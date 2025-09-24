@@ -26,6 +26,7 @@ use core_external\external_multiple_structure;
 use core_external\external_single_structure;
 use core_external\external_value;
 use stdClass;
+use tool_mulib\local\sql;
 
 /**
  * Base class for autocomplete form elements.
@@ -183,9 +184,9 @@ abstract class base extends external_api {
      * @param string $search
      * @param array $fields database fields
      * @param string $tablealias
-     * @return array
+     * @return sql
      */
-    public static function get_search_query(string $search, array $fields, string $tablealias = ''): array {
+    public static function get_search_query(string $search, array $fields, string $tablealias = ''): sql {
         global $DB;
 
         if ($tablealias !== '' && !str_ends_with($tablealias, '.')) {
@@ -207,10 +208,10 @@ abstract class base extends external_api {
         }
 
         if ($conditions) {
-            $sql = '(' . implode(' OR ', $conditions) . ') ';
-            return [$sql, $params];
+            $sql = ' (' . implode(' OR ', $conditions) . ') ';
+            return new sql($sql, $params);
         } else {
-            return ['1=1 ', $params];
+            return new sql(' 1=1 ', $params);
         }
     }
 

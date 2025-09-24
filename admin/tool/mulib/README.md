@@ -4,6 +4,18 @@
 
 This plugin is required by other MuTMS plugins.
 
+## List of APIs.
+
+1. Ajax forms for dialogs.
+2. Form autocompletion heplers.
+3. Plugin docs.
+4. Action dropdowns.
+5. Date interval helper.
+6. Notification manager.
+7. JSON validation helper.
+8. Entity details templates.
+9. SQL fragments.
+
 ## Known Limitations
 
 - Supported databases: PostgreSQL and MariaDB (MS SQL Server is not fully supported).

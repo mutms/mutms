@@ -1,5 +1,12 @@
 # Changelog
 
+## mu-5.0.2-03
+
+Release date: xx/09/2025
+
+* Added support for dropdown action icon and class.
+* Added SQL fragments. 
+
 ## mu-5.0.2-02
 
 Release date: 31/08/2025

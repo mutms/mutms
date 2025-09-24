@@ -20,6 +20,7 @@
 namespace tool_mulib\external\form_autocomplete;
 
 use stdClass;
+use tool_mulib\local\sql;
 
 /**
  * Base class for cohort auto-completion fields.
@@ -39,9 +40,9 @@ abstract class cohort extends base {
      *
      * @param string $search
      * @param string $tablealias
-     * @return array
+     * @return sql
      */
-    public static function get_cohort_search_query(string $search, string $tablealias = ''): array {
+    public static function get_cohort_search_query(string $search, string $tablealias = ''): sql {
         return static::get_search_query($search, ['name', 'idnumber', 'description'], $tablealias);
     }
 
