@@ -19,7 +19,6 @@
 
 namespace tool_muprog\local\source;
 
-use tool_mucertify\local\certification;
 use tool_muprog\local\course_reset;
 use stdClass;
 
@@ -130,7 +129,7 @@ final class mucertify extends base {
 
         $sourceclasses = \tool_muprog\local\allocation::get_source_classes();
 
-        // Delete allocations from deleted certifications, assignments or periods.
+        // Delete allocations from deleted certifications, assignments and periods, or when period data does not match allocation.
         $params = [];
         if ($userid) {
             $userselect = "AND pa.userid = :userid";
@@ -153,7 +152,7 @@ final class mucertify extends base {
                               FROM {tool_mucertify_period} cp
                               JOIN {tool_mucertify_assignment} ca ON ca.certificationid = cp.certificationid AND ca.userid = cp.userid
                               JOIN {tool_mucertify_certification} c ON c.id = cp.certificationid
-                             WHERE cp.allocationid = pa.id)";
+                             WHERE cp.allocationid = pa.id AND cp.programid = pa.programid AND cp.userid = pa.userid)";
         $sql .= " $userselect $certificationselect";
         $sql .= " ORDER BY pa.id ASC";
         $allocations = $DB->get_records_sql($sql, $params);
@@ -349,7 +348,7 @@ final class mucertify extends base {
 
             if ($resettype == course_reset::RESETTYPE_NONE) {
                 if ($allocation) {
-                    // Do not retry allocation.
+                    // Do not delete allocation, use whatever is there.
                     $DB->set_field('tool_mucertify_period', 'allocationid', 0, ['id' => $period->id]);
                     continue;
                 }
@@ -366,8 +365,9 @@ final class mucertify extends base {
 
                 $allocation = $DB->get_record('tool_muprog_allocation', ['userid' => $period->userid, 'programid' => $period->programid]);
                 if ($allocation) {
-                    // Something is wrong, probably some automatic allocation source messing this up, oh well.
-                    debugging("Failed resetting allocation for certification period $period->id", DEBUG_DEVELOPER);
+                    // Something is wrong, probably some automatic allocation source messing this up or a race condition,
+                    // just use the allocation because it must be fresh new allocation with optional course reset,
+                    // note that the dates may be wrong.
                     $DB->set_field('tool_mucertify_period', 'allocationid', 0, ['id' => $period->id]);
                     continue;
                 }
@@ -386,9 +386,9 @@ final class mucertify extends base {
         }
         unset($periods);
 
-        // Sync skipped program completions if necessary.
+        // Sync program completions if necessary - event may be future, missed or program may be already completed when period created.
         $params = [];
-        $params['now3'] = $params['now2'] = $params['now1'] = time();
+        $params['now4'] = $params['now3'] = $params['now2'] = $params['now1'] = time();
         if ($userid) {
             $userselect = "AND pa.userid = :userid";
             $params['userid'] = $userid;
@@ -396,7 +396,7 @@ final class mucertify extends base {
             $userselect = '';
         }
         if ($certificationid) {
-            $certificationselect = "AND pa.sourceinstanceid = :certificationid";
+            $certificationselect = "AND ca.certificationid = :certificationid";
             $params['certificationid'] = $certificationid;
         } else {
             $certificationselect = '';
@@ -404,16 +404,15 @@ final class mucertify extends base {
         $sql = "SELECT pa.id
                   FROM {tool_muprog_allocation} pa
                   JOIN {tool_muprog_program} p ON p.id = pa.programid
-                  JOIN {tool_mucertify_period} cp ON cp.allocationid = pa.id
+                  JOIN {tool_mucertify_period} cp ON cp.programid = pa.programid AND cp.userid = pa.userid
                   JOIN {tool_mucertify_assignment} ca ON ca.certificationid = cp.certificationid AND ca.userid = cp.userid
                   JOIN {tool_mucertify_certification} c ON c.id = cp.certificationid
-                  JOIN {tool_muprog_source} ps ON ps.programid = p.id AND ps.type = 'mucertify' AND ps.id = pa.sourceid
                  WHERE pa.archived = 0 AND ca.archived = 0 AND c.archived = 0 AND p.archived = 0
-                       AND pa.timecompleted IS NOT NULL
+                       AND pa.timecompleted <= :now4
                        AND cp.timecertified IS NULL AND cp.timerevoked IS NULL
                        AND (cp.timewindowend IS NULL OR cp.timewindowend > :now1)
                        AND (cp.timeuntil IS NULL OR cp.timeuntil > :now2)
-                       AND cp.timewindowstart < :now3
+                       AND cp.timewindowstart <= :now3
                        $userselect $certificationselect
               ORDER BY pa.id ASC";
         $allocations = $DB->get_records_sql($sql, $params);
@@ -422,12 +421,8 @@ final class mucertify extends base {
             if (!$allocation || !isset($allocation->timecompleted) || $allocation->archived) {
                 continue;
             }
-            $period = $DB->get_record('tool_mucertify_period', ['allocationid' => $allocation->id]);
-            if (!$period || isset($period->timecertified)) {
-                continue;
-            }
             $program = $DB->get_record('tool_muprog_program', ['id' => $allocation->programid]);
-            if (!$program) {
+            if (!$program || $program->archived) {
                 continue;
             }
             \tool_mucertify\local\period::allocation_completed($program, $allocation);

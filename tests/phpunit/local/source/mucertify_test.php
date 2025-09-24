@@ -21,7 +21,7 @@
 namespace tool_muprog\phpunit\local\source;
 
 use stdClass;
-use tool_mucertify\local\assignment;
+use tool_mucertify\local\certification;
 use tool_mucertify\local\period;
 use tool_mucertify\local\source\manual;
 use tool_muprog\local\course_reset;
@@ -368,6 +368,99 @@ final class mucertify_test extends \advanced_testcase {
             MUST_EXIST
         );
         $this->assertSame(null, $period8->allocationid);
+    }
+
+    /**
+     * Test graceful handling of certification allocation colliding with pre-existing manual allocation.
+     */
+    public function test_sync_certifications_allocate_conflict_noreset(): void {
+        global $DB;
+
+        /** @var \tool_mucertify_generator $generator */
+        $generator = $this->getDataGenerator()->get_plugin_generator('tool_mucertify');
+        /** @var \tool_muprog_generator $programgenerator */
+        $programgenerator = $this->getDataGenerator()->get_plugin_generator('tool_muprog');
+
+        $program1 = $programgenerator->create_program(['sources' => ['mucertify' => [], 'manual' => []]]);
+        $top1 = program::load_content($program1->id);
+
+        $data = [
+            'sources' => ['manual' => []],
+            'programid1' => $program1->id,
+        ];
+        $certification1 = $generator->create_certification($data);
+        $data = [
+            'id' => (string)$certification1->id,
+            'resettype1' => course_reset::RESETTYPE_NONE,
+        ];
+        $certification1 = certification::update_settings((object)$data);
+        $settings = \tool_mucertify\local\certification::get_periods_settings($certification1);
+        $this->assertSame(course_reset::RESETTYPE_NONE, $settings->resettype1);
+
+        $user1 = $this->getDataGenerator()->create_user();
+        $user2 = $this->getDataGenerator()->create_user();
+
+        $allocation1 = $programgenerator->create_program_allocation(['programid' => $program1->id, 'userid' => $user1->id]);
+        $allocation2 = $programgenerator->create_program_allocation(['programid' => $program1->id, 'userid' => $user2->id]);
+
+        $now = time();
+
+        $data = (object)[
+            'allocationid' => $allocation1->id,
+            'itemid' => $top1->get_id(),
+            'timecompleted' => $now,
+        ];
+        \tool_muprog\local\allocation::update_item_completion($data);
+        $allocation1 = $DB->get_record('tool_muprog_allocation', ['id' => $allocation1->id], '*', MUST_EXIST);
+        $this->assertNotNull($allocation1->timecompleted);
+
+        $this->setCurrentTimeStart();
+        $assignment1 = $generator->create_certification_assignment([
+            'certificationid' => $certification1->id,
+            'userid' => $user1->id,
+        ]);
+        $period1 = $DB->get_record(
+            'tool_mucertify_period',
+            ['userid' => $user1->id, 'certificationid' => $certification1->id],
+            '*',
+            MUST_EXIST
+        );
+        $this->assertSame('0', $period1->allocationid);
+        $this->assertTimeCurrent($period1->timecertified);
+
+        $assignment2 = $generator->create_certification_assignment([
+            'certificationid' => $certification1->id,
+            'userid' => $user2->id,
+        ]);
+        $period2 = $DB->get_record(
+            'tool_mucertify_period',
+            ['userid' => $user2->id, 'certificationid' => $certification1->id],
+            '*',
+            MUST_EXIST
+        );
+        $this->assertSame('0', $period2->allocationid);
+        $this->assertSame(null, $period2->timecertified);
+
+        $allocation1x = $DB->get_record('tool_muprog_allocation', ['programid' => $program1->id, 'userid' => $user1->id], '*', MUST_EXIST);
+        $this->assertEquals($allocation1, $allocation1x);
+        $allocation2x = $DB->get_record('tool_muprog_allocation', ['programid' => $program1->id, 'userid' => $user2->id], '*', MUST_EXIST);
+        $this->assertEquals($allocation2, $allocation2x);
+
+        $this->setCurrentTimeStart();
+        $data = (object)[
+            'allocationid' => $allocation2->id,
+            'itemid' => $top1->get_id(),
+            'timecompleted' => $now,
+        ];
+        \tool_muprog\local\allocation::update_item_completion($data);
+        $period2 = $DB->get_record(
+            'tool_mucertify_period',
+            ['userid' => $user2->id, 'certificationid' => $certification1->id],
+            '*',
+            MUST_EXIST
+        );
+        $this->assertSame('0', $period2->allocationid);
+        $this->assertTimeCurrent($period2->timecertified);
     }
 
     public function test_sync_certifications_archive(): void {
