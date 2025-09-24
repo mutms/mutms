@@ -47,9 +47,11 @@ class dropdown implements \core\output\named_templatable, \core\output\renderabl
      *
      * @param string $label
      * @param \moodle_url $url
+     * @param \core\output\pix_icon|null $icon
+     * @param string $class
      */
-    final public function add_item(string $label, \moodle_url $url): void {
-        $this->items[] = ['label' => $label, 'url' => $url->out(false)];
+    final public function add_item(string $label, \moodle_url $url, ?\core\output\pix_icon $icon = null, string $class = ''): void {
+        $this->items[] = ['label' => $label, 'url' => $url->out(false), 'icon' => $icon, 'class' => $class];
     }
 
     /**
@@ -88,9 +90,17 @@ class dropdown implements \core\output\named_templatable, \core\output\renderabl
      * @return array
      */
     final public function export_for_template(\renderer_base $output): array {
+        $items = [];
+        foreach ($this->items as $item) {
+            if (isset($item['icon'])) {
+                $item['icon'] = \core\output\icon_system::instance()->render_pix_icon($output, $item['icon']);
+            }
+            $items[] = $item;
+        }
+
         return [
             'title' => $this->title,
-            'items' => $this->items,
+            'items' => $items,
         ];
     }
 

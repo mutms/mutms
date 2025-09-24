@@ -21,6 +21,7 @@ namespace tool_mulib\external\form_autocomplete;
 
 use stdClass;
 use tool_mulib\local\mulib;
+use tool_mulib\local\sql;
 
 /**
  * Base class for user auto-completion fields.
@@ -81,6 +82,34 @@ abstract class user extends base {
         }
 
         return \tool_mutenancy\local\tenancy::get_related_users_exists($useridfield, $context, $glue);
+    }
+
+    /**
+     * User search where sql.
+     *
+     * @param string $search
+     * @param string $tablealias
+     * @param \context $context
+     * @return sql
+     */
+    public static function get_user_search_query(string $search, string $tablealias, \context $context): sql {
+        $fields = \core_user\fields::for_name()->with_identity($context, false);
+        $extrafields = $fields->get_required_fields([\core_user\fields::PURPOSE_IDENTITY]);
+        [$sql, $params] = users_search_sql($search, $tablealias, USER_SEARCH_CONTAINS, $extrafields);
+        return new sql($sql, $params);
+    }
+
+    /**
+     * User search ORDER BY sql.
+     *
+     * @param string $search
+     * @param string $tablealias
+     * @param \context $context
+     * @return sql
+     */
+    public static function get_user_search_orderby(string $search, string $tablealias, \context $context): sql {
+        [$sql, $params] = users_order_by_sql($tablealias, $search, $context);
+        return new sql($sql, $params);
     }
 
     /**
