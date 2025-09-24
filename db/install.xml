@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<XMLDB PATH="admin/tool/mucertify/db" VERSION="20250419" COMMENT="XMLDB file for tool_mucertify plugin"
+<XMLDB PATH="admin/tool/mucertify/db" VERSION="20250909" COMMENT="XMLDB file for tool_mucertify plugin"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:noNamespaceSchemaLocation="../../../../lib/xmldb/xmldb.xsd"
 >
@@ -148,7 +148,7 @@
         <KEY NAME="programid" TYPE="foreign" FIELDS="programid" REFTABLE="tool_muprog_program" REFFIELDS="id"/>
       </KEYS>
       <INDEXES>
-        <INDEX NAME="allocationid" UNIQUE="true" FIELDS="allocationid" COMMENT="Duplicates should never happen"/>
+        <INDEX NAME="allocationid" UNIQUE="false" FIELDS="allocationid" COMMENT="Not unique because 0 is used to indicate that initial allocation for period was not possible"/>
         <INDEX NAME="certificateissueid" UNIQUE="true" FIELDS="certificateissueid" COMMENT="Soft unique reference to tool_certificate_issues.id"/>
       </INDEXES>
     </TABLE>
