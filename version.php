@@ -28,8 +28,8 @@ defined('MOODLE_INTERNAL') || die();
 
 /** @var stdClass $plugin */
 $plugin->component = 'tool_mupwned';
-$plugin->version = 2025083150;
+$plugin->version = 2025092450;
 $plugin->requires = 2025041400;
 $plugin->maturity = MATURITY_ALPHA;
 $plugin->supported = [5000, 5000];
-$plugin->release = 'mu-5.0.2-02+';
+$plugin->release = 'mu-5.0.2-03';
