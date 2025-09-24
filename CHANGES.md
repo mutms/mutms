@@ -2,7 +2,7 @@
 
 ## mu-5.0.2-03
 
-Release date: xx/09/2025
+Release date: 24/09/2025
 
 * Certification allocation conflicts are now handled gracefully.
 
