@@ -67,6 +67,7 @@ $string['event_tenant_created'] = 'Tenant created';
 $string['event_tenant_deleted'] = 'Tenant deleted';
 $string['event_tenant_restored'] = 'Tenant restored';
 $string['event_tenant_updated'] = 'Tenant updated';
+$string['event_user_allocated'] = 'User tenant allocation changed';
 $string['login_tenant_select'] = 'Select site';
 $string['logos_edit'] = 'Edit logos';
 $string['member_confirm_info'] = 'In most cases member accounts should not be confirmed here.

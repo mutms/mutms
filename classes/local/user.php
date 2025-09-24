@@ -408,7 +408,7 @@ final class user {
                     manager::remove($m->tenantid, $m->userid);
                 }
             }
-            $user->tenantid = $tenant->id;
+            $user->tenantid = (string)$tenant->id;
         } else {
             $DB->set_field('user', 'tenantid', null, ['id' => $user->id]);
             $user->tenantid = null;
@@ -428,6 +428,9 @@ final class user {
         $trans->allow_commit();
 
         \core\session\manager::destroy_user_sessions($user->id);
+
+        $event = \tool_mutenancy\event\user_allocated::create_from_user($user);
+        $event->trigger();
 
         return $user;
     }
