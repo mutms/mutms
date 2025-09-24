@@ -35,9 +35,19 @@ final class event_observer {
      * @param \tool_muprog\event\allocation_completed $event
      */
     public static function allocation_completed(\tool_muprog\event\allocation_completed $event): void {
+        $program = $event->get_record_snapshot('tool_muprog_program', $event->get_data()['other']['programid']);
+        $allocation = $event->get_record_snapshot('tool_muprog_allocation', $event->objectid);
+
+        if ($program->archived || $allocation->archived) {
+            return;
+        }
+        if ($allocation->timecompleted > time()) {
+            return;
+        }
+
         period::allocation_completed(
-            $event->get_record_snapshot('tool_muprog_program', $event->get_data()['other']['programid']),
-            $event->get_record_snapshot('tool_muprog_allocation', $event->objectid)
+            $program,
+            $allocation
         );
     }
 }

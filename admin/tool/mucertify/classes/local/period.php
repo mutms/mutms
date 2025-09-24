@@ -645,7 +645,9 @@ final class period {
     }
 
     /**
-     * Called from event observer.
+     * Called from event observer and right after new period creation.
+     *
+     * NOTE: make sure completion is not in the future when calling this
      *
      * @param stdClass $program
      * @param stdClass $allocation
@@ -667,9 +669,9 @@ final class period {
                  WHERE a.archived = 0 AND c.archived = 0 AND u.deleted = 0
                        AND p.timecertified IS NULL AND p.timerevoked IS NULL
                        AND p.timewindowstart <= $now AND (p.timewindowend IS NULL OR p.timewindowend > $now)
-                       AND p.allocationid = :allocationid AND p.programid = :programid";
+                       AND p.userid = :userid AND p.programid = :programid";
         $params = [
-            'allocationid' => $allocation->id,
+            'userid' => $allocation->userid,
             'programid' => $program->id,
         ];
         $period = $DB->get_record_sql($sql, $params);

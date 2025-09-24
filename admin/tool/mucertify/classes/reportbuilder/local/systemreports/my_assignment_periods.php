@@ -16,6 +16,7 @@
 
 // phpcs:disable moodle.Files.BoilerplateComment.CommentEndedTooSoon
 // phpcs:disable moodle.Files.LineLength.TooLong
+// phpcs:disable moodle.Files.LineLength.MaxExceeded
 
 namespace tool_mucertify\reportbuilder\local\systemreports;
 
@@ -81,7 +82,7 @@ final class my_assignment_periods extends system_report {
         $this->allocationentity = new allocation();
         $allocationalias = $this->allocationentity->get_table_alias('tool_muprog_allocation');
         $this->add_entity($this->allocationentity);
-        $this->add_join("LEFT JOIN {tool_muprog_allocation} {$allocationalias} ON {$allocationalias}.id = {$periodentityalias}.allocationid");
+        $this->add_join("LEFT JOIN {tool_muprog_allocation} {$allocationalias} ON {$allocationalias}.programid = {$periodentityalias}.programid AND {$allocationalias}.userid = {$periodentityalias}.userid");
 
         // Link program to allocation instad of period, we want only assigned programs here.
         $this->programentity = new program();

@@ -71,5 +71,21 @@ function xmldb_tool_mucertify_upgrade($oldversion) {
         upgrade_plugin_savepoint(true, 2025080950.01, 'tool', 'mucertify');
     }
 
+    if ($oldversion < 2025083145.01) {
+        $table = new xmldb_table('tool_mucertify_period');
+        $index = new xmldb_index('allocationid', XMLDB_INDEX_UNIQUE, ['allocationid']);
+        if ($dbman->index_exists($table, $index)) {
+            $dbman->drop_index($table, $index);
+        }
+
+        $table = new xmldb_table('tool_mucertify_period');
+        $index = new xmldb_index('allocationid', XMLDB_INDEX_NOTUNIQUE, ['allocationid']);
+        if (!$dbman->index_exists($table, $index)) {
+            $dbman->add_index($table, $index);
+        }
+
+        upgrade_plugin_savepoint(true, 2025083145.01, 'tool', 'mucertify');
+    }
+
     return true;
 }

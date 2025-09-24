@@ -473,8 +473,8 @@ class renderer extends \plugin_renderer_base {
             $program = $DB->get_record('tool_muprog_program', ['id' => $period->programid]);
             $programcontext = \context::instance_by_id($program->contextid, IGNORE_MISSING);
         }
-        if ($program && $period->allocationid) {
-            $allocation = $DB->get_record('tool_muprog_allocation', ['id' => $period->allocationid]);
+        if ($program) {
+            $allocation = $DB->get_record('tool_muprog_allocation', ['programid' => $period->programid, 'userid' => $period->userid]);
         }
 
         $buttons = [];

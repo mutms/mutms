@@ -1,5 +1,11 @@
 # Changelog
 
+## mu-5.0.2-03
+
+Release date: xx/09/2025
+
+* Program allocation conflicts are now handled gracefully. However, mixing certification allocation sources with other types of allocations within a single program remains discouraged.
+
 ## mu-5.0.2-02
 
 Release date: 31/08/2025

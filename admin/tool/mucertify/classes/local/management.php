@@ -62,49 +62,6 @@ final class management {
     }
 
     /**
-     * Returns search query for certifications without any access control logic.
-     *
-     * @param \context|null $context
-     * @param string $search
-     * @param string $tablealias
-     * @return array
-     */
-    public static function get_search_query(?\context $context, string $search, string $tablealias = ''): array {
-        global $DB;
-
-        if ($tablealias !== '' && substr($tablealias, -1) !== '.') {
-            $tablealias .= '.';
-        }
-
-        $conditions = [];
-        $params = [];
-
-        if ($context) {
-            $conditions[] = $tablealias . 'contextid = :prgcontextid';
-            $params['prgcontextid'] = $context->id;
-        }
-
-        if (trim($search) !== '') {
-            $searchparam = '%' . $DB->sql_like_escape($search) . '%';
-            $conditions = [];
-            $fields = ['fullname', 'idnumber', 'description'];
-            $cnt = 0;
-            foreach ($fields as $field) {
-                $conditions[] = $DB->sql_like($tablealias . $field, ':prgsearch' . $cnt, false);
-                $params['prgsearch' . $cnt] = $searchparam;
-                $cnt++;
-            }
-        }
-
-        if ($conditions) {
-            $sql = '(' . implode(' OR ', $conditions) . ')';
-            return [$sql, $params];
-        } else {
-            return ['1=1', $params];
-        }
-    }
-
-    /**
      * Fetch cohorts that allow certification visibility.
      *
      * @param int $certificationid
