@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<XMLDB PATH="admin/tool/muloginas/db" VERSION="20250528" COMMENT="XMLDB file for tool_muloginas plugin"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:noNamespaceSchemaLocation="../../../../lib/xmldb/xmldb.xsd"
+>
+  <TABLES>
+    <TABLE NAME="tool_muloginas_request" COMMENT="Log-in-as tokens for Incognito sessions">
+      <FIELDS>
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+        <FIELD NAME="token" TYPE="char" LENGTH="255" NOTNULL="true" SEQUENCE="false" COMMENT="Sign in token"/>
+        <FIELD NAME="userid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="User who initiated the log-in-as request"/>
+        <FIELD NAME="timecreated" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="When was the request created"/>
+        <FIELD NAME="sid" TYPE="char" LENGTH="255" NOTNULL="true" SEQUENCE="false" COMMENT="Requesting user session id"/>
+        <FIELD NAME="useragent" TYPE="char" LENGTH="1333" NOTNULL="true" SEQUENCE="false" COMMENT="Browser info"/>
+        <FIELD NAME="targetuserid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="User who was logged-in-as"/>
+        <FIELD NAME="timeused" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false" COMMENT="When was the token used, only one attempt allowed"/>
+        <FIELD NAME="targetsid" TYPE="char" LENGTH="255" NOTNULL="false" SEQUENCE="false" COMMENT="Logged-in-as session id successfully"/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+        <KEY NAME="userid" TYPE="foreign" FIELDS="userid" REFTABLE="user" REFFIELDS="id"/>
+        <KEY NAME="targetuserid" TYPE="foreign" FIELDS="targetuserid" REFTABLE="user" REFFIELDS="id"/>
+      </KEYS>
+      <INDEXES>
+        <INDEX NAME="token" UNIQUE="true" FIELDS="token" COMMENT="Token must be unique"/>
+        <INDEX NAME="timecreated" UNIQUE="false" FIELDS="timecreated"/>
+      </INDEXES>
+    </TABLE>
+  </TABLES>
+</XMLDB>
