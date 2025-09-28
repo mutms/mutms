@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<XMLDB PATH="admin/tool/murelation/db" VERSION="20250615" COMMENT="XMLDB file for tool_murelation plugin"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:noNamespaceSchemaLocation="../../../../lib/xmldb/xmldb.xsd"
+>
+  <TABLES>
+    <TABLE NAME="tool_murelation_framework" COMMENT="User relation framework that defines type of user relation">
+      <FIELDS>
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+        <FIELD NAME="name" TYPE="char" LENGTH="254" NOTNULL="true" SEQUENCE="false" COMMENT="Full name of the framework"/>
+        <FIELD NAME="idnumber" TYPE="char" LENGTH="100" NOTNULL="false" SEQUENCE="false" COMMENT="Optional external identifier - globally unique"/>
+        <FIELD NAME="description" TYPE="text" NOTNULL="true" SEQUENCE="false" COMMENT="Description of the framework intended use"/>
+        <FIELD NAME="descriptionformat" TYPE="int" LENGTH="2" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="uimode" TYPE="int" LENGTH="2" NOTNULL="true" SEQUENCE="false" COMMENT="1 means Supervisors mode, 2 means Teams mode - cannot be changed"/>
+        <FIELD NAME="visibility" TYPE="int" LENGTH="2" NOTNULL="true" DEFAULT="1" SEQUENCE="false" COMMENT="0 means hidden, 1 means position managers, 2 means supervisors and subordinates, 3 means also course teachers, 4 means everybody"/>
+        <FIELD NAME="alltenants" TYPE="int" LENGTH="1" NOTNULL="true" DEFAULT="1" SEQUENCE="false" COMMENT="1 means available for new supervisor positions in all tenants, 0 only in selected tenants."/>
+        <FIELD NAME="managecohortid" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false" COMMENT="If set cohort membership and capability is required to edit supervisors/teams and subordinates"/>
+        <FIELD NAME="supervisortitle" TYPE="char" LENGTH="254" NOTNULL="true" SEQUENCE="false" COMMENT="Designation of supervisor entity or team of subordinates - Classroom A, Teacher, Manager"/>
+        <FIELD NAME="supervisorstitle" TYPE="char" LENGTH="254" NOTNULL="true" SEQUENCE="false" COMMENT="How to call a list of supervisors in the framework - Classrooms, Teachers, Managers"/>
+        <FIELD NAME="supervisorcohortid" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false" COMMENT="If set candidates for supervisors must be from this cohort"/>
+        <FIELD NAME="supervisorroleid" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false" COMMENT="Optional role assigned to supervisors in context of subordinate users"/>
+        <FIELD NAME="subordinatetitle" TYPE="char" LENGTH="254" NOTNULL="true" SEQUENCE="false" COMMENT="Designation of subordinate position - Student, Employee, Learner, Child"/>
+        <FIELD NAME="subordinatestitle" TYPE="char" LENGTH="254" NOTNULL="true" SEQUENCE="false" COMMENT="How to call list of subordinates in the framework - Students, Employees, Learners"/>
+        <FIELD NAME="subordinatecohortid" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false" COMMENT="If set candidates for subordinates must be from this cohort"/>
+        <FIELD NAME="timecreated" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+        <KEY NAME="managecohortid" TYPE="foreign" FIELDS="managecohortid" REFTABLE="cohort" REFFIELDS="id"/>
+        <KEY NAME="supervisorcohortid" TYPE="foreign" FIELDS="supervisorcohortid" REFTABLE="cohort" REFFIELDS="id"/>
+        <KEY NAME="supervisorroleid" TYPE="foreign" FIELDS="supervisorroleid" REFTABLE="role" REFFIELDS="id"/>
+        <KEY NAME="subordinatecohortid" TYPE="foreign" FIELDS="subordinatecohortid" REFTABLE="cohort" REFFIELDS="id"/>
+      </KEYS>
+      <INDEXES>
+        <INDEX NAME="idnumber" UNIQUE="true" FIELDS="idnumber" COMMENT="Enforces unique idnumber for all frameworks if defined"/>
+      </INDEXES>
+    </TABLE>
+    <TABLE NAME="tool_murelation_tenant_allow" COMMENT="Allowed frameworks for tenants - restricts adding of new positions and profile visibility">
+      <FIELDS>
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+        <FIELD NAME="frameworkid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="Relation framework"/>
+        <FIELD NAME="tenantid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="Allowed tenant id"/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+        <KEY NAME="frameworkid" TYPE="foreign" FIELDS="frameworkid" REFTABLE="tool_murelation_framework" REFFIELDS="id"/>
+      </KEYS>
+      <INDEXES>
+        <INDEX NAME="frameworkid-tenantid" UNIQUE="true" FIELDS="frameworkid, tenantid" COMMENT="Prevent duplicates"/>
+      </INDEXES>
+    </TABLE>
+    <TABLE NAME="tool_murelation_supervisor" COMMENT="Represents supervisor position or a whole team depending on framework mode">
+      <FIELDS>
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+        <FIELD NAME="frameworkid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="Relation framework"/>
+        <FIELD NAME="tenantid" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false" COMMENT="Optional tenant id - access control and it limits who can be supervisor and subordinate, need to switch tenants to add for now; in supervisors mode it matches subordinate tenant id"/>
+        <FIELD NAME="teamname" TYPE="char" LENGTH="254" NOTNULL="false" SEQUENCE="false" COMMENT="Team name - required in team mode, optional otherwise - always NULL in Supervisors mode"/>
+        <FIELD NAME="teamidnumber" TYPE="char" LENGTH="100" NOTNULL="false" SEQUENCE="false" COMMENT="External team identifier - globally unique, always NULL in Supervisors mode"/>
+        <FIELD NAME="teamcohortid" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false" COMMENT="Team cohort for all subordinates aka team members, always NULL in Supervisors mode"/>
+        <FIELD NAME="supmanaged" TYPE="int" LENGTH="1" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="1 means supervisor may add and remove team members if the have viewpositions permission, 0 means only standard position management permissions apply, not used in Supervisors mode"/>
+        <FIELD NAME="maxsubordinates" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false" COMMENT="Maximum number of subordinates in team, null means no limit, always 1 in Supervisors mode"/>
+        <FIELD NAME="userid" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false" COMMENT="Supervisor user id - NULL if position not assigned, required in Supervisors mode"/>
+        <FIELD NAME="timecreated" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+        <KEY NAME="frameworkid" TYPE="foreign" FIELDS="frameworkid" REFTABLE="tool_murelation_framework" REFFIELDS="id"/>
+        <KEY NAME="teamcohortid" TYPE="foreign" FIELDS="teamcohortid" REFTABLE="cohort" REFFIELDS="id"/>
+        <KEY NAME="userid" TYPE="foreign" FIELDS="userid" REFTABLE="user" REFFIELDS="id"/>
+      </KEYS>
+      <INDEXES>
+        <INDEX NAME="tenantid" UNIQUE="false" FIELDS="tenantid" COMMENT="Used instead of foreign key because multi-tenancy tables may not be available"/>
+        <INDEX NAME="teamidnumber" UNIQUE="true" FIELDS="teamidnumber" COMMENT="Enforces unique idnumber for teams if defined"/>
+      </INDEXES>
+    </TABLE>
+    <TABLE NAME="tool_murelation_subordinate" COMMENT="Subordinate user position">
+      <FIELDS>
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+        <FIELD NAME="supervisorid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="Supervisor position reference"/>
+        <FIELD NAME="userid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="Subordinate user id"/>
+        <FIELD NAME="frameworkid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="Relation framework - auxiliary field, must match supervisor framework id"/>
+        <FIELD NAME="teamposition" TYPE="char" LENGTH="254" NOTNULL="false" SEQUENCE="false" COMMENT="Optional team position name - always NULL in Supervisors mode"/>
+        <FIELD NAME="timecreated" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+        <KEY NAME="supervisorid" TYPE="foreign" FIELDS="supervisorid" REFTABLE="tool_murelation_supervisor" REFFIELDS="id"/>
+        <KEY NAME="userid" TYPE="foreign" FIELDS="userid" REFTABLE="user" REFFIELDS="id"/>
+        <KEY NAME="frameworkid" TYPE="foreign" FIELDS="frameworkid" REFTABLE="tool_murelation_framework" REFFIELDS="id"/>
+      </KEYS>
+      <INDEXES>
+        <INDEX NAME="frameworkid-userid" UNIQUE="true" FIELDS="frameworkid, userid" COMMENT="Each user may take max one subordinate position in each framework"/>
+      </INDEXES>
+    </TABLE>
+  </TABLES>
+</XMLDB>
