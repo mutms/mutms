@@ -1,0 +1,10 @@
+<?xml version="1.0"?>
+<libraries>
+  <library>
+    <location>pix/switch.svg</location>
+    <name>Font-Awesome Sitemap icon</name>
+    <version>6.7.2</version>
+    <license>CC BY</license>
+    <licenseversion>4.0</licenseversion>
+  </library>
+</libraries>
