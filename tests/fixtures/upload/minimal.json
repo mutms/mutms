@@ -1,0 +1,29 @@
+{
+    "programs": [
+        {
+            "idnumber": "P00",
+            "fullname": "Program 00",
+            "contents": {
+                "itemtype": "set",
+                "items": [
+                    {
+                        "itemtype": "course",
+                        "reference": "C01"
+                    },
+                    {
+                        "itemtype": "course",
+                        "reference": "C02"
+                    }
+                ]
+            }
+        },
+        {
+            "idnumber": "P01",
+            "fullname": "Program 01"
+        },
+        {
+            "idnumber": "P02",
+            "fullname": "Program 02"
+        }
+    ]
+}

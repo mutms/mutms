@@ -1,0 +1,7 @@
+username,startdate,duedate,enddate
+student1,,,
+student2,10/11/22,31 Dec 2022,2023-01-31T15:52:01+00:00
+student3,10/11/22,,
+student4,,,10/11/21
+student5,02/01/23,02/01/22,
+student6,02/01/23,,02/01/22

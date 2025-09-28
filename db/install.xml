@@ -1,0 +1,263 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<XMLDB PATH="admin/tool/muprog/db" VERSION="20250419" COMMENT="XMLDB file for tool_muprog plugin"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:noNamespaceSchemaLocation="../../../../lib/xmldb/xmldb.xsd"
+>
+  <TABLES>
+    <TABLE NAME="tool_muprog_program" COMMENT="List of programs">
+      <FIELDS>
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+        <FIELD NAME="contextid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="Context for programs management access control, will also be used for multi-tenancy"/>
+        <FIELD NAME="fullname" TYPE="char" LENGTH="254" NOTNULL="true" SEQUENCE="false" COMMENT="Human readable name of the program, does not have to be unique"/>
+        <FIELD NAME="idnumber" TYPE="char" LENGTH="100" NOTNULL="true" SEQUENCE="false" COMMENT="Unique identifier of a program, multilang definitely not supported"/>
+        <FIELD NAME="description" TYPE="text" NOTNULL="true" SEQUENCE="false" COMMENT="Program description text"/>
+        <FIELD NAME="descriptionformat" TYPE="int" LENGTH="2" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="presentationjson" TYPE="text" NOTNULL="true" SEQUENCE="false" COMMENT="Visual presentation of program, such as image files"/>
+        <FIELD NAME="publicaccess" TYPE="int" LENGTH="1" NOTNULL="true" SEQUENCE="false" COMMENT="1 means visible to everyone, 0 means use cohorts for visibility"/>
+        <FIELD NAME="archived" TYPE="int" LENGTH="1" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="Archived programs are hidden, non-mutable and mostly ignored, program must be archived before deletion"/>
+        <FIELD NAME="creategroups" TYPE="int" LENGTH="1" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="Create course groups for each course in program"/>
+        <FIELD NAME="timeallocationstart" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false" COMMENT="Restriction for allocations- allocations allowed from this date forward if set"/>
+        <FIELD NAME="timeallocationend" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false" COMMENT="Restriction for allocations - allocations not allowed after this date if set"/>
+        <FIELD NAME="startdatejson" TYPE="text" NOTNULL="true" SEQUENCE="false" COMMENT="Calculation rules for user start date in program allocation"/>
+        <FIELD NAME="duedatejson" TYPE="text" NOTNULL="true" SEQUENCE="false" COMMENT="Calculation rules for user due date in program allocation"/>
+        <FIELD NAME="enddatejson" TYPE="text" NOTNULL="true" SEQUENCE="false" COMMENT="Calculation rules for user end date in program allocation"/>
+        <FIELD NAME="timecreated" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+        <KEY NAME="contextid" TYPE="foreign" FIELDS="contextid" REFTABLE="context" REFFIELDS="id"/>
+      </KEYS>
+      <INDEXES>
+        <INDEX NAME="idnumber" UNIQUE="true" FIELDS="idnumber" COMMENT="Enforce unique idnumber for all programs"/>
+        <INDEX NAME="archived" UNIQUE="false" FIELDS="archived"/>
+      </INDEXES>
+    </TABLE>
+    <TABLE NAME="tool_muprog_item" COMMENT="Structure of programs - items representing courses and course-sets with their ordering and completion rules.">
+      <FIELDS>
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+        <FIELD NAME="programid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="topitem" TYPE="int" LENGTH="1" NOTNULL="false" SEQUENCE="false" COMMENT="1 for top most item representing program itself, NULL for all other items"/>
+        <FIELD NAME="courseid" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false" COMMENT="Course reference, NULL if item is course-set (must not be set for top item)"/>
+        <FIELD NAME="trainingid" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false" COMMENT="Training framework reference, NULL for sets (must not be set for top item)"/>
+        <FIELD NAME="previtemid" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false" COMMENT="Previous item needs to be completed in order to allow courseid access, this is ignored for sets"/>
+        <FIELD NAME="fullname" TYPE="char" LENGTH="254" NOTNULL="true" SEQUENCE="false" COMMENT="Human readable name of course-set, copy of course.fullname if courseid set, copy of program name for top item"/>
+        <FIELD NAME="sequencejson" TYPE="text" NOTNULL="true" SEQUENCE="false" COMMENT="List of children with ordering and completion rules, optional start delay info if courseid set"/>
+        <FIELD NAME="minprerequisites" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false" COMMENT="Number of required prerequisite item completions needed for this item completion - derived from sequencejson, 1 for empty set means cannot be completed, 1 if courseid set"/>
+        <FIELD NAME="points" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="1" SEQUENCE="false" COMMENT="Point-based value for item/set completion"/>
+        <FIELD NAME="minpoints" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false" COMMENT="Point-based alternative to minprerequisites"/>
+        <FIELD NAME="completiondelay" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="Optional completion delay"/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+        <KEY NAME="programid" TYPE="foreign" FIELDS="programid" REFTABLE="tool_muprog_program" REFFIELDS="id"/>
+        <KEY NAME="courseid" TYPE="foreign" FIELDS="courseid" REFTABLE="course" REFFIELDS="id"/>
+        <KEY NAME="previtemid" TYPE="foreign" FIELDS="previtemid" REFTABLE="tool_muprog_item" REFFIELDS="id"/>
+      </KEYS>
+      <INDEXES>
+        <INDEX NAME="minprerequisites" UNIQUE="false" FIELDS="minprerequisites"/>
+        <INDEX NAME="points" UNIQUE="false" FIELDS="points"/>
+        <INDEX NAME="minpoints" UNIQUE="false" FIELDS="minpoints"/>
+        <INDEX NAME="programid-courseid" UNIQUE="false" FIELDS="programid, courseid"/>
+        <INDEX NAME="trainingid" UNIQUE="false" FIELDS="trainingid" COMMENT="references optional tool_mutrain_framework table"/>
+      </INDEXES>
+    </TABLE>
+    <TABLE NAME="tool_muprog_group" COMMENT="Course groups that were created for course items">
+      <FIELDS>
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+        <FIELD NAME="programid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="courseid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="groupid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+        <KEY NAME="programid" TYPE="foreign" FIELDS="programid" REFTABLE="tool_muprog_program" REFFIELDS="id"/>
+        <KEY NAME="courseid" TYPE="foreign" FIELDS="courseid" REFTABLE="course" REFFIELDS="id"/>
+        <KEY NAME="groupid" TYPE="foreign-unique" FIELDS="groupid" REFTABLE="groups" REFFIELDS="id"/>
+      </KEYS>
+      <INDEXES>
+        <INDEX NAME="programid-courseid" UNIQUE="true" FIELDS="programid, courseid" COMMENT="Only one group for program-course combination"/>
+      </INDEXES>
+    </TABLE>
+    <TABLE NAME="tool_muprog_prerequisite" COMMENT="Internal item dependency map - it is built automatically from program items using sequencejson">
+      <FIELDS>
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+        <FIELD NAME="itemid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="prerequisiteitemid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+        <KEY NAME="itemid" TYPE="foreign" FIELDS="itemid" REFTABLE="tool_muprog_item" REFFIELDS="id"/>
+        <KEY NAME="prerequisiteitemid" TYPE="foreign" FIELDS="prerequisiteitemid" REFTABLE="tool_muprog_item" REFFIELDS="id"/>
+      </KEYS>
+      <INDEXES>
+        <INDEX NAME="itemid-prerequisiteitemid" UNIQUE="true" FIELDS="itemid, prerequisiteitemid" COMMENT="Prevent duplicates"/>
+      </INDEXES>
+    </TABLE>
+    <TABLE NAME="tool_muprog_cohort" COMMENT="Members of these cohorts may browse non-public programs before allocation">
+      <FIELDS>
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+        <FIELD NAME="programid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="cohortid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+        <KEY NAME="programid" TYPE="foreign" FIELDS="programid" REFTABLE="tool_muprog_program" REFFIELDS="id"/>
+        <KEY NAME="cohortid" TYPE="foreign" FIELDS="cohortid" REFTABLE="cohort" REFFIELDS="id"/>
+      </KEYS>
+      <INDEXES>
+        <INDEX NAME="programid-cohortid" UNIQUE="true" FIELDS="programid, cohortid" COMMENT="Prevent duplicates"/>
+      </INDEXES>
+    </TABLE>
+    <TABLE NAME="tool_muprog_source" COMMENT="Program allocation sources representing different means of user allocation">
+      <FIELDS>
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+        <FIELD NAME="programid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="type" TYPE="char" LENGTH="50" NOTNULL="true" SEQUENCE="false" COMMENT="Type of allocation - manual, self, cohort, certification, etc."/>
+        <FIELD NAME="datajson" TYPE="text" NOTNULL="true" SEQUENCE="false" COMMENT="General source allocation settings"/>
+        <FIELD NAME="auxint1" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false"/>
+        <FIELD NAME="auxint2" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false"/>
+        <FIELD NAME="auxint3" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false"/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+        <KEY NAME="programid" TYPE="foreign" FIELDS="programid" REFTABLE="tool_muprog_program" REFFIELDS="id"/>
+      </KEYS>
+    </TABLE>
+    <TABLE NAME="tool_muprog_request" COMMENT="List of people waiting for allocation to programs, entry is deleted after allocation">
+      <FIELDS>
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+        <FIELD NAME="sourceid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="userid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="datajson" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="Request details created by source"/>
+        <FIELD NAME="timerequested" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="timerejected" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false" COMMENT="Rejected request blocks retry, delete rejected record if retry allowed"/>
+        <FIELD NAME="rejectedby" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false"/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+        <KEY NAME="sourceid" TYPE="foreign" FIELDS="sourceid" REFTABLE="tool_muprog_source" REFFIELDS="id"/>
+        <KEY NAME="userid" TYPE="foreign" FIELDS="userid" REFTABLE="user" REFFIELDS="id"/>
+        <KEY NAME="rejectedby" TYPE="foreign" FIELDS="rejectedby" REFTABLE="user" REFFIELDS="id"/>
+      </KEYS>
+      <INDEXES>
+        <INDEX NAME="sourceid-userid" UNIQUE="true" FIELDS="sourceid, userid" COMMENT="Only one request for allocation of user per source, delete rejection if they are allowed to retry"/>
+      </INDEXES>
+    </TABLE>
+    <TABLE NAME="tool_muprog_allocation" COMMENT="User allocations to programs">
+      <FIELDS>
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+        <FIELD NAME="programid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="userid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="sourceid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="Means of user allocation"/>
+        <FIELD NAME="archived" TYPE="int" LENGTH="1" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="All enrolments are suspended when user allocation is archived and completion is frozen, useful when user is removed from cohort when auto allocating"/>
+        <FIELD NAME="sourcedatajson" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="Extra allocation data belonging to source, it can store waitlist history, person who allocated mannually, etc."/>
+        <FIELD NAME="sourceinstanceid" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false" COMMENT="Some external reference that can be used from source classes"/>
+        <FIELD NAME="timeallocated" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="Date when user was allocated to program"/>
+        <FIELD NAME="timestart" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="Date when program opens for this user"/>
+        <FIELD NAME="timedue" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false" COMMENT="Expected completion date"/>
+        <FIELD NAME="timeend" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false" COMMENT="Date when program closes for this user (progress is fronzen after this date and enrolments are suspended)"/>
+        <FIELD NAME="timecompleted" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false" COMMENT="User program completion date, NULL means program not completed"/>
+        <FIELD NAME="calendarupdated" TYPE="int" LENGTH="1" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="1 means calendar needs update - used when program name or description changes"/>
+        <FIELD NAME="timecreated" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+        <KEY NAME="programid" TYPE="foreign" FIELDS="programid" REFTABLE="tool_muprog_program" REFFIELDS="id"/>
+        <KEY NAME="userid" TYPE="foreign" FIELDS="userid" REFTABLE="user" REFFIELDS="id"/>
+        <KEY NAME="sourceid" TYPE="foreign" FIELDS="sourceid" REFTABLE="tool_muprog_source" REFFIELDS="id"/>
+      </KEYS>
+      <INDEXES>
+        <INDEX NAME="programid-userid" UNIQUE="true" FIELDS="programid, userid" COMMENT="Only one allocation of user per program, archive and delete allocation if change needed, or use other evidence in case of certification certification"/>
+        <INDEX NAME="archived-timestart-timeend" UNIQUE="false" FIELDS="archived, timestart, timeend" COMMENT="Used in queries that deal with non-archived active allocations only"/>
+        <INDEX NAME="sourceinstanceid" UNIQUE="false" FIELDS="sourceinstanceid"/>
+      </INDEXES>
+    </TABLE>
+    <TABLE NAME="tool_muprog_completion" COMMENT="Program item completions, added after item completion">
+      <FIELDS>
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+        <FIELD NAME="itemid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="allocationid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="timecompleted" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="Item completion date"/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+        <KEY NAME="itemid" TYPE="foreign" FIELDS="itemid" REFTABLE="tool_muprog_item" REFFIELDS="id"/>
+        <KEY NAME="allocationid" TYPE="foreign" FIELDS="allocationid" REFTABLE="tool_muprog_allocation" REFFIELDS="id"/>
+      </KEYS>
+      <INDEXES>
+        <INDEX NAME="itemid-allocationid" UNIQUE="true" FIELDS="itemid, allocationid" COMMENT="Only one completion per item and user"/>
+        <INDEX NAME="timecompleted" UNIQUE="false" FIELDS="timecompleted"/>
+      </INDEXES>
+    </TABLE>
+    <TABLE NAME="tool_muprog_evidence" COMMENT="Alternative evidence for completion of a program item">
+      <FIELDS>
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+        <FIELD NAME="itemid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="userid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="evidencejson" TYPE="text" NOTNULL="true" SEQUENCE="false" COMMENT="Evidence details"/>
+        <FIELD NAME="timecompleted" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="Item completion date"/>
+        <FIELD NAME="timecreated" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="createdby" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+        <KEY NAME="itemid" TYPE="foreign" FIELDS="itemid" REFTABLE="tool_muprog_item" REFFIELDS="id"/>
+        <KEY NAME="userid" TYPE="foreign" FIELDS="userid" REFTABLE="user" REFFIELDS="id"/>
+        <KEY NAME="createdby" TYPE="foreign" FIELDS="createdby" REFTABLE="user" REFFIELDS="id"/>
+      </KEYS>
+      <INDEXES>
+        <INDEX NAME="itemid-userid" UNIQUE="true" FIELDS="itemid, userid" COMMENT="Only one evidence per item and user allowed"/>
+      </INDEXES>
+    </TABLE>
+    <TABLE NAME="tool_muprog_cert" COMMENT="List of certificate templates used for program completions">
+      <FIELDS>
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+        <FIELD NAME="programid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="templateid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="Template for program certificate"/>
+        <FIELD NAME="expirydatetype" TYPE="int" LENGTH="1" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="expirydateoffset" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false" COMMENT="Timestamp for absolute dates, duration in seconds for relative dates"/>
+        <FIELD NAME="timecreated" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+        <KEY NAME="programid" TYPE="foreign-unique" FIELDS="programid" REFTABLE="tool_muprog_program" REFFIELDS="id"/>
+      </KEYS>
+      <INDEXES>
+        <INDEX NAME="templateid" UNIQUE="false" FIELDS="templateid" COMMENT="Soft reference to tool_certificate_templates.id, one template can be used in multiple programs"/>
+      </INDEXES>
+    </TABLE>
+    <TABLE NAME="tool_muprog_cert_issue" COMMENT="Issued certificates created via tool_certificate">
+      <FIELDS>
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+        <FIELD NAME="programid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="allocationid" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false"/>
+        <FIELD NAME="timecompleted" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="issueid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="timecreated" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+        <KEY NAME="programid" TYPE="foreign" FIELDS="programid" REFTABLE="tool_muprog_program" REFFIELDS="id"/>
+        <KEY NAME="allocationid" TYPE="foreign" FIELDS="allocationid" REFTABLE="tool_muprog_allocation" REFFIELDS="id"/>
+      </KEYS>
+      <INDEXES>
+        <INDEX NAME="issueid" UNIQUE="true" FIELDS="issueid" COMMENT="Soft reference to tool_certificate_issues.id"/>
+      </INDEXES>
+    </TABLE>
+    <TABLE NAME="tool_muprog_src_cohort" COMMENT="Program can be automatically allocated to the members of these cohorts if configured in that way">
+      <FIELDS>
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+        <FIELD NAME="sourceid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="cohortid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+        <KEY NAME="cohortid" TYPE="foreign" FIELDS="cohortid" REFTABLE="cohort" REFFIELDS="id"/>
+        <KEY NAME="sourceid" TYPE="foreign" FIELDS="sourceid" REFTABLE="tool_muprog_source" REFFIELDS="id"/>
+      </KEYS>
+      <INDEXES>
+        <INDEX NAME="sourceid-cohortid" UNIQUE="true" FIELDS="sourceid, cohortid"/>
+      </INDEXES>
+    </TABLE>
+  </TABLES>
+</XMLDB>

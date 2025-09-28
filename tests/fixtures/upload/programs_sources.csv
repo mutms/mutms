@@ -1,0 +1,6 @@
+program,sourcetype,data
+P00,approval,allowrequest=1
+P00,manual,
+P00,selfallocation,maxusers=7|key=secretkey|allowsignup=1
+P02,approval,allowrequest=0
+P02,selfallocation,maxusers=|key=|allowsignup=0
