@@ -1,0 +1,6 @@
+username,email,timewindowstart,timewindowdue,timewindowend
+student1,student1@example.com,10/11/2024,01/02/2025,07/02/2025
+student2,student2@example.com,02/04/2024,,
+student3,,,,
+student4,student4@example.com,22/22/2024,,
+doesnotexists,doesnotexists@example.com,,,

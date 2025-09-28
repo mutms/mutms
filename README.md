@@ -1,0 +1,53 @@
+# Certifications plugin for Moodle™ LMS
+
+![Moodle Plugin CI](https://github.com/mutms/moodle-tool_mucertify/actions/workflows/moodle-ci.yml/badge.svg)
+
+Certifications is a versatile suite of plugins designed to simplify and optimize the certification process for organizations.
+It provides an effective and user-friendly solution to meet compliance training requirements, ensuring that your workforce 
+remains aligned with critical industry standards and regulations.
+
+## Key features
+
+* tracking of compliance through certification periods tied to designated programs,
+* multiple sources for assigning certifications,
+* advanced recertification rules to match organizational needs,
+* intuitive _Certification management_ interface,
+* _Certification catalogue_ where users may browse all available certifications,
+* dedicated _My certifications profile page_,
+* _My certifications dashboard block_ for quick access to details.
+
+## Requirements
+
+This plugin requires following plugins:
+
+* [Additional tools library plugin](https://github.com/mutms/moodle-tool_mulib)
+* [Programs plugin](https://github.com/mutms/moodle-tool_muprog)
+* [Program enrolment plugin](https://github.com/mutms/moodle-enrol_muprog)
+
+Other recommended plugins:
+
+* [My certifications block](https://github.com/mutms/moodle-block_mucertify_my)
+* [My programs block](https://github.com/mutms/moodle-block_muprog_my)
+* [Training plugin](https://github.com/mutms/moodle-tool_mutrain)
+* [Training value custom field](https://github.com/mutms/moodle-customfield_mutrain)
+* [Certificate plugin](https://github.com/moodleworkplace/moodle-tool_certificate)
+* [Certification fields for Certificate plugin](https://github.com/mutms/moodle-certificateelement_mucertify)
+* [Program fields for Certificate plugin](https://github.com/mutms/moodle-certificateelement_muprog)
+* [Multi-tenancy](https://github.com/mutms/moodle-tool_mutenancy).
+
+## Documentation
+
+See [plugin documentation](https://github.com/mutms/moodle-tool_mucertify/blob/MOODLE_405_STABLE/docs/en/index.md)
+and [Wiki pages](https://github.com/mutms/moodle-tool_mucertify/wiki) for more information.
+
+## Acknowledgement
+
+This plugin is a fork of [Certifications by Open LMS](https://github.com/open-lms-open-source/moodle-tool_certify)
+and exists thanks to Open LMS's decision to release it to the public under the GPL 3.0 license.
+
+Note that the current code is still under development and is not suitable for production use.
+If you require a stable version for a production environment or commercial support,
+please consider [Open LMS Work](https://www.openlms.net/open-lms-work/).
+This plugin is not suitable for existing customers of Open LMS due to the lack of upgrade path.
+
+MuTMS suite of plugins is not associated with Moodle HQ or Open LMS in any way.
