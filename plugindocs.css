@@ -1,0 +1,54 @@
+/* The purpose of this CSS is to make the built-in plugin docs look similar to GitHub. */
+
+#page {
+    margin-top: 0;
+    padding: 16px 32px 16px 32px;
+}
+
+#tool_mulib_plugindocs h1 {
+    padding-top: .3em;
+    padding-bottom: .3em;
+    font-size: 2em;
+    border-bottom: 1px solid lightgray;
+}
+
+#tool_mulib_plugindocs h2 {
+    padding-top: .3em;
+    padding-bottom: .3em;
+    font-size: 1.5em;
+    border-bottom: 1px solid lightgray;
+}
+
+#tool_mulib_plugindocs h2 + * {
+    padding-top: 0.3em;
+}
+
+#tool_mulib_plugindocs img {
+    max-width: 100%;
+}
+
+#tool_mulib_plugindocs table {
+    display: block;
+    max-width: 100%;
+    overflow: auto;
+}
+
+#tool_mulib_plugindocs th,
+#tool_mulib_plugindocs td {
+    padding: 6px 13px;
+    border: 1px solid lightgrey;
+}
+
+#tool_mulib_plugindocs tr {
+    border: 1px solid lightgrey;
+}
+
+#tool_mulib_plugindocs tr:nth-child(even) {
+    background-color: rgb(246, 248, 250);
+}
+
+#tool_mulib_plugindocs {
+    max-width: 1012px;
+    margin-right: auto;
+    margin-left: auto;
+}

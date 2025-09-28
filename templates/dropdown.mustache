@@ -1,0 +1,60 @@
+{{!
+This file is part of MuTMS suite of plugins for Moodle™ LMS.
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
+@copyright   2022 Open LMS
+@copyright   2025 Petr Skoda
+@license     https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+
+}}
+{{!
+    @template tool_mulib/dropdown
+
+    Simple dropdown with actions.
+
+    Example context (json):
+    {
+        "title": "Actions",
+        "items": [
+            { "divider": true },
+            { "url": "https://example.com/something.php", "label": "Something" },
+            { "customhtml": "<a class=\"dropdown-item\" href=\"https://example.com/other.php\">Other link</a>" }
+        ]
+    }
+}}
+<div class="btn-group">
+    <button class="btn btn-icon mx-2"
+            type="button"
+            data-bs-toggle="dropdown"
+            aria-haspopup="true"
+            aria-expanded="false"
+            title="{{title}}"
+    >
+        <i class="icon fa fa-ellipsis-v fa-fw m-0" aria-hidden="true"></i>
+    </button>
+    <div class="dropdown-menu dropdown-menu-end">
+        {{#items}}
+            {{#divider}}
+                <div class="dropdown-divider"></div>
+            {{/divider}}
+            {{#url}}
+                <a class="dropdown-item {{class}}" href="{{url}}">{{{icon}}}{{label}}</a>
+            {{/url}}
+            {{#customhtml}}
+                {{{.}}}
+            {{/customhtml}}
+        {{/items}}
+    </div>
+</div>

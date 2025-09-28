@@ -1,0 +1,4 @@
+/* temporary fix for MDL-85206 */
+.mform .fitem .felement[data-fieldtype=static] {
+    padding-top: 0.5rem;
+}

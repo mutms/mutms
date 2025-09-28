@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<COMPATIBILITY_MATRIX>
+    <PLUGIN name="tool_mulib">
+        <CUSTOM_CHECKS>
+            <CUSTOM_CHECK file="admin/tool/mulib/environmentlib.php" function="tool_mulib_64bit_required" level="required">
+                <FEEDBACK>
+                    <ON_OK message="environment_64bit_ok" plugin="tool_mulib"/>
+                    <ON_ERROR message="environment_64bit_required" plugin="tool_mulib"/>
+                </FEEDBACK>
+            </CUSTOM_CHECK>
+            <CUSTOM_CHECK file="admin/tool/mulib/environmentlib.php" function="tool_mulib_oracle_incompatible" level="required">
+                <FEEDBACK>
+                    <ON_ERROR message="environment_oracle_incompatible" plugin="tool_mulib"/>
+                </FEEDBACK>
+            </CUSTOM_CHECK>
+            <CUSTOM_CHECK file="admin/tool/mulib/environmentlib.php" function="tool_mulib_windows_unsupported" level="optional">
+                <FEEDBACK>
+                    <ON_CHECK message="environment_windows_unsupported" plugin="tool_mulib"/>
+                </FEEDBACK>
+            </CUSTOM_CHECK>
+        </CUSTOM_CHECKS>
+    </PLUGIN>
+</COMPATIBILITY_MATRIX>
