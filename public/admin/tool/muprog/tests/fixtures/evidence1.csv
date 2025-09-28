@@ -1,0 +1,7 @@
+username,email,idnumber,completed,evidence
+student1,student1@example.com,s1,02/12/23,Evidence1
+student2,student2@example.com,s2,03/12/23,
+student3,student3@example.com,s3,04/11/23,Evidence3
+student4,student4@example.com,s4,13/13/23,
+student5,student5@example.com,s5,,
+studentz,studentz@example.com,sz,02/12/23,EvidenceZ

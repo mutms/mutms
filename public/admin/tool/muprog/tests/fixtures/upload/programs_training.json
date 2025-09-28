@@ -1,0 +1,208 @@
+{
+    "$schema": "./programs_schema.json",
+    "programs": [
+        {
+            "idnumber": "P00",
+            "fullname": "Program 00",
+            "category": "",
+            "description": "<p>Test program</p>\r\n<p>at system context</p>",
+            "descriptionformat": 1,
+            "publicaccess": 1,
+            "creategroups": 0,
+            "allocationstart": "2023-10-30T17:57:00+00:00",
+            "allocationend": "2029-10-30T17:57:00+00:00",
+            "startdate": {
+                "type": "delay",
+                "delay": "P3D"
+            },
+            "duedate": {
+                "type": "delay",
+                "delay": "P1M"
+            },
+            "enddate": {
+                "type": "delay",
+                "delay": "P6M"
+            },
+            "contents": {
+                "itemtype": "set",
+                "completiondelay": 0,
+                "sequencetype": "allinorder",
+                "items": [
+                    {
+                        "itemtype": "course",
+                        "reference": "C01",
+                        "points": 1,
+                        "completiondelay": 86400
+                    },
+                    {
+                        "itemtype": "set",
+                        "points": 1,
+                        "completiondelay": 0,
+                        "setname": "First set",
+                        "sequencetype": "atleast",
+                        "minprerequisites": 2,
+                        "items": [
+                            {
+                                "itemtype": "course",
+                                "reference": "C02",
+                                "points": 1,
+                                "completiondelay": 0
+                            },
+                            {
+                                "itemtype": "course",
+                                "reference": "C03",
+                                "points": 1,
+                                "completiondelay": 0
+                            },
+                            {
+                                "itemtype": "course",
+                                "reference": "C04",
+                                "points": 1,
+                                "completiondelay": 0
+                            }
+                        ]
+                    },
+                    {
+                        "itemtype": "set",
+                        "points": 2,
+                        "completiondelay": 172800,
+                        "setname": "Second set",
+                        "sequencetype": "minpoints",
+                        "minpoints": 3,
+                        "items": [
+                            {
+                                "itemtype": "course",
+                                "reference": "C05",
+                                "points": 4,
+                                "completiondelay": 0
+                            }
+                        ]
+                    }
+                ]
+            },
+            "sources": [
+                {
+                    "sourcetype": "approval",
+                    "data": {
+                        "allowrequest": 1
+                    }
+                },
+                {
+                    "sourcetype": "manual"
+                },
+                {
+                    "sourcetype": "selfallocation",
+                    "data": {
+                        "maxusers": 7,
+                        "key": "secretkey",
+                        "allowsignup": 1
+                    }
+                }
+            ]
+        },
+        {
+            "idnumber": "P01",
+            "fullname": "Program 01",
+            "category": "Category 1",
+            "description": "",
+            "descriptionformat": 1,
+            "publicaccess": 0,
+            "creategroups": 1,
+            "allocationstart": null,
+            "allocationend": null,
+            "startdate": {
+                "type": "allocation"
+            },
+            "duedate": {
+                "type": "notset"
+            },
+            "enddate": {
+                "type": "notset"
+            },
+            "contents": {
+                "itemtype": "set",
+                "completiondelay": 0,
+                "sequencetype": "allinanyorder",
+                "items": [
+                    {
+                        "itemtype": "course",
+                        "reference": "C01",
+                        "points": 1,
+                        "completiondelay": 0
+                    },
+                    {
+                        "itemtype": "course",
+                        "reference": "C02",
+                        "points": 1,
+                        "completiondelay": 0
+                    },
+                    {
+                        "itemtype": "course",
+                        "reference": "C05",
+                        "points": 1,
+                        "completiondelay": 0
+                    }
+                ]
+            },
+            "sources": []
+        },
+        {
+            "idnumber": "P02",
+            "fullname": "Program 02",
+            "category": "CAT2",
+            "description": "",
+            "descriptionformat": 1,
+            "publicaccess": 0,
+            "creategroups": 0,
+            "allocationstart": null,
+            "allocationend": null,
+            "startdate": {
+                "type": "date",
+                "date": "2024-10-01T18:09:00+01:00"
+            },
+            "duedate": {
+                "type": "date",
+                "date": "2024-11-01T18:09:00+00:00"
+            },
+            "enddate": {
+                "type": "date",
+                "date": "2024-12-01T18:09:00+00:00"
+            },
+            "contents": {
+                "itemtype": "set",
+                "completiondelay": 0,
+                "sequencetype": "allinanyorder",
+                "items": [
+                    {
+                        "itemtype": "training",
+                        "reference": "TFW1",
+                        "points": 1,
+                        "completiondelay": 0
+                    },
+                    {
+                        "itemtype": "training",
+                        "reference": "Training FW2",
+                        "points": 2,
+                        "completiondelay": 86400
+                    }
+                ]
+            },
+            "sources": [
+                {
+                    "sourcetype": "approval",
+                    "data": {
+                        "allowrequest": 0
+                    }
+                },
+                {
+                    "sourcetype": "selfallocation",
+                    "data": {
+                        "maxusers": null,
+                        "key": null,
+                        "allowsignup": 0
+                    }
+                }
+            ]
+        }
+    ]
+}

@@ -1,0 +1,16 @@
+program,itemtype,reference,points,completiondelay,parentset,setname,sequencetype,minprerequisites,minpoints
+P00,set,,,0,0,,allinorder,,
+P00,course,C01,1,86400,1,,,,
+P00,set,,1,0,1,"First set",atleast,2,
+P00,course,C02,1,0,2,,,,
+P00,course,C03,1,0,2,,,,
+P00,course,C04,1,0,2,,,,
+P00,set,,2,172800,1,"Second set",minpoints,,3
+P00,course,C05,4,0,2,,,,
+P01,set,,,0,0,,allinanyorder,,
+P01,course,C01,1,0,1,,,,
+P01,course,C02,1,0,1,,,,
+P01,course,C05,1,0,1,,,,
+P02,set,,,0,0,,allinanyorder,,
+P02,training,TFW1,1,0,1,,,,
+P02,training,"Training FW2",2,86400,1,,,,

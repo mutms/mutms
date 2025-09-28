@@ -1,0 +1,24 @@
+
+#page-admin-tool-muprog-catalogue-index img.programimage,
+#page-admin-tool-muprog-management-program .programimage img {
+    max-width: 300px;
+    max-height: 200px;
+    width: auto;
+    height: auto;
+}
+
+#page-admin-tool-muprog-management-program_content #program_content a.movehere {
+    margin: 0;
+    padding: 5px;
+    display: inline;
+    height: 2rem;
+    border: 2px dashed #343a40;
+}
+
+#page-admin-tool-muprog-catalogue-program .programimage img,
+#page-admin-tool-muprog-my-program .programimage img {
+    max-width: 200px;
+    max-height: 100px;
+    width: auto;
+    height: auto;
+}
