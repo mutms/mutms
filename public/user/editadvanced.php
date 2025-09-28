@@ -75,6 +75,11 @@ if ($id == -1) {
     admin_externalpage_setup('addnewuser', '', array('id' => -1));
     $PAGE->set_primary_active_tab('siteadminnode');
     $PAGE->navbar->add(get_string('addnewuser', 'moodle'), $PAGE->url);
+
+    if (mutenancy_is_active()) {
+        $user->tenantid = (int)\tool_mutenancy\local\tenancy::get_current_tenantid();
+    }
+
 } else {
     // Editing existing user.
     require_capability('moodle/user:update', $systemcontext);
@@ -87,6 +92,10 @@ if ($id == -1) {
         if ($node = $PAGE->navigation->find('myprofile', navigation_node::TYPE_ROOTNODE)) {
             $node->force_open();
         }
+    }
+
+    if (mutenancy_is_active()) {
+        \tool_mutenancy\local\tenancy::force_current_tenantid($user->tenantid);
     }
 }
 
@@ -322,7 +331,6 @@ if ($userform->is_cancelled()) {
     }
     // Never reached..
 }
-
 
 // Display page header.
 if ($user->id == -1 or ($user->id != $USER->id)) {

@@ -21,8 +21,13 @@ if (!during_initial_install()) { //do not use during installation
 
         // "frontpage" settingpage
         $temp = new admin_settingpage('frontpagesettings', new lang_string('frontpagesettings','admin'), 'moodle/course:update', false, $frontpagecontext);
-        $temp->add(new admin_setting_sitesettext('fullname', new lang_string('fullsitename'), '', NULL)); // no default
-        $temp->add(new admin_setting_sitesettext('shortname', new lang_string('shortsitename'), '', NULL)); // no default
+
+        if (!mutenancy_is_active() || !\tool_mutenancy\local\tenancy::get_current_tenantid()) {
+            // Do not allow editing of site name when tenant may override site names.
+            $temp->add(new admin_setting_sitesettext('fullname', new lang_string('fullsitename'), '', NULL)); // no default
+            $temp->add(new admin_setting_sitesettext('shortname', new lang_string('shortsitename'), '', NULL)); // no default
+        }
+
         $temp->add(new admin_setting_special_frontpagedesc());
         $temp->add(new admin_setting_courselist_frontpage(false)); // non-loggedin version of the setting (that's what the parameter is for :) )
         $temp->add(new admin_setting_courselist_frontpage(true)); // loggedin version of the setting

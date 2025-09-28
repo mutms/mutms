@@ -57,10 +57,19 @@ class enrol_manual_potential_participant extends user_selector_base {
         $fields      = 'SELECT u.id, ' . $this->userfieldsselects;
         $countfields = 'SELECT COUNT(1)';
 
+        if (mutenancy_is_active()) {
+            $enrol = $DB->get_record('enrol', ['id' => $this->enrolid], '*', MUST_EXIST);
+            $coursecontext = context_course::instance($enrol->courseid);
+            $tenantrestriction = \tool_mutenancy\local\tenancy::get_related_users_exists('u.id', $coursecontext);
+        } else {
+            $tenantrestriction = '';
+        }
+
         $sql = " FROM {user} u
             LEFT JOIN {user_enrolments} ue ON (ue.userid = u.id AND ue.enrolid = :enrolid)
                       $this->userfieldsjoin
                 WHERE $wherecondition
+                      $tenantrestriction
                       AND ue.id IS NULL";
 
         list($sort, $sortparams) = users_order_by_sql('u', $search, $this->accesscontext, $this->userfieldsmappings);

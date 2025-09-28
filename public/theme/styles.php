@@ -66,6 +66,14 @@ if (!is_null($themesubrev)) {
     $themesubrev = min_clean_param($themesubrev, 'INT');
 }
 
+// Support for tenant theme config overrides.
+$tenantid = 0;
+if (isset($values[0])) {
+    if (str_starts_with($values[0], 't')) {
+        $tenantid = min_clean_param(substr($values[0], 1), 'INT');
+    }
+}
+
 // Note: We only check validity of the revision number here, we do not check the theme sub-revision because this is
 // not solely based on time.
 if (!min_is_revision_valid_and_current($rev)) {
@@ -88,8 +96,8 @@ if (file_exists("$CFG->dirroot/theme/$themename/config.php")) {
 }
 
 $candidatedir = "$CFG->localcachedir/theme/$rev/$themename/css";
-$candidatesheet = "{$candidatedir}/" . theme_styles_get_filename($type, $themesubrev, $usesvg);
-$etag = theme_styles_get_etag($themename, $rev, $type, $themesubrev, $usesvg);
+$candidatesheet = "{$candidatedir}/" . theme_styles_get_filename($type, $themesubrev, $usesvg, $tenantid);
+$etag = theme_styles_get_etag($themename, $rev, $type, $themesubrev, $usesvg, $tenantid);
 
 if (file_exists($candidatesheet)) {
     if (!empty($_SERVER['HTTP_IF_NONE_MATCH']) || !empty($_SERVER['HTTP_IF_MODIFIED_SINCE'])) {
@@ -107,6 +115,20 @@ define('NO_MOODLE_COOKIES', true); // Session not used here.
 define('NO_UPGRADE_CHECK', true);  // Ignore upgrade check.
 
 require("$CFG->dirroot/lib/setup.php");
+
+if (mutenancy_is_active()) {
+    if ($tenantid) {
+        $tenant = \tool_mutenancy\local\tenant::fetch($tenantid);
+        if ($tenant && !$tenant->archived) {
+            $tenantid = (int)$tenant->id;
+            \tool_mutenancy\local\tenancy::force_current_tenantid($tenantid);
+        } else {
+            $tenantid = 0;
+        }
+    } else {
+        $tenantid = 0;
+    }
+}
 
 $theme = theme_config::load($themename);
 $theme->force_svg_use($usesvg);
@@ -126,8 +148,8 @@ if ($themerev <= 0 or $themerev != $rev or $themesubrev != $currentthemesubrev) 
     $cache = false;
 
     $candidatedir = "$CFG->localcachedir/theme/$rev/$themename/css";
-    $candidatesheet = "{$candidatedir}/" . theme_styles_get_filename($type, $themesubrev, $usesvg);
-    $etag = theme_styles_get_etag($themename, $rev, $type, $themesubrev, $usesvg);
+    $candidatesheet = "{$candidatedir}/" . theme_styles_get_filename($type, $themesubrev, $usesvg, $tenantid);
+    $etag = theme_styles_get_etag($themename, $rev, $type, $themesubrev, $usesvg, $tenantid);
 }
 
 make_localcache_directory('theme', false);
@@ -144,7 +166,7 @@ if ($type === 'editor' || $type === 'editor-rtl') {
 
 }
 
-if (($fallbacksheet = theme_styles_fallback_content($theme)) && !$theme->has_css_cached_content()) {
+if (!$tenantid && ($fallbacksheet = theme_styles_fallback_content($theme)) && !$theme->has_css_cached_content()) {
     // The theme is not yet available and a fallback is available.
     // Return the fallback immediately, specifying the Content-Length, then generate in the background.
     $css = file_get_contents($fallbacksheet);
@@ -175,7 +197,7 @@ if ($sendaftergeneration || $lock) {
 
     // The content does not exist locally.
     // Generate and save it.
-    $candidatesheet = theme_styles_generate_and_store($theme, $rev, $themesubrev, $candidatedir);
+    $candidatesheet = theme_styles_generate_and_store($theme, $rev, $themesubrev, $candidatedir, $tenantid);
 
     if ($lock) {
         $lock->release();
@@ -201,9 +223,10 @@ if ($sendaftergeneration || $lock) {
  * @param   int             $rev The theme revision
  * @param   int             $themesubrev The theme sub-revision
  * @param   string          $candidatedir The directory that it should be stored in
+ * @param   int             $tenantid
  * @return  string          The path that the primary CSS was written to
  */
-function theme_styles_generate_and_store($theme, $rev, $themesubrev, $candidatedir) {
+function theme_styles_generate_and_store($theme, $rev, $themesubrev, $candidatedir, $tenantid) {
     global $CFG;
     require_once("{$CFG->libdir}/filelib.php");
 
@@ -220,17 +243,19 @@ function theme_styles_generate_and_store($theme, $rev, $themesubrev, $candidated
     }
 
     // Determine the candidatesheet path.
-    $candidatesheet = "{$candidatedir}/" . theme_styles_get_filename($type, $themesubrev, $theme->use_svg_icons());
+    $candidatesheet = "{$candidatedir}/" . theme_styles_get_filename($type, $themesubrev, $theme->use_svg_icons(), $tenantid);
 
     // Store the CSS.
     css_store_css($theme, $candidatesheet, $csscontent);
 
     // Store the fallback CSS in the temp directory.
     // This file is used as a fallback when waiting for a theme to compile and is not versioned in any way.
-    $fallbacksheet = make_temp_directory("theme/{$theme->name}")
-        . "/"
-        . theme_styles_get_filename($type, 0, $theme->use_svg_icons());
-    css_store_css($theme, $fallbacksheet, $csscontent);
+    if (!$tenantid) {
+        $fallbacksheet = make_temp_directory("theme/{$theme->name}")
+            . "/"
+            . theme_styles_get_filename($type, 0, $theme->use_svg_icons(), $tenantid);
+        css_store_css($theme, $fallbacksheet, $csscontent);
+    }
 
     // Delete older revisions from localcache.
     $themecachedirs = glob("{$CFG->localcachedir}/theme/*", GLOB_ONLYDIR);
@@ -247,7 +272,8 @@ function theme_styles_generate_and_store($theme, $rev, $themesubrev, $candidated
     $subrevfiles = glob("{$CFG->localcachedir}/theme/{$rev}/{$theme->name}/css/*.css");
     foreach ($subrevfiles as $subrevfile) {
         $cachedsubrev = [];
-        preg_match("/_([0-9]+)\.([0-9]+\.)?css$/", $subrevfile, $cachedsubrev);
+        $basename = basename($subrevfile);
+        preg_match("/^[^_]+_([0-9]+).*\.css$/", $basename, $cachedsubrev);
         $cachedsubrev = isset($cachedsubrev[1]) ? intval($cachedsubrev[1]) : 0;
         if ($cachedsubrev > 0 && $cachedsubrev < $themesubrev) {
             fulldelete($subrevfile);
@@ -272,7 +298,7 @@ function theme_styles_fallback_content($theme) {
     }
 
     $type = $theme->get_rtl_mode() ? 'all-rtl' : 'all';
-    $filename = theme_styles_get_filename($type);
+    $filename = theme_styles_get_filename($type, 0, true, 0);
 
     $fallbacksheet = "{$CFG->tempdir}/theme/{$theme->name}/{$filename}";
     if (file_exists($fallbacksheet)) {
@@ -288,11 +314,15 @@ function theme_styles_fallback_content($theme) {
  * @param   string  $type The requested sheet type
  * @param   int     $themesubrev The theme sub-revision
  * @param   bool    $usesvg Whether SVGs are allowed
+ * @param   int     $tenantid
  * @return  string  The filename for this sheet
  */
-function theme_styles_get_filename($type, $themesubrev = 0, $usesvg = true) {
+function theme_styles_get_filename($type, $themesubrev, $usesvg, $tenantid) {
     $filename = $type;
     $filename .= ($themesubrev > 0) ? "_{$themesubrev}" : '';
+    if ($tenantid) {
+        $filename .= "-t{$tenantid}";
+    }
     $filename .= $usesvg ? '' : '-nosvg';
 
     return "{$filename}.css";
@@ -306,13 +336,18 @@ function theme_styles_get_filename($type, $themesubrev = 0, $usesvg = true) {
  * @param   string  $type The requested sheet type
  * @param   int     $themesubrev The theme sub-revision
  * @param   bool    $usesvg Whether SVGs are allowed
+ * @param   int     $tenantid
  * @return  string  The etag to use for this request
  */
-function theme_styles_get_etag($themename, $rev, $type, $themesubrev, $usesvg) {
+function theme_styles_get_etag($themename, $rev, $type, $themesubrev, $usesvg, $tenantid) {
     $etag = [$rev, $themename, $type, $themesubrev];
 
     if (!$usesvg) {
         $etag[] = 'nosvg';
+    }
+
+    if ($tenantid) {
+        $etag[] = 't' . $tenantid;
     }
 
     return sha1(implode('/', $etag));

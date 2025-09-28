@@ -4057,10 +4057,21 @@ EOD;
      * @return moodle_url The moodle_url for the favicon
      */
     public function favicon() {
-        $logo = null;
-        if (!during_initial_install()) {
-            $logo = get_config('core_admin', 'favicon');
+        if (during_initial_install()) {
+            return $this->image_url('favicon', 'theme');
         }
+
+        if (mutenancy_is_active()) {
+            $logo = \tool_mutenancy\local\appearance::get_favicon_url();
+            if ($logo) {
+                return $logo;
+            } else {
+                // Fallback to theme favicon.
+                return $this->image_url('favicon', 'theme');
+            }
+        }
+
+        $logo = get_config('core_admin', 'favicon');
         if (empty($logo)) {
             return $this->image_url('favicon', 'theme');
         }

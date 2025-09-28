@@ -621,7 +621,7 @@ class user {
             throw new moodle_exception('guestsarenotallowed', 'error');
         }
 
-        if ($checksuspended && $user->suspended) {
+        if ($checksuspended && ($user->suspended || mutenancy_is_user_archived($user))) {
             throw new moodle_exception('suspended', 'auth');
         }
 

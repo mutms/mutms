@@ -1098,6 +1098,10 @@ class manager {
 
         // Make sure the user is correct in web server access logs.
         set_access_log_user();
+
+        if (mutenancy_is_active()) {
+            \tool_mutenancy\local\tenancy::callback_session_set_user();
+        }
     }
 
     /**

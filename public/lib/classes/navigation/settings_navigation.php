@@ -110,6 +110,9 @@ class settings_navigation extends navigation_node {
                     $this->load_front_page_settings(($context->id == $this->context->id));
                 }
                 break;
+            case CONTEXT_TENANT:
+                $this->load_tenant_settings();
+                break;
             case CONTEXT_COURSECAT:
                 $this->load_category_settings();
                 break;
@@ -1553,6 +1556,51 @@ class settings_navigation extends navigation_node {
         $this->add_context_locking_node($blocknode, $this->context);
 
         return $blocknode;
+    }
+
+    /**
+     * Add tenant settings to naviagetion
+     *
+     * @return ?navigation_node
+     */
+    protected function load_tenant_settings() {
+        // We can land here while being in the context of a block, in which case we
+        // should get the parent context which should be the tenant one. See self::initialise().
+        if ($this->context->contextlevel == CONTEXT_BLOCK) {
+            $tcontext = $this->context->get_parent_context();
+        } else {
+            $tcontext = $this->context;
+        }
+
+        // Let's make sure that we always have the right context when getting here.
+        if ($tcontext->contextlevel != CONTEXT_TENANT) {
+            throw new coding_exception('Unexpected context while loading tenant settings.');
+        }
+
+        $tenantnode = $this->add($tcontext->get_context_name(), null, navigation_node::TYPE_CONTAINER, null, 'tenantsettings');
+        $tenantnode->nodetype = navigation_node::NODETYPE_BRANCH;
+        $tenantnode->force_open();
+
+        // Assign local roles.
+        if (get_assignable_roles($tcontext, ROLENAME_ORIGINAL, false)) {
+            $assignurl = new url('/admin/roles/assign.php', ['contextid' => $tcontext->id]);
+            $tenantnode->add(get_string('assignroles', 'role'), $assignurl, self::TYPE_SETTING, null, 'roles', new pix_icon('i/assignroles', ''));
+        }
+
+        // Override roles.
+        if (has_capability('moodle/role:review', $tcontext) || get_overridable_roles($tcontext)) {
+            $url = new url('/admin/roles/permissions.php', ['contextid' => $tcontext->id]);
+            $tenantnode->add(get_string('permissions', 'role'), $url, self::TYPE_SETTING, null, 'permissions', new pix_icon('i/permissions', ''));
+        }
+
+        // Check role permissions.
+        if (has_any_capability(array('moodle/role:assign', 'moodle/role:safeoverride',
+            'moodle/role:override', 'moodle/role:assign'), $tcontext)) {
+            $url = new url('/admin/roles/check.php', ['contextid' => $tcontext->id]);
+            $tenantnode->add(get_string('checkpermissions', 'role'), $url, self::TYPE_SETTING, null, 'rolecheck', new pix_icon('i/checkpermissions', ''));
+        }
+
+        return $tenantnode;
     }
 
     /**

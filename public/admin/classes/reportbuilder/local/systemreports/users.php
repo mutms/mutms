@@ -67,6 +67,16 @@ class users extends system_report {
         $this->add_base_fields("{$entityuseralias}.id, {$entityuseralias}.confirmed, {$entityuseralias}.mnethostid,
             {$entityuseralias}.suspended, {$entityuseralias}.username, " . implode(', ', $fullnamefields));
 
+        if (mutenancy_is_active()) {
+            $entitytenant = new \tool_mutenancy\reportbuilder\local\entities\tenant();
+            $entitytenantalias = $entitytenant->get_table_alias('tool_mutenancy_tenant');
+            $entitytenant
+                ->add_joins($entitytenant->get_joins())
+                ->add_join("LEFT JOIN {tool_mutenancy_tenant} {$entitytenantalias}
+                    ON {$entityuseralias}.tenantid = {$entitytenantalias}.id");
+            $this->add_entity($entitytenant);
+        }
+
         if ($this->get_parameter('withcheckboxes', false, PARAM_BOOL)) {
             $canviewfullnames = has_capability('moodle/site:viewfullnames', \context_system::instance());
             $this->set_checkbox_toggleall(static function(\stdClass $row) use ($canviewfullnames): array {
@@ -169,6 +179,10 @@ class users extends system_report {
                 });
         }
 
+        if (mutenancy_is_active()) {
+            $this->add_column_from_entity('user:tenant');
+        }
+
         $this->set_initial_sort_column('user:fullnamewithpicturelink', SORT_ASC);
         $this->set_default_no_results_notice(new lang_string('nousersfound', 'moodle'));
     }
@@ -205,6 +219,11 @@ class users extends system_report {
             'role:name',
         ];
         $this->add_filters_from_entities($filters);
+        if (mutenancy_is_active()) {
+            $this->add_filter_from_entity('user:tenant');
+            $this->add_filter_from_entity('user:tenantidnumber');
+            $this->add_filter_from_entity('user:tenantmember');
+        }
 
         // Enrolled in any course filter.
         $ue = database::generate_alias();
@@ -381,6 +400,25 @@ class users extends system_report {
         }));
 
         $this->add_action_divider();
+
+        if (mutenancy_is_active()) {
+            if ($DB->record_exists('tool_mutenancy_tenant', [])) {
+                $url = new moodle_url('/admin/tool/mutenancy/management/user_allocate.php', ['id' => ':id']);
+                $link = new \tool_mulib\output\ajax_form\link($url, new lang_string('user_allocate', 'tool_mutenancy'), 'i/switch');
+                $this->add_action($link->create_report_action()
+                    ->add_callback(static function(\stdclass $row) use ($contextsystem): bool {
+                        global $USER;
+                        if (is_siteadmin($row->id)) {
+                            return false;
+                        }
+                        if ($row->id == $USER->id) {
+                            return false;
+                        }
+                        return has_capability('tool/mutenancy:allocate', $contextsystem);
+                    })
+                );
+            }
+        }
 
         // Action to confirm users.
         $this->add_action((new action(

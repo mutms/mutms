@@ -493,6 +493,14 @@ class profile_field_base {
                 // PROFILE_VISIBLE_NONE, so let's check capabilities at system level.
                 if ($this->userid > 0) {
                     $context = context_system::instance();
+
+                    if (mutenancy_is_active()) {
+                        $tenantid = \tool_mutenancy\local\tenancy::get_user_tenantid($this->userid);
+                        if ($tenantid) {
+                            // Use capability at tenant level for tenant members.
+                            $context = context_tenant::instance($tenantid);
+                        }
+                    }
                 }
                 return has_capability('moodle/user:viewalldetails', $context);
         }
@@ -523,6 +531,15 @@ class profile_field_base {
 
         if (has_capability('moodle/user:update', $systemcontext)) {
             return true;
+        }
+
+        if (mutenancy_is_active()) {
+            if ($this->userid > 0) {
+                $usercontext = context_user::instance($this->userid);
+                if ($usercontext->tenantid && has_capability('tool/mutenancy:memberupdate', $usercontext)) {
+                    return true;
+                }
+            }
         }
 
         // Checking for mentors have capability to edit user's profile.

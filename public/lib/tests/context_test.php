@@ -100,6 +100,7 @@ final class context_test extends \advanced_testcase {
             'path' => $context->path,
             'depth' => $context->depth,
             'locked' => false,
+            'tenantid' => null,
         ];
         $this->assertSame($expected, $array);
     }

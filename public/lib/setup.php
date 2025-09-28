@@ -638,6 +638,8 @@ require_once($CFG->libdir .'/editorlib.php');       // All text editor related f
 require_once($CFG->libdir .'/messagelib.php');      // Messagelib functions.
 require_once($CFG->libdir .'/modinfolib.php');      // Cached information on course-module instances.
 
+require_once($CFG->libdir .'/mutenancylib.php');    // Multi-tenancy helpers.
+
 // Increase memory limits if possible.
 raise_memory_limit(MEMORY_STANDARD);
 
@@ -963,6 +965,10 @@ if (!isset($CFG->filelifetime)) {
 if (!empty($CFG->profilingenabled)) {
     require_once($CFG->libdir . '/xhprof/xhprof_moodle.php');
     profiling_start();
+}
+
+if (mutenancy_is_active()) {
+    \tool_mutenancy\local\tenancy::callback_lib_setup();
 }
 
 // Hack to get around max_input_vars restrictions,

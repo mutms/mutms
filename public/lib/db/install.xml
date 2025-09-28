@@ -916,6 +916,7 @@
         <FIELD NAME="middlename" TYPE="char" LENGTH="255" NOTNULL="false" SEQUENCE="false" COMMENT="Middle name"/>
         <FIELD NAME="alternatename" TYPE="char" LENGTH="255" NOTNULL="false" SEQUENCE="false" COMMENT="Alternate name - Useful for three-name countries."/>
         <FIELD NAME="moodlenetprofile" TYPE="char" LENGTH="255" NOTNULL="false" SEQUENCE="false" COMMENT="Moodle.net profile information"/>
+        <FIELD NAME="tenantid" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false" COMMENT="references tool_mutenancy_tenant id"/>
       </FIELDS>
       <KEYS>
         <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
@@ -936,6 +937,7 @@
         <INDEX NAME="lastnamephonetic" UNIQUE="false" FIELDS="lastnamephonetic"/>
         <INDEX NAME="middlename" UNIQUE="false" FIELDS="middlename"/>
         <INDEX NAME="alternatename" UNIQUE="false" FIELDS="alternatename"/>
+        <INDEX NAME="tenantid" UNIQUE="false" FIELDS="tenantid"/>
       </INDEXES>
     </TABLE>
     <TABLE NAME="user_preferences" COMMENT="Allows modules to store arbitrary user preferences">
@@ -1206,6 +1208,7 @@
         <FIELD NAME="path" TYPE="char" LENGTH="255" NOTNULL="false" SEQUENCE="false"/>
         <FIELD NAME="depth" TYPE="int" LENGTH="2" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
         <FIELD NAME="locked" TYPE="int" LENGTH="2" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="Whether this context and its children are locked"/>
+        <FIELD NAME="tenantid" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false" COMMENT="references tool_mutenancy_tenant id"/>
       </FIELDS>
       <KEYS>
         <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
@@ -1214,6 +1217,7 @@
         <INDEX NAME="contextlevel-instanceid" UNIQUE="true" FIELDS="contextlevel, instanceid"/>
         <INDEX NAME="instanceid" UNIQUE="false" FIELDS="instanceid"/>
         <INDEX NAME="path" UNIQUE="false" FIELDS="path" HINTS="varchar_pattern_ops"/>
+        <INDEX NAME="tenantid" UNIQUE="false" FIELDS="tenantid"/>
       </INDEXES>
     </TABLE>
     <TABLE NAME="context_temp" COMMENT="Used by build_context_path() in upgrade and cron to keep context depths and paths in sync.">

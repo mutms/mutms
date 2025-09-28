@@ -118,6 +118,26 @@ function user_create_user($user, $updatepassword = true, $triggerevent = true) {
         }
     }
 
+    if (mutenancy_is_active()) {
+        if (!empty($user->tenantid)) {
+            $tenant = $DB->get_record('tool_mutenancy_tenant', ['id' => $user->tenantid]);
+            if (!$tenant) {
+                throw new \core\exception\invalid_parameter_exception('Invalid tenantid specified');
+            }
+        } else if (!empty($user->tenant)) {
+            $tenant = $DB->get_record('tool_mutenancy_tenant', ['idnumber' => $user->tenant]);
+            if (!$tenant) {
+                throw new \core\exception\invalid_parameter_exception('Invalid tenant idnumber specified');
+            }
+            $user->tenantid = $tenant->id;
+        } else {
+            $user->tenantid = null;
+        }
+    } else {
+        $user->tenantid = null;
+    }
+    unset($user->tenant);
+
     // Insert the user into the database.
     $newuserid = $DB->insert_record('user', $user);
 
@@ -219,6 +239,10 @@ function user_update_user($user, $updatepassword = true, $triggerevent = true) {
     foreach ($user as $attributekey => $attributevalue) {
         // We explicitly want to ignore 'timemodified' attribute for checking, if an update is needed.
         if (!property_exists($currentrecord, $attributekey) || $attributekey === 'timemodified') {
+            continue;
+        }
+        if ($attributekey === 'tenantid') {
+            // Tenant allocation changes are handled elsewhere!
             continue;
         }
         if ($currentrecord->{$attributekey} !== $attributevalue) {

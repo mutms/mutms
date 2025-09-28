@@ -37,9 +37,10 @@ $redirect = optional_param('redirect', '', PARAM_LOCALURL);    // Where to redir
 $PAGE->set_url('/login/confirm.php');
 $PAGE->set_context(context_system::instance());
 
-if (!$authplugin = signup_get_user_confirmation_authplugin()) {
-    throw new moodle_exception('confirmationnotenabled');
-}
+// mutenancy: moved to later when we know the user tenant
+//if (!$authplugin = signup_get_user_confirmation_authplugin()) {
+//    throw new moodle_exception('confirmationnotenabled');
+//}
 
 if (!empty($data) || (!empty($p) && !empty($s))) {
 
@@ -50,6 +51,18 @@ if (!empty($data) || (!empty($p) && !empty($s))) {
     } else {
         $usersecret = $p;
         $username   = $s;
+    }
+
+    $unconfirmed = $DB->get_record('user', ['username' => $username, 'mnethostid' => $CFG->mnet_localhost_id]);
+    if (!$unconfirmed) {
+        throw new \moodle_exception('invalidconfirmdata');
+    }
+    if (mutenancy_is_active()) {
+        $tenantid = \tool_mutenancy\local\tenancy::get_user_tenantid($unconfirmed->id);
+        \tool_mutenancy\local\tenancy::force_current_tenantid($tenantid);
+    }
+    if (!$authplugin = signup_get_user_confirmation_authplugin()) {
+        throw new moodle_exception('confirmationnotenabled');
     }
 
     $confirmed = $authplugin->user_confirm($username, $usersecret);

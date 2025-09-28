@@ -65,6 +65,11 @@ abstract class context_helper extends context {
             CONTEXT_MODULE => \core\context\module::class,
             CONTEXT_BLOCK => \core\context\block::class,
         );
+        if (mutenancy_is_active()) {
+            self::$alllevels[CONTEXT_TENANT] = \core\context\tenant::class;
+            ksort(self::$alllevels);
+        }
+
 
         if (empty($CFG->custom_context_classes)) {
             return;
@@ -333,6 +338,10 @@ abstract class context_helper extends context {
             $classname::build_paths($force);
         }
 
+        if (mutenancy_is_active()) {
+            \core\context\tenant::fix_all_tenantids();
+        }
+
         // Reset static course cache - it might have incorrect cached data.
         accesslib_clear_all_caches(true);
     }
@@ -353,7 +362,7 @@ abstract class context_helper extends context {
      * @return array (table.column=>alias, ...)
      */
     public static function get_preload_record_columns($tablealias) {
-        return [
+        $result = [
             "$tablealias.id" => "ctxid",
             "$tablealias.path" => "ctxpath",
             "$tablealias.depth" => "ctxdepth",
@@ -361,6 +370,10 @@ abstract class context_helper extends context {
             "$tablealias.instanceid" => "ctxinstance",
             "$tablealias.locked" => "ctxlocked",
         ];
+        if (mutenancy_is_active()) {
+            $result["$tablealias.tenantid"] = "ctxtenantid";
+        }
+        return $result;
     }
 
     /**
@@ -372,12 +385,17 @@ abstract class context_helper extends context {
      * @return string
      */
     public static function get_preload_record_columns_sql($tablealias) {
-        return "$tablealias.id AS ctxid, " .
+        $result = "$tablealias.id AS ctxid, " .
             "$tablealias.path AS ctxpath, " .
             "$tablealias.depth AS ctxdepth, " .
             "$tablealias.contextlevel AS ctxlevel, " .
             "$tablealias.instanceid AS ctxinstance, " .
             "$tablealias.locked AS ctxlocked";
+
+        if (mutenancy_is_active()) {
+            $result .= ", $tablealias.tenantid AS ctxtenantid";
+        }
+        return $result;
     }
 
     /**

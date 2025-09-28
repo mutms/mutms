@@ -42,7 +42,9 @@ class message_output_email extends message_output {
         global $CFG, $DB;
 
         // skip any messaging suspended and deleted users
-        if ($eventdata->userto->auth === 'nologin' or $eventdata->userto->suspended or $eventdata->userto->deleted) {
+        if ($eventdata->userto->auth === 'nologin' or $eventdata->userto->suspended or $eventdata->userto->deleted
+            or mutenancy_is_user_archived($eventdata->userto)
+        ) {
             return true;
         }
 

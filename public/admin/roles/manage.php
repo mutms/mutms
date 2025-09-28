@@ -59,6 +59,12 @@ $undeletableroles = array();
 $undeletableroles[$CFG->notloggedinroleid] = 1;
 $undeletableroles[$CFG->guestroleid] = 1;
 $undeletableroles[$CFG->defaultuserroleid] = 1;
+if (mutenancy_is_active()) {
+    $tenantmanager = \tool_mutenancy\local\manager::get_role();
+    $undeletableroles[$tenantmanager->id] = 1;
+    $tenantuser = \tool_mutenancy\local\user::get_role();
+    $undeletableroles[$tenantuser->id] = 1;
+}
 
 $PAGE->set_primary_active_tab('siteadminnode');
 $PAGE->navbar->add(get_string('defineroles', 'role'), $PAGE->url);

@@ -67,6 +67,10 @@ class cohorts extends system_report {
                 return null;
             }
 
+            if ($cohort->component === 'tool_mutenancy') {
+                return null;
+            }
+
             return [
                 $cohort->id,
                 get_string('selectitem', 'moodle', $cohort->name),

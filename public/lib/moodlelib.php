@@ -1153,6 +1153,10 @@ function unset_all_config_for_plugin($plugin) {
     // Finally clear both the plugin cache and the core cache (suspect settings now removed from core).
     cache_helper::invalidate_by_definition('core', 'config', array(), array('core', $plugin));
 
+    if (mutenancy_is_active()) {
+        \tool_mutenancy\local\config::purge_plugin_overrides($plugin);
+    }
+
     return true;
 }
 
@@ -2430,6 +2434,22 @@ function require_login($courseorid = null, $autologinguest = true, $cm = null, $
         $CFG->forceclean = true;
     }
 
+    if (mutenancy_is_active()) {
+        // Prevent tenant members accessing courses of other tenants.
+        $coursecontext = context_course::instance($course->id);
+        if ($coursecontext->tenantid) {
+            if (isguestuser()) {
+                throw new require_login_exception('No guest');
+            } else {
+                global $USER;
+                $tenantid = \tool_mutenancy\local\tenancy::get_user_tenantid($USER->id);
+                if ($tenantid && $tenantid != $coursecontext->tenantid) {
+                    throw new require_login_exception('No other tenant access');
+                }
+            }
+        }
+    }
+
     $afterlogins = get_plugins_with_function('after_require_login', 'lib.php');
 
     // Do not bother admins with any formalities, except for activities pending deletion.
@@ -2705,6 +2725,10 @@ function require_logout() {
         // This should not happen often, no need for hooks or events here.
         \core\session\manager::terminate_current();
         return;
+    }
+
+    if (mutenancy_is_active()) {
+        \tool_mutenancy\local\tenancy::callback_logout();
     }
 
     // Execute hooks before action.
@@ -3900,7 +3924,7 @@ function authenticate_user_login(
             $authplugin->pre_user_login_hook($user);
         }
 
-        if (!empty($user->suspended)) {
+        if (!empty($user->suspended) || mutenancy_is_user_archived($user)) {
             $failurereason = AUTH_LOGIN_SUSPENDED;
 
             // Trigger login failed event.
@@ -5637,6 +5661,10 @@ function email_to_user($user, $from, $subject, $messagetext, $messagehtml = '', 
     if ((isset($user->auth) && $user->auth=='nologin') or (isset($user->suspended) && $user->suspended)) {
         return true;
     }
+    if (mutenancy_is_user_archived($user)) {
+        // Members of archived tenants are considered to be suspended users.
+        return true;
+    }
 
     if (!validate_email($user->email)) {
         // We can not send emails to invalid addresses - it might create security issue or confuse the mailer.
@@ -5702,6 +5730,11 @@ function email_to_user($user, $from, $subject, $messagetext, $messagehtml = '', 
     if (!empty($replyto) && !validate_email($replyto)) {
         debugging('email_to_user: Invalid replyto-email '.s($replyto));
         $replyto = $noreplyaddress;
+    }
+
+    if (mutenancy_is_active()) {
+        $tenantid = \tool_mutenancy\local\tenancy::get_user_tenantid($user->id);
+        \tool_mutenancy\local\tenancy::fix_site($tenantid);
     }
 
     if (is_string($from)) { // So we can pass whatever we want if there is need.
@@ -5816,6 +5849,10 @@ function email_to_user($user, $from, $subject, $messagetext, $messagehtml = '', 
     if ($user->id > 0) {
         $context['touserid'] = $user->id;
         $context['tousername'] = $user->username;
+    }
+
+    if (mutenancy_is_active()) {
+        \tool_mutenancy\local\tenancy::fix_site();
     }
 
     if (!empty($user->mailformat) && $user->mailformat == 1) {
@@ -6195,10 +6232,13 @@ function send_password_change_info($user) {
 function email_is_not_allowed($email) {
     global $CFG;
 
+    $allowemailaddresses = mutenancy_get_config('core', 'allowemailaddresses');
+    $denyemailaddresses = mutenancy_get_config('core', 'denyemailaddresses');
+
     // Comparing lowercase domains.
     $email = strtolower($email);
-    if (!empty($CFG->allowemailaddresses)) {
-        $allowed = explode(' ', strtolower($CFG->allowemailaddresses));
+    if (!empty($allowemailaddresses)) {
+        $allowed = explode(' ', strtolower($allowemailaddresses));
         foreach ($allowed as $allowedpattern) {
             $allowedpattern = trim($allowedpattern);
             if (!$allowedpattern) {
@@ -6214,10 +6254,10 @@ function email_is_not_allowed($email) {
                 return false;
             }
         }
-        return get_string('emailonlyallowed', '', $CFG->allowemailaddresses);
+        return get_string('emailonlyallowed', '', $allowemailaddresses);
 
-    } else if (!empty($CFG->denyemailaddresses)) {
-        $denied = explode(' ', strtolower($CFG->denyemailaddresses));
+    } else if (!empty($denyemailaddresses)) {
+        $denied = explode(' ', strtolower($denyemailaddresses));
         foreach ($denied as $deniedpattern) {
             $deniedpattern = trim($deniedpattern);
             if (!$deniedpattern) {
@@ -6226,11 +6266,11 @@ function email_is_not_allowed($email) {
             if (strpos($deniedpattern, '.') === 0) {
                 if (strpos(strrev($email), strrev($deniedpattern)) === 0) {
                     // Subdomains are in a form ".example.com" - matches "xxx@anything.example.com".
-                    return get_string('emailnotallowed', '', $CFG->denyemailaddresses);
+                    return get_string('emailnotallowed', '', $denyemailaddresses);
                 }
 
             } else if (strpos(strrev($email), strrev('@'.$deniedpattern)) === 0) {
-                return get_string('emailnotallowed', '', $CFG->denyemailaddresses);
+                return get_string('emailnotallowed', '', $denyemailaddresses);
             }
         }
     }

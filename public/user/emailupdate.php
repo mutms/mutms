@@ -37,6 +37,10 @@ if (!$user = $DB->get_record('user', array('id' => $id))) {
     throw new \moodle_exception('invaliduserid');
 }
 
+if (mutenancy_is_active()) {
+    \tool_mutenancy\local\tenancy::force_current_tenantid($user->tenantid);
+}
+
 $preferences = get_user_preferences(null, null, $user->id);
 $a = new stdClass();
 $a->fullname = fullname($user, true);

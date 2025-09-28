@@ -39,9 +39,16 @@ class core_role_potential_assignees_course_and_above extends core_role_assign_us
         $fields      = 'SELECT u.id, ' . $this->userfieldsselects;
         $countfields = 'SELECT COUNT(1)';
 
+        if (mutenancy_is_active()) {
+            $tenantrestriction = \tool_mutenancy\local\tenancy::get_related_users_exists('u.id', $this->context);
+        } else {
+            $tenantrestriction = '';
+        }
+
         $sql = " FROM {user} u
                       $this->userfieldsjoin
                 WHERE $wherecondition
+                      $tenantrestriction
                       AND u.id NOT IN (
                          SELECT r.userid
                            FROM {role_assignments} r

@@ -85,6 +85,9 @@ class uu_progress_tracker {
             'theme' => get_string('theme'),
             'deleted' => get_string('delete'),
         ];
+        if (mutenancy_is_active()) {
+            $this->headers['tenant'] = get_string('tenant', 'tool_mutenancy');
+        }
         $this->columns = array_keys($this->headers);
     }
 
@@ -235,6 +238,9 @@ function uu_validate_user_upload_columns(csv_import_reader $cir, $stdfields, $pr
 
         } else if (preg_match($specialfieldsregex, $lcfield)) {
             // special fields for enrolments
+            $newfield = $lcfield;
+        } else if (mutenancy_is_active() && $lcfield === 'tenant') {
+            // Special field for user creation only.
             $newfield = $lcfield;
 
         } else {

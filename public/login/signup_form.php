@@ -36,6 +36,12 @@ class login_signup_form extends moodleform implements renderable, templatable {
 
         $mform = $this->_form;
 
+        if (mutenancy_is_active()) {
+            global $SITE;
+            // No idea why vanilla Moodle does not tell you, where you are creating new account?
+            $mform->addElement('html', '<div><strong>' .format_string($SITE->fullname) . '</strong></div>');
+        }
+
         $mform->addElement('text', 'username', get_string('username'), 'maxlength="100" size="12" autocapitalize="none"');
         $mform->setType('username', PARAM_RAW);
         $mform->addRule('username', get_string('missingusername'), 'required', null, 'client');

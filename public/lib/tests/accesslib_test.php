@@ -850,6 +850,9 @@ final class accesslib_test extends advanced_testcase {
      * @covers ::get_role_archetypes
      */
     public function test_get_role_archetypes(): void {
+        if (mutenancy_is_active()) {
+            \tool_mutenancy\local\tenancy::deactivate();
+        }
         $archetypes = get_role_archetypes();
         $this->assertCount(8, $archetypes); // There are 8 archetypes in standard install.
         foreach ($archetypes as $k => $v) {

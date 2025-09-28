@@ -487,6 +487,9 @@ final class step_test extends \advanced_testcase {
      * Ensure that new dirty steps are persisted.
      */
     public function test_persist_dirty_new(): void {
+        // Prime config caches to work around sloppy DB mocking.
+        mutenancy_is_active();
+
         // Mock the database.
         $DB = $this->mock_database();
         $DB->expects($this->once())
@@ -529,6 +532,9 @@ final class step_test extends \advanced_testcase {
     public function test_persist_force_new(): void {
         global $DB;
 
+        // Prime config caches to work around sloppy DB mocking.
+        mutenancy_is_active();
+
         // Mock the database.
         $DB = $this->mock_database();
         $DB->expects($this->once())
@@ -566,6 +572,9 @@ final class step_test extends \advanced_testcase {
      * Ensure that existing dirty steps are persisted.
      */
     public function test_persist_dirty_existing(): void {
+        // Prime config caches to work around sloppy DB mocking.
+        mutenancy_is_active();
+
         // Mock the database.
         $DB = $this->mock_database();
         $DB->expects($this->once())
@@ -609,6 +618,9 @@ final class step_test extends \advanced_testcase {
      */
     public function test_persist_force_existing(): void {
         global $DB;
+
+        // Prime config caches to work around sloppy DB mocking.
+        mutenancy_is_active();
 
         // Mock the database.
         $DB = $this->mock_database();

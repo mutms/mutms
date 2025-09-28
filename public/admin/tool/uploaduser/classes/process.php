@@ -895,6 +895,12 @@ class process {
                 }
             }
 
+            if (mutenancy_is_active()) {
+                // Allocation is not supported here!
+                $this->upt->track('tenant', '-', 'normal', false);
+                unset($existinguser->tenant);
+            }
+
             if ($doupdate or $existinguser->password !== $oldpw) {
                 // We want only users that were really updated.
                 user_update_user($existinguser, false, false);
@@ -993,6 +999,28 @@ class process {
             } else if (\core_user::clean_field($user->lang, 'lang') === '') {
                 $this->upt->track('status', get_string('cannotfindlang', 'error', $user->lang), 'warning');
                 $user->lang = '';
+            }
+
+            if (mutenancy_is_active()) {
+                if (empty($user->tenant)) {
+                    $user->tenantid = null;
+                } else {
+                    if (is_number($user->tenant)) {
+                        $tenant = $DB->get_record('tool_mutenancy_tenant', ['id' => $user->tenant]);
+                    } else {
+                        $tenant = $DB->get_record('tool_mutenancy_tenant', ['idnumber' => $user->tenant]);
+                    }
+                    if ($tenant) {
+                        $user->tenantid = $tenant->id;
+                        $this->upt->track('tenant', s($tenant->idnumber), 'normal', false);
+                    } else {
+                        $this->upt->track('tenant', get_string('error'), 'error');
+                        $this->upt->track('status', get_string('usernotaddederror', 'error'), 'error');
+                        $this->userserrors++;
+                        return;
+                    }
+                }
+                unset($user->tenant);
             }
 
             $forcechangepassword = false;

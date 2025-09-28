@@ -66,6 +66,10 @@ if (isguestuser($user)) {
     throw new \moodle_exception('guestnoeditprofile');
 }
 
+if (mutenancy_is_active()) {
+    \tool_mutenancy\local\tenancy::force_current_tenantid($user->tenantid);
+}
+
 // User interests separated by commas.
 $user->interests = core_tag_tag::get_item_tags_array('core', 'user', $user->id);
 

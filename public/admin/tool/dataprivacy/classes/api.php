@@ -1612,8 +1612,10 @@ class api {
 
         $contexts = [];
 
-        $query = "SELECT DISTINCT c.id as ctxid, c.contextlevel as ctxlevel, c.instanceid as ctxinstance, c.path as ctxpath,
-                        c.depth as ctxdepth, c.locked as ctxlocked
+        // Fix sloppy context preloading code!
+        $ctxfields = context_helper::get_preload_record_columns_sql('c');
+
+        $query = "SELECT DISTINCT $ctxfields
                     FROM {" . \tool_dataprivacy\request_contextlist::TABLE . "} rcl
                     JOIN {" . \tool_dataprivacy\dataprivacy_contextlist::TABLE . "} cl ON rcl.contextlistid = cl.id
                     JOIN {" . \tool_dataprivacy\contextlist_context::TABLE . "} ctx ON cl.id = ctx.contextlistid

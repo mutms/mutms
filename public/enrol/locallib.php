@@ -512,10 +512,18 @@ class course_enrolment_manager {
 
         $fields      = 'SELECT '.$ufields;
         $countfields = 'SELECT COUNT(1)';
+
+        if (mutenancy_is_active()) {
+            $tenantrestriction = \tool_mutenancy\local\tenancy::get_related_users_exists('u.id', $this->context);
+        } else {
+            $tenantrestriction = '';
+        }
+
         $sql = " FROM {user} u
                       $joins
             LEFT JOIN {user_enrolments} ue ON (ue.userid = u.id AND ue.enrolid = :enrolid)
                 WHERE $wherecondition
+                      $tenantrestriction
                       AND ue.id IS NULL";
         $params['enrolid'] = $enrolid;
 
