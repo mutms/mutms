@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<XMLDB PATH="admin/tool/mulib/db" VERSION="20250301" COMMENT="XMLDB file for tool_mulib"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:noNamespaceSchemaLocation="../../../../lib/xmldb/xmldb.xsd"
+>
+  <TABLES>
+    <TABLE NAME="tool_mulib_notification" COMMENT="Notification settings for components - the main purpose is to track if everything in component was notified as expected">
+      <FIELDS>
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+        <FIELD NAME="component" TYPE="char" LENGTH="50" NOTNULL="true" SEQUENCE="false" COMMENT="Plugin"/>
+        <FIELD NAME="notificationtype" TYPE="char" LENGTH="100" NOTNULL="true" SEQUENCE="false" COMMENT="Type of notification - references PHP class in component local/notification namespace"/>
+        <FIELD NAME="instanceid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="Notification instance id of given type, 0 if instances not used"/>
+        <FIELD NAME="enabled" TYPE="int" LENGTH="1" NOTNULL="true" DEFAULT="1" SEQUENCE="false" COMMENT="Notification is enabled if record present and enabled value is 1"/>
+        <FIELD NAME="custom" TYPE="int" LENGTH="1" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="1 if notification has custom text, otherwise lang pack is used, record is deleted only if instanceid is deleted"/>
+        <FIELD NAME="customjson" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="Custom email subject, fullmessage and smallmessage settings"/>
+        <FIELD NAME="auxjson" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="Other settings and data - interpreted by type class"/>
+        <FIELD NAME="auxint1" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false" COMMENT="Auxiliary number for performance improvements, can be used for things like early due date warning - interpreted by type class"/>
+        <FIELD NAME="auxint2" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false"/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+      </KEYS>
+      <INDEXES>
+        <INDEX NAME="component-notificationtype-instanceid" UNIQUE="true" FIELDS="component, notificationtype, instanceid" COMMENT="Prevent duplicates"/>
+      </INDEXES>
+    </TABLE>
+    <TABLE NAME="tool_mulib_notification_user" COMMENT="Sent notifications - deleted when component instanceid is deleted">
+      <FIELDS>
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+        <FIELD NAME="notificationid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="userid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="Notified user"/>
+        <FIELD NAME="otherid1" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false" COMMENT="Other reference id identifying the notification"/>
+        <FIELD NAME="otherid2" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false" COMMENT="Yet another reference id identifying the notification"/>
+        <FIELD NAME="timenotified" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="messageid" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false" COMMENT="The vague messageid value returned from message_send(), NULL means something went wrong"/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+        <KEY NAME="notificationid" TYPE="foreign" FIELDS="notificationid" REFTABLE="tool_mulib_notification" REFFIELDS="id"/>
+        <KEY NAME="userid" TYPE="foreign" FIELDS="userid" REFTABLE="user" REFFIELDS="id"/>
+      </KEYS>
+      <INDEXES>
+        <INDEX NAME="otherid1-otherid2" UNIQUE="false" FIELDS="otherid1, otherid2" COMMENT="Performance improvement"/>
+      </INDEXES>
+    </TABLE>
+  </TABLES>
+</XMLDB>

@@ -1,0 +1,6 @@
+{
+  "require": {
+    "opis/json-schema": "^2.3",
+    "erusev/parsedown": "*"
+  }
+}
