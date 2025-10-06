@@ -57,7 +57,7 @@ class renderer extends \plugin_renderer_base {
 
         $tagsdiv = '';
         if ($CFG->usetags) {
-            $tags = \core_tag_tag::get_item_tags('tool_muprog', 'program', $program->id);
+            $tags = \core_tag_tag::get_item_tags('tool_muprog', 'tool_muprog_program', $program->id);
             if ($tags) {
                 $tagsdiv = $this->output->tag_list($tags, '', 'program-tags mb-3');
             }

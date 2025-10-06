@@ -56,7 +56,7 @@ final class program_update extends \tool_mulib\local\ajax_form {
         $mform->addHelpButton('creategroups', 'creategroups', 'tool_muprog');
 
         if ($CFG->usetags) {
-            $mform->addElement('tags', 'tags', get_string('tags'), ['itemtype' => 'program', 'component' => 'tool_muprog']);
+            $mform->addElement('tags', 'tags', get_string('tags'), ['itemtype' => 'tool_muprog_program', 'component' => 'tool_muprog']);
         }
 
         $options = \tool_muprog\local\program::get_image_filemanager_options();

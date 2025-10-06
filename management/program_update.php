@@ -61,7 +61,7 @@ $program = file_prepare_standard_editor(
     'description',
     $program->id
 );
-$program->tags = core_tag_tag::get_item_tags_array('tool_muprog', 'program', $program->id);
+$program->tags = core_tag_tag::get_item_tags_array('tool_muprog', 'tool_muprog_program', $program->id);
 
 $program->image = file_get_submitted_draft_itemid('image');
 file_prepare_draft_area($program->image, $context->id, 'tool_muprog', 'image', $program->id, ['subdirs' => 0]);

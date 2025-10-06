@@ -205,7 +205,7 @@ final class program {
         $program = self::update_image($data);
 
         if ($CFG->usetags && isset($data->tags)) {
-            \core_tag_tag::set_item_tags('tool_muprog', 'program', $data->id, $context, $data->tags);
+            \core_tag_tag::set_item_tags('tool_muprog', 'tool_muprog_program', $data->id, $context, $data->tags);
         }
 
         if ($editorused) {
@@ -299,7 +299,7 @@ final class program {
                 // Delete tags even if they are not enabled before move,
                 // tags API is not designed to deal with this,
                 // we cannot create instance of deleted context.
-                \core_tag_tag::set_item_tags('tool_muprog', 'program', $data->id, $oldcontext, null);
+                \core_tag_tag::set_item_tags('tool_muprog', 'tool_muprog_program', $data->id, $oldcontext, null);
             }
             $record->contextid = $context->id;
         } else {
@@ -358,7 +358,7 @@ final class program {
         $DB->update_record('tool_muprog_program', $record);
 
         if ($CFG->usetags && isset($data->tags)) {
-            \core_tag_tag::set_item_tags('tool_muprog', 'program', $data->id, $context, $data->tags);
+            \core_tag_tag::set_item_tags('tool_muprog', 'tool_muprog_program', $data->id, $context, $data->tags);
         }
 
         $program = self::update_image($data);
@@ -915,7 +915,7 @@ final class program {
         $DB->delete_records('tool_muprog_cert', ['programid' => $program->id]);
 
         // Program details last.
-        \core_tag_tag::set_item_tags('tool_muprog', 'program', $program->id, $context, null);
+        \core_tag_tag::set_item_tags('tool_muprog', 'tool_muprog_program', $program->id, $context, null);
         $fs = get_file_storage();
         $fs->delete_area_files($context->id, 'tool_muprog', 'description', $program->id);
         $fs->delete_area_files($context->id, 'tool_muprog', 'image', $program->id);

@@ -96,4 +96,31 @@ final class lib_test extends \advanced_testcase {
         $this->assertSame("$CFG->wwwroot/admin/tool/muprog/my/program.php?id=" . $program1->id, $result->get_url()->out());
         $this->assertSame(1, $result->get_item_count());
     }
+
+    /**
+     * @covers \tool_muprog_get_tagged_programs()
+     */
+    public function test_tool_muprog_get_tagged_programs(): void {
+        global $CFG;
+        require_once($CFG->dirroot . '/admin/tool/muprog/lib.php');
+
+        $syscontext = \context_system::instance();
+
+        /** @var \tool_muprog_generator $generator */
+        $generator = $this->getDataGenerator()->get_plugin_generator('tool_muprog');
+
+        $program1 = $generator->create_program(['fullname' => 'hokus', 'sources' => ['manual' => []]]);
+        $program2 = $generator->create_program(['fullname' => 'pokus', 'sources' => ['manual' => []]]);
+
+        \core_tag_tag::set_item_tags('tool_muprog', 'tool_muprog_program', $program1->id, $syscontext, ['foo', 'bar']);
+        \core_tag_tag::set_item_tags('tool_muprog', 'tool_muprog_program', $program2->id, $syscontext, ['bar']);
+        $tags1 = \core_tag_tag::get_item_tags('tool_muprog', 'tool_muprog_program', $program1->id);
+        $this->assertCount(2, $tags1);
+        $tags2 = \core_tag_tag::get_item_tags('tool_muprog', 'tool_muprog_program', $program2->id);
+        $this->assertCount(1, $tags2);
+        $bar = reset($tags2);
+
+        $result = tool_muprog_get_tagged_programs($bar);
+        $this->assertInstanceOf(\core_tag\output\tagindex::class, $result);
+    }
 }

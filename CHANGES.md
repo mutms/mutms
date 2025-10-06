@@ -2,8 +2,9 @@
 
 ## mu-5.0.3-01
 
-Release date: xx/10/2025
+Release date: 06/10/2025
 
+* Fixed program tags itemtype to match database table name.
 * Added support for Moodle 5.1.
 
 ## mu-5.0.2-03
