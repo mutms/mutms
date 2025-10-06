@@ -37,6 +37,11 @@ class enrol_muprog_plugin extends enrol_plugin {
             return get_string('error');
         }
 
+        if (!isset($instance->customint1)) {
+            // Most likely a sloppy test in rb.
+            return get_string('error');
+        }
+
         $program = $DB->get_record('tool_muprog_program', ['id' => $instance->customint1]);
 
         $name = get_string('program', 'tool_muprog');
