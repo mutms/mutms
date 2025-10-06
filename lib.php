@@ -146,7 +146,7 @@ function tool_mucertify_get_tagged_certifications($tag, $exclusivemode = false, 
     return new core_tag\output\tagindex(
         $tag,
         'tool_mucertify',
-        'certification',
+        'tool_mucertify_certification',
         $content,
         $exclusivemode,
         0,

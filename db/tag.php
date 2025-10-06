@@ -30,7 +30,7 @@ defined('MOODLE_INTERNAL') || die();
 
 $tagareas = [
     [
-        'itemtype' => 'certification',
+        'itemtype' => 'tool_mucertify_certification',
         'component' => 'tool_mucertify',
         'callback' => 'tool_mucertify_get_tagged_certifications',
         'callbackfile' => '/admin/tool/mucertify/lib.php',

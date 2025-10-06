@@ -87,5 +87,17 @@ function xmldb_tool_mucertify_upgrade($oldversion) {
         upgrade_plugin_savepoint(true, 2025083145.01, 'tool', 'mucertify');
     }
 
+    if ($oldversion < 2025092450.01) {
+        // Use certification table name for tag itemtype.
+        $DB->set_field(
+            'tag_instance',
+            'itemtype',
+            'tool_mucertify_certification',
+            ['itemtype' => 'certification', 'component' => 'tool_mucertify']
+        );
+
+        upgrade_plugin_savepoint(true, 2025092450.01, 'tool', 'mucertify');
+    }
+
     return true;
 }
