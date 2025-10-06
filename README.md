@@ -27,6 +27,13 @@ To use this plugin you need to install [Additional MuTMS libraries plugin for Mo
 - Cohorts cannot be created automatically.
 - When changing tenant memberships supervisors may be deleted to respect tenant separation, this is done at a later time from cron task.
 
+How to create supervisors:
+
+1. Login as admin and go to "Site administration / Users / User relation frameworks"
+2. Add a new framework using "Supervisors" framework mode
+3. Go to user profile
+4. To add user supervisor click Actions icon in user details section and select Add supervisor action
+
 ## Teams mode
 
 - In the Teams mode the emphasis is on groups of subordinates managed by a team supervisor.
@@ -39,6 +46,15 @@ To use this plugin you need to install [Additional MuTMS libraries plugin for Mo
 - Team name is required.
 - Team cohort may be created, all subordinates of the team are then automatically added as cohort members.
 - When changing tenant memberships user may be removed from teams to respect tenant separation, this is done at a later time from cron task.
+
+How to create supervisors:
+
+1. Login as admin and go to "Site administration / Users / User relation frameworks"
+2. Add a new framework using "Teams" framework mode
+3. Go to Team tab
+4. Add teams
+5. Add team members
+6. Teams are visible in user profiles
 
 ## Planned features
 
