@@ -66,7 +66,7 @@ class renderer extends \plugin_renderer_base {
         $url = new moodle_url('/admin/tool/mucertify/management/index.php', ['contextid' => $context->id]);
         $details->add(get_string('category'), html_writer::link($url, $context->get_context_name(false)));
         if ($CFG->usetags) {
-            $tags = \core_tag_tag::get_item_tags('tool_mucertify', 'certification', $certification->id);
+            $tags = \core_tag_tag::get_item_tags('tool_mucertify', 'tool_mucertify_certification', $certification->id);
             if ($tags) {
                 $details->add(get_string('tags'), $this->output->tag_list($tags, '', 'certification-tags'));
             }
