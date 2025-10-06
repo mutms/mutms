@@ -28,14 +28,14 @@ defined('MOODLE_INTERNAL') || die();
 
 /** @var stdClass $plugin */
 $plugin->component = 'certificateelement_muprog';
-$plugin->version = 2025092450;
+$plugin->version = 2025100650;
 $plugin->requires = 2025041400;
 $plugin->maturity = MATURITY_ALPHA;
-$plugin->supported = [500, 500];
+$plugin->supported = [500, 501];
 
-$plugin->release = 'mu-5.0.2-03';
+$plugin->release = 'mu-5.0.3-01';
 
 $plugin->dependencies = [
-    'tool_muprog' => 2025092450,
+    'tool_muprog' => 2025100650,
     'tool_certificate' => 2025041400,
 ];
