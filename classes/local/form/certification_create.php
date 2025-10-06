@@ -52,7 +52,7 @@ final class certification_create extends \tool_mulib\local\ajax_form {
         $mform->addRule('contextid', get_string('required'), 'required', null, 'client');
 
         if ($CFG->usetags) {
-            $mform->addElement('tags', 'tags', get_string('tags'), ['itemtype' => 'certification', 'component' => 'tool_mucertify']);
+            $mform->addElement('tags', 'tags', get_string('tags'), ['itemtype' => 'tool_mucertify_certification', 'component' => 'tool_mucertify']);
         }
 
         $options = \tool_mucertify\local\certification::get_image_filemanager_options();
