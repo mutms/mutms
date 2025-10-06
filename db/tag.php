@@ -30,7 +30,7 @@ defined('MOODLE_INTERNAL') || die();
 
 $tagareas = [
     [
-        'itemtype' => 'program',
+        'itemtype' => 'tool_muprog_program',
         'component' => 'tool_muprog',
         'callback' => 'tool_muprog_get_tagged_programs',
         'callbackfile' => '/admin/tool/muprog/lib.php',

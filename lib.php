@@ -189,7 +189,7 @@ function tool_muprog_get_tagged_programs($tag, $exclusivemode = false, $fromctx 
     return new core_tag\output\tagindex(
         $tag,
         'tool_muprog',
-        'program',
+        'tool_muprog_program',
         $content,
         $exclusivemode,
         0,

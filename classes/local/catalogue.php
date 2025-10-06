@@ -189,7 +189,7 @@ final class catalogue {
 
             $tagsdiv = '';
             if ($CFG->usetags) {
-                $tags = \core_tag_tag::get_item_tags('tool_muprog', 'program', $program->id);
+                $tags = \core_tag_tag::get_item_tags('tool_muprog', 'tool_muprog_program', $program->id);
                 if ($tags) {
                     $tagsdiv = $OUTPUT->tag_list($tags, '', 'program-tags');
                 }
@@ -383,7 +383,7 @@ final class catalogue {
 
         $sql = "SELECT DISTINCT t.id, t.name
                   FROM {tag} t
-                  JOIN {tag_instance} tt ON tt.itemtype = 'program' AND tt.tagid = t.id AND tt.component = 'tool_muprog'
+                  JOIN {tag_instance} tt ON tt.itemtype = 'tool_muprog_program' AND tt.tagid = t.id AND tt.component = 'tool_muprog'
                   JOIN {tool_muprog_program} p ON p.id = tt.itemid
              LEFT JOIN {tool_muprog_allocation} pa ON pa.programid = p.id AND pa.userid = :userid1 AND pa.archived = 0
                  WHERE p.archived = 0
@@ -418,7 +418,7 @@ final class catalogue {
 
         $sql = "SELECT p.*
                   FROM {tool_muprog_program} p
-                  JOIN {tag_instance} tt ON tt.itemid = p.id AND tt.itemtype = 'program' AND tt.tagid = :tagid AND tt.component = 'tool_muprog'
+                  JOIN {tag_instance} tt ON tt.itemid = p.id AND tt.itemtype = 'tool_muprog_program' AND tt.tagid = :tagid AND tt.component = 'tool_muprog'
              LEFT JOIN {tool_muprog_allocation} pa ON pa.programid = p.id AND pa.userid = :userid1 AND pa.archived = 0
                  WHERE p.archived = 0
                        AND (p.publicaccess = 1 OR pa.id IS NOT NULL OR EXISTS (
