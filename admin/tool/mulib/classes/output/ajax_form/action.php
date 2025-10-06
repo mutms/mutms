@@ -122,10 +122,10 @@ abstract class action implements \core\output\named_templatable, \core\output\re
     /**
      * Set initial modal dialog size.
      *
-     * @param string $title
+     * @param string|null $title
      * @return static
      */
-    public function set_modal_title(string $title): static {
+    public function set_modal_title(?string $title): static {
         $this->modaltitle = $title;
         return $this;
     }

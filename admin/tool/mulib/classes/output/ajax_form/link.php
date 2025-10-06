@@ -83,4 +83,40 @@ return false;";
 
         return $action;
     }
+
+    /**
+     * Create icon with the same data.
+     *
+     * @return icon
+     */
+    public function create_icon(): icon {
+        if ($this->icon) {
+            $icon = new icon($this->formurl, $this->label, $this->icon->pix, $this->icon->component);
+        } else {
+            debugging('Link does not have an icon defined', DEBUG_DEVELOPER);
+            $icon = new icon($this->formurl, $this->label, 'i/empty', 'core');
+        }
+        $icon->set_form_size($this->formsize);
+        $icon->set_submitted_action($this->formsubmittedaction);
+        $icon->set_modal_title($this->modaltitle);
+        return $icon;
+    }
+
+    /**
+     * Create button with the same data.
+     *
+     * @param bool $primary
+     * @param bool $useicon
+     * @return button
+     */
+    public function create_button(bool $primary = false, bool $useicon = false): button {
+        $button = new button($this->formurl, $this->label, $primary);
+        $button->set_form_size($this->formsize);
+        $button->set_submitted_action($this->formsubmittedaction);
+        $button->set_modal_title($this->modaltitle);
+        if ($useicon && $this->icon) {
+            $button->set_icon($this->icon);
+        }
+        return $button;
+    }
 }
