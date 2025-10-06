@@ -71,7 +71,7 @@ class renderer extends \plugin_renderer_base {
         $details->add(get_string('category'), html_writer::link($url, $context->get_context_name(false)));
         $details->add(get_string('creategroups', 'tool_muprog'), ($program->creategroups ? get_string('yes') : get_string('no')));
         if ($CFG->usetags) {
-            $tags = \core_tag_tag::get_item_tags('tool_muprog', 'program', $program->id);
+            $tags = \core_tag_tag::get_item_tags('tool_muprog', 'tool_muprog_program', $program->id);
             if ($tags) {
                 $details->add(get_string('tags'), $this->output->tag_list($tags, '', 'program-tags'));
             }

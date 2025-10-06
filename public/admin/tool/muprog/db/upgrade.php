@@ -77,5 +77,17 @@ function xmldb_tool_muprog_upgrade($oldversion): bool {
         upgrade_plugin_savepoint(true, 2025080950.01, 'tool', 'muprog');
     }
 
+    if ($oldversion < 2025092450.01) {
+        // Use program table name for tag itemtype.
+        $DB->set_field(
+            'tag_instance',
+            'itemtype',
+            'tool_muprog_program',
+            ['itemtype' => 'program', 'component' => 'tool_muprog']
+        );
+
+        upgrade_plugin_savepoint(true, 2025092450.01, 'tool', 'muprog');
+    }
+
     return true;
 }
