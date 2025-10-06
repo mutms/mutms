@@ -148,7 +148,7 @@ final class certification {
         self::update_image($data);
 
         if ($CFG->usetags && isset($data->tags)) {
-            \core_tag_tag::set_item_tags('tool_mucertify', 'certification', $data->id, $context, $data->tags);
+            \core_tag_tag::set_item_tags('tool_mucertify', 'tool_mucertify_certification', $data->id, $context, $data->tags);
         }
 
         if ($editorused) {
@@ -221,7 +221,7 @@ final class certification {
                 // Delete tags even if they are not enabled before move,
                 // tags API is not designed to deal with this,
                 // we cannot create instance of deleted context.
-                \core_tag_tag::set_item_tags('tool_mucertify', 'certification', $data->id, $oldcontext, null);
+                \core_tag_tag::set_item_tags('tool_mucertify', 'tool_mucertify_certification', $data->id, $oldcontext, null);
             }
             $record->contextid = $context->id;
         } else {
@@ -270,7 +270,7 @@ final class certification {
         $DB->update_record('tool_mucertify_certification', $record);
 
         if ($CFG->usetags && isset($data->tags)) {
-            \core_tag_tag::set_item_tags('tool_mucertify', 'certification', $data->id, $context, $data->tags);
+            \core_tag_tag::set_item_tags('tool_mucertify', 'tool_mucertify_certification', $data->id, $context, $data->tags);
         }
 
         $certification = self::update_image($data);
@@ -681,7 +681,7 @@ final class certification {
         $DB->delete_records('tool_mucertify_period', ['certificationid' => $certification->id]);
 
         // Certification details last.
-        \core_tag_tag::set_item_tags('tool_mucertify', 'certification', $certification->id, $context, null);
+        \core_tag_tag::set_item_tags('tool_mucertify', 'tool_mucertify_certification', $certification->id, $context, null);
         $fs = get_file_storage();
         $fs->delete_area_files($context->id, 'tool_mucertify', 'description', $certification->id);
         $fs->delete_area_files($context->id, 'tool_mucertify', 'image', $certification->id);

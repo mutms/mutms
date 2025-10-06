@@ -191,7 +191,7 @@ final class catalogue {
 
             $tagsdiv = '';
             if ($CFG->usetags) {
-                $tags = \core_tag_tag::get_item_tags('tool_mucertify', 'certification', $certification->id);
+                $tags = \core_tag_tag::get_item_tags('tool_mucertify', 'tool_mucertify_certification', $certification->id);
                 if ($tags) {
                     $tagsdiv = $OUTPUT->tag_list($tags, '', 'certification-tags');
                 }
@@ -385,7 +385,7 @@ final class catalogue {
 
         $sql = "SELECT DISTINCT t.id, t.name
                   FROM {tag} t
-                  JOIN {tag_instance} tt ON tt.itemtype = 'certification' AND tt.tagid = t.id AND tt.component = 'tool_mucertify'
+                  JOIN {tag_instance} tt ON tt.itemtype = 'tool_mucertify_certification' AND tt.tagid = t.id AND tt.component = 'tool_mucertify'
                   JOIN {tool_mucertify_certification} p ON p.id = tt.itemid
              LEFT JOIN {tool_mucertify_assignment} pa ON pa.certificationid = p.id AND pa.userid = :userid1 AND pa.archived = 0
                  WHERE p.archived = 0
@@ -420,7 +420,7 @@ final class catalogue {
 
         $sql = "SELECT p.*
                   FROM {tool_mucertify_certification} p
-                  JOIN {tag_instance} tt ON tt.itemid = p.id AND tt.itemtype = 'certification' AND tt.tagid = :tagid AND tt.component = 'tool_mucertify'
+                  JOIN {tag_instance} tt ON tt.itemid = p.id AND tt.itemtype = 'tool_mucertify_certification' AND tt.tagid = :tagid AND tt.component = 'tool_mucertify'
              LEFT JOIN {tool_mucertify_assignment} pa ON pa.certificationid = p.id AND pa.userid = :userid1 AND pa.archived = 0
                  WHERE p.archived = 0
                        AND (p.publicaccess = 1 OR pa.id IS NOT NULL OR EXISTS (

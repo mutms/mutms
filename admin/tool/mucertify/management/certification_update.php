@@ -61,7 +61,7 @@ $certification = file_prepare_standard_editor(
     'description',
     $certification->id
 );
-$certification->tags = core_tag_tag::get_item_tags_array('tool_mucertify', 'certification', $certification->id);
+$certification->tags = core_tag_tag::get_item_tags_array('tool_mucertify', 'tool_mucertify_certification', $certification->id);
 
 $certification->image = file_get_submitted_draft_itemid('image');
 file_prepare_draft_area($certification->image, $context->id, 'tool_mucertify', 'image', $certification->id, ['subdirs' => 0]);
