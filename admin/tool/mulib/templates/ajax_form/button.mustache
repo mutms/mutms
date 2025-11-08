@@ -26,6 +26,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
     {
         "classes": "singlebutton",
         "primary": true,
+        "outline": false,
         "formurl": "https://www.example.com/form.php",
         "formsize": "lg",
         "formsubmittedaction": "reload",
@@ -36,7 +37,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 }}
 
 <div class="{{classes}}">
-    <button type="submit" class="btn btn-{{#primary}}primary{{/primary}}{{^primary}}secondary{{/primary}}"
+    <button type="submit" class="btn btn-{{#outline}}outline-{{/outline}}{{#primary}}primary{{/primary}}{{^primary}}secondary{{/primary}}"
             data-form-url="{{formurl}}" data-form-size="{{formsize}}" data-form-submitted-action="{{formsubmittedaction}}"
             id="tool-mulib-ajax-form-modal-action-{{uniqid}}">{{{icon}}}{{label}}</button>
 </div>

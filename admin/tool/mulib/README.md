@@ -8,13 +8,12 @@ This plugin is required by other MuTMS plugins.
 
 1. Ajax forms for dialogs.
 2. Form autocompletion heplers.
-3. Plugin docs.
-4. Action dropdowns.
-5. Date interval helper.
-6. Notification manager.
-7. JSON validation helper.
-8. Entity details templates.
-9. SQL fragments.
+3. Action dropdowns.
+4. Date interval helper.
+5. Notification manager.
+6. JSON validation helper.
+7. Entity details templates.
+8. SQL fragments.
 
 ## Known Limitations
 
@@ -28,3 +27,7 @@ This plugin is a fork of [Open LMS local util plugin](https://github.com/open-lm
 and exists thanks to Open LMS's decision to release it to the public under the GPL 3.0 license.
 
 MuTMS suite of plugins is not associated with Moodle HQ or Open LMS in any way.
+
+## Roadmap
+
+* Target for production release and availability of paid support: Q2 2026
