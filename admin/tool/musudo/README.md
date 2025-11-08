@@ -30,3 +30,7 @@ To further improve security, the privileged session can be protected with existi
 ## Known issues
 
 * This plugin is internally using the Switch role feature, due to that course level privileges appear as "Switched roles" in Moodle UI.
+
+## Roadmap
+
+* Target for production release and availability of paid support: Q2 2026
