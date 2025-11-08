@@ -31,6 +31,8 @@ use lang_string;
 final class button extends action {
     /** @var bool */
     protected $primary;
+    /** @var bool */
+    protected $outline;
 
     /**
      * Create button that opens a form in modal dialog.
@@ -57,10 +59,22 @@ final class button extends action {
         return $this;
     }
 
+    /**
+     * Render button as outline.
+     *
+     * @param bool $value
+     * @return static
+     */
+    public function set_outline(bool $value): static {
+        $this->outline = $value;
+        return $this;
+    }
+
     #[\Override]
     public function export_for_template(\renderer_base $output): array {
         $data = parent::export_for_template($output);
         $data['primary'] = $this->primary;
+        $data['outline'] = $this->outline;
 
         return $data;
     }

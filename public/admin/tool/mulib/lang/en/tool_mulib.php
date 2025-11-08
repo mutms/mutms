@@ -48,7 +48,6 @@ $string['notification_update'] = 'Update notification';
 $string['notification_view'] = 'Notification details';
 $string['notifications'] = 'Notifications';
 $string['notset'] = 'Not set';
-$string['plugindocs'] = '{$a} documentation';
 $string['pluginname'] = 'Additional tools library';
 $string['privacy:metadata:notificationid'] = 'Notification id';
 $string['privacy:metadata:timenotified'] = 'Time user notified';

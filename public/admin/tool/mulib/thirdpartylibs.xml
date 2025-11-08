@@ -3,14 +3,14 @@
   <library>
     <location>vendor/opis/json-schema</location>
     <name>opis/json-schema</name>
-    <version>2.4.1</version>
+    <version>2.6.0</version>
     <license>Apache</license>
     <licenseversion>2.0</licenseversion>
   </library>
   <library>
     <location>vendor/opis/string</location>
     <name>opis/string</name>
-    <version>2.0.2</version>
+    <version>2.1.0</version>
     <license>Apache</license>
     <licenseversion>2.0</licenseversion>
   </library>
@@ -20,12 +20,6 @@
     <version>1.1.0</version>
     <license>Apache</license>
     <licenseversion>2.0</licenseversion>
-  </library>
-  <library>
-    <location>vendor/erusev/parsedown</location>
-    <name>Parsedown</name>
-    <version>1.7.4</version>
-    <license>MIT</license>
   </library>
   <library>
     <location>vendor/composer</location>
