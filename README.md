@@ -13,3 +13,7 @@ This Moodle plugin strengthens account security by adding a site‑wide setting 
 5. Navigate to "Site administration / Plugins / Authentication / Compromised password blocking" settings page.
 6. Enable "Detect compromised passwords".
 7. If anything goes wrong you can also reset passwords from CLI, see /admin/cli/reset_password.php
+
+## Roadmap
+
+* Target for production release and availability of paid support: Q2 2026
