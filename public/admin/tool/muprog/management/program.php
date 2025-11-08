@@ -50,7 +50,7 @@ require_capability('tool/muprog:view', $context);
 $currenturl = new moodle_url('/admin/tool/muprog/management/program.php', ['id' => $id]);
 
 management::setup_program_page($currenturl, $context, $program, 'program_general');
-\tool_mulib\local\plugindocs::set_path('tool_muprog', 'management_program.md');
+$PAGE->set_docs_path('https://github.com/mutms/moodle-tool_muprog/wiki/Program-settings');
 
 /** @var \tool_muprog\output\management\renderer $managementoutput */
 $managementoutput = $PAGE->get_renderer('tool_muprog', 'management');

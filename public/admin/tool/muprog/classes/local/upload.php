@@ -356,7 +356,7 @@ final class upload {
         $table = new \html_table();
         $table->head = $columns;
         $table->id = 'upload_preview';
-        $table->attributes['class'] = 'admintable generaltable';
+        $table->attributes['class'] = 'table table-striped table-hover table-bordered';
         $table->data = $data;
         return \html_writer::table($table);
     }
