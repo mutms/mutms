@@ -189,7 +189,7 @@ class renderer extends \plugin_renderer_base {
             get_string('certificationstatus', 'tool_mucertify'),
             get_string('untildate', 'tool_mucertify'),
         ];
-        $table->attributes['class'] = 'admintable generaltable';
+        $table->attributes['class'] = 'table table-striped table-hover';
         $table->data = $data;
         return \html_writer::table($table);
     }

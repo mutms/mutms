@@ -49,7 +49,7 @@ require_capability('tool/mucertify:view', $context);
 $currenturl = new moodle_url('/admin/tool/mucertify/management/certification_users.php', ['id' => $certification->id]);
 
 management::setup_certification_page($currenturl, $context, $certification, 'certification_users');
-\tool_mulib\local\plugindocs::set_path('tool_mucertify', 'management_certification_users.md');
+$PAGE->set_docs_path('https://github.com/mutms/moodle-tool_mucertify/wiki/Certification-users');
 
 /** @var \tool_mucertify\local\source\base[] $sourceclasses */ // Type hack.
 $sourceclasses = \tool_mucertify\local\assignment::get_source_classes();
