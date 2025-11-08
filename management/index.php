@@ -60,7 +60,7 @@ if ($context->contextlevel == CONTEXT_SYSTEM) {
 $currenturl = new moodle_url('/admin/tool/muprog/management/index.php', ['contextid' => $context->id]);
 
 management::setup_index_page($currenturl, $context);
-\tool_mulib\local\plugindocs::set_path('tool_muprog', 'management_index.md');
+$PAGE->set_docs_path('https://github.com/mutms/moodle-tool_muprog/wiki/Program-management');
 
 $actions = new header_actions(get_string('management_index_actions', 'tool_muprog'));
 

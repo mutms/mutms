@@ -198,7 +198,7 @@ class renderer extends \plugin_renderer_base {
         $table = new \html_table();
         $table->head = [get_string('item', 'tool_muprog'), get_string('sequencetype', 'tool_muprog')];
         $table->id = 'program_content';
-        $table->attributes['class'] = 'admintable generaltable';
+        $table->attributes['class'] = 'table table-striped table-hover table-bordered';
         $table->data = $rows;
 
         return \html_writer::table($table);
