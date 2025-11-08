@@ -56,9 +56,11 @@ How to create supervisors:
 5. Add team members
 6. Teams are visible in user profiles
 
-## Planned features
+## Roadmap
 
-* Notification of related users in programs and certifications
-* Approvals by related users in programs allocations and certification assignments
-* Additional/temporary supervisors
-* Report builder content restrictions
+* Target for production release and availability of paid support: Q2 2026
+* Planned features:
+   * Notification of related users in programs and certifications
+   * Approvals by related users in programs allocations and certification assignments
+   * Additional/temporary supervisors
+   * Report builder content restrictions
