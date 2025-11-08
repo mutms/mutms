@@ -238,7 +238,7 @@ class renderer extends \plugin_renderer_base {
             get_string('completiondate', 'tool_muprog'),
         ];
         $table->id = 'program_content';
-        $table->attributes['class'] = 'admintable generaltable';
+        $table->attributes['class'] = 'table table-striped table-hover table-bordered';
         $table->data = $rows;
 
         $result = $this->output->heading(get_string('tabcontent', 'tool_muprog'), 3);
@@ -288,7 +288,7 @@ class renderer extends \plugin_renderer_base {
         $table->head = [get_string('programname', 'tool_muprog'), get_string('programstatus', 'tool_muprog'),
             get_string('programstart', 'tool_muprog'), get_string('programdue', 'tool_muprog'),
             get_string('programend', 'tool_muprog')];
-        $table->attributes['class'] = 'admintable generaltable';
+        $table->attributes['class'] = 'table table-striped';
         $table->data = $data;
         return \html_writer::table($table);
     }

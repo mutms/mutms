@@ -1,5 +1,5 @@
 @tool @tool_muprog @MuTMS @javascript
-Feature: Programs plugin English documentation image generator
+Feature: Programs plugin English wiki documentation image generator
 
   Background:
     Given site is prepared for documentation screenshots
@@ -100,7 +100,7 @@ Feature: Programs plugin English documentation image generator
     Given I log in as "manager"
     And I am on the "tool_muprog > All programs management" page
 
-    Then I make documentation screenshot "programs.png" for "tool_muprog" plugin
+    Then I make documentation screenshot "img_programs.png" for "tool_muprog" plugin
     And site is restored after documentation screenshots
 
   Scenario: Documentation screenshots for management_program page
@@ -108,7 +108,7 @@ Feature: Programs plugin English documentation image generator
     And I am on the "tool_muprog > All programs management" page
     And I follow "Advanced First Aid"
 
-    Then I make documentation screenshot "program_general.png" for "tool_muprog" plugin
+    Then I make documentation screenshot "img_program_general.png" for "tool_muprog" plugin
     And site is restored after documentation screenshots
 
   Scenario: Documentation screenshots for management_program_content page
@@ -117,7 +117,7 @@ Feature: Programs plugin English documentation image generator
     And I follow "Basic First Aid"
     And I click on "Content" "link" in the ".nav-tabs" "css_element"
 
-    Then I make documentation screenshot "program_content.png" for "tool_muprog" plugin
+    Then I make documentation screenshot "img_program_content.png" for "tool_muprog" plugin
     And site is restored after documentation screenshots
 
   Scenario: Documentation screenshots for management_program_visibility page
@@ -126,7 +126,7 @@ Feature: Programs plugin English documentation image generator
     And I follow "Motorcycle Track Days"
     And I click on "Catalogue visibility" "link" in the ".nav-tabs" "css_element"
 
-    Then I make documentation screenshot "program_visibility.png" for "tool_muprog" plugin
+    Then I make documentation screenshot "img_program_visibility.png" for "tool_muprog" plugin
     And site is restored after documentation screenshots
 
   Scenario: Documentation screenshots for management_program_allocation page
@@ -151,7 +151,7 @@ Feature: Programs plugin English documentation image generator
     And I click on "Update scheduling" "button" in the ".modal-dialog" "css_element"
     And I change window size to "1208x900"
 
-    Then I make documentation screenshot "program_allocation.png" for "tool_muprog" plugin
+    Then I make documentation screenshot "img_program_allocation.png" for "tool_muprog" plugin
     And site is restored after documentation screenshots
 
   Scenario: Documentation screenshots for management_program_users page
@@ -160,7 +160,7 @@ Feature: Programs plugin English documentation image generator
     And I follow "Basic First Aid"
     And I click on "Users" "link" in the ".nav-tabs" "css_element"
 
-    Then I make documentation screenshot "program_users.png" for "tool_muprog" plugin
+    Then I make documentation screenshot "img_program_users.png" for "tool_muprog" plugin
     And site is restored after documentation screenshots
 
   Scenario: Documentation screenshots for progams management_allocation page
@@ -171,17 +171,17 @@ Feature: Programs plugin English documentation image generator
     And I follow "User B"
     And I change window size to "1208x1100"
 
-    Then I make documentation screenshot "allocation.png" for "tool_muprog" plugin
+    Then I make documentation screenshot "img_allocation.png" for "tool_muprog" plugin
     And site is restored after documentation screenshots
 
   Scenario: Documentation screenshots for My programs profile page
     Given I log in as "c"
     And I am on the "tool_muprog > My programs" page
 
-    Then I make documentation screenshot "profile_my_programs.png" for "tool_muprog" plugin
+    Then I make documentation screenshot "img_profile_my_programs.png" for "tool_muprog" plugin
     And I follow "Motorcycle Maintenance for Beginners"
     And I change window size to "1208x1000"
-    Then I make documentation screenshot "profile_my_program.png" for "tool_muprog" plugin
+    Then I make documentation screenshot "img_profile_my_program.png" for "tool_muprog" plugin
     And site is restored after documentation screenshots
 
   Scenario: Documentation screenshots for My programs block
@@ -200,7 +200,7 @@ Feature: Programs plugin English documentation image generator
     And I click on "Delete" "button" in the "Delete block?" "dialogue"
     And I add the "My programs" block to the "content" region
     And I turn editing mode off
-    Then I make documentation screenshot "dashboard_my_programs.png" for "tool_muprog" plugin
+    Then I make documentation screenshot "img_dashboard_my_programs.png" for "tool_muprog" plugin
     And site is restored after documentation screenshots
 
   Scenario: Documentation screenshots for Program catalogue page
@@ -208,5 +208,5 @@ Feature: Programs plugin English documentation image generator
     And I am on the "tool_muprog > My programs" page
     And I follow "Program catalogue"
 
-    Then I make documentation screenshot "catalogue.png" for "tool_muprog" plugin
+    Then I make documentation screenshot "img_catalogue.png" for "tool_muprog" plugin
     And site is restored after documentation screenshots

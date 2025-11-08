@@ -55,7 +55,7 @@ require_capability('tool/muprog:view', $context);
 $currenturl = new moodle_url('/admin/tool/muprog/management/program_content.php', ['id' => $id]);
 
 management::setup_program_page($currenturl, $context, $program, 'program_content');
-\tool_mulib\local\plugindocs::set_path('tool_muprog', 'management_program_content.md');
+$PAGE->set_docs_path('https://github.com/mutms/moodle-tool_muprog/wiki/Program-content');
 
 if ($autofix && !$program->archived) {
     require_sesskey();
