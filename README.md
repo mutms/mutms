@@ -19,3 +19,7 @@ Instead of switching users within the same session, it introduces an option to l
 - For security reasons, the generated log in as link expires after fifteen seconds, which may not be optional for accessibility.
 - This feature may not be compatible with mobile phone and tablet browsers.
 - Test coverage is minimal due to the inability to test Incognito sessions in Behat.
+
+## Roadmap
+
+* Target for production release and availability of paid support: Q2 2026
