@@ -1,5 +1,14 @@
 # Changelog
 
+## mu-5.0.3-02
+
+Release date: 08/11/2025
+
+* Added \tool_mulib\local\mulib::clean_string() to help with Mustache double encoding
+* Plugin documentation was move to GitHub wikis and removed Parsedown library
+* Added support for outline AJAX form buttons. 
+* Fixed rendering of actions dropdown.
+
 ## mu-5.0.3-01
 
 Release date: 06/10/2025
@@ -30,6 +39,6 @@ Release date: 09/08/2025
 
 ## mu-5.0.1-01
 
-Release date: xx/xx/2025
+Release date: 30/06/2025
 
 * Fixed compatibility with Moodle 5.0.1 release.

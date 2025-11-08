@@ -56,4 +56,32 @@ final class mulib_test extends \advanced_testcase {
         \tool_mutenancy\local\tenancy::activate();
         $this->assertTrue(mulib::is_mutenancy_active());
     }
+
+    /**
+     * Test conversion of dangerous characters and named entities to numeric entities.
+     */
+    public function test_clean_string(): void {
+        $string = 'Žluťoučký koníček <tag> "test" \'example\' & escaped &amp; &lt; &gt; &quot; ';
+        $cleaned = mulib::clean_string($string);
+
+        $this->assertSame(
+            'Žluťoučký koníček &#60;tag&#62; &#34;test&#34; &#39;example&#39; &#38; escaped &#38; &#60; &#62; &#34; ',
+            $cleaned
+        );
+
+        // Repeated cleaning does not change result.
+        $this->assertSame($cleaned, mulib::clean_string($cleaned));
+
+        // Function s() does not modify it.
+        $this->assertSame($cleaned, s($cleaned));
+
+        // Function format_string() does not modify it.
+        $this->assertSame($cleaned, format_string($cleaned));
+
+        // Function clean_text() does not remove data.
+        $this->assertSame($cleaned, mulib::clean_string(clean_text($cleaned)));
+
+        // It can be converted back to raw UTF-8 characters.
+        $this->assertSame(\core_text::entities_to_utf8($string), \core_text::entities_to_utf8($cleaned));
+    }
 }
