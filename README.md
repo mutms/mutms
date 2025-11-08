@@ -19,3 +19,7 @@ This plugin is a fork of [Training value custom field by Open LMS](https://githu
 and exists thanks to Open LMS's decision to release it to the public under the GPL 3.0 license.
 
 MuTMS suite of plugins is not associated with Moodle HQ or Open LMS in any way.
+
+## Roadmap
+
+* Target for production release and availability of paid support: Q2 2026
