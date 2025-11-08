@@ -310,7 +310,7 @@ class behat_tool_mulib extends behat_base {
         $DB->set_field('course', 'shortname', 'MuTMS', ['category' => 0]);
         $DB->set_field('course', 'fullname', 'MuTMS test site', ['category' => 0]);
 
-        if (defined('BEHAT_MULIB_UPDATE_SCREENSHOTS') && BEHAT_MULIB_UPDATE_SCREENSHOTS) {
+        if (defined('BEHAT_MUTMS_UPDATE_WIKI_SCREENSHOTS') && BEHAT_MUTMS_UPDATE_WIKI_SCREENSHOTS) {
             // Hide theme footer only if actually taking the screenshot.
             purge_all_caches();
             $this->getSession()->reload();
@@ -328,7 +328,7 @@ class behat_tool_mulib extends behat_base {
      * @Then site is restored after documentation screenshots
      */
     public function restore_for_documentation_screenshots() {
-        if (defined('BEHAT_MULIB_UPDATE_SCREENSHOTS') && BEHAT_MULIB_UPDATE_SCREENSHOTS) {
+        if (defined('BEHAT_MUTMS_UPDATE_WIKI_SCREENSHOTS') && BEHAT_MUTMS_UPDATE_WIKI_SCREENSHOTS) {
             // Undo hiding of footer to prevent other tests from failing.
             set_config('scss', '', 'theme_boost');
             purge_all_caches();
@@ -341,7 +341,7 @@ class behat_tool_mulib extends behat_base {
     /**
      * Take screenshot for and save it as image for plugin documentation.
      *
-     * NOTE: does nothing if BEHAT_MULIB_UPDATE_SCREENSHOTS not defined in config
+     * NOTE: does nothing if BEHAT_MUTMS_UPDATE_WIKI_SCREENSHOTS not defined in config
      *
      * @When I make documentation screenshot :image for :plugin plugin
      *
@@ -350,18 +350,14 @@ class behat_tool_mulib extends behat_base {
      * @return void
      */
     public function create_documentation_screenshot(string $image, string $plugin) {
-        if (!defined('BEHAT_MULIB_UPDATE_SCREENSHOTS') || !BEHAT_MULIB_UPDATE_SCREENSHOTS) {
+        if (!defined('BEHAT_MUTMS_UPDATE_WIKI_SCREENSHOTS') || !BEHAT_MUTMS_UPDATE_WIKI_SCREENSHOTS) {
             return;
         }
         $basedir = core_component::get_component_directory($plugin);
-        if (!file_exists("$basedir/docs/en")) {
-            throw new Exception('Plugin does not have docs directory');
-        }
-        $imagedir = "$basedir/docs/en/img";
-        if (!file_exists($imagedir)) {
-            mkdir($imagedir);
+        if (!file_exists("$basedir/wiki")) {
+            mkdir("$basedir/wiki");
         }
 
-        file_put_contents("$imagedir/$image", $this->getSession()->getScreenshot());
+        file_put_contents("$basedir/wiki/$image", $this->getSession()->getScreenshot());
     }
 }

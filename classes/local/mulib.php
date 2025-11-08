@@ -49,4 +49,42 @@ final class mulib {
         }
         return \tool_mutenancy\local\tenancy::is_active();
     }
+
+    /**
+     * Encode all dangerous characters and named html entities as
+     * numeric html entities.
+     *
+     * The result of this function can be used safely in both {{ }} and {{{ }}} tags in Mustache templates
+     * because it is not modified by s() function and it is equivalent to htmlentities() escaping.
+     *
+     * @param string|null $string
+     * @return string|null html string without any tags or dangerous characters
+     */
+    public static function clean_string(?string $string): ?string {
+        if ($string === null || $string === '') {
+            return $string;
+        }
+
+        $replace = [
+            '"' => '&#34;',
+            '\'' => '&#39;',
+            '<' => '&#60;',
+            '>' => '&#62;',
+        ];
+        $string = strtr($string, $replace);
+        $string = preg_replace('/&(?![a-zA-Z0-9#]{1,8};)/', '&#38;', $string);
+
+        static $translationtable = null;
+
+        if (!isset($translationtable)) {
+            $translationtable = [];
+            // NOTE: do not use ENT_HTML5 here because it adds way too many items.
+            $entities = get_html_translation_table(HTML_ENTITIES, ENT_COMPAT | ENT_HTML401, 'UTF-8');
+            foreach ($entities as $char => $entity) {
+                $translationtable[$entity] = '&#' . \IntlChar::ord($char) . ';';
+            }
+        }
+
+        return strtr($string, $translationtable);
+    }
 }

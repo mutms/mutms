@@ -21,46 +21,23 @@ namespace tool_mulib\local;
 /**
  * Plugin documentation helper.
  *
+ * @deprecated
+ *
  * @package     tool_mulib
  * @copyright   2025 Petr Skoda
  * @license     https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class plugindocs {
-    /** @var string file argument validation regex */
-    public const FILE_REGEX = '#^[a-z0-9_/]+\.(png|md)$#';
-
     /**
-     * Add page documentation link.
+     * Set GitHub wiki links directly.
+     *
+     * @deprecated
      *
      * @param string $component
      * @param string $file
      * @return void
      */
     public static function set_path(string $component, string $file): void {
-        global $PAGE, $CFG;
-
-        if (str_contains($file, '-')) {
-            debugging('plugin docs file name cannot contain "-" character', DEBUG_DEVELOPER);
-            return;
-        }
-        $plugindir = \core_component::get_component_directory($component);
-        if (!file_exists("$plugindir/docs/en/$file")) {
-            debugging('plugin docs file does not exist: ' . $file, DEBUG_DEVELOPER);
-        }
-
-        $PAGE->set_docs_path("$CFG->wwwroot/admin/tool/mulib/plugindocs.php/$component/$file");
-    }
-
-    /**
-     * Render markdown file content to make it look the same as on GitHub.
-     *
-     * @param string $text
-     * @return string
-     */
-    public static function render_github_markdown(string $text): string {
-        require_once(__DIR__ . '/../../vendor/autoload.php');
-
-        $parsedown = new \Parsedown();
-        return $parsedown->text($text);
+        debugging('plugindocs feature was removed', DEBUG_DEVELOPER);
     }
 }

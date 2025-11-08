@@ -107,15 +107,19 @@ return false;";
      *
      * @param bool $primary
      * @param bool $useicon
+     * @param bool $outline
      * @return button
      */
-    public function create_button(bool $primary = false, bool $useicon = false): button {
+    public function create_button(bool $primary = false, bool $useicon = false, bool $outline = false): button {
         $button = new button($this->formurl, $this->label, $primary);
         $button->set_form_size($this->formsize);
         $button->set_submitted_action($this->formsubmittedaction);
         $button->set_modal_title($this->modaltitle);
         if ($useicon && $this->icon) {
             $button->set_icon($this->icon);
+        }
+        if ($outline) {
+            $button->set_outline(true);
         }
         return $button;
     }
