@@ -45,9 +45,12 @@ and [Wiki pages](https://github.com/mutms/moodle-tool_mucertify/wiki) for more i
 This plugin is a fork of [Certifications by Open LMS](https://github.com/open-lms-open-source/moodle-tool_certify)
 and exists thanks to Open LMS's decision to release it to the public under the GPL 3.0 license.
 
-Note that the current code is still under development and is not suitable for production use.
-If you require a stable version for a production environment or commercial support,
-please consider [Open LMS Work](https://www.openlms.net/open-lms-work/).
+MuTMS suite of plugins is not associated with Moodle HQ or Open LMS in any way.
 This plugin is not suitable for existing customers of Open LMS due to the lack of upgrade path.
 
-MuTMS suite of plugins is not associated with Moodle HQ or Open LMS in any way.
+## Roadmap
+
+* Target for production release and availability of paid support: Q2 2026
+* Planned features:
+    * integration of Supervisors and teams plugin for notifications and approvals
+    * integration of Universal catalogue plugin

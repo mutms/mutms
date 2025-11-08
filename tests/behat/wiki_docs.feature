@@ -1,5 +1,5 @@
 @tool @tool_mucertify @MuTMS @javascript
-Feature: Certifications plugin English documentation image generator
+Feature: Certifications plugin English wiki documentation image generator
 
   Background:
     Given site is prepared for documentation screenshots
@@ -65,7 +65,7 @@ Feature: Certifications plugin English documentation image generator
     Given I log in as "manager"
     And I am on the "tool_mucertify > All certifications management" page
 
-    Then I make documentation screenshot "certifications.png" for "tool_mucertify" plugin
+    Then I make documentation screenshot "img_certifications.png" for "tool_mucertify" plugin
     And site is restored after documentation screenshots
 
   Scenario: Documentation screenshots for management_certification page
@@ -73,7 +73,7 @@ Feature: Certifications plugin English documentation image generator
     And I am on the "tool_mucertify > All certifications management" page
     And I follow "Health and safety"
 
-    Then I make documentation screenshot "certification_general.png" for "tool_mucertify" plugin
+    Then I make documentation screenshot "img_certification_general.png" for "tool_mucertify" plugin
     And site is restored after documentation screenshots
 
   Scenario: Documentation screenshots for management_certification_settings page
@@ -96,7 +96,7 @@ Feature: Certifications plugin English documentation image generator
     And I click on "Update re-certification" "button" in the ".modal-dialog" "css_element"
     And I change window size to "1208x1000"
 
-    Then I make documentation screenshot "certification_settings.png" for "tool_mucertify" plugin
+    Then I make documentation screenshot "img_certification_settings.png" for "tool_mucertify" plugin
     And site is restored after documentation screenshots
 
   Scenario: Documentation screenshots for management_certification_visibility page
@@ -105,7 +105,7 @@ Feature: Certifications plugin English documentation image generator
     And I follow "Cybersecurity"
     And I follow "Catalogue visibility"
 
-    Then I make documentation screenshot "certification_visibility.png" for "tool_mucertify" plugin
+    Then I make documentation screenshot "img_certification_visibility.png" for "tool_mucertify" plugin
     And site is restored after documentation screenshots
 
   Scenario: Documentation screenshots for management_certification_assignment page
@@ -119,7 +119,7 @@ Feature: Certifications plugin English documentation image generator
       | Assign to cohorts | All employees |
     And I click on "Update" "button" in the ".modal-dialog" "css_element"
 
-    Then I make documentation screenshot "certification_assignment.png" for "tool_mucertify" plugin
+    Then I make documentation screenshot "img_certification_assignment.png" for "tool_mucertify" plugin
     And site is restored after documentation screenshots
 
   Scenario: Documentation screenshots for management_certification_users page
@@ -160,25 +160,25 @@ Feature: Certifications plugin English documentation image generator
     And I click on "Override period dates" "button" in the ".modal-dialog" "css_element"
 
     When I follow "Users"
-    Then I make documentation screenshot "certification_users.png" for "tool_mucertify" plugin
+    Then I make documentation screenshot "img_certification_users.png" for "tool_mucertify" plugin
 
     When I follow "User A"
     And I change window size to "1208x1000"
-    Then I make documentation screenshot "assignment.png" for "tool_mucertify" plugin
+    Then I make documentation screenshot "img_assignment.png" for "tool_mucertify" plugin
     And I change window size to "1208x780"
 
     When I log in as "a"
     And I am on the "tool_mucertify > My certifications" page
-    Then I make documentation screenshot "profile_my_certifications.png" for "tool_mucertify" plugin
+    Then I make documentation screenshot "img_profile_my_certifications.png" for "tool_mucertify" plugin
 
     When I follow "Health and safety"
     And I change window size to "1208x1000"
-    Then I make documentation screenshot "profile_my_certification.png" for "tool_mucertify" plugin
+    Then I make documentation screenshot "img_profile_my_certification.png" for "tool_mucertify" plugin
     And I change window size to "1208x780"
 
     When I am on the "tool_mucertify > My certifications" page
     And I follow "Certification catalogue"
-    Then I make documentation screenshot "catalogue.png" for "tool_mucertify" plugin
+    Then I make documentation screenshot "img_catalogue.png" for "tool_mucertify" plugin
 
     When I skip tests if "block_mucertify_my" is not installed
     And I follow "Dashboard"
@@ -194,6 +194,6 @@ Feature: Certifications plugin English documentation image generator
     And I click on "Delete" "button" in the "Delete block?" "dialogue"
     And I add the "My certifications" block to the "content" region
     And I turn editing mode off
-    Then I make documentation screenshot "dashboard_my_certifications.png" for "tool_mucertify" plugin
+    Then I make documentation screenshot "img_dashboard_my_certifications.png" for "tool_mucertify" plugin
 
     And site is restored after documentation screenshots
