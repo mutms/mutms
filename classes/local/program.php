@@ -253,6 +253,22 @@ final class program {
 
         util::fix_muprog_active();
 
+        if (!empty($data->addsources) && is_array($data->addsources)) {
+            foreach ($data->addsources as $sourcetype => $addsource) {
+                if (!$addsource) {
+                    continue;
+                }
+                $classname = allocation::get_source_classname($sourcetype);
+                if ($classname && $classname::is_new_allowed_in_new()) {
+                    $classname::update_source((object)[
+                        'programid' => $program->id,
+                        'type' => $sourcetype,
+                        'enable' => 1,
+                    ]);
+                }
+            }
+        }
+
         allocation::fix_allocation_sources($program->id, null);
         allocation::fix_enrol_instances($program->id);
         allocation::fix_user_enrolments($program->id, null);

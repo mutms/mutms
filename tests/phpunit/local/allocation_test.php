@@ -24,6 +24,7 @@ use tool_muprog\local\content\set;
 use tool_muprog\local\source\manual;
 use tool_muprog\local\allocation;
 use tool_muprog\local\program;
+use tool_mulib\local\mulib;
 
 /**
  * Program allocation helper test.
@@ -1196,7 +1197,7 @@ final class allocation_test extends \advanced_testcase {
     public function test_get_my_allocations_tenant(): void {
         global $DB;
 
-        if (!\tool_muprog\local\util::is_mutenancy_available()) {
+        if (!mulib::is_mutenancy_available()) {
             $this->markTestSkipped('tenant support not available');
         }
 

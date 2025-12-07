@@ -26,6 +26,7 @@ use tool_mucertify\local\period;
 use tool_mucertify\local\source\manual;
 use tool_muprog\local\course_reset;
 use tool_muprog\local\program;
+use tool_muprog\local\source\mucertify;
 
 /**
  * Certifications program source test.
@@ -49,17 +50,25 @@ final class mucertify_test extends \advanced_testcase {
     }
 
     public function test_get_type(): void {
-        $this->assertSame('mucertify', \tool_muprog\local\source\mucertify::get_type());
+        $this->assertSame('mucertify', mucertify::get_type());
     }
 
     public function test_is_new_allowed(): void {
         $program = new stdClass();
-        $this->assertSame(true, \tool_muprog\local\source\mucertify::is_new_allowed($program));
+        $this->assertTrue(mucertify::is_new_allowed($program));
+        set_config('source_mucertify_allownew', 0, 'tool_muprog');
+        $this->assertFalse(mucertify::is_new_allowed($program));
+    }
+
+    public function test_is_new_allowed_in_new(): void {
+        $this->assertTrue(mucertify::is_new_allowed_in_new());
+        set_config('source_mucertify_allownew', 0, 'tool_muprog');
+        $this->assertFalse(mucertify::is_new_allowed_in_new());
     }
 
     public function test_is_update_allowed(): void {
         $program = new stdClass();
-        $this->assertSame(true, \tool_muprog\local\source\mucertify::is_update_allowed($program));
+        $this->assertSame(true, mucertify::is_update_allowed($program));
     }
 
     public function test_is_allocation_update_possible(): void {

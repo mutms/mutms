@@ -24,6 +24,7 @@ use core_external\external_value;
 use core_external\external_api;
 use core_external\external_multiple_structure;
 use core_external\external_single_structure;
+use tool_mulib\local\mulib;
 
 /**
  * Provides list of programs based on search parameters.
@@ -83,7 +84,7 @@ final class get_programs extends external_api {
                 throw new \invalid_parameter_exception('Invalid duplicate field name: ' . $field);
             }
             if ($field === 'tenantid') {
-                if (!\tool_muprog\local\util::is_mutenancy_active()) {
+                if (!mulib::is_mutenancy_active()) {
                     throw new \invalid_parameter_exception('Invalid field name: ' . $field);
                 }
                 if ($value === null) {

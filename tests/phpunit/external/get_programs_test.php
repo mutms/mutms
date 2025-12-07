@@ -19,6 +19,8 @@
 
 namespace tool_muprog\phpunit\external;
 
+use tool_mulib\local\mulib;
+
 /**
  * External API for get program list
  *
@@ -254,7 +256,7 @@ final class get_programs_test extends \advanced_testcase {
     }
 
     public function test_execute_tenants(): void {
-        if (!\tool_muprog\local\util::is_mutenancy_available()) {
+        if (!mulib::is_mutenancy_available()) {
             $this->markTestSkipped('tenant support not available');
         }
 

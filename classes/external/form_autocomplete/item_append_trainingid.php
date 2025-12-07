@@ -15,11 +15,15 @@
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 // phpcs:disable moodle.Files.BoilerplateComment.CommentEndedTooSoon
+// phpcs:disable moodle.Files.LineLength.TooLong
 
 namespace tool_muprog\external\form_autocomplete;
 
 use core_external\external_function_parameters;
 use core_external\external_value;
+use tool_mulib\local\sql;
+use tool_mulib\local\context_map;
+use tool_mulib\local\mulib;
 
 /**
  * Provides list of candidates for adding frameworks to program.
@@ -50,25 +54,22 @@ final class item_append_trainingid extends \tool_mulib\external\form_autocomplet
     }
 
     /**
-     * Finds users with the identity matching the given query.
+     * Finds candidates for adding training frameworks to program.
      *
      * @param string $query The search request.
      * @param int $programid The framework.
      * @return array
      */
     public static function execute(string $query, int $programid): array {
-        global $DB;
+        global $DB, $USER;
 
         [
             'query' => $query,
             'programid' => $programid,
-        ] = self::validate_parameters(
-            self::execute_parameters(),
-            [
-                'query' => $query,
-                'programid' => $programid,
-            ]
-        );
+        ] = self::validate_parameters(self::execute_parameters(), [
+            'query' => $query,
+            'programid' => $programid,
+        ]);
 
         $program = $DB->get_record('tool_muprog_program', ['id' => $programid], '*', MUST_EXIST);
 
@@ -77,44 +78,47 @@ final class item_append_trainingid extends \tool_mulib\external\form_autocomplet
         self::validate_context($context);
         require_capability('tool/muprog:edit', $context);
 
-        if (!\tool_muprog\local\util::is_mutrain_available()) {
+        if (!mulib::is_mutrain_available()) {
             throw new \core\exception\coding_exception('mutrain is not available');
         }
 
-        $params = ['programid' => $programid];
-        $tenantselect = '';
-        if (\tool_muprog\local\util::is_mutenancy_active()) {
-            $targetprogramtenantid = $DB->get_field('context', 'tenantid', ['id' => $context->id]);
-            if ($targetprogramtenantid) {
-                $tenantselect = "AND (c.tenantid = :tenantid OR c.tenantid IS NULL)";
-                $params['tenantid'] = $targetprogramtenantid;
+        $sql = (
+            new sql(
+                "SELECT f.id, f.name
+                   FROM {tool_mutrain_framework} f
+                   /* capsubquery */
+                   /* tenantjoin */
+                  WHERE f.archived = 0 /* capwhere */ /* searchsql */
+               ORDER BY f.name ASC"
+            )
+        )
+            ->replace_comment(
+                'capsubquery',
+                context_map::get_contexts_by_capability_query(
+                    'tool/mutrain:viewframeworks',
+                    $USER->id,
+                    new sql("(ctx.contextlevel = ? OR ctx.contextlevel = ?)", [\context_system::LEVEL, \context_coursecat::LEVEL])
+                )->wrap("LEFT JOIN (", ")capctx ON capctx.id = f.contextid")
+            )
+            ->replace_comment(
+                'capwhere',
+                new sql("AND (f.publicaccess = 1 OR capctx.id IS NOT NULL)")
+            )
+            ->replace_comment(
+                'searchsql',
+                self::get_search_query($query, ['name', 'idnumber'], 'f')->wrap('AND ', '')
+            );
+
+        if (mulib::is_mutenancy_active()) {
+            if ($context->tenantid) {
+                $sql = $sql->replace_comment(
+                    'tenantjoin',
+                    new sql("JOIN {context} tctx ON tctx.id = f.contextid AND (tctx.tenantid = ? OR tctx.tenantid IS NULL)", [$context->tenantid])
+                );
             }
         }
 
-        $sql = "SELECT f.id, f.name, f.idnumber, f.archived, f.contextid, f.publicaccess
-                  FROM {tool_mutrain_framework} f
-                  JOIN {context} c ON c.id = f.contextid
-                 WHERE f.archived = 0
-                       $tenantselect
-              ORDER BY f.name ASC";
-        $frameworks = $DB->get_records_sql($sql, $params);
-
-        foreach ($frameworks as $id => $framework) {
-            if ($query) {
-                if (!str_contains($framework->name, $query) && !str_contains($framework->idnumber ?? '', $query)) {
-                    unset($frameworks[$id]);
-                    continue;
-                }
-            }
-            if (!$framework->publicaccess) {
-                $context = \context::instance_by_id($framework->contextid);
-                if (!has_capability('tool/mutrain:viewframeworks', $context)) {
-                    unset($frameworks[$id]);
-                    continue;
-                }
-            }
-        }
-
+        $frameworks = $DB->get_records_sql($sql->sql, $sql->params, 0, self::MAX_RESULTS);
         return self::prepare_result($frameworks, $context);
     }
 

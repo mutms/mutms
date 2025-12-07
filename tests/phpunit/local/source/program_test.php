@@ -52,6 +52,10 @@ final class program_test extends \advanced_testcase {
         $this->assertFalse(\tool_muprog\local\source\program::is_new_allowed($program));
     }
 
+    public function test_is_new_allowed_in_new(): void {
+        $this->assertFalse(\tool_muprog\local\source\program::is_new_allowed_in_new());
+    }
+
     public function test_fix_allocations(): void {
         global $DB;
 

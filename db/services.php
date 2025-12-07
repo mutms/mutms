@@ -93,6 +93,13 @@ $functions = [
         'ajax' => true,
         'loginrequired' => true,
     ],
+    'tool_muprog_form_autocomplete_source_extdb_edit_queryid' => [
+        'classname' => \tool_muprog\external\form_autocomplete\source_extdb_edit_queryid::class,
+        'description' => 'Return list of candidate queries for allocation based on other external database.',
+        'type' => 'read',
+        'ajax' => true,
+        'loginrequired' => true,
+    ],
     // Real web services follow.
     'tool_muprog_get_programs' => [
         'classname' => tool_muprog\external\get_programs::class,

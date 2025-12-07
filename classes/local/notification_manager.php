@@ -33,7 +33,7 @@ final class notification_manager extends \tool_mulib\local\notification\manager 
     /**
      * Returns list of all notifications in plugin.
      *
-     * @return array of PHP class names with notificationtype as keys
+     * @return class-string<\tool_muprog\local\notification\base>[] of PHP class names with notificationtype as keys
      */
     public static function get_all_types(): array {
         // Note: order here affects cron task execution.
@@ -70,8 +70,6 @@ final class notification_manager extends \tool_mulib\local\notification\manager 
             unset($types[$notification->notificationtype]);
         }
 
-        // phpcs:ignore moodle.Commenting.InlineComment.TypeHintingForeach
-        /** @var class-string<notification\base> $classname */
         foreach ($types as $type => $classname) {
             $types[$type] = $classname::get_name();
         }
@@ -83,12 +81,13 @@ final class notification_manager extends \tool_mulib\local\notification\manager 
      * Returns context of instance for notifications.
      *
      * @param int $instanceid
+     * @param int $strictness
      * @return null|\context
      */
-    public static function get_instance_context(int $instanceid): ?\context {
+    public static function get_instance_context(int $instanceid, int $strictness = MUST_EXIST): ?\context {
         global $DB;
 
-        $program = $DB->get_record('tool_muprog_program', ['id' => $instanceid]);
+        $program = $DB->get_record('tool_muprog_program', ['id' => $instanceid], '*', MUST_EXIST);
         if (!$program) {
             return null;
         }
@@ -149,30 +148,30 @@ final class notification_manager extends \tool_mulib\local\notification\manager 
      * Returns url of UI that shows all plugin notifications for given instance id.
      *
      * @param int $instanceid
-     * @return \moodle_url|null
+     * @return \core\url
      */
-    public static function get_instance_management_url(int $instanceid): ?\moodle_url {
+    public static function get_instance_management_url(int $instanceid): \core\url {
         global $DB;
         $program = $DB->get_record('tool_muprog_program', ['id' => $instanceid]);
         if (!$program) {
-            return null;
+            return new \core\url('/');
         }
 
         $context = \context::instance_by_id($program->contextid);
         if (!has_capability('tool/muprog:view', $context)) {
-            return null;
+            return new \core\url('/');
         }
 
-        return new \moodle_url('/admin/tool/muprog/management/program_notifications.php', ['id' => $program->id]);
+        return new \core\url('/admin/tool/muprog/management/program_notifications.php', ['id' => $program->id]);
     }
 
     /**
      * Set up notification/view.php page.
      *
-     * @param \stdClass $notification
+     * @param stdClass $notification
      * @return void
      */
-    public static function setup_view_page(\stdClass $notification): void {
+    public static function setup_view_page(stdClass $notification): void {
         global $PAGE, $DB, $OUTPUT;
 
         $program = $DB->get_record('tool_muprog_program', ['id' => $notification->instanceid]);
@@ -216,8 +215,6 @@ final class notification_manager extends \tool_mulib\local\notification\manager 
         }
 
         $types = self::get_all_types();
-
-        /** @var class-string<notification\base> $classname */
         foreach ($types as $classname) {
             $classname::notify_users($program, $user);
         }
@@ -226,10 +223,10 @@ final class notification_manager extends \tool_mulib\local\notification\manager 
     /**
      * To be called when deleting program allocation.
      *
-     * @param \stdClass $allocation
+     * @param stdClass $allocation
      * @return void
      */
-    public static function delete_allocation_notifications(\stdClass $allocation) {
+    public static function delete_allocation_notifications(stdClass $allocation) {
         global $DB;
 
         if (!property_exists($allocation, 'sourceid')) {
@@ -254,10 +251,10 @@ final class notification_manager extends \tool_mulib\local\notification\manager 
     /**
      * To be called when deleting program.
      *
-     * @param \stdClass $program
+     * @param stdClass $program
      * @return void
      */
-    public static function delete_program_notifications(\stdClass $program) {
+    public static function delete_program_notifications(stdClass $program) {
         global $DB;
 
         if (!property_exists($program, 'publicaccess')) {

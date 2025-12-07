@@ -185,7 +185,7 @@ final class notification_manager_test extends \advanced_testcase {
         );
 
         $this->setUser($user2);
-        $this->assertSame(null, notification_manager::get_instance_management_url($program1->id));
+        $this->assertSame('/', notification_manager::get_instance_management_url($program1->id)->out_as_local_url());
 
         $this->setAdminUser();
         $this->assertSame(

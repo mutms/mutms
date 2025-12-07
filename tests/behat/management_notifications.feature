@@ -96,6 +96,54 @@ Feature: Program notifications management tests
     And I follow "User deallocated"
     And I press "Back"
 
+  @javascript @tool_murelation
+  Scenario: Manager enables cc supervisors for notification in a program
+    Given I skip tests if "tool_murelation" is not installed
+    And the following "tool_murelation > frameworks" exist:
+      | name        | idnumber | uimode      | supervisortitle | supervisorstitle | subordinatetitle | subordinatestitle |
+      | Framework 1 | fw1      | supervisors | Ucitel          | Ucitele          | Zak              | Zaci              |
+      | Framework 2 | fw2      | teams       | Velitel         | Velitele         | Pesak            | Pesaci            |
+    And I log in as "manager1"
+    And I am on the "tool_muprog > All programs management" page
+
+    And I click on "Add program" "button"
+    And I set the following fields in the ".modal-dialog" "css_element" to these values:
+      | Program name  | Program 001 |
+      | Program ID    | PR01        |
+    And I click on "Add program" "button" in the ".modal-dialog" "css_element"
+    And I follow "Notifications"
+
+    When I click on "Add notification" "link"
+    And I set the following fields in the ".modal-dialog" "css_element" to these values:
+      | Enabled                 | 1                    |
+      | User allocated          | 1                    |
+      | User deallocated        | 1                    |
+      | Send copy to supervisor | Ucitel (Framework 1) |
+    And I click on "Add notification" "button" in the ".modal-dialog" "css_element"
+    Then the following should exist in the "tool_muprog_notifications" table:
+      | Notification            | Send copy to supervisor | Customised | Enabled |
+      | User allocated          | Ucitel (Framework 1)    | No         | Yes     |
+      | User deallocated        | Ucitel (Framework 1)    | No         | Yes     |
+    And I follow "User allocated"
+
+    When I press "Update notification"
+    And I set the following fields in the ".modal-dialog" "css_element" to these values:
+      | Send copy to supervisor | Velitel (Framework 2) |
+    And I click on "Update notification" "button" in the ".modal-dialog" "css_element"
+    Then I should see "Velitel (Framework 2)" in the "Send copy to supervisor" definition list item
+
+    When I press "Update notification"
+    And I set the following fields in the ".modal-dialog" "css_element" to these values:
+      | Send copy to supervisor | No |
+    And I click on "Update notification" "button" in the ".modal-dialog" "css_element"
+    Then I should see "No" in the "Send copy to supervisor" definition list item
+
+    When I press "Back"
+    Then the following should exist in the "tool_muprog_notifications" table:
+      | Notification            | Send copy to supervisor | Customised | Enabled |
+      | User allocated          | No                      | No         | Yes     |
+      | User deallocated        | Ucitel (Framework 1)    | No         | Yes     |
+
   @javascript
   Scenario: Manager can import notification from one program to another
     Given the following "tool_muprog > programs" exist:

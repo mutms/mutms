@@ -19,6 +19,8 @@
 
 namespace tool_muprog\local;
 
+use tool_mulib\local\mulib;
+
 /**
  * Program catalogue for learners.
  *
@@ -273,7 +275,7 @@ final class catalogue {
         }
 
         $tenantjoin = "";
-        if (util::is_mutenancy_active()) {
+        if (mulib::is_mutenancy_active()) {
             $tenantid = \tool_mutenancy\local\tenancy::get_current_tenantid();
             if ($tenantid) {
                 $tenantjoin = "JOIN {context} pc ON pc.id = p.contextid AND (pc.tenantid IS NULL OR pc.tenantid = :tenantid)";
@@ -313,7 +315,7 @@ final class catalogue {
             return false;
         }
 
-        if (\tool_muprog\local\util::is_mutenancy_active()) {
+        if (mulib::is_mutenancy_active()) {
             if ($userid == $USER->id) {
                 $tenantid = \tool_mutenancy\local\tenancy::get_current_tenantid();
             } else {
