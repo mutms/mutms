@@ -1,5 +1,11 @@
 # Changelog
 
+## mu-5.0.4-01
+
+Release date: 08/12/2025
+
+* No changes.
+
 ## mu-5.0.3-02
 
 Release date: 08/11/2025
