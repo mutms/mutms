@@ -174,48 +174,64 @@ final class tenancy_test extends \advanced_testcase {
         $cohort2 = $this->getDataGenerator()->create_cohort();
 
         $tenant1 = $generator->create_tenant(['assoccohortid' => $cohort1->id]);
+        $tenantcontext1 = \context_tenant::instance($tenant1->id);
         $tenant2 = $generator->create_tenant(['archived' => 1, 'assoccohortid' => $cohort2->id]);
-
-        $user1 = $this->getDataGenerator()->create_user();
-        $user2 = $this->getDataGenerator()->create_user();
-        $user3 = $this->getDataGenerator()->create_user(['tenantid' => $tenant1->id]);
-        $user4 = $this->getDataGenerator()->create_user();
+        $tenantcontext2 = \context_tenant::instance($tenant1->id);
 
         $syscontext = \context_system::instance();
-        $viewroleid = $this->getDataGenerator()->create_role();
-        assign_capability('tool/mutenancy:view', CAP_ALLOW, $viewroleid, $syscontext);
         $switchrole = $this->getDataGenerator()->create_role();
         assign_capability('tool/mutenancy:switch', CAP_ALLOW, $switchrole, $syscontext);
 
-        $this->setUser($user1);
-        $this->assertFalse(tenancy::can_switch());
-        role_assign($switchrole, $user1->id, $syscontext->id);
-        $this->assertFalse(tenancy::can_switch());
-        role_assign($viewroleid, $user1->id, $syscontext->id);
+        $user0 = $this->getDataGenerator()->create_user();
+
+        $user1 = $this->getDataGenerator()->create_user();
+        cohort_add_member($cohort2->id, $user1->id);
+
+        $user2 = $this->getDataGenerator()->create_user();
+        cohort_add_member($cohort1->id, $user2->id);
+
+        $user3 = $this->getDataGenerator()->create_user(['tenantid' => $tenant1->id]);
+        role_assign($switchrole, $user3->id, $syscontext->id);
+        cohort_add_member($cohort1->id, $user3->id);
+
+        $user4 = $this->getDataGenerator()->create_user();
+        role_assign($switchrole, $user4->id, $syscontext->id);
+
+        $user5 = $this->getDataGenerator()->create_user();
+        role_assign($switchrole, $user5->id, $tenantcontext1->id);
+
+        $user6 = $this->getDataGenerator()->create_user();
+        role_assign($switchrole, $user6->id, $tenantcontext2->id);
+
+        $this->setAdminUser();
         $this->assertTrue(tenancy::can_switch());
 
+        $this->setUser();
+        $this->assertFalse(tenancy::can_switch());
+
+        $this->setGuestUser();
+        $this->assertFalse(tenancy::can_switch());
+
+        $this->setUser($user0);
+        $this->assertFalse(tenancy::can_switch());
+
+        $this->setUser($user1);
+        $this->assertFalse(tenancy::can_switch());
+
         $this->setUser($user2);
-        $this->assertFalse(tenancy::can_switch());
-        role_assign($switchrole, $user2->id, $syscontext->id);
-        $this->assertFalse(tenancy::can_switch());
-        cohort_add_member($cohort1->id, $user2->id);
         $this->assertTrue(tenancy::can_switch());
 
         $this->setUser($user3);
         $this->assertFalse(tenancy::can_switch());
-        role_assign($switchrole, $user3->id, $syscontext->id);
-        $this->assertFalse(tenancy::can_switch());
-        role_assign($viewroleid, $user3->id, $syscontext->id);
-        $this->assertFalse(tenancy::can_switch());
-        cohort_add_member($cohort1->id, $user3->id);
-        $this->assertFalse(tenancy::can_switch());
 
         $this->setUser($user4);
-        $this->assertFalse(tenancy::can_switch());
-        role_assign($switchrole, $user4->id, $syscontext->id);
-        $this->assertFalse(tenancy::can_switch());
-        cohort_add_member($cohort2->id, $user4->id);
-        $this->assertFalse(tenancy::can_switch());
+        $this->assertTrue(tenancy::can_switch());
+
+        $this->setUser($user5);
+        $this->assertTrue(tenancy::can_switch());
+
+        $this->setUser($user6);
+        $this->assertTrue(tenancy::can_switch());
     }
 
     /**
@@ -508,6 +524,30 @@ final class tenancy_test extends \advanced_testcase {
               ORDER BY u.id ASC";
         $result = $DB->get_fieldset_sql($sql);
         $this->assertSame([$user2x1->id], $result);
+    }
+
+    /**
+     * @covers ::get_tenant_string
+     */
+    public function test_get_tenant_string(): void {
+        $this->assertSame('Tenant', tenancy::get_tenant_string('tenant'));
+        $this->assertSame('Add tenant', tenancy::get_tenant_string('tenant_create'));
+
+        set_config('tenantentity', 'Fakulta', 'tool_mutenancy');
+        $this->assertSame('Fakulta', tenancy::get_tenant_string('tenant'));
+        $this->assertSame('Add Fakulta', tenancy::get_tenant_string('tenant_create'));
+    }
+
+    /**
+     * @covers ::get_tenants_string
+     */
+    public function test_get_tenants_string(): void {
+        $this->assertSame('Tenants', tenancy::get_tenants_string('tenants'));
+        $this->assertSame('Other tenants', tenancy::get_tenants_string('tenant_switch_other'));
+
+        set_config('tenantentities', 'Fakulty', 'tool_mutenancy');
+        $this->assertSame('Fakulty', tenancy::get_tenants_string('tenants'));
+        $this->assertSame('Other Fakulty', tenancy::get_tenants_string('tenant_switch_other'));
     }
 
     /**

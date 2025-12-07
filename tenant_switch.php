@@ -42,16 +42,14 @@ if (!tenancy::is_active()) {
 }
 
 $context = context_system::instance();
-require_capability('tool/mutenancy:switch', $context);
-
-if (!tenancy::can_switch()) {
-    redirect(new moodle_url('/'));
-}
-
 $PAGE->set_url('/admin/tool/mutenancy/tenant_switch.php');
 $PAGE->set_context($context);
 
 $returnurl = new moodle_url('/');
+
+if (!tenancy::can_switch()) {
+    redirect($returnurl);
+}
 
 $form = new \tool_mutenancy\local\form\tenant_switch(null, []);
 

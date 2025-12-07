@@ -289,3 +289,66 @@ Feature: Tenant administration
     And I click on "Update tenant" "button" in the ".modal-dialog" "css_element"
     And I should see "Cohort 2" in the "Associated users cohort" definition list item
     And I should see "3" in the "Tenant users" definition list item
+
+  Scenario: Tenant admin may create, update and delete with customised tenant names
+    Given the multi-tenancy is activated
+    And the following config values are set as admin:
+      | tenantentity   | Faculty   | tool_mutenancy |
+      | tenantentities | Faculties | tool_mutenancy |
+    And I log in as "tadmin"
+
+    And I navigate to "Multi-tenancy > Tenants" in site administration
+    When I press "Add Faculty"
+    And I set the following fields in the ".modal-dialog" "css_element" to these values:
+      | Tenant name  | Tenant 1 |
+      | Tenant ID    | ten1     |
+    And I click on "Add Faculty" "button" in the ".modal-dialog" "css_element"
+    Then I should see "Tenant 1" in the "Tenant name" definition list item
+    And I should see "ten1" in the "Tenant ID" definition list item
+    And I should see "/login/?tenant=ten1" in the "Tenant login URL" definition list item
+    And I should see "No" in the "Show tenant on login page" definition list item
+    And I should see "Tenant 1" in the "Tenant category" definition list item
+    And I should see "Faculty users: Tenant 1" in the "Tenant cohort" definition list item
+    And I should see "Not set" in the "Associated users cohort" definition list item
+    And I should see "Tenant 1" in the "Tenant site name" definition list item
+    And I should see "ten1" in the "Tenant site short name" definition list item
+    And I should see "0" in the "Tenant users" definition list item
+    And I should see "No" in the "Archived" definition list item
+
+    And I navigate to "Multi-tenancy > Tenants" in site administration
+    When I press "Add Faculty"
+    And I set the following fields in the ".modal-dialog" "css_element" to these values:
+      | Tenant name               | Tenant 2      |
+      | Tenant ID                 | ten2          |
+      | Show tenant on login page | 1             |
+      | Tenant members limit      | 22            |
+      | Associated users cohort   | Cohort 2      |
+      | Tenant site name          | Tenant site 2 |
+      | Tenant site short name    | TSS2          |
+      | Tenant category name      | Cat for T2    |
+      | Tenant category ID number | catt2         |
+      | Tenant cohort name        | Koh for ten 2 |
+      | Tenant cohort ID number   | KFT2          |
+    And I click on "Add Faculty" "button" in the ".modal-dialog" "css_element"
+
+    When I press "Update Faculty"
+    And I set the following fields in the ".modal-dialog" "css_element" to these values:
+      | Show tenant on login page | 0             |
+    And I click on "Update Faculty" "button" in the ".modal-dialog" "css_element"
+    Then I should see "Tenant 2" in the "Tenant name" definition list item
+    And I should see "ten2" in the "Tenant ID" definition list item
+
+    When I click on "Archive Faculty" "link"
+    And I click on "Archive Faculty" "button" in the ".modal-dialog" "css_element"
+    Then I should see "Yes" in the "Archived" definition list item
+
+    When I click on "Restore archived Faculty" "link"
+    And I click on "Restore archived Faculty" "button" in the ".modal-dialog" "css_element"
+    Then I should see "No" in the "Archived" definition list item
+
+    When I click on "Archive Faculty" "link"
+    And I click on "Archive Faculty" "button" in the ".modal-dialog" "css_element"
+    And I press "Delete Faculty"
+    And I click on "Delete Faculty" "button" in the ".modal-dialog" "css_element"
+    Then I should see "Tenant 1"
+    And I should not see "Tenant 2"

@@ -69,6 +69,7 @@ $string['event_tenant_restored'] = 'Tenant restored';
 $string['event_tenant_updated'] = 'Tenant updated';
 $string['event_user_allocated'] = 'User tenant allocation changed';
 $string['login_tenant_select'] = 'Select site';
+$string['login_tenant_select_a'] = 'Select {$a}';
 $string['logos_edit'] = 'Edit logos';
 $string['member_confirm_info'] = 'In most cases member accounts should not be confirmed here.
 
@@ -124,6 +125,14 @@ $string['secondary_tenant_appearance'] = 'Appearance';
 $string['secondary_tenant_auth'] = 'Authentication';
 $string['secondary_tenant_details'] = 'Details';
 $string['secondary_tenant_users'] = 'Users';
+$string['setting_allowguests'] = 'Allow guest access to tenants';
+$string['setting_allowguests_desc'] = 'Enable this setting if you want to allow guest access to tenant courses.
+
+Note that this feature requires site‑level guest access to be enabled. In addition, tenant courses must have guest access enabled, and users should be associated with tenants rather than being tenant members.';
+$string['setting_tenantentities'] = 'Tenant entity plural';
+$string['setting_tenantentities_desc'] = 'If provided the plural "Tenants" word will be replaced with given custom name. For example: Units, Faculties or Events';
+$string['setting_tenantentity'] = 'Tenant entity singular';
+$string['setting_tenantentity_desc'] = 'If provided the singular "Tenant" word will be replaced with given custom name. For example: Unit, Faculty or Event';
 $string['setting_tenantlimit'] = 'Tenant limit';
 $string['setting_tenantlimit_desc'] = 'Specifies how many tenants can be created. Note that sites with more than 100 tenants may encounter performance and usability problems.';
 $string['setting_tenantprimarynav'] = 'Add tenant management to primary menu';
@@ -139,6 +148,7 @@ $string['tenancy_deactivate_info'] = 'Tenant manager role will be deleted during
 $string['tenant'] = 'Tenant';
 $string['tenant_actions'] = 'Actions';
 $string['tenant_archive'] = 'Archive tenant';
+$string['tenant_archive_a'] = 'Archive {$a}';
 $string['tenant_archive_info'] = 'Archiving tenant:
 
 * prevents tenant members from logging in and stops all outgoing emails and notifications,
@@ -154,7 +164,9 @@ $string['tenant_cohort'] = 'Tenant cohort';
 $string['tenant_cohortidnumber'] = 'Tenant cohort ID number';
 $string['tenant_cohortname'] = 'Tenant cohort name';
 $string['tenant_create'] = 'Add tenant';
+$string['tenant_create_a'] = 'Add {$a}';
 $string['tenant_delete'] = 'Delete tenant';
+$string['tenant_delete_a'] = 'Delete {$a}';
 $string['tenant_delete_info'] = 'During tenant deletion:
 
 * tenant manager permissions will be revoked
@@ -169,28 +181,37 @@ $string['tenant_loginurl'] = 'Tenant login URL';
 $string['tenant_manager'] = 'Tenant manager';
 $string['tenant_managers'] = 'Tenant managers';
 $string['tenant_member'] = 'Tenant member';
+$string['tenant_member_a'] = '{$a} member';
 $string['tenant_memberlimit'] = 'Tenant members limit';
 $string['tenant_memberlimit_help'] = 'Specifies maximum number of tenant member accounts that can be created in the tenant.
 
 Note that associated users are not counted towards this limit.';
 $string['tenant_name'] = 'Tenant name';
 $string['tenant_restore'] = 'Restore archived tenant';
+$string['tenant_restore_a'] = 'Restore archived {$a}';
 $string['tenant_restore_info'] = 'Restoring of tenant should revert most changes done during tenant archiving.
 
 It is however recommended to verify all tenant settings and category visibility afterwards.';
 $string['tenant_sitefullname'] = 'Tenant site name';
 $string['tenant_siteshortname'] = 'Tenant site short name';
 $string['tenant_switch'] = 'Switch tenant';
+$string['tenant_switch_a'] = 'Switch {$a}';
 $string['tenant_switch_info'] = 'Switching to a tenant changes site appearance and it restricts list of candidate available users for some actions.
 
 Note that switching to tenant is not equivalent to being a tenant member, there are additional restrictions affecting tenant members.';
 $string['tenant_switch_my'] = 'My tenants';
+$string['tenant_switch_my_a'] = 'My {$a}';
 $string['tenant_switch_notenant'] = 'No tenant';
+$string['tenant_switch_notenant_a'] = 'No {$a}';
 $string['tenant_switch_other'] = 'Other tenants';
+$string['tenant_switch_other_a'] = 'Other {$a}';
 $string['tenant_update'] = 'Update tenant';
+$string['tenant_update_a'] = 'Update {$a}';
 $string['tenant_users'] = 'Tenant users';
+$string['tenant_users_a'] = '{$a} users';
 $string['tenants'] = 'Tenants';
 $string['user_allocate'] = 'Allocate user';
 $string['user_allocate_info'] = 'When allocating user to a tenant their tenant manager assignments are removed
 and they will loose access to all other tenants.';
 $string['user_tenants'] = 'Associated with tenants';
+$string['user_tenants_a'] = 'Associated with {$a}';

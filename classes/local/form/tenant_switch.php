@@ -15,8 +15,11 @@
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 // phpcs:disable moodle.Files.BoilerplateComment.CommentEndedTooSoon
+// phpcs:disable moodle.Files.LineLength.TooLong
 
 namespace tool_mutenancy\local\form;
+
+use tool_mutenancy\local\tenancy;
 
 /**
  * Switch tenant form.
@@ -30,14 +33,16 @@ final class tenant_switch extends \tool_mulib\local\ajax_form {
     protected function definition(): void {
         $mform = $this->_form;
 
-        $info = '<div class="alert alert-info">' . markdown_to_html(get_string('tenant_switch_info', 'tool_mutenancy')) . '</div>';
-        $mform->addElement('html', $info);
+        if (has_capability('tool/mutenancy:admin', \context_system::instance())) {
+            $info = '<div class="alert alert-info">' . markdown_to_html(get_string('tenant_switch_info', 'tool_mutenancy')) . '</div>';
+            $mform->addElement('html', $info);
+        }
 
         $options = self::get_options();
-        $mform->addElement('selectgroups', 'tenantid', get_string('tenant', 'tool_mutenancy'), $options);
+        $mform->addElement('selectgroups', 'tenantid', tenancy::get_tenant_string('tenant'), $options);
         $mform->setDefault('tenantid', (int)\tool_mutenancy\local\tenancy::get_current_tenantid());
 
-        $this->add_action_buttons(true, get_string('tenant_switch', 'tool_mutenancy'));
+        $this->add_action_buttons(true, tenancy::get_tenant_string('tenant_switch'));
     }
 
     #[\Override]
@@ -60,8 +65,8 @@ final class tenant_switch extends \tool_mulib\local\ajax_form {
     public static function get_options(): array {
         global $DB, $USER;
 
-        $notenant = get_string('tenant_switch_notenant', 'tool_mutenancy');
-        $mytenants = get_string('tenant_switch_my', 'tool_mutenancy');
+        $notenant = tenancy::get_tenant_string('tenant_switch_notenant');
+        $mytenants = tenancy::get_tenants_string('tenant_switch_my');
 
         $options = [];
         $options[''][0] = $notenant;
@@ -77,26 +82,47 @@ final class tenant_switch extends \tool_mulib\local\ajax_form {
             $options[$mytenants][$k] = $v;
         }
 
-        $syscontext = \context_system::instance();
-        if (!has_capability('tool/mutenancy:view', $syscontext)) {
-            return $options;
-        }
-
         if (isset($options[$mytenants])) {
-            $othertenants = get_string('tenant_switch_other', 'tool_mutenancy');
+            $othertenants = tenancy::get_tenants_string('tenant_switch_other');
         } else {
-            $othertenants = get_string('tenants', 'tool_mutenancy');
+            $othertenants = tenancy::get_tenants_string('tenants');
         }
 
-        $sql = "SELECT t.id, t.name
-                  FROM {tool_mutenancy_tenant} t
-             LEFT JOIN {cohort_members} cm ON cm.cohortid = t.assoccohortid AND cm.userid = :me
-                 WHERE t.archived = 0 AND cm.id IS NULL";
-        $tenants = $DB->get_records_sql_menu($sql, ['me' => $USER->id]);
+        // Cheat here a bit to make this faster,
+        // also keep this consistent with tenancy::can_switch().
+        $syscontext = \context_system::instance();
+
+        if (has_capability('tool/mutenancy:switch', $syscontext)) {
+            $sql = "SELECT t.id, t.name
+                      FROM {tool_mutenancy_tenant} t
+                 LEFT JOIN {cohort_members} cm ON cm.cohortid = t.assoccohortid AND cm.userid = :me
+                     WHERE t.archived = 0 AND cm.id IS NULL";
+            $params = ['me' => $USER->id];
+        } else {
+            [$needed, $forbidden] = get_roles_with_cap_in_context($syscontext, 'tool/mutenancy:switch');
+            if (!$needed) {
+                return $options;
+            }
+            $needed = implode(',', $needed);
+            $sql = "SELECT t.id, t.name
+                      FROM {role_assignments} ra
+                      JOIN {context} c ON c.id = ra.contextid AND c.contextlevel = :tenantlevel
+                      JOIN {tool_mutenancy_tenant} t ON t.id = c.instanceid AND t.archived = 0
+                 LEFT JOIN {cohort_members} cm ON cm.cohortid = t.assoccohortid AND cm.userid = ra.userid
+                     WHERE ra.userid = :me AND ra.roleid IN ($needed) AND cm.id IS NULL";
+            $params = ['tenantlevel' => \context_tenant::LEVEL, 'me' => $USER->id];
+        }
+
+        $tenants = $DB->get_records_sql_menu($sql, $params);
         $tenants = array_map('format_string', $tenants);
         \core_collator::asort($tenants);
-        foreach ($tenants as $k => $v) {
-            $options[$othertenants][$k] = $v;
+        foreach ($tenants as $tid => $tname) {
+            // Use real capability check here, no more guessing!
+            $tenantcontext = \context_tenant::instance($tid);
+            if (!has_capability('tool/mutenancy:switch', $tenantcontext)) {
+                continue;
+            }
+            $options[$othertenants][$tid] = $tname;
         }
 
         return $options;

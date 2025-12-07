@@ -20,6 +20,7 @@
 namespace tool_mutenancy\output\tenant;
 
 use tool_mutenancy\local\user;
+use tool_mutenancy\local\tenancy;
 
 /**
  * Tenant renderer.
@@ -142,11 +143,11 @@ final class renderer extends \tool_mutenancy\output\tenant_renderer_base {
         if (has_capability('tool/mutenancy:admin', $context)) {
             if ($tenant->archived) {
                 $url = new \moodle_url('/admin/tool/mutenancy/management/tenant_restore.php', ['id' => $tenant->id]);
-                $action = new \tool_mulib\output\ajax_form\icon($url, get_string('tenant_restore', 'tool_mutenancy'), 't/edit');
+                $action = new \tool_mulib\output\ajax_form\icon($url, tenancy::get_tenant_string('tenant_restore'), 't/edit');
                 $action->set_form_size('sm');
             } else if ($USER->tenantid != $tenant->id) {
                 $url = new \moodle_url('/admin/tool/mutenancy/management/tenant_archive.php', ['id' => $tenant->id]);
-                $action = new \tool_mulib\output\ajax_form\icon($url, get_string('tenant_archive', 'tool_mutenancy'), 'i/settings');
+                $action = new \tool_mulib\output\ajax_form\icon($url, tenancy::get_tenant_string('tenant_archive'), 'i/settings');
                 $action->set_form_size('sm');
             }
             $action = $this->render($action);

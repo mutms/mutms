@@ -54,6 +54,7 @@ final class manager_test extends \advanced_testcase {
         $capabilities = manager::get_default_capabilities();
 
         $this->assertSame(CAP_ALLOW, $capabilities['tool/mutenancy:view']);
+        $this->assertSame(CAP_ALLOW, $capabilities['tool/mutenancy:switch']);
         $this->assertSame(CAP_ALLOW, $capabilities['tool/mutenancy:configauth']);
         $this->assertSame(CAP_ALLOW, $capabilities['tool/mutenancy:configappearance']);
         $this->assertSame(CAP_ALLOW, $capabilities['tool/mutenancy:membercreate']);
@@ -62,7 +63,6 @@ final class manager_test extends \advanced_testcase {
         $this->assertSame(CAP_ALLOW, $capabilities['moodle/site:viewuseridentity']);
 
         $this->assertArrayNotHasKey('tool/mutenancy:admin', $capabilities);
-        $this->assertArrayNotHasKey('tool/mutenancy:switch', $capabilities);
         $this->assertArrayNotHasKey('moodle/site:config', $capabilities);
         $this->assertArrayNotHasKey('moodle/site:configview', $capabilities);
         $this->assertArrayNotHasKey('moodle/user:editprofile', $capabilities);
@@ -96,7 +96,6 @@ final class manager_test extends \advanced_testcase {
         }
 
         $this->assertFalse(has_capability('tool/mutenancy:admin', $syscontext, $user));
-        $this->assertFalse(has_capability('tool/mutenancy:switch', $syscontext, $user));
         $this->assertFalse(has_capability('moodle/site:config', $syscontext, $user));
         $this->assertFalse(has_capability('moodle/site:configview', $syscontext, $user));
         $this->assertFalse(has_capability('moodle/user:editprofile', $syscontext, $user));

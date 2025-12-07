@@ -21,6 +21,7 @@ namespace tool_mutenancy\local\form;
 
 use tool_mutenancy\external\form_autocomplete\tenant_assoccohortid;
 use tool_mutenancy\local\tenant;
+use tool_mutenancy\local\tenancy;
 
 /**
  * Create a new tenant form.
@@ -83,7 +84,7 @@ final class tenant_create extends \tool_mulib\local\ajax_form {
         $mform->addElement('text', 'cohortidnumber', get_string('tenant_cohortidnumber', 'tool_mutenancy'), ['size' => 40, 'maxlength' => 255]);
         $mform->setType('cohortidnumber', PARAM_TEXT);
 
-        $this->add_action_buttons(true, get_string('tenant_create', 'tool_mutenancy'));
+        $this->add_action_buttons(true, tenancy::get_tenant_string('tenant_create'));
     }
 
     #[\Override]

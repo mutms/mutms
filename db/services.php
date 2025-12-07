@@ -27,6 +27,64 @@
 defined('MOODLE_INTERNAL') || die();
 
 $functions = [
+    'tool_mutenancy_get_tenants' => [
+        'classname' => tool_mutenancy\external\get_tenants::class,
+        'description' => 'Returns list of tenants',
+        'type' => 'read',
+        'ajax' => false,
+        'capabilities'  => 'tool/mutenancy:view',
+    ],
+
+    'tool_mutenancy_create_tenant' => [
+        'classname' => tool_mutenancy\external\create_tenant::class,
+        'description' => 'Create a new tenant',
+        'type' => 'write',
+        'ajax' => false,
+        'capabilities'  => 'tool/mutenancy:admin',
+    ],
+
+    'tool_mutenancy_update_tenant' => [
+        'classname' => tool_mutenancy\external\update_tenant::class,
+        'description' => 'Update existing tenant',
+        'type' => 'write',
+        'ajax' => false,
+        'capabilities'  => 'tool/mutenancy:admin',
+    ],
+
+    'tool_mutenancy_get_managers' => [
+        'classname' => tool_mutenancy\external\get_managers::class,
+        'description' => 'Returns list of tenant managers',
+        'type' => 'read',
+        'ajax' => false,
+        'capabilities'  => 'tool/mutenancy:view',
+    ],
+
+    'tool_mutenancy_add_manager' => [
+        'classname' => tool_mutenancy\external\add_manager::class,
+        'description' => 'Add user to tenant manager position',
+        'type' => 'write',
+        'ajax' => false,
+        'capabilities'  => 'tool/mutenancy:admin',
+    ],
+
+    'tool_mutenancy_remove_manager' => [
+        'classname' => tool_mutenancy\external\remove_manager::class,
+        'description' => 'Remove user from tenant manager position',
+        'type' => 'write',
+        'ajax' => false,
+        'capabilities'  => 'tool/mutenancy:admin',
+    ],
+
+    'tool_mutenancy_allocate_user' => [
+        'classname' => tool_mutenancy\external\allocate_user::class,
+        'description' => 'Allocate user as tenant member or global user',
+        'type' => 'write',
+        'ajax' => false,
+        'capabilities'  => 'tool/mutenancy:allocate',
+    ],
+
+    // Form autocomplete ajax stuff.
+
     'tool_mutenancy_form_autocomplete_tenant_assoccohortid' => [
         'classname' => tool_mutenancy\external\form_autocomplete\tenant_assoccohortid::class,
         'description' => 'Return list of cohorts for tenant associated users.',

@@ -129,3 +129,27 @@ Feature: Tenant authentication setting loginshow
 
     When I am on the "TEN3" "tool_mutenancy > Tenant login" page
     Then I should see "Welcome to main site"
+
+  Scenario: Users may access customised tenant name login pages
+    Given the following config values are set as admin:
+      | tenantentity   | Faculty   | tool_mutenancy |
+      | tenantentities | Faculties | tool_mutenancy |
+    And the following "tool_mutenancy > tenants" exist:
+      | name     | idnumber | loginshow | sitefullname     | siteshortname | archived |
+      | Tenant 1 | TEN1     | 1         | Tent Site full 1 | TSS1          | 0        |
+      | Tenant 2 | TEN2     | 0         | Tent Site full 2 | TSS2          | 0        |
+    And I am on homepage
+
+    When I click on "Log in" "link" in the ".logininfo" "css_element"
+    Then I should see "Log in to Acceptance test site"
+    And I should see "Access as a guest"
+    And I should see "Select Faculty"
+
+    When I click on "Select Faculty" "link"
+    Then I should see "Tent Site full 1" in the ".dropdown-menu" "css_element"
+    And I should not see "Tent Site full 2" in the ".dropdown-menu" "css_element"
+
+    When I click on "Tent Site full 1" "link"
+    Then I should see "Tent Site full 1"
+    And I should not see "Access as a guest"
+    And I should see "Select Faculty"

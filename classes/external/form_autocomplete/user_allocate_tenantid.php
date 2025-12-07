@@ -20,6 +20,7 @@ namespace tool_mutenancy\external\form_autocomplete;
 
 use core_external\external_function_parameters;
 use core_external\external_value;
+use tool_mulib\local\sql;
 
 /**
  * Tenant candidates for user allocation/deallocation to/from tenant.
@@ -60,13 +61,10 @@ final class user_allocate_tenantid extends \tool_mulib\external\form_autocomplet
         [
             'query' => $query,
             'userid' => $userid,
-        ] = self::validate_parameters(
-            self::execute_parameters(),
-            [
-                'query' => $query,
-                'userid' => $userid,
-            ]
-        );
+        ] = self::validate_parameters(self::execute_parameters(), [
+            'query' => $query,
+            'userid' => $userid,
+        ]);
 
         $context = \context_system::instance();
         self::validate_context($context);
@@ -74,15 +72,22 @@ final class user_allocate_tenantid extends \tool_mulib\external\form_autocomplet
 
         $user = $DB->get_record('user', ['id' => $userid, 'deleted' => 0], '*', MUST_EXIST);
 
-        [$searchsql, $params] = self::get_search_query($query, ['name', 'idnumber'], 't');
-        $params['tenantid'] = (int)$user->tenantid;
+        $sql = (
+            new sql(
+                "SELECT t.id, t.name
+                   FROM {tool_mutenancy_tenant} t
+                  WHERE t.id <> :tenantid
+                        /* searchsql */
+               ORDER BY t.name ASC",
+                ['tenantid' => (int)$user->tenantid]
+            )
+        )
+            ->replace_comment(
+                'searchsql',
+                self::get_search_query($query, ['name', 'idnumber'], 't')->wrap('AND ', '')
+            );
 
-        $sql = "SELECT t.id, t.name
-                  FROM {tool_mutenancy_tenant} t
-                 WHERE $searchsql AND t.id <> :tenantid
-              ORDER BY t.name ASC";
-
-        $tenants = $DB->get_records_sql($sql, $params, 0, self::MAX_RESULTS + 1);
+        $tenants = $DB->get_records_sql($sql->sql, $sql->params, 0, self::MAX_RESULTS + 1);
         return self::prepare_result($tenants, $context);
     }
 
