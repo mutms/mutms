@@ -118,6 +118,7 @@ class core_customfield_external extends external_api {
                     new external_single_structure(
                         array(
                             'id' => new external_value(PARAM_INT, 'id'),
+                            'name' => new external_value(PARAM_TEXT, 'name'),
                             'nameeditable' => new external_value(PARAM_RAW, 'inplace editable name'),
                             'addfieldmenu' => new external_value(PARAM_RAW, 'addfieldmenu'),
                             'canedit' => new external_value(PARAM_BOOL, 'can edit'),
@@ -135,6 +136,8 @@ class core_customfield_external extends external_api {
                         )
                     )
                 ),
+                'canmovefields' => new external_value(PARAM_BOOL, 'Whether fields can be moved', VALUE_DEFAULT, false),
+                'canmovecategories' => new external_value(PARAM_BOOL, 'Whether categories can be moved', VALUE_DEFAULT, false),
             )
         );
     }

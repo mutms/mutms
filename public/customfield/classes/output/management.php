@@ -85,13 +85,15 @@ class management implements renderable, templatable {
         ]);
 
         $categoriesarray = array();
-
+        $movablefieldscount = 0;
+        $movablecategoriescount = 0;
         foreach ($categories as $category) {
 
             $canedit = $data->component === $category->get('component') && $data->area === $category->get('area');
 
             $categoryarray = array();
             $categoryarray['id'] = $category->get('id');
+            $categoryarray['name'] = $category->get_formatted_name();
             $categoryarray['nameeditable'] = $canedit ? $output->render(api::get_category_inplace_editable($category, true)) :
                 $category->get_formatted_name();
             $categoryarray['movetitle'] = get_string('movecategory', 'core_customfield',
@@ -133,6 +135,9 @@ class management implements renderable, templatable {
                 $categoryarray['canedit'] = $canedit;
 
                 $categoryarray['fields'][] = $fieldarray;
+                if ($canedit) {
+                    $movablefieldscount++;
+                }
             }
 
             if ($canedit) {
@@ -152,6 +157,7 @@ class management implements renderable, templatable {
                 $menu->attributes['class'] .= ' float-start me-1';
 
                 $categoryarray['addfieldmenu'] = $output->render($menu);
+                $movablecategoriescount++;
             } else {
                 $categoryarray['addfieldmenu'] = '';
             }
@@ -160,6 +166,9 @@ class management implements renderable, templatable {
         }
 
         $data->categories = $categoriesarray;
+        $data->canmovecategories = $movablecategoriescount > 1;
+        // Can move fields if there are more than one field or if there are multiple categories.
+        $data->canmovefields = $movablefieldscount > 1 || $data->canmovecategories;
 
         if (empty($data->categories)) {
             $data->nocategories = get_string('nocategories', 'core_customfield');
