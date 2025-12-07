@@ -37,6 +37,13 @@ final class mulib_test extends \advanced_testcase {
         $this->resetAfterTest();
     }
 
+    public function test_is_mutrain_available(): void {
+        $this->assertSame(
+            file_exists(__DIR__ . '/../../../../../tool/mutrain/version.php'),
+            mulib::is_mutrain_available()
+        );
+    }
+
     public function test_is_mutenancy_available(): void {
         $this->assertSame(
             file_exists(__DIR__ . '/../../../../../tool/mutenancy/version.php'),

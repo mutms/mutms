@@ -21,6 +21,7 @@
 namespace tool_mulib\phpunit\local\notification;
 
 use tool_mulib\local\notification\util;
+use tool_mulib\local\mulib;
 
 /**
  * Notification util tests.
@@ -74,6 +75,7 @@ final class util_test extends \advanced_testcase {
         $this->assertSame($data['component'], $notification->component);
         $this->assertSame($data['notificationtype'], $notification->notificationtype);
         $this->assertSame($data['instanceid'], $notification->instanceid);
+        $this->assertSame(null, $notification->supervisorframeworkid);
         $this->assertSame($data['enabled'], $notification->enabled);
         $this->assertSame('0', $notification->custom);
         $this->assertSame(null, $notification->customjson);
@@ -120,6 +122,35 @@ final class util_test extends \advanced_testcase {
         $this->assertSame(null, $notification->auxjson);
         $this->assertSame(null, $notification->auxint1);
         $this->assertSame(null, $notification->auxint2);
+
+        if (!mulib::is_murelatio_available()) {
+            return;
+        }
+        /** @var \tool_murelation_generator $relationgenerator */
+        $relationgenerator = $this->getDataGenerator()->get_plugin_generator('tool_murelation');
+
+        $framework1 = $relationgenerator->create_framework([
+            'uimode' => \tool_murelation\local\framework::UIMODE_SUPERVISORS,
+        ]);
+
+        $data = [
+            'component' => 'tool_muprog',
+            'notificationtype' => 'deallocation',
+            'instanceid' => $program->id,
+            'supervisorframeworkid' => $framework1->id,
+            'enabled' => '1',
+        ];
+        $notification = util::notification_create($data);
+        $this->assertSame($data['component'], $notification->component);
+        $this->assertSame($data['notificationtype'], $notification->notificationtype);
+        $this->assertSame($data['instanceid'], $notification->instanceid);
+        $this->assertSame($framework1->id, $notification->supervisorframeworkid);
+        $this->assertSame($data['enabled'], $notification->enabled);
+        $this->assertSame('0', $notification->custom);
+        $this->assertSame(null, $notification->customjson);
+        $this->assertSame(null, $notification->auxjson);
+        $this->assertSame(null, $notification->auxint1);
+        $this->assertSame(null, $notification->auxint2);
     }
 
     /**
@@ -153,6 +184,7 @@ final class util_test extends \advanced_testcase {
         $this->assertSame($data['component'], $notification->component);
         $this->assertSame($data['notificationtype'], $notification->notificationtype);
         $this->assertSame($data['instanceid'], $notification->instanceid);
+        $this->assertSame(null, $notification->supervisorframeworkid);
         $this->assertSame($data2['enabled'], $notification->enabled);
         $this->assertSame('1', $notification->custom);
         $this->assertSame('{"subject":"abc","body":"def"}', $notification->customjson);
@@ -202,6 +234,50 @@ final class util_test extends \advanced_testcase {
         $this->assertSame($data2['enabled'], $notification->enabled);
         $this->assertSame('1', $notification->custom);
         $this->assertSame('{"subject":"","body":""}', $notification->customjson);
+        $this->assertSame(null, $notification->auxjson);
+        $this->assertSame(null, $notification->auxint1);
+        $this->assertSame(null, $notification->auxint2);
+
+        if (!mulib::is_murelatio_available()) {
+            return;
+        }
+        /** @var \tool_murelation_generator $relationgenerator */
+        $relationgenerator = $this->getDataGenerator()->get_plugin_generator('tool_murelation');
+
+        $framework1 = $relationgenerator->create_framework([
+            'uimode' => \tool_murelation\local\framework::UIMODE_SUPERVISORS,
+        ]);
+
+        $data6 = [
+            'id' => $notification->id,
+            'custom' => '0',
+            'supervisorframeworkid' => $framework1->id,
+        ];
+        $notification = util::notification_update($data6);
+        $this->assertSame($data['component'], $notification->component);
+        $this->assertSame($data['notificationtype'], $notification->notificationtype);
+        $this->assertSame($data['instanceid'], $notification->instanceid);
+        $this->assertSame($framework1->id, $notification->supervisorframeworkid);
+        $this->assertSame($data2['enabled'], $notification->enabled);
+        $this->assertSame('0', $notification->custom);
+        $this->assertSame(null, $notification->customjson);
+        $this->assertSame(null, $notification->auxjson);
+        $this->assertSame(null, $notification->auxint1);
+        $this->assertSame(null, $notification->auxint2);
+
+        $data6 = [
+            'id' => $notification->id,
+            'custom' => '0',
+            'supervisorframeworkid' => 0,
+        ];
+        $notification = util::notification_update($data6);
+        $this->assertSame($data['component'], $notification->component);
+        $this->assertSame($data['notificationtype'], $notification->notificationtype);
+        $this->assertSame($data['instanceid'], $notification->instanceid);
+        $this->assertSame(null, $notification->supervisorframeworkid);
+        $this->assertSame($data2['enabled'], $notification->enabled);
+        $this->assertSame('0', $notification->custom);
+        $this->assertSame(null, $notification->customjson);
         $this->assertSame(null, $notification->auxjson);
         $this->assertSame(null, $notification->auxint1);
         $this->assertSame(null, $notification->auxint2);
