@@ -15,8 +15,11 @@
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 // phpcs:disable moodle.Files.BoilerplateComment.CommentEndedTooSoon
+// phpcs:disable moodle.Files.LineLength.TooLong
 
 namespace tool_mulib\local\form;
+
+use tool_mulib\local\mulib;
 
 /**
  * Notification create form.
@@ -47,12 +50,22 @@ final class notification_create extends \tool_mulib\local\ajax_form {
         $instance = $manager::get_instance_name($instanceid);
         $mform->addElement('static', 'staticinstance', get_string('notification_instance', 'tool_mulib'), $instance);
 
+        $showcc = false;
         $types = $manager::get_candidate_types($instanceid);
         $elements = [];
         foreach ($types as $type => $typename) {
+            $classname = $manager::get_classname($type);
+            if ($classname && $classname::is_cc_supervisor_supported()) {
+                $showcc = true;
+            }
             $elements[] = $mform->createElement('checkbox', $type, $typename);
         }
-        $mform->addGroup($elements, 'types', get_string('notification_types', 'tool_mulib'), '<br />');
+        $mform->addGroup($elements, 'types', get_string('notification_types', 'tool_mulib'), '<div class="w-100 mb-2" />');
+
+        if ($showcc && mulib::is_murelatio_active()) {
+            $options = $manager::get_supervisor_options($instanceid, null);
+            $mform->addElement('select', 'supervisorframeworkid', get_string('notification_cc_supervisor', 'tool_mulib'), $options);
+        }
 
         $mform->addElement('advcheckbox', 'enabled', get_string('notification_enabled', 'tool_mulib'), ' ');
         $mform->setDefault('enabled', 1);

@@ -52,12 +52,12 @@ final class sql implements \ArrayAccess {
     }
 
     /**
-     * Replace comment with SQL fragment.
+     * Create new query with comment replaced by SQL fragment.
      *
      * @param string $comment comment text (without comment '/*' delimiters and spaces)
      * @param sql|string $sql
      * @param array|null $params optional params when sql is string, must not be used with sql instance
-     * @return sql $this
+     * @return sql new query instance
      */
     public function replace_comment(string $comment, sql|string $sql, ?array $params = null): self {
         $comment = '/* ' . $comment . ' */';
@@ -69,7 +69,11 @@ final class sql implements \ArrayAccess {
         }
 
         if (is_string($sql)) {
-            $sql = new sql($sql, (array)$params);
+            if ($sql === '') {
+                $finalsql = str_replace($comment, '', $this->sql);
+                return new self($finalsql, $this->params);
+            }
+            $sql = new self($sql, (array)$params);
         } else {
             if (isset($params)) {
                 throw new coding_exception('params parameter cannot be used together with sql instance');
@@ -81,28 +85,26 @@ final class sql implements \ArrayAccess {
 
         $finalsql = str_replace($comment, $newsql, $this->sql);
 
-        // Fix order of parameters.
-        [$this->sql, $this->params] = self::normalise_params($finalsql, $finalparams);
-
-        return $this;
+        return new self($finalsql, $finalparams);
     }
 
     /**
-     * Wrap SQL fragment in between two strings.
+     * Create a new SQL fragment wrapped in between two strings.
      *
-     * NOTE: if query is empty string then nothing changes.
+     * NOTE: if query is empty string then result is empty string too.
      *
      * @param string $pre
      * @param string $post
-     * @return sql $this
+     * @return sql new query instance
      */
     public function wrap(string $pre, string $post): self {
         if ($this->sql === '') {
-            return $this;
+            return new self('');
         }
         $parts = self::normalise_merge_sqls([$pre, $this, $post]);
-        [$this->sql, $this->params] = self::merge_sqls($parts, '');
-        return $this;
+        [$newsql, $newparams] = self::merge_sqls($parts, '');
+
+        return new self($newsql, $newparams);
     }
 
     /**
@@ -115,7 +117,7 @@ final class sql implements \ArrayAccess {
     public static function join(string $glue, array $sqls): sql {
         $sqls = self::normalise_merge_sqls($sqls);
         [$sql, $params] = self::merge_sqls($sqls, $glue);
-        return new sql($sql, $params);
+        return new self($sql, $params);
     }
 
     /**
@@ -245,7 +247,7 @@ final class sql implements \ArrayAccess {
                 if ($sql === '') {
                     continue;
                 }
-                $sql = new sql($sql);
+                $sql = new self($sql);
             } else if ($sql instanceof sql) {
                 if ($sql->sql === '') {
                     continue;

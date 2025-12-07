@@ -20,6 +20,7 @@
 namespace tool_mulib\local\notification;
 
 use tool_mulib\output\header_actions;
+use tool_mulib\local\mulib;
 
 /**
  * Base for classes that describe notifications in a plugin.
@@ -59,7 +60,7 @@ abstract class manager {
      * Returns notification class for given type string.
      *
      * @param string $notificationtype
-     * @return null|string PHP classname
+     * @return null|class-string<\tool_mulib\local\notification\notificationtype> PHP classname
      */
     final public static function get_classname(string $notificationtype): ?string {
         $types = static::get_all_types();
@@ -81,17 +82,18 @@ abstract class manager {
      * Returns context of instance for notifications.
      *
      * @param int $instanceid
+     * @param int $strictness
      * @return null|\context
      */
-    abstract public static function get_instance_context(int $instanceid): ?\context;
+    abstract public static function get_instance_context(int $instanceid, int $strictness = MUST_EXIST): ?\context;
 
     /**
      * Returns url of UI that shows all plugin notifications for given instance id.
      *
      * @param int $instanceid
-     * @return \moodle_url|null
+     * @return \core\url
      */
-    abstract public static function get_instance_management_url(int $instanceid): ?\moodle_url;
+    abstract public static function get_instance_management_url(int $instanceid): \core\url;
 
     /**
      * Can the current user view instance notifications?
@@ -162,14 +164,14 @@ abstract class manager {
      * @return string
      */
     public static function render_notifications(int $instanceid, ?string $tableid = null): string {
-        global $DB, $PAGE, $OUTPUT;
+        global $DB, $OUTPUT;
 
         $component = static::get_component();
         $notifications = $DB->get_records('tool_mulib_notification', ['instanceid' => $instanceid, 'component' => $component]);
 
         $canmanage = static::can_manage($instanceid);
-        $canview = static::can_view($instanceid);
         $types = static::get_all_types();
+        $murelationactive = mulib::is_murelatio_active();
 
         foreach ($notifications as $notification) {
             /** @var class-string<\tool_mulib\local\notification\notificationtype> $classname */
@@ -192,11 +194,23 @@ abstract class manager {
                 if (!$notification->enabled) {
                     $name = '<span class="dimmed_text">' . $name . '</span>';
                 }
-                $url = new \moodle_url('/admin/tool/mulib/notification/view.php', ['id' => $notification->id]);
+                $url = new \core\url('/admin/tool/mulib/notification/view.php', ['id' => $notification->id]);
                 $name = \html_writer::link($url, $name);
                 $row[] = $name;
             } else {
                 $row[] = $name;
+            }
+            if ($murelationactive) {
+                if ($notification->supervisorframeworkid) {
+                    $framework = $DB->get_record('tool_murelation_framework', ['id' => $notification->supervisorframeworkid]);
+                    if ($framework) {
+                        $row[] = format_string($framework->supervisortitle) . ' (' . format_string($framework->name) . ')';
+                    } else {
+                        $row[] = get_string('error');
+                    }
+                } else {
+                    $row[] = get_string('no');
+                }
             }
             $row[] = $notification->custom ? get_string('yes') : get_string('no');
             if ($classname) {
@@ -210,12 +224,12 @@ abstract class manager {
                     // Do not show the delete link here if they can go the notification details page,
                     // we do not want to encourage users to randomly deleting notification and loosing
                     // track of who was already notified.
-                    $url = new \moodle_url('/admin/tool/mulib/notification/delete.php', ['id' => $notification->id]);
+                    $url = new \core\url('/admin/tool/mulib/notification/delete.php', ['id' => $notification->id]);
                     $icon = new \tool_mulib\output\ajax_form\icon($url, get_string('notification_delete', 'tool_mulib'), 'i/delete');
                     $actions[] = $OUTPUT->render($icon);
                 }
                 if ($classname) {
-                    $url = new \moodle_url('/admin/tool/mulib/notification/update.php', ['id' => $notification->id]);
+                    $url = new \core\url('/admin/tool/mulib/notification/update.php', ['id' => $notification->id]);
                     $icon = new \tool_mulib\output\ajax_form\icon($url, get_string('notification_update', 'tool_mulib'), 'i/edit');
                     $actions[] = $OUTPUT->render($icon);
                 }
@@ -225,25 +239,29 @@ abstract class manager {
         }
 
         if (static::get_candidate_types($instanceid)) {
-            $url = new \moodle_url('/admin/tool/mulib/notification/create.php', ['instanceid' => $instanceid, 'component' => $component]);
+            $url = new \core\url('/admin/tool/mulib/notification/create.php', ['instanceid' => $instanceid, 'component' => $component]);
             $icon = new \tool_mulib\output\ajax_form\icon($url, get_string('notification_create', 'tool_mulib'), 'e/insert');
             $icon = $OUTPUT->render($icon);
             $cell = new \html_table_cell($icon);
+            $cell->colspan = 3;
+            if ($murelationactive) {
+                $cell->colspan++;
+            }
             if ($canmanage) {
-                $cell->colspan = 4;
-            } else {
-                $cell->colspan = 3;
+                $cell->colspan++;
             }
             $rows[] = [$cell];
         }
 
         $table = new \html_table();
         $table->id = ($tableid ?? static::get_component() . '_notifications');
-        $table->head = [
-            get_string('notification', 'tool_mulib'),
-            get_string('notification_custom', 'tool_mulib'),
-            get_string('notification_enabled', 'tool_mulib'),
-        ];
+        $table->head = [];
+        $table->head[] = get_string('notification', 'tool_mulib');
+        if ($murelationactive) {
+            $table->head[] = get_string('notification_cc_supervisor', 'tool_mulib');
+        };
+        $table->head[] = get_string('notification_custom', 'tool_mulib');
+        $table->head[] = get_string('notification_enabled', 'tool_mulib');
         if ($canmanage) {
             $table->head[] = get_string('actions');
         }
@@ -271,10 +289,57 @@ abstract class manager {
         }
 
         $component = static::get_component();
-        $url = new \moodle_url('/admin/tool/mulib/notification/import.php', ['instanceid' => $instanceid, 'component' => $component]);
+        $url = new \core\url('/admin/tool/mulib/notification/import.php', ['instanceid' => $instanceid, 'component' => $component]);
         $link = new \tool_mulib\output\ajax_form\link($url, get_string('notification_import', 'tool_mulib'));
         $actions->get_dropdown()->add_ajax_form($link);
 
         return $actions;
+    }
+
+    /**
+     * Returns supervisor frameworks for notification purposes.
+     *
+     * @param int $instanceid
+     * @param int|null $current
+     * @return array
+     */
+    public static function get_supervisor_options(int $instanceid, ?int $current): array {
+        global $DB;
+
+        $result = [0 => get_string('no')];
+
+        if (!mulib::is_murelatio_active()) {
+            // This should not happen.
+            return $result;
+        }
+
+        $context = static::get_instance_context($instanceid);
+
+        $sql = new \tool_mulib\local\sql(
+            "SELECT f.id, f.name, f.supervisortitle
+               FROM {tool_murelation_framework} f
+                    /* tenantjoin */
+              WHERE (f.visibility > 0 OR f.id = :current) /* tenantwhere */
+           ORDER BY f.supervisortitle ASC",
+            ['current' => $current]
+        );
+
+        if (mulib::is_mutenancy_active()) {
+            if ($context->tenantid) {
+                $sql = $sql->replace_comment('tenantjoin', "LEFT JOIN {tool_murelation_tenant_allow} ta ON ta.frameworkid = f.id");
+                $sql = $sql->replace_comment('tenantwhere', "AND (ta.id IS NOT NULL OR f.alltenants = 1)");
+            }
+        }
+
+        $frameworks = $DB->get_records_sql($sql->sql, $sql->params);
+        foreach ($frameworks as $framework) {
+            $result[$framework->id] = format_string($framework->supervisortitle) . ' (' . format_string($framework->name) . ')';
+        }
+
+        if ($current && !isset($result[$current])) {
+            $result[$current] = get_string('error');
+        }
+
+        return $result;
     }
 }
