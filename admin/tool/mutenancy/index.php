@@ -40,7 +40,7 @@ admin_externalpage_setup('tool_mutenancy_tenants', '', null, '', ['nosearch' => 
 $syscontext = context_system::instance();
 $tenantcount = $DB->count_records('tool_mutenancy_tenant', []);
 
-$PAGE->set_heading(get_string('tenants', 'tool_mutenancy'));
+$PAGE->set_heading(tenancy::get_tenants_string('tenants'));
 
 if (!tenancy::is_active()) {
     echo $OUTPUT->header();
@@ -59,7 +59,11 @@ if (has_capability('tool/mutenancy:admin', $syscontext)) {
     $notenantsyet = !$DB->record_exists('tool_mutenancy_tenant', []);
     if (!$tenantlimit || $tenantlimit > $DB->count_records('tool_mutenancy_tenant', [])) {
         $url = new moodle_url('/admin/tool/mutenancy/management/tenant_create.php');
-        $button = new \tool_mulib\output\ajax_form\button($url, get_string('tenant_create', 'tool_mutenancy'), $notenantsyet);
+        $button = new \tool_mulib\output\ajax_form\button(
+            $url,
+            tenancy::get_tenant_string('tenant_create'),
+            $notenantsyet
+        );
         $button->set_submitted_action($button::SUBMITTED_ACTION_REDIRECT);
         $PAGE->add_header_action($OUTPUT->render($button));
     }

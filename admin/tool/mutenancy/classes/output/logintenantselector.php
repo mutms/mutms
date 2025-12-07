@@ -19,6 +19,7 @@
 namespace tool_mutenancy\output;
 
 use stdClass;
+use tool_mutenancy\local\tenancy;
 
 /**
  * Tenant selector for login page.
@@ -50,7 +51,7 @@ final class logintenantselector implements \core\output\named_templatable, \rend
         }
 
         $this->menu = new \action_menu();
-        $this->menu->set_menu_trigger(get_string('login_tenant_select', 'tool_mutenancy'));
+        $this->menu->set_menu_trigger(tenancy::get_tenant_string('login_tenant_select'));
 
         if ($currenttenantid) {
             $site = $DB->get_record('course', ['category' => 0], 'id, fullname');

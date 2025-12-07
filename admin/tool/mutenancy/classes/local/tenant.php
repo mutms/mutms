@@ -20,6 +20,7 @@
 namespace tool_mutenancy\local;
 
 use stdClass;
+use tool_mutenancy\local\tenancy;
 
 /**
  * Multi-tenancy tenant helper.
@@ -156,7 +157,7 @@ final class tenant {
         // Create new hidden cohort for members in system context,
         // it would not be useful inside the tenant category much.
         $cohort = (object)[
-            'name' => get_string('tenant_users', 'tool_mutenancy') . ': ' . $data->name,
+            'name' => tenancy::get_tenant_string('tenant_users') . ': ' . $data->name,
             'contextid' => $syscontext->id,
             'visible' => 0,
             'component' => 'tool_mutenancy',
