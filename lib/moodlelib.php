@@ -2437,7 +2437,9 @@ function require_login($courseorid = null, $autologinguest = true, $cm = null, $
         $coursecontext = context_course::instance($course->id);
         if ($coursecontext->tenantid) {
             if (isguestuser()) {
-                throw new require_login_exception('No guest');
+                if (!get_config('tool_mutenancy', 'allowguests')) {
+                    throw new require_login_exception('No guest');
+                }
             } else {
                 global $USER;
                 $tenantid = \tool_mutenancy\local\tenancy::get_user_tenantid($USER->id);

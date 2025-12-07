@@ -666,6 +666,12 @@ function user_get_user_details($user, $course = null, array $userfields = array(
         $userdetails['theme'] = clean_param($userdetails['theme'], PARAM_THEME);
     }
 
+    if (mutenancy_is_active()) {
+        if (property_exists($user, 'tenantid')) {
+            $userdetails['tenantid'] = $user->tenantid;
+        }
+    }
+
     return $userdetails;
 }
 
