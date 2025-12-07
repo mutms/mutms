@@ -20,6 +20,7 @@
 namespace tool_muprog\phpunit\external\form_autocomplete;
 
 use tool_muprog\external\form_autocomplete\source_program_edit_programid;
+use tool_mulib\local\mulib;
 
 /**
  * Autocompletion support for completed program selection.
@@ -86,7 +87,7 @@ final class source_program_edit_programid_test extends \advanced_testcase {
     }
 
     public function test_execute_tenant(): void {
-        if (!\tool_muprog\local\util::is_mutenancy_available()) {
+        if (!mulib::is_mutenancy_available()) {
             $this->markTestSkipped('tenant support not available');
         }
 

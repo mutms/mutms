@@ -68,6 +68,18 @@ final class program_create extends \tool_mulib\local\ajax_form {
         $this->handler = \tool_muprog\customfield\program_handler::create();
         $this->handler->instance_form_definition($mform);
 
+        $sources = [];
+        /** @var \tool_muprog\local\source\base[] $sourceclasses */
+        $sourceclasses = \tool_muprog\local\allocation::get_source_classes();
+        foreach ($sourceclasses as $sourceclass) {
+            if ($sourceclass::is_new_allowed_in_new()) {
+                $sources[] = $mform->createElement('advcheckbox', $sourceclass::get_type(), $sourceclass::get_name());
+            }
+        }
+        if ($sources) {
+            $mform->addElement('group', 'addsources', get_string('allocationsources', 'tool_muprog'), $sources, '<div class="w-100 mb-2" />');
+        }
+
         $this->add_action_buttons(true, get_string('program_create', 'tool_muprog'));
 
         // Prepare custom fields data.

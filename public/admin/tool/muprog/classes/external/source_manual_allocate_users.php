@@ -24,6 +24,7 @@ use core_external\external_function_parameters;
 use core_external\external_value;
 use core_external\external_multiple_structure;
 use core_external\external_single_structure;
+use tool_mulib\local\mulib;
 
 /**
  * Allocates the given users to the program.
@@ -123,7 +124,7 @@ final class source_manual_allocate_users extends external_api {
             }
         }
 
-        if (\tool_muprog\local\util::is_mutenancy_active()) {
+        if (mulib::is_mutenancy_active()) {
             $programtenantid = $DB->get_field('context', 'tenantid', ['id' => $program->contextid]);
             if ($programtenantid) {
                 foreach ($useridstoallocate as $userid) {

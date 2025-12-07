@@ -310,6 +310,7 @@ class tool_muprog_generator extends component_generator_base {
             'component' => 'tool_muprog',
             'notificationtype' => $record->notificationtype,
             'instanceid' => $program->id,
+            'supervisorframeworkid' => $record->supervisorframeworkid ?? null,
             'enabled' => '1',
         ];
         if (!empty($record->custom)) {

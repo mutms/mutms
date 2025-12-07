@@ -19,6 +19,8 @@
 
 namespace tool_muprog\phpunit\external;
 
+use tool_mulib\local\mulib;
+
 /**
  * External API for adding cohort to the list or cohorts that are synced with the program.
  *
@@ -133,8 +135,7 @@ final class source_cohort_add_cohort_test extends \advanced_testcase {
     }
 
     public function test_execute_tenants(): void {
-        global $DB;
-        if (!\tool_muprog\local\util::is_mutenancy_available()) {
+        if (!mulib::is_mutenancy_available()) {
             $this->markTestSkipped('tenant support not available');
         }
 

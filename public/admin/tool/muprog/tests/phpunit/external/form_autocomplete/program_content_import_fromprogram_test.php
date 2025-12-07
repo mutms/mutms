@@ -20,6 +20,7 @@
 namespace tool_muprog\phpunit\external\form_autocomplete;
 
 use tool_muprog\external\form_autocomplete\program_content_import_fromprogram;
+use tool_mulib\local\mulib;
 
 /**
  * External API for form import program content
@@ -106,7 +107,7 @@ final class program_content_import_fromprogram_test extends \advanced_testcase {
 
     public function test_execute_tenant(): void {
         global $DB, $CFG;
-        if (!\tool_muprog\local\util::is_mutenancy_available()) {
+        if (!mulib::is_mutenancy_available()) {
             $this->markTestSkipped('tenant support not available');
         }
 

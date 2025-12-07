@@ -41,4 +41,8 @@ $callbacks = [
         'hook' => \tool_mutenancy\hook\tenant_management_menu::class,
         'callback' => [\tool_muprog\callback\tool_mutenancy::class, 'tenant_management_menu'],
     ],
+    [
+        'hook' => \tool_mulib\hook\extdb_query_classes::class,
+        'callback' => [\tool_muprog\local\extdb\query\allocation::class, 'query_manager_callback'],
+    ],
 ];

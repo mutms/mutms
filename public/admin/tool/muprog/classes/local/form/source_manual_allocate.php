@@ -19,6 +19,7 @@
 namespace tool_muprog\local\form;
 
 use tool_muprog\external\form_autocomplete\source_manual_allocate_users;
+use tool_mulib\local\mulib;
 
 /**
  * Allocate users and cohorts manually.
@@ -96,7 +97,7 @@ final class source_manual_allocate extends \tool_mulib\local\ajax_form {
             if (!$cohort->visible && !has_capability('moodle/cohort:view', $cohortcontext)) {
                 $errors['cohortid'] = get_string('error');
             }
-            if (\tool_muprog\local\util::is_mutenancy_active()) {
+            if (mulib::is_mutenancy_active()) {
                 if ($context->tenantid) {
                     if ($cohortcontext->tenantid && $cohortcontext->tenantid != $context->tenantid) {
                         $errors['cohortid'] = get_string('error');

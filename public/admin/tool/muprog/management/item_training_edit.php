@@ -29,6 +29,7 @@
 
 use tool_muprog\local\program;
 use tool_muprog\local\content\training;
+use tool_mulib\local\mulib;
 
 /** @var moodle_database $DB */
 /** @var moodle_page $PAGE */
@@ -48,7 +49,7 @@ $program = $DB->get_record('tool_muprog_program', ['id' => $item->programid], '*
 $context = context::instance_by_id($program->contextid);
 require_capability('tool/muprog:edit', $context);
 
-if (!\tool_muprog\local\util::is_mutrain_available()) {
+if (!mulib::is_mutrain_available()) {
     throw new \core\exception\coding_exception('mutrain is not available');
 }
 

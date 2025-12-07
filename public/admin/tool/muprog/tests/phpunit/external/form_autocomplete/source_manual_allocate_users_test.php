@@ -20,6 +20,7 @@
 namespace tool_muprog\phpunit\external\form_autocomplete;
 
 use tool_muprog\external\form_autocomplete\source_manual_allocate_users;
+use tool_mulib\local\mulib;
 
 /**
  * External API for program allocation candidate test.
@@ -123,7 +124,7 @@ final class source_manual_allocate_users_test extends \advanced_testcase {
     public function test_execution_tenant(): void {
         global $DB, $CFG;
 
-        if (!\tool_muprog\local\util::is_mutenancy_available()) {
+        if (!mulib::is_mutenancy_available()) {
             $this->markTestSkipped('tenant support not available');
         }
 

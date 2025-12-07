@@ -20,6 +20,7 @@
 namespace tool_muprog\phpunit\external\form_autocomplete;
 
 use tool_muprog\external\form_autocomplete\item_append_trainingid;
+use tool_mulib\local\mulib;
 
 /**
  * External API for adding of training to program.
@@ -36,7 +37,7 @@ use tool_muprog\external\form_autocomplete\item_append_trainingid;
 final class item_append_trainingid_test extends \advanced_testcase {
     public function setUp(): void {
         parent::setUp();
-        if (!\tool_muprog\local\util::is_mutrain_available()) {
+        if (!mulib::is_mutrain_available()) {
             $this->markTestSkipped('mutrain not available');
         }
         $this->resetAfterTest();
@@ -221,7 +222,7 @@ final class item_append_trainingid_test extends \advanced_testcase {
     }
 
     public function test_execute_tenant(): void {
-        if (!\tool_muprog\local\util::is_mutenancy_available()) {
+        if (!mulib::is_mutenancy_available()) {
             $this->markTestSkipped('tenant support not available');
         }
 

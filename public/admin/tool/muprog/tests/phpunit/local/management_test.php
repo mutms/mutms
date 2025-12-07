@@ -21,6 +21,8 @@
 namespace tool_muprog\phpunit\local;
 
 use tool_muprog\local\management;
+use tool_mulib\local\sql;
+use tool_mulib\local\mulib;
 
 /**
  * Program management helper test.
@@ -79,7 +81,7 @@ final class management_test extends \advanced_testcase {
     }
 
     public function test_get_management_url_tenant(): void {
-        if (!\tool_muprog\local\util::is_mutenancy_available()) {
+        if (!mulib::is_mutenancy_available()) {
             $this->markTestSkipped('multitenancy not available');
         }
         \tool_mutenancy\local\tenancy::activate();
@@ -122,40 +124,56 @@ final class management_test extends \advanced_testcase {
         $program2 = $generator->create_program(['fullname' => 'Second program', 'idnumber' => 'PRG2', 'description' => 'druhy popis']);
         $program3 = $generator->create_program(['fullname' => 'Third program', 'idnumber' => 'PR3', 'description' => 'treti popis', 'contextid' => $catcontext1->id]);
 
-        [$search, $params] = management::get_program_search_query(null, 'First', 'p');
-        $programids = $DB->get_fieldset_sql("SELECT p.* FROM {tool_muprog_program} AS p WHERE $search ORDER BY p.id ASC", $params);
+        $sql0 = new sql(
+            "SELECT p.*
+               FROM {tool_muprog_program} p
+              /* search */
+           ORDER BY p.id ASC"
+        );
+
+        $search = management::get_program_search_query(null, 'First', 'p');
+        $sql = $sql0->replace_comment('search', $search->wrap('WHERE ', ''));
+        $programids = $DB->get_fieldset_sql($sql->sql, $sql->params);
         $this->assertSame([$program1->id], $programids);
 
-        [$search, $params] = management::get_program_search_query(null, 'First', '');
-        $programids = $DB->get_fieldset_sql("SELECT * FROM {tool_muprog_program} WHERE $search ORDER BY id ASC", $params);
+        $search = management::get_program_search_query(null, 'First', '');
+        $sql = $sql0->replace_comment('search', $search->wrap('WHERE ', ''));
+        $programids = $DB->get_fieldset_sql($sql->sql, $sql->params);
         $this->assertSame([$program1->id], $programids);
 
-        [$search, $params] = management::get_program_search_query(null, 'PRG', 'p');
-        $programids = $DB->get_fieldset_sql("SELECT p.* FROM {tool_muprog_program} AS p WHERE $search ORDER BY p.id ASC", $params);
+        $search = management::get_program_search_query(null, 'PRG', 'p');
+        $sql = $sql0->replace_comment('search', $search->wrap('WHERE ', ''));
+        $programids = $DB->get_fieldset_sql($sql->sql, $sql->params);
         $this->assertSame([$program1->id, $program2->id], $programids);
 
-        [$search, $params] = management::get_program_search_query(null, 'popis', 'p');
-        $programids = $DB->get_fieldset_sql("SELECT p.* FROM {tool_muprog_program} AS p WHERE $search ORDER BY p.id ASC", $params);
+        $search = management::get_program_search_query(null, 'popis', 'p');
+        $sql = $sql0->replace_comment('search', $search->wrap('WHERE ', ''));
+        $programids = $DB->get_fieldset_sql($sql->sql, $sql->params);
         $this->assertSame([$program1->id, $program2->id, $program3->id], $programids);
 
-        [$search, $params] = management::get_program_search_query(null, '', 'p');
-        $programids = $DB->get_fieldset_sql("SELECT p.* FROM {tool_muprog_program} AS p WHERE $search ORDER BY p.id ASC", $params);
+        $search = management::get_program_search_query(null, '', 'p');
+        $sql = $sql0->replace_comment('search', $search->wrap('WHERE ', ''));
+        $programids = $DB->get_fieldset_sql($sql->sql, $sql->params);
         $this->assertSame([$program1->id, $program2->id, $program3->id], $programids);
 
-        [$search, $params] = management::get_program_search_query($catcontext1, '', 'p');
-        $programids = $DB->get_fieldset_sql("SELECT p.* FROM {tool_muprog_program} AS p WHERE $search ORDER BY p.id ASC", $params);
+        $search = management::get_program_search_query($catcontext1, '', 'p');
+        $sql = $sql0->replace_comment('search', $search->wrap('WHERE ', ''));
+        $programids = $DB->get_fieldset_sql($sql->sql, $sql->params);
         $this->assertSame([$program3->id], $programids);
 
-        [$search, $params] = management::get_program_search_query($catcontext1, 'PR', 'p');
-        $programids = $DB->get_fieldset_sql("SELECT p.* FROM {tool_muprog_program} AS p WHERE $search ORDER BY p.id ASC", $params);
+        $search = management::get_program_search_query($catcontext1, 'PR', 'p');
+        $sql = $sql0->replace_comment('search', $search->wrap('WHERE ', ''));
+        $programids = $DB->get_fieldset_sql($sql->sql, $sql->params);
         $this->assertSame([$program3->id], $programids);
 
-        [$search, $params] = management::get_program_search_query($catcontext1, 'PR', '');
-        $programids = $DB->get_fieldset_sql("SELECT * FROM {tool_muprog_program} WHERE $search ORDER BY id ASC", $params);
+        $search = management::get_program_search_query($catcontext1, 'PR', '');
+        $sql = $sql0->replace_comment('search', $search->wrap('WHERE ', ''));
+        $programids = $DB->get_fieldset_sql($sql->sql, $sql->params);
         $this->assertSame([$program3->id], $programids);
 
-        [$search, $params] = management::get_program_search_query($catcontext1, 'PRG', 'p');
-        $programids = $DB->get_fieldset_sql("SELECT p.* FROM {tool_muprog_program} AS p WHERE $search ORDER BY p.id ASC", $params);
+        $search = management::get_program_search_query($catcontext1, 'PRG', 'p');
+        $sql = $sql0->replace_comment('search', $search->wrap('WHERE ', ''));
+        $programids = $DB->get_fieldset_sql($sql->sql, $sql->params);
         $this->assertSame([], $programids);
     }
 

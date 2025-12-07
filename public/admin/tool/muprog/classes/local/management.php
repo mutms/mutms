@@ -24,6 +24,8 @@ use tool_muprog\local\content\item;
 use tool_muprog\local\content\set;
 use tool_muprog\local\content\top;
 use moodle_url, stdClass;
+use tool_mulib\local\sql;
+use tool_mulib\local\mulib;
 
 /**
  * Program management helper.
@@ -49,7 +51,7 @@ final class management {
 
         if (has_capability('tool/muprog:view', \context_system::instance())) {
             return new moodle_url('/admin/tool/muprog/management/index.php');
-        } else if (util::is_mutenancy_active()) {
+        } else if (mulib::is_mutenancy_active()) {
             $tenantid = \tool_mutenancy\local\tenancy::get_current_tenantid();
             if ($tenantid) {
                 $tenant = \tool_mutenancy\local\tenant::fetch($tenantid);
@@ -71,42 +73,36 @@ final class management {
      * @param \context|null $context
      * @param string $search
      * @param string $tablealias
-     * @return array
+     * @return sql
      */
-    public static function get_program_search_query(?\context $context, string $search, string $tablealias = ''): array {
+    public static function get_program_search_query(?\context $context, string $search, string $tablealias = ''): sql {
         global $DB;
 
-        if ($tablealias !== '' && substr($tablealias, -1) !== '.') {
+        if ($tablealias !== '' && !str_ends_with($tablealias, '.')) {
             $tablealias .= '.';
         }
 
         $conditions = [];
-        $params = [];
-
-        if ($context) {
-            $contextselect = 'AND ' . $tablealias . 'contextid = :prgcontextid';
-            $params['prgcontextid'] = $context->id;
-        } else {
-            $contextselect = '';
-        }
-
         if (trim($search) !== '') {
             $searchparam = '%' . $DB->sql_like_escape($search) . '%';
             $fields = ['fullname', 'idnumber', 'description'];
-            $cnt = 0;
             foreach ($fields as $field) {
-                $conditions[] = $DB->sql_like($tablealias . $field, ':prgsearch' . $cnt, false);
-                $params['prgsearch' . $cnt] = $searchparam;
-                $cnt++;
+                $conditions[] = new sql($DB->sql_like($tablealias . $field, '?', false), [$searchparam]);
             }
         }
 
         if ($conditions) {
-            $sql = '(' . implode(' OR ', $conditions) . ') ' . $contextselect;
-            return [$sql, $params];
+            $sql = sql::join(' OR ', $conditions)->wrap('(', ')');
         } else {
-            return ['1=1 ' . $contextselect, $params];
+            $sql = new sql('');
         }
+
+        if ($context) {
+            $contextselect = new sql($tablealias . 'contextid = ?', [$context->id]);
+            $sql = sql::join(' AND ', [$sql, $contextselect]);
+        }
+
+        return $sql;
     }
 
     /**

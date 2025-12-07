@@ -22,6 +22,7 @@ namespace tool_muprog\phpunit\local;
 
 use tool_muprog\local\content\set;
 use tool_muprog\local\content\top;
+use tool_mulib\local\mulib;
 
 /**
  * Program helper test.
@@ -127,7 +128,7 @@ final class export_test extends \advanced_testcase {
         ], $programs[0]->sources);
 
         // Add some training.
-        if (!\tool_muprog\local\util::is_mutrain_available()) {
+        if (!mulib::is_mutrain_available()) {
             return;
         }
 
@@ -187,7 +188,7 @@ final class export_test extends \advanced_testcase {
         $course1 = $this->getDataGenerator()->create_course();
         $course2 = $this->getDataGenerator()->create_course();
 
-        if (\tool_muprog\local\util::is_mutrain_available()) {
+        if (mulib::is_mutrain_available()) {
             /** @var \tool_mutrain_generator $traininggenerator */
             $traininggenerator = $this->getDataGenerator()->get_plugin_generator('tool_mutrain');
             $fielcategory = $this->getDataGenerator()->create_custom_field_category(
@@ -268,7 +269,7 @@ final class export_test extends \advanced_testcase {
         $course1 = $this->getDataGenerator()->create_course();
         $course2 = $this->getDataGenerator()->create_course();
 
-        if (\tool_muprog\local\util::is_mutrain_available()) {
+        if (mulib::is_mutrain_available()) {
             /** @var \tool_mutrain_generator $traininggenerator */
             $traininggenerator = $this->getDataGenerator()->get_plugin_generator('tool_mutrain');
             $fielcategory = $this->getDataGenerator()->create_custom_field_category(

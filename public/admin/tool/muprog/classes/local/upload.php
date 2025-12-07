@@ -19,6 +19,7 @@
 namespace tool_muprog\local;
 
 use stdClass;
+use tool_mulib\local\mulib;
 
 /**
  * Programs upload helper.
@@ -302,7 +303,7 @@ final class upload {
                         $coursename = $DB->get_field('course', 'fullname', ['id' => $item->courseid]);
                         return [$padding . format_string($coursename)];
                     } else if ($item->itemtype === 'training') {
-                        if (util::is_mutrain_available()) {
+                        if (mulib::is_mutrain_available()) {
                             $frameworkname = $DB->get_field('tool_mutrain_framework', 'name', ['id' => $item->trainingid]);
                             return [$padding . format_string($frameworkname)];
                         } else {
@@ -575,7 +576,7 @@ final class upload {
                             return get_string('error');
                         }
                         return null;
-                    } else if ($item->itemtype === 'training' && util::is_mutrain_available()) {
+                    } else if ($item->itemtype === 'training' && mulib::is_mutrain_available()) {
                         unset($item->items);
                         $frameworks = $DB->get_records('tool_mutrain_framework', ['idnumber' => $item->reference]);
                         if (count($frameworks) === 1) {
