@@ -1,0 +1,9 @@
+.DS_Store
+/.idea/
+/vendor/
+.phpunit.result.cache
+/mdc.env
+/composer.phar
+/composer.lock
+/compose.yaml
+

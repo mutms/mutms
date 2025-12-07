@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<XMLDB PATH="mod/mubook/db" VERSION="20251031" COMMENT="XMLDB file for Interactive book module"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:noNamespaceSchemaLocation="../../../lib/xmldb/xmldb.xsd"
+>
+  <TABLES>
+    <TABLE NAME="mubook" COMMENT="Interactive book module instances">
+      <FIELDS>
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+        <FIELD NAME="course" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="name" TYPE="char" LENGTH="255" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="intro" TYPE="text" NOTNULL="true" SEQUENCE="false" COMMENT="Short book introduction text, not displayed in the book itself"/>
+        <FIELD NAME="introformat" TYPE="int" LENGTH="4" NOTNULL="true" DEFAULT="1" SEQUENCE="false" COMMENT="Intro text format"/>
+        <FIELD NAME="numbering" TYPE="int" LENGTH="4" NOTNULL="true" SEQUENCE="false" COMMENT="Chapter numbering style"/>
+        <FIELD NAME="markdownhtml" TYPE="int" LENGTH="4" NOTNULL="true" SEQUENCE="false" COMMENT="How to deal with HTML tags in Markdown format"/>
+        <FIELD NAME="contentdefault" TYPE="char" LENGTH="100" NOTNULL="true" DEFAULT="markdown" SEQUENCE="false" COMMENT="Default type for new content"/>
+        <FIELD NAME="timecreated" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="timemodified" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+        <KEY NAME="course" TYPE="foreign" FIELDS="course" REFTABLE="course" REFFIELDS="id"/>
+      </KEYS>
+    </TABLE>
+    <TABLE NAME="mubook_chapter" COMMENT="Defines book chapters - only one level of nesting is allowed">
+      <FIELDS>
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+        <FIELD NAME="mubookid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="parentid" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false" COMMENT="Parent chapter id, null means top level - must reference the same book"/>
+        <FIELD NAME="title" TYPE="char" LENGTH="1333" NOTNULL="true" SEQUENCE="false" COMMENT="Chapter title"/>
+        <FIELD NAME="sortorder" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="1-based order number of chapter, unique in parent chapter or top level of each book"/>
+        <FIELD NAME="originjson" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="Optional info related to origin of chapter - such as import source, restored snapshot id, etc."/>
+        <FIELD NAME="timecreated" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="timemodified" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+        <KEY NAME="mubookid" TYPE="foreign" FIELDS="mubookid" REFTABLE="mubook" REFFIELDS="id"/>
+        <KEY NAME="parentid" TYPE="foreign" FIELDS="parentid" REFTABLE="mubook_chapter" REFFIELDS="id"/>
+      </KEYS>
+      <INDEXES>
+        <INDEX NAME="sortorder" UNIQUE="false" FIELDS="sortorder"/>
+      </INDEXES>
+    </TABLE>
+    <TABLE NAME="mubook_content" COMMENT="Defines chapter content items">
+      <FIELDS>
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+        <FIELD NAME="type" TYPE="char" LENGTH="100" NOTNULL="true" SEQUENCE="false" COMMENT="Content type - short internal name"/>
+        <FIELD NAME="chapterid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="Chapter where the content is shown"/>
+        <FIELD NAME="sortorder" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="1-based order number of chapter, unique in parent chapter or top level of each book"/>
+        <FIELD NAME="data1" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="General data"/>
+        <FIELD NAME="data2" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="General data"/>
+        <FIELD NAME="data3" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="General data"/>
+        <FIELD NAME="auxint1" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false" COMMENT="General integer"/>
+        <FIELD NAME="auxint2" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false" COMMENT="General integer"/>
+        <FIELD NAME="auxint3" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false" COMMENT="General integer"/>
+        <FIELD NAME="unsafetrusted" TYPE="int" LENGTH="1" NOTNULL="false" SEQUENCE="false" COMMENT="NULL for safe content, for unsafe content 1 means XSS is allowed, 0 means all HTML and files are sanitised"/>
+        <FIELD NAME="hidden" TYPE="int" LENGTH="1" NOTNULL="false" SEQUENCE="false" COMMENT="1 means normal users cannot see the content item, 0 means visible"/>
+        <FIELD NAME="groupid" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false" COMMENT="Optional restriction by group, if set then only group members or users with access all groups see the content"/>
+        <FIELD NAME="originjson" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="Optional info related to origin of content - such as import source, restored snapshot id, etc."/>
+        <FIELD NAME="timecreated" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="timemodified" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+        <KEY NAME="chapterid" TYPE="foreign" FIELDS="chapterid" REFTABLE="mubook_chapter" REFFIELDS="id"/>
+        <KEY NAME="groupid" TYPE="foreign" FIELDS="groupid" REFTABLE="group" REFFIELDS="id"/>
+      </KEYS>
+      <INDEXES>
+        <INDEX NAME="type" UNIQUE="false" FIELDS="type"/>
+        <INDEX NAME="sortorder" UNIQUE="false" FIELDS="sortorder"/>
+        <INDEX NAME="auxint1" UNIQUE="false" FIELDS="auxint1"/>
+      </INDEXES>
+    </TABLE>
+  </TABLES>
+</XMLDB>

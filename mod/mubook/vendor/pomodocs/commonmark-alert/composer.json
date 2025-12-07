@@ -1,0 +1,52 @@
+{
+  "name": "pomodocs/commonmark-alert",
+  "description": "CommonMark extension to support alerts in Github blockquote style",
+  "license": "MIT",
+  "type": "commonmark-extension",
+  "minimum-stability": "stable",
+  "autoload": {
+    "psr-4": {
+      "PomoDocs\\CommonMark\\Alert\\": "src/"
+    }
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "PomoDocs\\CommonMark\\Alert\\Tests\\": "tests/"
+    }
+  },
+  "require": {
+    "php": ">=8.1",
+    "league/commonmark": "^2.7"
+  },
+  "require-dev": {
+  },
+  "scripts": {
+    "analytics": "tools/phpstan analyze",
+    "check": [
+      "@cs:fix",
+      "@test",
+      "@analytics"
+    ],
+    "coverage:html": "@test --coverage-html coverage/",
+    "coverage": "@test --coverage",
+    "coverage:clover": "@test --coverage-clover clover.xml",
+    "cs:check": "tools/php-cs-fixer fix -v --diff --dry-run",
+    "cs:fix": "tools/php-cs-fixer fix -v --diff",
+    "test": "pest"
+  },
+  "scripts-descriptions": {
+    "analytics": "Run static analysis tool",
+    "check": "Perform all tests and analysis, required before submitting a pull request",
+    "cs:check": "Run code style analysis, without fixing errors",
+    "cs:fix": "Run code style analysis and fix errors",
+    "coverage": "Show coverage report to the console",
+    "coverage:html": "Create a code coverage report in html format, into the `coverage/` directory",
+    "coverage:clover": "Create a code coverage report in xml format, into the `clover.xml` file",
+    "test": "Run the test suite"
+  },
+  "config": {
+    "allow-plugins": {
+      "pestphp/pest-plugin": true
+    }
+  }
+}
