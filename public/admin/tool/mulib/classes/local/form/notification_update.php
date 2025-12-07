@@ -15,8 +15,11 @@
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 // phpcs:disable moodle.Files.BoilerplateComment.CommentEndedTooSoon
+// phpcs:disable moodle.Files.LineLength.TooLong
 
 namespace tool_mulib\local\form;
+
+use tool_mulib\local\mulib;
 
 /**
  * Notification update form.
@@ -44,14 +47,13 @@ final class notification_update extends \tool_mulib\local\ajax_form {
         $instance = $manager::get_instance_name($notification->instanceid);
         $mform->addElement('static', 'staticinstance', get_string('notification_instance', 'tool_mulib'), $instance);
 
-        $types = $manager::get_all_types();
-        $type = $types[$notification->notificationtype] ?? null;
-        if ($type) {
-            $type = $type::get_name();
-        } else {
-            $type = get_string('error');
+        $mform->addElement('static', 'staticnotificationtype', get_string('notification_type', 'tool_mulib'), $classname::get_name());
+
+        if (mulib::is_murelatio_active() && $classname::is_cc_supervisor_supported()) {
+            $options = $manager::get_supervisor_options($notification->instanceid, $notification->supervisorframeworkid);
+            $mform->addElement('select', 'supervisorframeworkid', get_string('notification_cc_supervisor', 'tool_mulib'), $options);
+            $mform->setDefault('supervisorframeworkid', $notification->supervisorframeworkid);
         }
-        $mform->addElement('static', 'staticnotificationtype', get_string('notification_type', 'tool_mulib'), $type);
 
         $mform->addElement('advcheckbox', 'enabled', get_string('notification_enabled', 'tool_mulib'), ' ');
         $mform->setDefault('enabled', $notification->enabled);
@@ -80,12 +82,9 @@ final class notification_update extends \tool_mulib\local\ajax_form {
         $mform->setDefault('subject', $subject);
         $mform->hideIf('subject', 'custom', 'notchecked');
 
-        // Hack: put editor into group to work around hideIf editor incompatibility.
-        $editor = $mform->createElement('editor', 'body', get_string('notification_body', 'tool_mulib'));
-        $mform->addElement('group', 'bodygroup', get_string('notification_body', 'tool_mulib'), [$editor], null, false);
-        $mform->setType('body', PARAM_RAW);
+        $mform->addElement('editor', 'body', get_string('notification_body', 'tool_mulib'));
         $mform->setDefault('body', ['text' => $body, 'format' => FORMAT_HTML]);
-        $mform->hideIf('bodygroup', 'custom', 'notchecked');
+        $mform->hideIf('body', 'custom', 'notchecked');
 
         $this->add_action_buttons(true, get_string('notification_update', 'tool_mulib'));
     }

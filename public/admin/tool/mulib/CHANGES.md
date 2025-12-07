@@ -1,5 +1,17 @@
 # Changelog
 
+## mu-5.0.4-01
+
+Release date: 08/12/2025
+
+* Changed \tool_mulib\external\form_autocomplete\user API to use sql fragments.
+* Changed \tool_mulib\local\sql methods to never modify existing instance.
+* Added get_contexts_by_capability_join() implementing fast user permissions lookup via database query. 
+* Added context parents and map database table for fast context relationship lookups.
+* Fixed custom notification editor.
+* Added option to send copy of subordinate notifications to supervisors.
+* Added management of reusable external PDO databases.
+
 ## mu-5.0.3-02
 
 Release date: 08/11/2025

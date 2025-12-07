@@ -21,6 +21,7 @@ namespace tool_mulib\phpunit\external\form_autocomplete;
 
 use tool_mulib\external\form_autocomplete\user;
 use tool_mulib\local\mulib;
+use tool_mulib\local\sql;
 
 /**
  * MuTMS helper tests.
@@ -44,10 +45,7 @@ final class user_test extends \advanced_testcase {
         $user0 = $this->getDataGenerator()->create_user();
         $syscontext = \context_system::instance();
         $result = user::get_tenant_related_users_where('u.id', $syscontext);
-        $this->assertSame("", $result);
-
-        $result = user::get_tenant_related_users_where('u.id', $syscontext, '');
-        $this->assertSame("1=1", $result);
+        $this->assertSame("", $result->sql);
 
         if (!mulib::is_mutenancy_available()) {
             return;
@@ -70,47 +68,35 @@ final class user_test extends \advanced_testcase {
         cohort_add_member($cohort2->id, $user0->id);
 
         $result = user::get_tenant_related_users_where('u.id', $syscontext);
-        $this->assertSame("", $result);
-
-        $result = user::get_tenant_related_users_where('u.id', $syscontext, '');
-        $this->assertSame("1=1", $result);
+        $this->assertSame("", $result->sql);
 
         $result = user::get_tenant_related_users_where('u.id', $tenantcontext1, '');
-        $sql = "SELECT u.id
-                  FROM {user} u
-                 WHERE $result
-              ORDER BY u.id ASC";
-        $this->assertEquals([$user1->id], array_keys($DB->get_records_sql($sql)));
+        $sql0 = new sql(
+            "SELECT u.id
+               FROM {user} u
+              /* where */
+           ORDER BY u.id ASC"
+        );
+        $sql = $sql0->replace_comment('where', $result->wrap('WHERE ', ''));
+        $this->assertEquals([$user1->id], array_keys($DB->get_records_sql($sql->sql, $sql->params)));
 
         $result = user::get_tenant_related_users_where('u.id', $tenantcontext2, '');
-        $sql = "SELECT u.id
-                  FROM {user} u
-                 WHERE $result
-              ORDER BY u.id ASC";
-        $this->assertEquals([$user0->id, $user2->id], array_keys($DB->get_records_sql($sql)));
+        $sql = $sql0->replace_comment('where', $result->wrap('WHERE ', ''));
+        $this->assertEquals([$user0->id, $user2->id], array_keys($DB->get_records_sql($sql->sql, $sql->params)));
 
         \tool_mutenancy\local\tenancy::force_current_tenantid($tenant2->id);
 
         $result = user::get_tenant_related_users_where('u.id', $syscontext, '');
-        $sql = "SELECT u.id
-                  FROM {user} u
-                 WHERE $result
-              ORDER BY u.id ASC";
-        $this->assertEquals([$user0->id, $user2->id], array_keys($DB->get_records_sql($sql)));
+        $sql = $sql0->replace_comment('where', $result->wrap('WHERE ', ''));
+        $this->assertEquals([$user0->id, $user2->id], array_keys($DB->get_records_sql($sql->sql, $sql->params)));
 
         $result = user::get_tenant_related_users_where('u.id', $tenantcontext1, '');
-        $sql = "SELECT u.id
-                  FROM {user} u
-                 WHERE $result
-              ORDER BY u.id ASC";
-        $this->assertEquals([$user1->id], array_keys($DB->get_records_sql($sql)));
+        $sql = $sql0->replace_comment('where', $result->wrap('WHERE ', ''));
+        $this->assertEquals([$user1->id], array_keys($DB->get_records_sql($sql->sql, $sql->params)));
 
         $result = user::get_tenant_related_users_where('u.id', $tenantcontext2, '');
-        $sql = "SELECT u.id
-                  FROM {user} u
-                 WHERE $result
-              ORDER BY u.id ASC";
-        $this->assertEquals([$user0->id, $user2->id], array_keys($DB->get_records_sql($sql)));
+        $sql = $sql0->replace_comment('where', $result->wrap('WHERE ', ''));
+        $this->assertEquals([$user0->id, $user2->id], array_keys($DB->get_records_sql($sql->sql, $sql->params)));
     }
 
     public function test_validate_tenant_relation(): void {

@@ -89,6 +89,36 @@ class behat_tool_mulib extends behat_base {
     }
 
     /**
+     * Execute a scheduled task via CURL.
+     *
+     * @Given I run all ad-hoc tasks
+     */
+    public function execute_adhoc_tasks() {
+        global $CFG;
+
+        $ch = new curl();
+        $options = [
+            'FOLLOWLOCATION' => true,
+            'RETURNTRANSFER' => true,
+            'SSL_VERIFYPEER' => false,
+            'SSL_VERIFYHOST' => 0,
+            'HEADER' => 0,
+        ];
+
+        $content = $ch->get(
+            "$CFG->wwwroot/admin/tool/mulib/tests/behat/adhoc_runner.php",
+            [],
+            $options
+        );
+
+        if (!str_contains($content, 'Ad-hoc tasks completed')) {
+            throw new ExpectationException("Ad-hoc tasks did not complete successfully, content : " . $content, $this->getSession());
+        }
+
+        $this->look_for_exceptions();
+    }
+
+    /**
      * Admin bookmark takes way too much space on admin pages,
      * so get rid of it.
      *

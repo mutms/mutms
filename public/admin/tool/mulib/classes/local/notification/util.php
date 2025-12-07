@@ -80,6 +80,10 @@ final class util {
             $data->enabled = 1;
         }
 
+        if (!$classname::is_cc_supervisor_supported() || empty($data->supervisorframeworkid)) {
+            $data->supervisorframeworkid = null;
+        }
+
         if (!empty($data->custom)) {
             $data->custom = '1';
             $data->customjson = $data->customjson ?? json_encode([
@@ -126,6 +130,14 @@ final class util {
         unset($data->instanceid);
         if (property_exists($data, 'enabled')) {
             $data->enabled = (int)(bool)$data->enabled;
+        }
+
+        if (!$classname::is_cc_supervisor_supported()) {
+            $data->supervisorframeworkid = null;
+        } else if (property_exists($data, 'supervisorframeworkid')) {
+            if (empty($data->supervisorframeworkid)) {
+                $data->supervisorframeworkid = null;
+            }
         }
 
         if (property_exists($data, 'custom')) {

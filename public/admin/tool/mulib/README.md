@@ -4,22 +4,25 @@
 
 This plugin is required by other MuTMS plugins.
 
-## List of APIs.
+## List of APIs and helpers
 
 1. Ajax forms for dialogs.
-2. Form autocompletion heplers.
+2. Form autocompletion helpers.
 3. Action dropdowns.
 4. Date interval helper.
 5. Notification manager.
 6. JSON validation helper.
 7. Entity details templates.
 8. SQL fragments.
+9. External PDO database servers and queries API.
+10. Context relations map.
+11. Database-level permissions lookup via context map.
 
-## Known Limitations
+## Known limitations
 
-- Supported databases: PostgreSQL and MariaDB (MS SQL Server is not fully supported).
-- 64-bit PHP is required.
+- Supported databases: PostgreSQL, MariaDB and MySQL (MS SQL Server is not fully supported).
 - PHP for Windows is not supported, use WSL 2 or Docker if necessary.
+- Classic theme is not supported in MuTMS plugins.
 
 ## Acknowledgement
 

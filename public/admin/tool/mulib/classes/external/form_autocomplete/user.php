@@ -67,21 +67,19 @@ abstract class user extends base {
      *
      * @param string $useridfield for example usr.id
      * @param \context $context
-     * @param string $glue
-     * @return string
+     * @return sql where condition, '' if tenants not active
      */
-    public static function get_tenant_related_users_where(string $useridfield, \context $context, string $glue = "AND"): string {
+    public static function get_tenant_related_users_where(string $useridfield, \context $context): sql {
         if (!mulib::is_mutenancy_active()) {
-            if ($glue === '') {
-                // Return something always true as WHERE condition.
-                return "1=1";
-            } else {
-                // This is expected to be appended to existing WHERE conditions.
-                return "";
-            }
+            return new sql('');
         }
 
-        return \tool_mutenancy\local\tenancy::get_related_users_exists($useridfield, $context, $glue);
+        $where = \tool_mutenancy\local\tenancy::get_related_users_exists($useridfield, $context, '');
+        if ($where === '1=1') {
+            return new sql('');
+        }
+
+        return new sql($where);
     }
 
     /**
@@ -126,17 +124,19 @@ abstract class user extends base {
             return null;
         }
 
-        $select = self::get_tenant_related_users_where('u.id', $context, 'AND');
+        $tenantwhere = self::get_tenant_related_users_where('u.id', $context);
 
-        if ($select === "") {
-            return null;
-        }
+        $sql = (
+            new sql(
+                "SELECT 'x'
+                   FROM {user} u
+                  WHERE u.id = :userid /* tenantwhere */",
+                ['userid' => $user->id]
+            )
+        )
+            ->replace_comment('tenantwhere', $tenantwhere->wrap('AND ', ''));
 
-        $sql = "SELECT 'x'
-                  FROM {user} u
-                 WHERE u.id = :userid $select";
-        $params = ['userid' => $user->id];
-        if ($DB->record_exists_sql($sql, $params)) {
+        if ($DB->record_exists_sql($sql->sql, $sql->params)) {
             return null;
         }
 

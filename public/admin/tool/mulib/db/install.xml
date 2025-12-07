@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<XMLDB PATH="admin/tool/mulib/db" VERSION="20250301" COMMENT="XMLDB file for tool_mulib"
+<XMLDB PATH="admin/tool/mulib/db" VERSION="20251127" COMMENT="XMLDB file for tool_mulib"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:noNamespaceSchemaLocation="../../../../lib/xmldb/xmldb.xsd"
 >
@@ -10,6 +10,7 @@
         <FIELD NAME="component" TYPE="char" LENGTH="50" NOTNULL="true" SEQUENCE="false" COMMENT="Plugin"/>
         <FIELD NAME="notificationtype" TYPE="char" LENGTH="100" NOTNULL="true" SEQUENCE="false" COMMENT="Type of notification - references PHP class in component local/notification namespace"/>
         <FIELD NAME="instanceid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="Notification instance id of given type, 0 if instances not used"/>
+        <FIELD NAME="supervisorframeworkid" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false" COMMENT="tool_murelation_framework id for notification of supervisors, used with suffix _supervisor in notificationtype field"/>
         <FIELD NAME="enabled" TYPE="int" LENGTH="1" NOTNULL="true" DEFAULT="1" SEQUENCE="false" COMMENT="Notification is enabled if record present and enabled value is 1"/>
         <FIELD NAME="custom" TYPE="int" LENGTH="1" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="1 if notification has custom text, otherwise lang pack is used, record is deleted only if instanceid is deleted"/>
         <FIELD NAME="customjson" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="Custom email subject, fullmessage and smallmessage settings"/>
@@ -22,6 +23,7 @@
       </KEYS>
       <INDEXES>
         <INDEX NAME="component-notificationtype-instanceid" UNIQUE="true" FIELDS="component, notificationtype, instanceid" COMMENT="Prevent duplicates"/>
+        <INDEX NAME="supervisorframeworkid" UNIQUE="false" FIELDS="supervisorframeworkid" COMMENT="Index instead of key because it is not a required dependency"/>
       </INDEXES>
     </TABLE>
     <TABLE NAME="tool_mulib_notification_user" COMMENT="Sent notifications - deleted when component instanceid is deleted">
@@ -41,6 +43,71 @@
       </KEYS>
       <INDEXES>
         <INDEX NAME="otherid1-otherid2" UNIQUE="false" FIELDS="otherid1, otherid2" COMMENT="Performance improvement"/>
+      </INDEXES>
+    </TABLE>
+    <TABLE NAME="tool_mulib_extdb_server" COMMENT="External database server">
+      <FIELDS>
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+        <FIELD NAME="name" TYPE="char" LENGTH="255" NOTNULL="true" SEQUENCE="false" COMMENT="Server name"/>
+        <FIELD NAME="dsn" TYPE="char" LENGTH="1333" NOTNULL="true" SEQUENCE="false" COMMENT="PDO connection string"/>
+        <FIELD NAME="dbuser" TYPE="char" LENGTH="100" NOTNULL="false" SEQUENCE="false" COMMENT="DB user name"/>
+        <FIELD NAME="dbpass" TYPE="char" LENGTH="100" NOTNULL="false" SEQUENCE="false" COMMENT="DB user password"/>
+        <FIELD NAME="dboptions" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="JSON encoded PDO connection options"/>
+        <FIELD NAME="note" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="Optional server note"/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+      </KEYS>
+      <INDEXES>
+        <INDEX NAME="name" UNIQUE="true" FIELDS="name" COMMENT="make names unique to prevent confusion"/>
+      </INDEXES>
+    </TABLE>
+    <TABLE NAME="tool_mulib_extdb_query" COMMENT="External database query">
+      <FIELDS>
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+        <FIELD NAME="name" TYPE="char" LENGTH="255" NOTNULL="true" SEQUENCE="false" COMMENT="Query name"/>
+        <FIELD NAME="contextid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="Query is usable in this context and sub-contexts"/>
+        <FIELD NAME="serverid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="External database server id"/>
+        <FIELD NAME="component" TYPE="char" LENGTH="50" NOTNULL="true" SEQUENCE="false" COMMENT="Plugin where query is usable"/>
+        <FIELD NAME="type" TYPE="char" LENGTH="50" NOTNULL="true" SEQUENCE="false" COMMENT="Type of plugin query"/>
+        <FIELD NAME="sqlquery" TYPE="text" NOTNULL="true" SEQUENCE="false" COMMENT="SQL query with named parameters"/>
+        <FIELD NAME="note" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="Optional query note"/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+        <KEY NAME="contextid" TYPE="foreign" FIELDS="contextid" REFTABLE="context" REFFIELDS="id"/>
+        <KEY NAME="serverid" TYPE="foreign" FIELDS="serverid" REFTABLE="tool_mulib_extdb_server" REFFIELDS="id"/>
+      </KEYS>
+      <INDEXES>
+        <INDEX NAME="name" UNIQUE="true" FIELDS="name" COMMENT="make names unique to prevent confusion"/>
+      </INDEXES>
+    </TABLE>
+    <TABLE NAME="tool_mulib_context_parent" COMMENT="Cache of context parents - it does not include activities and blocks for performance reasons">
+      <FIELDS>
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+        <FIELD NAME="contextid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="Context id"/>
+        <FIELD NAME="parentcontextid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="Parent context id"/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+        <KEY NAME="contextid" TYPE="foreign-unique" FIELDS="contextid" REFTABLE="context" REFFIELDS="id"/>
+        <KEY NAME="parentcontextid" TYPE="foreign" FIELDS="parentcontextid" REFTABLE="context" REFFIELDS="id"/>
+      </KEYS>
+    </TABLE>
+    <TABLE NAME="tool_mulib_context_map" COMMENT="Cache of context relationships - it does not include activities and blocks for performance reasons">
+      <FIELDS>
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+        <FIELD NAME="contextid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="Context id"/>
+        <FIELD NAME="relatedcontextid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="Related context id"/>
+        <FIELD NAME="distance" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="0 for the same context, 1 for immediate parent, 2 parent of parent, etc"/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+        <KEY NAME="contextid" TYPE="foreign" FIELDS="contextid" REFTABLE="context" REFFIELDS="id"/>
+        <KEY NAME="relatedcontextid" TYPE="foreign" FIELDS="relatedcontextid" REFTABLE="context" REFFIELDS="id"/>
+      </KEYS>
+      <INDEXES>
+        <INDEX NAME="contextid-distance" UNIQUE="true" FIELDS="contextid, distance" COMMENT="there is only one parent going up the context tree"/>
       </INDEXES>
     </TABLE>
   </TABLES>
