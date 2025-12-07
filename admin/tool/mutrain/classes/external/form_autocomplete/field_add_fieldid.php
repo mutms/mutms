@@ -63,13 +63,10 @@ final class field_add_fieldid extends \tool_mulib\external\form_autocomplete\bas
         [
             'query' => $query,
             'frameworkid' => $frameworkid,
-        ] = self::validate_parameters(
-            self::execute_parameters(),
-            [
-                'query' => $query,
-                'frameworkid' => $frameworkid,
-            ]
-        );
+        ] = self::validate_parameters(self::execute_parameters(), [
+            'query' => $query,
+            'frameworkid' => $frameworkid,
+        ]);
 
         $framework = $DB->get_record('tool_mutrain_framework', ['id' => $frameworkid], '*', MUST_EXIST);
 
