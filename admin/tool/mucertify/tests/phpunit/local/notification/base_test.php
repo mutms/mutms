@@ -72,7 +72,7 @@ final class base_test extends \advanced_testcase {
         $this->assertSame('Manual assignment', $result['certification_sourcename']);
         $this->assertStringContainsString('Not certified', $result['certification_status']);
 
-        $result = \tool_mucertify\local\notification\base::get_assignment_placeholders($certification1, $source1, $assignment, $user1, $related1);
+        $result = \tool_mucertify\local\notification\base::get_assignment_placeholders($certification1, $source1, $assignment, $user1);
         $this->assertIsArray($result);
         $this->assertSame(\fullname($user1), $result['user_fullname']);
         $this->assertSame($user1->firstname, $result['user_firstname']);
@@ -80,6 +80,22 @@ final class base_test extends \advanced_testcase {
         $this->assertSame($certification1->fullname, $result['certification_fullname']);
         $this->assertSame($certification1->idnumber, $result['certification_idnumber']);
         $this->assertSame("$CFG->wwwroot/admin/tool/mucertify/my/certification.php?id=$certification1->id", $result['certification_url']);
+        $this->assertSame('Manual assignment', $result['certification_sourcename']);
+        $this->assertStringContainsString('Not certified', $result['certification_status']);
+
+        if (!\tool_mulib\local\mulib::is_murelatio_available()) {
+            return;
+        }
+
+        $this->setUser($user1);
+        $result = \tool_mucertify\local\notification\base::get_assignment_placeholders($certification1, $source1, $assignment, $user1, $related1);
+        $this->assertIsArray($result);
+        $this->assertSame(\fullname($user1), $result['user_fullname']);
+        $this->assertSame($user1->firstname, $result['user_firstname']);
+        $this->assertSame($user1->lastname, $result['user_lastname']);
+        $this->assertSame($certification1->fullname, $result['certification_fullname']);
+        $this->assertSame($certification1->idnumber, $result['certification_idnumber']);
+        $this->assertSame("$CFG->wwwroot/admin/tool/mucertify/catalogue/certification.php?id=$certification1->id", $result['certification_url']);
         $this->assertSame('Manual assignment', $result['certification_sourcename']);
         $this->assertStringContainsString('Not certified', $result['certification_status']);
     }

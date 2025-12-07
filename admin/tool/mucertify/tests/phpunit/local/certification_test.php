@@ -136,6 +136,24 @@ final class certification_test extends \advanced_testcase {
         $this->assertSame($program1->id, $certification->programid1);
         $this->assertSame(null, $certification->programid2);
         $this->assertSame(null, $certification->recertify);
+
+        $data = (object)[
+            'fullname' => 'Certification with manual source',
+            'idnumber' => 'C4',
+            'contextid' => $syscontext->id,
+            'addsources' => ['manual' => 1],
+        ];
+        $certification = certification::create((object)$data);
+        $this->assertTrue($DB->record_exists('tool_mucertify_source', ['certificationid' => $certification->id, 'type' => 'manual']));
+
+        $data = (object)[
+            'fullname' => 'Certification without manual source',
+            'idnumber' => 'C5',
+            'contextid' => $syscontext->id,
+            'addsources' => ['manual' => 0],
+        ];
+        $certification = certification::create((object)$data);
+        $this->assertFalse($DB->record_exists('tool_mucertify_source', ['certificationid' => $certification->id, 'type' => 'manual']));
     }
 
     public function test_update_general(): void {

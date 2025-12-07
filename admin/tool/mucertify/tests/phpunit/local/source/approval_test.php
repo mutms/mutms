@@ -52,6 +52,10 @@ final class approval_test extends \advanced_testcase {
         $this->assertTrue(approval::is_new_allowed($certification));
     }
 
+    public function test_is_new_allowed_in_new(): void {
+        $this->assertFalse(approval::is_new_allowed_in_new());
+    }
+
     public function test_can_user_request(): void {
         global $DB;
 

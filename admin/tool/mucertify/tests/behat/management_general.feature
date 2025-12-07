@@ -57,6 +57,7 @@ Feature: General Certification management tests
       | Certification name | Certification 001 |
       | Certification ID   | CT01              |
     And I click on "Add certification" "button" in the ".modal-dialog" "css_element"
+    And I click on "General" "link" in the ".secondary-navigation" "css_element"
     Then I should see "Certification 001" in the "Certification name" definition list item
     And I should see "CT01" in the "Certification ID" definition list item
     And I should see "System" in the "Category" definition list item
@@ -84,6 +85,7 @@ Feature: General Certification management tests
     And I set the field "Context" to "Cat 2"
     And I set the field "Tags" to "Mathematics, Algebra"
     And I click on "Add certification" "button" in the ".modal-dialog" "css_element"
+    And I click on "General" "link" in the ".secondary-navigation" "css_element"
     Then I should see "Certification 001" in the "Certification name" definition list item
     And I should see "CT01" in the "Certification ID" definition list item
     And I should see "Cat 2" in the "Category" definition list item
@@ -103,6 +105,7 @@ Feature: General Certification management tests
       | Certification name | Certification 001 |
       | Certification ID   | CT01              |
     And I click on "Add certification" "button" in the ".modal-dialog" "css_element"
+    And I click on "General" "link" in the ".secondary-navigation" "css_element"
 
     When I press "Edit"
     And I set the following fields in the ".modal-dialog" "css_element" to these values:
@@ -125,6 +128,7 @@ Feature: General Certification management tests
     And I set the field "Context" to "Cat 1"
     And I set the field "Tags" to "Logic"
     And I click on "Add certification" "button" in the ".modal-dialog" "css_element"
+    And I click on "General" "link" in the ".secondary-navigation" "css_element"
 
     When I press "Edit"
     And I set the following fields in the ".modal-dialog" "css_element" to these values:
@@ -175,6 +179,7 @@ Feature: General Certification management tests
       | Certification name  | Certification 001 |
       | Certification ID    | C01               |
     And I click on "Add certification" "button" in the ".modal-dialog" "css_element"
+    And I click on "General" "link" in the ".secondary-navigation" "css_element"
 
     When I click on "Archive certification" "link"
     And I click on "Archive certification" "button" in the ".modal-dialog" "css_element"
@@ -193,6 +198,7 @@ Feature: General Certification management tests
       | Certification name  | Certification 001 |
       | Certification ID    | C01               |
     And I click on "Add certification" "button" in the ".modal-dialog" "css_element"
+    And I click on "General" "link" in the ".secondary-navigation" "css_element"
     And I click on "Archive certification" "link"
     And I click on "Archive certification" "button" in the ".modal-dialog" "css_element"
     And I should see "Yes" in the "Archived" definition list item

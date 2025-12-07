@@ -138,6 +138,7 @@ $string['management_certification_users_actions'] = 'User actions';
 $string['messageprovider:approval_reject_notification'] = 'Certification request rejection notification';
 $string['messageprovider:approval_request_notification'] = 'Certification approval request notification';
 $string['messageprovider:assignment_notification'] = 'Certification assignment notification';
+$string['messageprovider:cc_supervisor_notification'] = 'Copy of subordinate certification notifications';
 $string['messageprovider:unassignment_notification'] = 'Certification un-assignment notification';
 $string['messageprovider:valid_notification'] = 'Certification validity notification';
 $string['mucertify:admin'] = 'Advanced certification administration';
@@ -158,6 +159,16 @@ $string['notification_assignment_body'] = 'Hello {$a->user_fullname},
 you have been assigned to certification "{$a->certification_fullname}".';
 $string['notification_assignment_description'] = 'Notification sent to users when they are assigned to certification.';
 $string['notification_assignment_subject'] = 'Certification assignment notification';
+$string['notification_cc_supervisor_body'] = 'Hello {$a->supervisor_fullname},
+
+a notification was sent to the following user:
+
+* {$a->subordinate_title}: {$a->user_fullname}
+* Notification type: {$a->notification_name}
+* Related certification: {$a->certification_fullname}
+
+';
+$string['notification_cc_supervisor_subject'] = '{$a->supervisor_title} notification - {$a->certification_fullname}';
 $string['notification_unassignment'] = 'User un-assigned';
 $string['notification_unassignment_body'] = 'Hello {$a->user_fullname},
 
@@ -276,6 +287,7 @@ $string['source_manual_result_skipped'] = '{$a} users were already assigned to c
 $string['source_manual_timeduecolumn'] = 'Certification due time column';
 $string['source_manual_timeendcolumn'] = 'Window closing time column';
 $string['source_manual_timestartcolumn'] = 'Window opening time column';
+$string['source_manual_timeuntilcolumn'] = 'Expiration time column';
 $string['source_manual_uploadusers'] = 'Upload assignments';
 $string['source_manual_usercolumn'] = 'User identification column';
 $string['source_manual_usermapping'] = 'User mapping via';

@@ -1,5 +1,16 @@
 # Changelog
 
+## mu-5.0.4-01
+
+Release date: 08/12/2025
+
+* After creating new certification user is now redirected to Period settings page because they need to add program. 
+* Fixed timezones in notifications.
+* Added supervisor notifications.
+* Added support for Expiration column into certification assignment uploads.
+* Added Expiration to certification assignment form - this can be used to align employee re-certifications to fixed dates. 
+* Added option for enabling of Manual allocations during certification creation.
+
 ## mu-5.0.3-02
 
 Release date: 08/11/2025
