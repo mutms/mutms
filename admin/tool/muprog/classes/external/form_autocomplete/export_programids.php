@@ -15,11 +15,14 @@
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 // phpcs:disable moodle.Files.BoilerplateComment.CommentEndedTooSoon
+// phpcs:disable moodle.Files.LineLength.TooLong
 
 namespace tool_muprog\external\form_autocomplete;
 
 use core_external\external_function_parameters;
 use core_external\external_value;
+use tool_mulib\local\sql;
+use tool_mulib\local\context_map;
 
 /**
  * Provides list of programs that can be exported.
@@ -55,37 +58,40 @@ final class export_programids extends \tool_mulib\external\form_autocomplete\bas
      * @return array
      */
     public static function execute(string $query): array {
-        global $DB;
+        global $DB, $USER;
 
-        $params['query'] = self::validate_parameters(self::execute_parameters(), ['query' => $query]);
+        [
+            'query' => $query,
+        ] = self::validate_parameters(self::execute_parameters(), [
+            'query' => $query,
+        ]);
 
         $syscontext = \context_system::instance();
         self::validate_context($syscontext);
 
-        [$searchsql, $params] = \tool_muprog\local\management::get_program_search_query(null, $query, 'p');
+        $sql = (
+            new sql(
+                "SELECT p.id, p.fullname
+                   FROM {tool_muprog_program} p
+                  /* capsubquery */
+                   /*capwhere */ /* searchsql */
+               ORDER BY p.fullname ASC"
+            )
+        )
+            ->replace_comment(
+                'searchsql',
+                \tool_muprog\local\management::get_program_search_query(null, $query, 'p')->wrap('AND ', '')
+            )
+            ->replace_comment(
+                'capsubquery',
+                context_map::get_contexts_by_capability_query(
+                    'tool/muprog:export',
+                    $USER->id,
+                    new sql("(ctx.contextlevel = ? OR ctx.contextlevel = ?)", [\context_system::LEVEL, \context_coursecat::LEVEL])
+                )->wrap("JOIN (", ")capctx ON capctx.id = p.contextid")
+            );
 
-        $sql = "SELECT p.id, p.fullname, p.contextid
-                  FROM {tool_muprog_program} p
-                  JOIN {context} c ON c.id = p.contextid
-                 WHERE $searchsql
-              ORDER BY p.fullname ASC";
-        $rs = $DB->get_recordset_sql($sql, $params);
-
-        $programs = [];
-        $count = 0;
-        foreach ($rs as $program) {
-            $context = \context::instance_by_id($program->contextid);
-            if (!has_capability('tool/muprog:export', $context)) {
-                continue;
-            }
-            $programs[] = $program;
-            $count++;
-            if ($count > self::MAX_RESULTS) {
-                break;
-            }
-        }
-        $rs->close();
-
+        $programs = $DB->get_records_sql($sql->sql, $sql->params, 0, self::MAX_RESULTS);
         return self::prepare_result($programs, $syscontext);
     }
 

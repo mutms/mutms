@@ -22,6 +22,7 @@ namespace tool_muprog\local\content;
 use tool_muprog\local\program;
 use tool_muprog\local\util;
 use tool_muprog\local\allocation;
+use tool_mulib\local\mulib;
 
 /**
  * Program top item.
@@ -307,7 +308,7 @@ final class top extends set {
             throw new \invalid_parameter_exception('Completion delay cannot be negative');
         }
 
-        if (!util::is_mutrain_available()) {
+        if (!mulib::is_mutrain_available()) {
             throw new \core\exception\coding_exception('mutrain is not avialable');
         }
 

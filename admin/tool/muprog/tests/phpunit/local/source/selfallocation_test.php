@@ -54,6 +54,10 @@ final class selfallocation_test extends \advanced_testcase {
         $this->assertFalse(\tool_muprog\local\source\selfallocation::is_new_allowed($program));
     }
 
+    public function test_is_new_allowed_in_new(): void {
+        $this->assertFalse(\tool_muprog\local\source\selfallocation::is_new_allowed_in_new());
+    }
+
     public function test_can_user_request(): void {
         global $DB;
 
@@ -249,6 +253,8 @@ final class selfallocation_test extends \advanced_testcase {
         $this->assertSame($source1->auxint1, $source3->auxint1);
         $this->assertSame($source1->auxint2, $source3->auxint2);
         $this->assertSame($source1->auxint3, $source3->auxint3);
+        $this->assertSame($source1->auxint4, $source3->auxint4);
+        $this->assertSame($source1->auxint5, $source3->auxint5);
 
         $source3 = \tool_muprog\local\source\selfallocation::import_source_data($program2->id, $program3->id);
         $this->assertSame($program3->id, $source3->programid);
@@ -257,5 +263,7 @@ final class selfallocation_test extends \advanced_testcase {
         $this->assertSame($source2->auxint1, $source3->auxint1);
         $this->assertSame($source2->auxint2, $source3->auxint2);
         $this->assertSame($source2->auxint3, $source3->auxint3);
+        $this->assertSame($source2->auxint4, $source3->auxint4);
+        $this->assertSame($source2->auxint5, $source3->auxint5);
     }
 }

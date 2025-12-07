@@ -23,6 +23,7 @@ use core_external\external_value;
 use core_external\external_api;
 use tool_muprog\local\source\cohort;
 use core_external\external_multiple_structure;
+use tool_mulib\local\mulib;
 
 /**
  * Adds a cohort to the list of synchronised cohorts in a program.
@@ -71,7 +72,7 @@ final class source_cohort_add_cohort extends external_api {
         $cohortcontext = \context::instance_by_id($cohort->contextid);
         require_capability('moodle/cohort:view', $cohortcontext);
 
-        if (\tool_muprog\local\util::is_mutenancy_active()) {
+        if (mulib::is_mutenancy_active()) {
             $programtenantid = $DB->get_field('context', 'tenantid', ['id' => $program->contextid]);
             if ($programtenantid) {
                 $cohorttenantid = $DB->get_field('context', 'tenantid', ['id' => $cohort->contextid]);

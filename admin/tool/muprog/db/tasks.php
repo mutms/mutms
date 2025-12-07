@@ -30,7 +30,7 @@ defined('MOODLE_INTERNAL') || die();
 
 $tasks = [
     [
-        'classname' => '\tool_muprog\task\cron',
+        'classname' => tool_muprog\task\cron::class,
         'minute' => 'R',
         'hour' => '*',
         'day' => '*',
@@ -39,7 +39,16 @@ $tasks = [
         'disabled' => 0,
     ],
     [
-        'classname' => '\tool_muprog\task\certificate',
+        'classname' => tool_muprog\task\extdb_cron::class,
+        'minute' => 'R',
+        'hour' => '1',
+        'day' => '*',
+        'month' => '*',
+        'dayofweek' => '*',
+        'disabled' => 0,
+    ],
+    [
+        'classname' => tool_muprog\task\certificate::class,
         'minute' => 'R',
         'hour' => '*',
         'day' => '*',

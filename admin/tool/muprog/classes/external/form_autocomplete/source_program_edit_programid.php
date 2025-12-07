@@ -15,11 +15,15 @@
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 // phpcs:disable moodle.Files.BoilerplateComment.CommentEndedTooSoon
+// phpcs:disable moodle.Files.LineLength.TooLong
 
 namespace tool_muprog\external\form_autocomplete;
 
 use core_external\external_function_parameters;
 use core_external\external_value;
+use tool_mulib\local\sql;
+use tool_mulib\local\context_map;
+use tool_mulib\local\mulib;
 
 /**
  * Provides list of programs where user can allocate users - as source for allocation after completion.
@@ -55,18 +59,15 @@ final class source_program_edit_programid extends \tool_mulib\external\form_auto
      * @return array
      */
     public static function execute(string $query, int $programid): array {
-        global $DB;
+        global $DB, $USER;
 
         [
             'query' => $query,
             'programid' => $programid,
-        ] = self::validate_parameters(
-            self::execute_parameters(),
-            [
-                'query' => $query,
-                'programid' => $programid,
-            ]
-        );
+        ] = self::validate_parameters(self::execute_parameters(), [
+            'query' => $query,
+            'programid' => $programid,
+        ]);
 
         $targetprogram = $DB->get_record('tool_muprog_program', ['id' => $programid], '*', MUST_EXIST);
         $context = \context::instance_by_id($targetprogram->contextid);
@@ -74,43 +75,45 @@ final class source_program_edit_programid extends \tool_mulib\external\form_auto
         self::validate_context($context);
         require_capability('tool/muprog:edit', $context);
 
-        [$searchsql, $params] = \tool_muprog\local\management::get_program_search_query(null, $query, 'p');
-        $params['programid'] = $programid;
+        $sql = (
+            new sql(
+                "SELECT p.id, p.fullname
+                   FROM {tool_muprog_program} p
+                   /* capsubquery */
+                   /* tenantjoin */
+                  WHERE p.id <> :programid /* searchsql */
+               ORDER BY p.fullname ASC",
+                ['programid' => $programid]
+            )
+        )
+            ->replace_comment(
+                'capsubquery',
+                context_map::get_contexts_by_capability_query(
+                    'tool/muprog:allocate',
+                    $USER->id,
+                    new sql("(ctx.contextlevel = ? OR ctx.contextlevel = ?)", [\context_system::LEVEL, \context_coursecat::LEVEL])
+                )->wrap("JOIN (", ")capctx ON capctx.id = p.contextid")
+            )
+            ->replace_comment(
+                'searchsql',
+                \tool_muprog\local\management::get_program_search_query(null, $query, 'p')->wrap('AND ', '')
+            );
 
-        $tenantselect = '';
-        if (\tool_muprog\local\util::is_mutenancy_active()) {
-            // Do not mix tenants here!
+        if (mulib::is_mutenancy_active()) {
             if ($context->tenantid) {
-                $tenantselect = "AND c.tenantid = :tenantid";
-                $params['tenantid'] = $context->tenantid;
+                $sql = $sql->replace_comment(
+                    'tenantjoin',
+                    new sql("JOIN {context} tctx ON tctx.id = p.contextid AND tctx.tenantid = ?", [$context->tenantid])
+                );
             } else {
-                $tenantselect = "AND c.tenantid IS NULL";
+                $sql = $sql->replace_comment(
+                    'tenantjoin',
+                    new sql("JOIN {context} tctx ON tctx.id = p.contextid AND tctx.tenantid IS NULL")
+                );
             }
         }
 
-        $sql = "SELECT p.id, p.fullname, p.contextid
-                  FROM {tool_muprog_program} p
-                  JOIN {context} c ON c.id = p.contextid
-                 WHERE p.id <> :programid AND $searchsql
-                       $tenantselect
-              ORDER BY p.fullname ASC";
-        $rs = $DB->get_recordset_sql($sql, $params);
-
-        $programs = [];
-        $count = 0;
-        foreach ($rs as $program) {
-            $context = \context::instance_by_id($program->contextid);
-            if (!has_capability('tool/muprog:allocate', $context)) {
-                continue;
-            }
-            $programs[] = $program;
-            $count++;
-            if ($count > self::MAX_RESULTS) {
-                break;
-            }
-        }
-        $rs->close();
-
+        $programs = $DB->get_records_sql($sql->sql, $sql->params, 0, self::MAX_RESULTS);
         return self::prepare_result($programs, $context);
     }
 
@@ -126,8 +129,8 @@ final class source_program_edit_programid extends \tool_mulib\external\form_auto
         if (!$program) {
             return get_string('error');
         }
-        $context = \context::instance_by_id($program->contextid);
-        if (!has_capability('tool/muprog:allocate', $context)) {
+        $programcontext = \context::instance_by_id($program->contextid);
+        if (!has_capability('tool/muprog:allocate', $programcontext)) {
             return get_string('error');
         }
 

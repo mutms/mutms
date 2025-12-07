@@ -95,6 +95,12 @@ if ($ADMIN->fulltree) {
         new lang_string('source_program_allownew_desc', 'tool_muprog'),
         1
     ));
+    $settings->add(new admin_setting_configcheckbox(
+        'tool_muprog/source_extdb_allownew',
+        new lang_string('source_extdb_allownew', 'tool_muprog'),
+        new lang_string('source_extdb_allownew_desc', 'tool_muprog'),
+        0
+    ));
 }
 
 $ADMIN->add('tool_muprog', new admin_externalpage(

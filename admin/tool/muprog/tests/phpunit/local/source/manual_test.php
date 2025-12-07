@@ -51,8 +51,12 @@ final class manual_test extends \advanced_testcase {
         $program = $generator->create_program();
 
         $this->assertTrue(manual::is_new_allowed($program));
-        \set_config('source_manual_allownew', 0, 'tool_muprog');
+        set_config('source_manual_allownew', 0, 'tool_muprog');
         $this->assertTrue(manual::is_new_allowed($program));
+    }
+
+    public function test_is_new_allowed_in_new(): void {
+        $this->assertTrue(manual::is_new_allowed_in_new());
     }
 
     public function test_is_allocation_possible(): void {
@@ -773,5 +777,7 @@ final class manual_test extends \advanced_testcase {
         $this->assertSame($source1->auxint1, $source2->auxint1);
         $this->assertSame($source1->auxint2, $source2->auxint2);
         $this->assertSame($source1->auxint3, $source2->auxint3);
+        $this->assertSame($source1->auxint4, $source2->auxint4);
+        $this->assertSame($source1->auxint5, $source2->auxint5);
     }
 }

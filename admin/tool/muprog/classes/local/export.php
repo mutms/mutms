@@ -19,6 +19,7 @@
 namespace tool_muprog\local;
 
 use stdClass;
+use tool_mulib\local\mulib;
 
 /**
  * Program export helper.
@@ -151,7 +152,7 @@ final class export {
                 }
 
                 if ($item instanceof \tool_muprog\local\content\training) {
-                    if (util::is_mutrain_available()) {
+                    if (mulib::is_mutrain_available()) {
                         $framework = $DB->get_record('tool_mutrain_framework', ['id' => $item->get_trainingid()]);
                         if ($framework) {
                             $reference = $framework->idnumber ?? $framework->name;

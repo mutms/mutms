@@ -20,6 +20,7 @@
 namespace tool_muprog\phpunit\external\form_autocomplete;
 
 use tool_muprog\external\form_autocomplete\program_visibility_edit_cohortids;
+use tool_mulib\local\mulib;
 
 /**
  * External API for program visibility cohorts test.
@@ -108,7 +109,7 @@ final class program_visibility_edit_cohortids_test extends \advanced_testcase {
     public function test_execution_tenant(): void {
         global $DB;
 
-        if (!\tool_muprog\local\util::is_mutenancy_available()) {
+        if (!mulib::is_mutenancy_available()) {
             $this->markTestSkipped('tenant support not available');
         }
 

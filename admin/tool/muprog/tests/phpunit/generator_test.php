@@ -21,6 +21,7 @@ namespace tool_muprog\phpunit;
 use tool_muprog\local\content\course;
 use tool_muprog\local\content\set;
 use tool_muprog\local\program;
+use tool_mulib\local\mulib;
 
 /**
  * Program generator test.
@@ -223,7 +224,7 @@ final class generator_test extends \advanced_testcase {
         $top = program::load_content($program->id);
         $this->assertSame($item5->get_id(), $top->get_children()[2]->get_children()[1]->get_id());
 
-        if (!\tool_muprog\local\util::is_mutrain_available()) {
+        if (!mulib::is_mutrain_available()) {
             return;
         }
 

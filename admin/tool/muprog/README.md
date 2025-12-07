@@ -15,14 +15,16 @@ efficient way to manage both small-scale and large-scale learning initiatives an
 
 ## Key features
 
-* program content created as a hierarchy of courses, training frameworks and course sets with flexible sequencing rules,
-* multiple sources for allocation of students to programs,
-* advanced program scheduling settings,
-* efficient course enrolment automation,
-* easy-to-use _Program management_ interface,
-* _Program catalogue_ where students may browse available programs and related courses,
-* dedicated _My programs profile page_,
-* _My programs dashboard block_ for quick access to details.
+* program content created as a hierarchy of courses, training frameworks and course sets with flexible sequencing rules
+* multiple sources for allocation of students to programs
+* advanced program scheduling settings
+* efficient course enrolment automation
+* easy-to-use _Program management_ interface
+* _Program catalogue_ where students may browse available programs and related courses
+* dedicated _My programs profile page_
+* _My programs dashboard block_ for quick access to details
+* allocation based on external database data
+* supervisors may receive copy of notifications sent to subordinates
 
 ## Requirements
 
@@ -34,6 +36,7 @@ This plugin requires following plugins:
 Other recommended plugins:
 
 * [My programs block](https://github.com/mutms/moodle-block_muprog_my)
+* [Supervisors and teams plugin](https://github.com/mutms/moodle-tool_murelation)
 * [Training plugin](https://github.com/mutms/moodle-tool_mutrain)
 * [Training value custom field](https://github.com/mutms/moodle-customfield_mutrain)
 * [Certificate plugin](https://github.com/moodleworkplace/moodle-tool_certificate)
@@ -56,6 +59,5 @@ This plugin is not suitable for existing customers of Open LMS due to the lack o
 
 * Target for production release and availability of paid support: Q2 2026
 * Planned features:
-   * synchronisation of allocations with external database 
-   * integration of Supervisors and teams plugin for notifications and approvals
+   * integration of Supervisors and teams plugin for approvals
    * integration of Universal catalogue plugin

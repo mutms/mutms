@@ -54,6 +54,10 @@ final class cohort_test extends \advanced_testcase {
         $this->assertFalse(\tool_muprog\local\source\cohort::is_new_allowed($program));
     }
 
+    public function test_is_new_allowed_in_new(): void {
+        $this->assertFalse(\tool_muprog\local\source\cohort::is_new_allowed_in_new());
+    }
+
     public function test_allocations_ignore_visibility(): void {
         global $DB;
 

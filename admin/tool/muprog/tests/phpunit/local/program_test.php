@@ -41,6 +41,8 @@ final class program_test extends \advanced_testcase {
     }
 
     public function test_create(): void {
+        global $DB;
+
         $syscontext = \context_system::instance();
         $data = (object)[
             'fullname' => 'Some program',
@@ -123,6 +125,25 @@ final class program_test extends \advanced_testcase {
         $this->assertSame('{"type":"delay","delay":"P1D"}', $program->duedatejson);
         $this->assertSame('{"type":"delay","delay":"P2M"}', $program->enddatejson);
         $this->assertTimeCurrent($program->timecreated);
+        $this->assertFalse($DB->record_exists('tool_muprog_source', ['programid' => $program->id, 'type' => 'manual']));
+
+        $data = (object)[
+            'fullname' => 'Program with manual source',
+            'idnumber' => 'SP4',
+            'contextid' => $syscontext->id,
+            'addsources' => ['manual' => 1],
+        ];
+        $program = program::create($data);
+        $this->assertTrue($DB->record_exists('tool_muprog_source', ['programid' => $program->id, 'type' => 'manual']));
+
+        $data = (object)[
+            'fullname' => 'Program without manual source',
+            'idnumber' => 'SP5',
+            'contextid' => $syscontext->id,
+            'addsources' => ['manual' => 0],
+        ];
+        $program = program::create($data);
+        $this->assertFalse($DB->record_exists('tool_muprog_source', ['programid' => $program->id, 'type' => 'manual']));
     }
 
     public function test_update_general(): void {

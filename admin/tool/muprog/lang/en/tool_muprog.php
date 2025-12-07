@@ -122,6 +122,7 @@ $string['exportfile_programs'] = 'programs';
 $string['exportformat'] = 'File format';
 $string['exportformat_csv'] = 'CSV';
 $string['exportformat_json'] = 'JSON';
+$string['extdb_query_allocation'] = 'Program allocation';
 $string['fixeddate'] = 'At a fixed date';
 $string['importallocationend'] = 'Allocation end ({$a})';
 $string['importallocationstart'] = 'Allocation start ({$a})';
@@ -150,6 +151,7 @@ $string['management_program_users_actions'] = 'Users actions';
 $string['messageprovider:allocation_notification'] = 'Program allocation notification';
 $string['messageprovider:approval_reject_notification'] = 'Program request rejection notification';
 $string['messageprovider:approval_request_notification'] = 'Program approval request notification';
+$string['messageprovider:cc_supervisor_notification'] = 'Copy of subordinate program notifications';
 $string['messageprovider:completion_notification'] = 'Program completed notification';
 $string['messageprovider:deallocation_notification'] = 'Program deallocation notification';
 $string['messageprovider:due_notification'] = 'Program overdue notification';
@@ -188,6 +190,16 @@ you have been allocated to program "{$a->program_fullname}", the start date is {
 ';
 $string['notification_allocation_description'] = 'Notification sent to users when they are allocated to program.';
 $string['notification_allocation_subject'] = 'Program allocation notification';
+$string['notification_cc_supervisor_body'] = 'Hello {$a->supervisor_fullname},
+
+a notification was sent to the following user:
+
+* {$a->subordinate_title}: {$a->user_fullname}
+* Notification type: {$a->notification_name}
+* Related program: {$a->program_fullname}
+
+';
+$string['notification_cc_supervisor_subject'] = '{$a->supervisor_title} notification - {$a->program_fullname}';
 $string['notification_completion'] = 'Program completed';
 $string['notification_completion_body'] = 'Hello {$a->user_fullname},
 
@@ -389,6 +401,16 @@ $string['source_cohort'] = 'Automatic cohort allocation';
 $string['source_cohort_allownew'] = 'Allow cohort allocation';
 $string['source_cohort_allownew_desc'] = 'Allow adding new _cohort auto allocation_ sources to programs';
 $string['source_cohort_cohortstoallocate'] = 'Allocate cohorts';
+$string['source_extdb'] = 'External database allocation';
+$string['source_extdb_allownew'] = 'Allow external database sync';
+$string['source_extdb_allownew_desc'] = 'External database sync requires the selection of a predefined query.
+To use this allocation source, site administrators need to configure external database server and queries in _Site administration / Server / External databases_.';
+$string['source_extdb_archiveremoved'] = 'Archive missing users';
+$string['source_extdb_lastsync'] = 'Last allocation update';
+$string['source_extdb_pendingsync'] = 'Allocation update pending';
+$string['source_extdb_sync'] = 'Process allocations';
+$string['source_extdb_sync_notqueued'] = 'Failed crating external database allocation ad-hoc task';
+$string['source_extdb_sync_queued'] = 'External database allocation ad-hoc task created';
 $string['source_manual'] = 'Manual allocation';
 $string['source_manual_allocateusers'] = 'Allocate users';
 $string['source_manual_csvfile'] = 'CSV file';
@@ -434,6 +456,8 @@ $string['tabgeneral'] = 'General';
 $string['tabusers'] = 'Users';
 $string['tabvisibility'] = 'Catalogue visibility';
 $string['tagarea_tool_muprog_program'] = 'Programs';
+$string['task_extdb_cron'] = 'External database program allocation cron';
+$string['task_extdb_sync'] = 'External database program allocation';
 $string['taskcertificate'] = 'Programs certificate issuing cron';
 $string['taskcron'] = 'Programs plugin cron';
 $string['training'] = 'Training';
