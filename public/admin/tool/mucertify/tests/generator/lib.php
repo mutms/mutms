@@ -282,6 +282,7 @@ class tool_mucertify_generator extends component_generator_base {
             'component' => 'tool_mucertify',
             'notificationtype' => $record->notificationtype,
             'instanceid' => $certification->id,
+            'supervisorframeworkid' => $record->supervisorframeworkid ?? null,
             'enabled' => '1',
         ];
         return \tool_mulib\local\notification\util::notification_create($data);

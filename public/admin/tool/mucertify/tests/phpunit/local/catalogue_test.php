@@ -19,6 +19,8 @@
 
 namespace tool_mucertify\phpunit\local;
 
+use tool_mulib\local\mulib;
+
 /**
  * Certification catalogue test.
  *
@@ -182,7 +184,7 @@ final class catalogue_test extends \advanced_testcase {
     public function test_get_certifications_tenant(): void {
         global $DB;
 
-        if (!\tool_mucertify\local\util::is_mutenancy_available()) {
+        if (!mulib::is_mutenancy_available()) {
             $this->markTestSkipped('tenant support not available');
         }
 
@@ -416,7 +418,7 @@ final class catalogue_test extends \advanced_testcase {
     public function test_is_certification_visible_tenant(): void {
         global $DB;
 
-        if (!\tool_mucertify\local\util::is_mutenancy_available()) {
+        if (!mulib::is_mutenancy_available()) {
             $this->markTestSkipped('tenant support not available');
         }
 

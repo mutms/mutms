@@ -53,6 +53,15 @@ final class manual extends base {
     }
 
     /**
+     * Can a new source of this type be added to programs when creating program?
+     *
+     * @return bool
+     */
+    public static function is_new_allowed_in_new(): bool {
+        return true;
+    }
+
+    /**
      * Is it possible to manually assign users to this certification?
      *
      * @param stdClass $certification
@@ -206,7 +215,12 @@ final class manual extends base {
             unset($filedata[0]);
         }
 
-        $datefields = ['timestartcolumn' => 'timewindowstart', 'timeduecolumn' => 'timewindowdue', 'timeendcolumn' => 'timewindowend'];
+        $datefields = [
+            'timestartcolumn' => 'timewindowstart',
+            'timeduecolumn' => 'timewindowdue',
+            'timeendcolumn' => 'timewindowend',
+            'timeuntilcolumn' => 'timeuntil',
+        ];
         $datecolumns = [];
         foreach ($datefields as $key => $value) {
             if (isset($data->{$key}) && $data->{$key} != -1) {

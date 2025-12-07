@@ -53,6 +53,10 @@ final class manual_test extends \advanced_testcase {
         $this->assertSame(true, manual::is_new_allowed($certification));
     }
 
+    public function test_is_new_allowed_in_new(): void {
+        $this->assertTrue(manual::is_new_allowed_in_new());
+    }
+
     public function test_is_update_allowed(): void {
         $certification = new \stdClass();
         $this->assertSame(true, manual::is_update_allowed($certification));

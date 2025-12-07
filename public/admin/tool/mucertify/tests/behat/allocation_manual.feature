@@ -38,7 +38,7 @@ Feature: Manual certification assignment tests
       | student3 | CH1    |
       | student2 | CH2    |
     And the following "roles" exist:
-      | name            | shortname |
+      | name                  | shortname |
       | certification viewer  | pviewer   |
       | certification manager | pmanager  |
     And the following "permission overrides" exist:
@@ -64,7 +64,9 @@ Feature: Manual certification assignment tests
       | Certification 000 | CT0      |          | PR0      |
       | Certification 001 | CT1      | Cat 1    | PR1      |
       | Certification 002 | CT2      | Cat 2    | PR2      |
-      | Certification 003 | CT3      | Cat 3    | PR3      |
+    And the following "tool_mucertify > certifications" exist:
+      | fullname          | idnumber | category | program1 | program2 | recertify | sources |
+      | Certification 003 | CT3      | Cat 3    | PR3      | PR3      | 2592000   | manual  |
 
   @javascript
   Scenario: Manager may assign users manually to certification
@@ -121,6 +123,28 @@ Feature: Manual certification assignment tests
     When I click on "Delete assignment" "link" in the "Student 2" "table_row"
     And I click on "Delete assignment" "button" in the ".modal-dialog" "css_element"
     Then I should not see "Student 2"
+
+  @javascript
+  Scenario: Manager may assign users manually with expiration to certification
+    Given I log in as "manager1"
+    And I am on the "tool_mucertify > All certifications management" page
+    And I follow "Certification 003"
+    And I click on "Users" "link" in the ".secondary-navigation" "css_element"
+
+    When I press "Assign users"
+    And I set the following fields to these values:
+      | Users                    | Student 1   |
+      | timeuntil[enabled]       | 1           |
+      | timeuntil[day]           | 1           |
+      | timeuntil[month]         | 1           |
+      | timeuntil[year]          | 2035        |
+      | timeuntil[hour]          | 00          |
+      | timeuntil[minute]        | 00          |
+    And I click on "Assign users" "button" in the ".modal-dialog" "css_element"
+    And I follow "Student 1"
+    Then the following should exist in the "reportbuilder-table" table:
+      | Certification due | Window closing | Program     | Expiration     | Re-certify automatically | Status  |
+      | Not set           | Not set        | Program 003 | 1/01/35, 00:00 | 2/12/34, 00:00           | Pending |
 
   @javascript @tool_mutenancy
   Scenario: Tenant manager may assign users manually to certification
@@ -249,6 +273,33 @@ Feature: Manual certification assignment tests
       | Program     | Window opening  | Certification due | Window closing | Expiration  |
       | Program 001 | 11/10/24, 00:00	| 2/01/25, 00:00    | 2/07/25, 00:00 | Not set     |
 
+  @javascript @_file_upload
+  Scenario: Manager may assign users with expiration in bulk using csv to certification
+    Given I log in as "manager1"
+    And I am on the "tool_mucertify > All certifications management" page
+    And I follow "Certification 003"
+    And I click on "Users" "link" in the ".secondary-navigation" "css_element"
+
+    When I click on "Upload assignments" action from "User actions" dropdown
+    And I upload "admin/tool/mucertify/tests/fixtures/assign_expire.csv" file to "CSV file" filemanager
+    And I click on "Continue" "button" in the ".modal-dialog" "css_element"
+    And I set the following fields in the ".modal-dialog" "css_element" to these values:
+      | User identification column | username  |
+      | User mapping via           | Username  |
+      | Expiration time            | timeuntil |
+      | First line is header       | 1         |
+    And I click on "Upload assignments" "button" in the ".modal-dialog" "css_element"
+    And I should see "2 users were assigned to certification"
+    And I follow "Student 1"
+    Then the following should exist in the "reportbuilder-table" table:
+      | Certification due | Window closing | Program     | Expiration     | Re-certify automatically | Status  |
+      | Not set           | Not set        | Program 003 | 1/01/35, 00:00 | 2/12/34, 00:00           | Pending |
+    And I click on "Users" "link" in the ".secondary-navigation" "css_element"
+    And I follow "Student 2"
+    Then the following should exist in the "reportbuilder-table" table:
+      | Certification due | Window closing | Program     | Expiration     | Re-certify automatically | Status  |
+      | Not set           | Not set        | Program 003 | Not set        | If expired               | Pending |
+
   @javascript
   Scenario: Set up, add and update custom fields for certification assignments
     And the following "permission overrides" exist:
@@ -304,3 +355,20 @@ Feature: Manual certification assignment tests
     And I follow "Certification 000"
     Then I should see "ASF2" in the "Test field 2" definition list item
     And I should not see "Test field 1"
+
+  @javascript
+  Scenario: Manager may enable Manual assignment when creating certification
+    Given I log in as "manager1"
+    And I am on the "tool_mucertify > All certifications management" page
+
+    When I click on "Add certification" "button"
+    And I set the following fields in the ".modal-dialog" "css_element" to these values:
+      | Certification name | Certification 001 |
+      | Manual assignment  | 1                 |
+      | Certification ID   | CT01              |
+    And I click on "Add certification" "button" in the ".modal-dialog" "css_element"
+    And I follow "Assignment settings"
+    Then I should see "Active" in the "Manual assignment" definition list item
+    And I should see "Inactive" in the "Self assignment" definition list item
+    And I should see "Inactive" in the "Requests with approval" definition list item
+    And I should see "Inactive" in the "Automatic cohort assignment" definition list item

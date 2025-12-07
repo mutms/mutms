@@ -178,6 +178,22 @@ final class certification {
 
         util::fix_mucertify_active();
 
+        if (!empty($data->addsources) && is_array($data->addsources)) {
+            foreach ($data->addsources as $sourcetype => $addsource) {
+                if (!$addsource) {
+                    continue;
+                }
+                $classname = assignment::get_source_classname($sourcetype);
+                if ($classname && $classname::is_new_allowed_in_new()) {
+                    $classname::update_source((object)[
+                        'certificationid' => $certification->id,
+                        'type' => $sourcetype,
+                        'enable' => 1,
+                    ]);
+                }
+            }
+        }
+
         \tool_mucertify\event\certification_created::create_from_certification($certification)->trigger();
 
         return $certification;

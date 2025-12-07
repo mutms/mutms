@@ -15,11 +15,15 @@
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 // phpcs:disable moodle.Files.BoilerplateComment.CommentEndedTooSoon
+// phpcs:disable moodle.Files.LineLength.TooLong
 
 namespace tool_mucertify\external\form_autocomplete;
 
 use core_external\external_function_parameters;
 use core_external\external_value;
+use tool_mulib\local\sql;
+use tool_mulib\local\context_map;
+use tool_mulib\local\mulib;
 
 /**
  * Cohort allocation cohorts autocompletion.
@@ -50,54 +54,58 @@ final class source_cohort_edit_cohortids extends \tool_mulib\external\form_autoc
      * @return array
      */
     public static function execute(string $query, int $certificationid): array {
-        global $DB;
+        global $DB, $USER;
 
         [
             'query' => $query,
             'certificationid' => $certificationid,
-        ] = self::validate_parameters(
-            self::execute_parameters(),
-            [
-                'query' => $query,
-                'certificationid' => $certificationid,
-            ]
-        );
+        ] = self::validate_parameters(self::execute_parameters(), [
+            'query' => $query,
+            'certificationid' => $certificationid,
+        ]);
 
         $certification = $DB->get_record('tool_mucertify_certification', ['id' => $certificationid], '*', MUST_EXIST);
         $context = \context::instance_by_id($certification->contextid);
         self::validate_context($context);
         require_capability('tool/mucertify:edit', $context);
 
-        [$searchsql, $params] = self::get_cohort_search_query($query, 'ch');
-        $tenantselect = "";
-        if (\tool_mucertify\local\util::is_mutenancy_active()) {
+        $sql = (
+            new sql(
+                "SELECT ch.id, ch.name
+                      FROM {cohort} ch
+                      /* tenantjoin */
+                      /* capsubquery */
+                    /* capwhere */ /* searchsql */
+                  ORDER BY ch.name ASC"
+            )
+        )
+            ->replace_comment(
+                'capsubquery',
+                context_map::get_contexts_by_capability_query(
+                    'moodle/cohort:view',
+                    $USER->id,
+                    new sql("(ctx.contextlevel = ? OR ctx.contextlevel = ?)", [\context_system::LEVEL, \context_coursecat::LEVEL])
+                )->wrap("LEFT JOIN (", ")capctx ON capctx.id = ch.contextid")
+            )
+            ->replace_comment(
+                'capwhere',
+                "WHERE (ch.visible = 1 OR capctx.id IS NOT NULL)"
+            )
+            ->replace_comment(
+                'searchsql',
+                self::get_cohort_search_query($query, 'ch')->wrap('AND ', '')
+            );
+
+        if (mulib::is_mutenancy_active()) {
             if ($context->tenantid) {
-                $tenantselect = "AND (c.tenantid IS NULL OR c.tenantid = :tenantid)";
-                $params['tenantid'] = $context->tenantid;
+                $sql = $sql->replace_comment(
+                    'tenantjoin',
+                    new sql("JOIN {context} tctx ON tctx.id = ch.contextid AND (tctx.tenantid = ? OR tctx.tenantid IS NULL)", [$context->tenantid])
+                );
             }
         }
 
-        $sql = "SELECT ch.id, ch.name, ch.contextid, ch.visible
-                  FROM {cohort} ch
-                  JOIN {context} c ON c.id = ch.contextid
-                 WHERE $searchsql $tenantselect
-              ORDER BY ch.name ASC";
-        $rs = $DB->get_recordset_sql($sql, $params);
-
-        $cohorts = [];
-        $i = 0;
-        foreach ($rs as $cohort) {
-            if (!self::is_cohort_visible($cohort)) {
-                continue;
-            }
-            $cohorts[$cohort->id] = $cohort;
-            $i++;
-            if ($i > self::MAX_RESULTS) {
-                break;
-            }
-        }
-        $rs->close();
-
+        $cohorts = $DB->get_records_sql($sql->sql, $sql->params, 0, self::MAX_RESULTS + 1);
         return self::prepare_result($cohorts, $context);
     }
 
@@ -121,7 +129,7 @@ final class source_cohort_edit_cohortids extends \tool_mulib\external\form_autoc
             }
         }
         $certification = $DB->get_record('tool_mucertify_certification', ['id' => $certificationid], '*', MUST_EXIST);
-        if (\tool_mucertify\local\util::is_mutenancy_active()) {
+        if (mulib::is_mutenancy_active()) {
             $certificationcontext = \context::instance_by_id($certification->contextid);
             if ($context->tenantid && $certificationcontext->tenantid && $context->tenantid != $certificationcontext->tenantid) {
                 // Do not allow cohorts from other tenants.
