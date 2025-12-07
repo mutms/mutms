@@ -78,32 +78,35 @@ final class team_update_userid extends \tool_mulib\external\form_autocomplete\us
             throw new \core\exception\invalid_parameter_exception('Cannot update team');
         }
 
-        $sql = new sql(
-            "SELECT usr.*
-               FROM {user} usr
-               /* cohortjoin */
-              WHERE usr.deleted = 0 AND usr.confirmed = 1
-                    /* search */ /* tenant */
-            /* orderby */"
-        );
+        $sql = (
+            new sql(
+                "SELECT usr.*
+                   FROM {user} usr
+                   /* cohortjoin */
+                  WHERE usr.deleted = 0 AND usr.confirmed = 1
+                        /* search */ /* tenant */
+                /* orderby */"
+            )
+        )
+            ->replace_comment(
+                'search',
+                self::get_user_search_query($query, 'usr', $context)->wrap('AND ', '')
+            )
+            ->replace_comment(
+                'tenant',
+                self::get_tenant_related_users_where('usr.id', $context)->wrap('AND ', '')
+            )
+            ->replace_comment(
+                'orderby',
+                self::get_user_search_orderby($query, 'usr', $context)->wrap('ORDER BY ', '')
+            );
+
         if ($framework->supervisorcohortid) {
-            $sql->replace_comment(
+            $sql = $sql->replace_comment(
                 'cohortjoin',
                 new sql("JOIN {cohort_members} cm ON cm.userid = usr.id AND cm.cohortid = ?", [$framework->supervisorcohortid])
             );
         }
-        $sql->replace_comment(
-            'search',
-            self::get_user_search_query($query, 'usr', $context)->wrap('AND ', '')
-        );
-        $sql->replace_comment(
-            'tenant',
-            self::get_tenant_related_users_where('usr.id', $context, 'AND')
-        );
-        $sql->replace_comment(
-            'orderby',
-            self::get_user_search_orderby($query, 'usr', $context)->wrap('ORDER BY ', '')
-        );
 
         $users = $DB->get_records_sql($sql->sql, $sql->params, 0, $CFG->maxusersperpage + 1);
 

@@ -309,7 +309,7 @@ final class uimode_teams {
             ]
         );
         if (mulib::is_mutenancy_active() && $subuser->tenantid) {
-            $sql->replace_comment(
+            $sql = $sql->replace_comment(
                 'tenant',
                 "AND (f.alltenants = 1 OR EXISTS (
                     SELECT 'x'

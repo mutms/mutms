@@ -47,7 +47,7 @@ How to create supervisors:
 - Team cohort may be created, all subordinates of the team are then automatically added as cohort members.
 - When changing tenant memberships user may be removed from teams to respect tenant separation, this is done at a later time from cron task.
 
-How to create supervisors:
+How to create teams:
 
 1. Login as admin and go to "Site administration / Users / User relation frameworks"
 2. Add a new framework using "Teams" framework mode
@@ -60,7 +60,6 @@ How to create supervisors:
 
 * Target for production release and availability of paid support: Q2 2026
 * Planned features:
-   * Notification of related users in programs and certifications
    * Approvals by related users in programs allocations and certification assignments
    * Additional/temporary supervisors
    * Report builder content restrictions
