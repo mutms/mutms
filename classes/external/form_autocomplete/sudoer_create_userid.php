@@ -21,6 +21,7 @@ namespace tool_musudo\external\form_autocomplete;
 use core_external\external_function_parameters;
 use core_external\external_value;
 use tool_musudo\local\util;
+use tool_mulib\local\sql;
 
 /**
  * Provides list of candidates for sudo users.
@@ -53,41 +54,39 @@ final class sudoer_create_userid extends \tool_mulib\external\form_autocomplete\
 
         [
             'query' => $query,
-        ] = self::validate_parameters(
-            self::execute_parameters(),
-            [
-                'query' => $query,
-            ]
-        );
+        ] = self::validate_parameters(self::execute_parameters(), [
+            'query' => $query,
+        ]);
 
         util::require_admin();
 
         $syscontext = \context_system::instance();
         self::validate_context($syscontext);
 
-        $fields = \core_user\fields::for_name()->with_identity($syscontext, false);
-        $extrafields = $fields->get_required_fields([\core_user\fields::PURPOSE_IDENTITY]);
-
-        [$searchsql, $searchparams] = users_search_sql($query, 'usr', true, $extrafields);
-        [$sortsql, $sortparams] = users_order_by_sql('usr', $query, $syscontext);
-        $params = array_merge($searchparams, $sortparams);
-
         $admins = explode(',', $CFG->siteadmins);
         $admins = array_map('intval', $admins);
         $admins = implode(',', $admins);
 
-        $sqlquery = <<<SQL
-            SELECT usr.*
-              FROM {user} usr
-         LEFT JOIN {tool_musudo_sudoer} su ON su.userid = usr.id
-             WHERE {$searchsql}
-                   AND su.id IS NULL AND usr.deleted = 0 AND usr.confirmed = 1
-                   AND usr.id NOT IN ($admins)
-          ORDER BY {$sortsql}
-SQL;
+        $sql = (
+            new sql(
+                "SELECT u.*
+                  FROM {user} u
+             LEFT JOIN {tool_musudo_sudoer} su ON su.userid = u.id
+                 WHERE su.id IS NULL AND u.deleted = 0 AND u.confirmed = 1
+                       AND u.id NOT IN ($admins) /* searchsql */
+              /* orderby */"
+            )
+        )
+            ->replace_comment(
+                'searchsql',
+                self::get_user_search_query($query, 'u', $syscontext)->wrap('AND ', '')
+            )
+            ->replace_comment(
+                'orderby',
+                self::get_user_search_orderby($query, 'u', $syscontext)->wrap('ORDER BY ', '')
+            );
 
-        $users = $DB->get_records_sql($sqlquery, $params, 0, $CFG->maxusersperpage + 1);
-
+        $users = $DB->get_records_sql($sql->sql, $sql->params, 0, $CFG->maxusersperpage + 1);
         return self::prepare_result($users, $syscontext);
     }
 
