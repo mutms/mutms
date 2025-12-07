@@ -25,31 +25,6 @@
  */
 
 /**
- * Full 64bit PHP support is required.
- *
- * @param environment_results $result
- * @return environment_results
- */
-function tool_mulib_64bit_required(environment_results $result): environment_results {
-    $result->setInfo("Full 64-bit PHP support");
-
-    if ((string)PHP_INT_MAX !== '9223372036854775807') {
-        $result->setStatus(false);
-        return $result;
-    }
-
-    // Make sure dates after 2032 are supported.
-    $time = strtotime('2050-01-01T00:00:01Z');
-    if ((string)$time !== '2524608001') {
-        $result->setStatus(false);
-        return $result;
-    }
-
-    $result->setStatus(true);
-    return $result;
-}
-
-/**
  * Prevent Oracle Database usage!
  *
  * @param environment_results $result

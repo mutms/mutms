@@ -57,7 +57,6 @@ $PAGE->set_pagelayout('admin');
 $PAGE->set_heading(get_string('notification', 'tool_mulib'));
 $PAGE->set_title(get_string('notification', 'tool_mulib'));
 
-/** @var class-string<\tool_mulib\local\notification\notificationtype> $classname */
 $classname = $manager::get_classname($notification->notificationtype);
 if (!$classname || !class_exists($classname)) {
     throw new invalid_parameter_exception('Unknown notification type');
@@ -76,6 +75,21 @@ if ($manageurl) {
 }
 $details->add(get_string('notification_instance', 'tool_mulib'), $instancename);
 $description = $classname::get_description();
+
+if (\tool_mulib\local\mulib::is_murelatio_active()) {
+    if ($notification->supervisorframeworkid) {
+        $framework = $DB->get_record('tool_murelation_framework', ['id' => $notification->supervisorframeworkid]);
+        if ($framework) {
+            $frameworkname = format_string($framework->supervisortitle) . ' (' . format_string($framework->name) . ')';
+        } else {
+            $frameworkname = get_string('error');
+        }
+    } else {
+        $frameworkname = get_string('no');
+    }
+    $details->add(get_string('notification_cc_supervisor', 'tool_mulib'), $frameworkname);
+}
+
 $enabled = $notification->enabled ? get_string('yes') : get_string('no');
 $details->add(get_string('notification_enabled', 'tool_mulib'), $enabled);
 $details->add(get_string('description'), $description);

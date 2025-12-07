@@ -55,7 +55,7 @@ if (!$manager::can_manage($instanceid)) {
 $context = $manager::get_instance_context($instanceid);
 
 $PAGE->set_context($context);
-$PAGE->set_url('/admin/tool/mulib/notification/add.php', ['component' => 'component', 'instanceid' => $instanceid]);
+$PAGE->set_url('/admin/tool/mulib/notification/create.php', ['component' => $component, 'instanceid' => $instanceid]);
 
 $form = new \tool_mulib\local\form\notification_create(
     null,
@@ -75,7 +75,10 @@ if ($form->is_cancelled()) {
                 'enabled' => $data->enabled,
                 'notificationtype' => $type,
             ];
-            util::notification_create((array)$d);
+            if (!empty($data->supervisorframeworkid)) {
+                $d['supervisorframeworkid'] = $data->supervisorframeworkid;
+            }
+            util::notification_create($d);
         }
     }
     $form->ajax_form_submitted($returnurl);

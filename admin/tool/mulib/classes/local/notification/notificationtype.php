@@ -15,10 +15,12 @@
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 // phpcs:disable moodle.Files.BoilerplateComment.CommentEndedTooSoon
+// phpcs:disable moodle.Files.LineLength.TooLong
 
 namespace tool_mulib\local\notification;
 
 use stdClass;
+use core\exception\coding_exception;
 
 /**
  * Base for classes implementing individual component notifications.
@@ -73,6 +75,47 @@ abstract class notificationtype {
     }
 
     /**
+     * Is sending of copy of notification to supervisor supported?
+     *
+     * @return bool
+     */
+    public static function is_cc_supervisor_supported(): bool {
+        return true;
+    }
+
+    /**
+     * Return supervisor of user if exists.
+     *
+     * @param int $userid
+     * @param int|null $frameworkid
+     * @return stdClass|null user record with framework titles
+     */
+    public static function get_supervisor_user(int $userid, ?int $frameworkid): ?\stdClass {
+        global $DB;
+
+        if (!\tool_mulib\local\mulib::is_murelatio_active()) {
+            return null;
+        }
+
+        $sql = new \tool_mulib\local\sql(
+            "SELECT u.*, f.subordinatetitle, f.supervisortitle
+               FROM {user} u
+               JOIN {tool_murelation_supervisor} sup ON sup.userid = u.id
+               JOIN {tool_murelation_framework} f ON f.id = sup.frameworkid AND f.id = :frameworkid
+               JOIN {tool_murelation_subordinate} sub ON sub.frameworkid = f.id AND sub.supervisorid = sup.id AND sub.userid = :userid
+              WHERE u.deleted = 0",
+            ['userid' => $userid, 'frameworkid' => $frameworkid]
+        );
+        $supervisoruser = $DB->get_record_sql($sql->sql, $sql->params);
+
+        if ($supervisoruser) {
+            return $supervisoruser;
+        } else {
+            return null;
+        }
+    }
+
+    /**
      * Returns notification description text.
      *
      * @return string HTML text converted from Markdown lang string value
@@ -120,20 +163,20 @@ abstract class notificationtype {
      */
     final public static function get_subject(stdClass $notification, array $a): string {
         if ($notification->component !== static::get_component()) {
-            throw new \coding_exception('Invalid component: ' . $notification->component);
+            throw new coding_exception('Invalid component: ' . $notification->component);
         }
         if ($notification->notificationtype !== static::get_notificationtype()) {
-            throw new \coding_exception('Invalid type: ' . $notification->notificationtype);
+            throw new coding_exception('Invalid type: ' . $notification->notificationtype);
         }
 
         $subject = '';
         if ($notification->custom && $notification->customjson) {
             $custom = json_decode($notification->customjson, true);
             $subject = $custom['subject'] ?? '';
-            $subject = static::format_subject($subject, $a);
+            $subject = self::format_subject($subject, $a);
         }
         if ($subject === '') {
-            $subject = static::format_subject(static::get_default_subject(), $a);
+            $subject = self::format_subject(static::get_default_subject(), $a);
         }
 
         return $subject;
@@ -159,7 +202,7 @@ abstract class notificationtype {
      */
     final public static function format_body(string $body, int $format, array $a): string {
         if ($format != FORMAT_MARKDOWN && $format != FORMAT_HTML) {
-            throw new \coding_exception('Unknown body format: ' . $format);
+            throw new coding_exception('Unknown body format: ' . $format);
         }
         $text = util::replace_placeholders($body, $a);
         $text = util::filter_multilang($text);
@@ -185,20 +228,20 @@ abstract class notificationtype {
      */
     final public static function get_body(stdClass $notification, array $a): string {
         if ($notification->component !== static::get_component()) {
-            throw new \coding_exception('Invalid component: ' . $notification->component);
+            throw new coding_exception('Invalid component: ' . $notification->component);
         }
         if ($notification->notificationtype !== static::get_notificationtype()) {
-            throw new \coding_exception('Invalid type: ' . $notification->notificationtype);
+            throw new coding_exception('Invalid type: ' . $notification->notificationtype);
         }
 
         $body = '';
         if ($notification->custom && $notification->customjson) {
             $custom = json_decode($notification->customjson, true);
             $body = $custom['body'] ?? '';
-            $body = static::format_body($body, FORMAT_HTML, $a);
+            $body = self::format_body($body, FORMAT_HTML, $a);
         }
         if ($body === '') {
-            $body = static::format_body(static::get_default_body(), FORMAT_MARKDOWN, $a);
+            $body = self::format_body(static::get_default_body(), FORMAT_MARKDOWN, $a);
         }
 
         return $body;
@@ -262,7 +305,7 @@ abstract class notificationtype {
      * @param int|null $otherid1
      * @param int|null $otherid2
      * @param bool|null $allowmultiple true means multiple notifications are allowed
-     * @return void
+     * @return bool
      */
     final protected static function message_send(
         \core\message\message $message,
@@ -271,13 +314,14 @@ abstract class notificationtype {
         ?int $otherid1 = null,
         ?int $otherid2 = null,
         bool $allowmultiple = false
-    ): void {
-        global $DB;
+    ): bool {
+        global $DB, $CFG;
+        require_once("$CFG->libdir/messagelib.php");
 
         if (!$DB->record_exists('tool_mulib_notification', ['id' => $notificationid])) {
             // Likely cron running when notification was deleted.
             debugging('invalid notification id', DEBUG_DEVELOPER);
-            return;
+            return false;
         }
         if (
             !$allowmultiple && $DB->record_exists(
@@ -287,7 +331,7 @@ abstract class notificationtype {
         ) {
             // Likely caused by two concurrently running cron tasks.
             debugging('Duplicate notification prevented', DEBUG_DEVELOPER);
-            return;
+            return false;
         }
 
         $messageid = message_send($message);
@@ -303,5 +347,7 @@ abstract class notificationtype {
         $record->timenotified = time();
         $record->messageid = $messageid;
         $record->id = $DB->insert_record('tool_mulib_notification_user', $record);
+
+        return true;
     }
 }

@@ -138,29 +138,43 @@ final class sql_test extends \advanced_testcase {
         global $DB;
 
         $sql = new sql("SELECT u.* FROM {user} u WHERE u.deleted = 0 /* confirmed */ AND u.auth = :auth", ['auth' => 'manual']);
+        $oldsql = $sql->sql;
+        $oldparams = $sql->params;
 
         // Make sure comments are supported by all database.
         $DB->get_records_sql($sql->sql, $sql->params);
 
         $result = $sql->replace_comment('confirmed', 'AND u.confirmed = 1');
-        $this->assertSame($result, $sql);
-        $this->assertSame('SELECT u.* FROM {user} u WHERE u.deleted = 0 AND u.confirmed = 1 AND u.auth = :auth', $sql->sql);
-        $this->assertSame(['auth' => 'manual'], $sql->params);
+        $this->assertSame($oldsql, $sql->sql);
+        $this->assertSame($oldparams, $sql->params);
+        $this->assertNotSame($result, $sql);
+        $this->assertSame('SELECT u.* FROM {user} u WHERE u.deleted = 0 AND u.confirmed = 1 AND u.auth = :auth', $result->sql);
+        $this->assertSame(['auth' => 'manual'], $result->params);
 
         $sql = new sql("SELECT u.* FROM {user} u WHERE u.deleted = 0 /* confirmed */ AND u.auth = :auth", ['auth' => 'manual']);
         $result = $sql->replace_comment('confirmed', 'AND u.confirmed = ?', [1]);
-        $this->assertSame($result, $sql);
-        $this->assertSame('SELECT u.* FROM {user} u WHERE u.deleted = 0 AND u.confirmed = :param1 AND u.auth = :auth', $sql->sql);
-        $this->assertSame(['param1' => 1, 'auth' => 'manual'], $sql->params);
+        $this->assertSame($oldsql, $sql->sql);
+        $this->assertSame($oldparams, $sql->params);
+        $this->assertNotSame($result, $sql);
+        $this->assertSame('SELECT u.* FROM {user} u WHERE u.deleted = 0 AND u.confirmed = :param1 AND u.auth = :auth', $result->sql);
+        $this->assertSame(['param1' => 1, 'auth' => 'manual'], $result->params);
 
         $sql = new sql("SELECT u.* FROM {user} u WHERE u.deleted = 0 /* confirmed */ AND u.auth = :auth", ['auth' => 'manual']);
-        $sql->replace_comment('confirmed', new sql('AND u.confirmed = :auth', ['auth' => 1]));
+        $result = $sql->replace_comment('confirmed', '', [1]);
+        $this->assertSame($oldsql, $sql->sql);
+        $this->assertSame($oldparams, $sql->params);
+        $this->assertNotSame($result, $sql);
+        $this->assertSame('SELECT u.* FROM {user} u WHERE u.deleted = 0  AND u.auth = :auth', $result->sql);
+        $this->assertSame(['auth' => 'manual'], $result->params);
+
+        $sql = new sql("SELECT u.* FROM {user} u WHERE u.deleted = 0 /* confirmed */ AND u.auth = :auth", ['auth' => 'manual']);
+        $sql = $sql->replace_comment('confirmed', new sql('AND u.confirmed = :auth', ['auth' => 1]));
         $this->assertSame('SELECT u.* FROM {user} u WHERE u.deleted = 0 AND u.confirmed = :param1 AND u.auth = :auth', $sql->sql);
         $this->assertSame(['param1' => 1, 'auth' => 'manual'], $sql->params);
 
         $sql = new sql("SELECT u.* FROM {user} u WHERE u.deleted = 0 /* confirmed */ AND u.auth = :auth", ['auth' => 'manual']);
         try {
-            $sql->replace_comment('xconfirmed', 'AND u.confirmed = 1');
+            $sql = $sql->replace_comment('xconfirmed', 'AND u.confirmed = 1');
             $this->fail('Exception expected');
         } catch (moodle_exception $ex) {
             $this->assertInstanceOf(coding_exception::class, $ex);
@@ -169,7 +183,7 @@ final class sql_test extends \advanced_testcase {
 
         $sql = new sql("SELECT u.* FROM {user} u WHERE u.deleted = 0 /* confirmed */ AND u.auth = :auth /* confirmed */", ['auth' => 'manual']);
         try {
-            $sql->replace_comment('confirmed', 'AND u.confirmed = 1');
+            $sql = $sql->replace_comment('confirmed', 'AND u.confirmed = 1');
             $this->fail('Exception expected');
         } catch (moodle_exception $ex) {
             $this->assertInstanceOf(coding_exception::class, $ex);
@@ -184,18 +198,28 @@ final class sql_test extends \advanced_testcase {
      */
     public function test_wrap(): void {
         $sql = new sql('');
+        $oldsql = $sql->sql;
+        $oldparams = $sql->params;
+
         $result = $sql->wrap('(', ')');
-        $this->assertSame($sql, $result);
-        $this->assertSame('', $sql->sql);
-        $this->assertSame([], $sql->params);
+        $this->assertSame($oldsql, $sql->sql);
+        $this->assertSame($oldparams, $sql->params);
+        $this->assertNotSame($sql, $result);
+        $this->assertSame('', $result->sql);
+        $this->assertSame([], $result->params);
 
         $sql = new sql('a = :param1', ['param1' => 2]);
-        $sql->wrap('(', ')');
-        $this->assertSame('(a = :param1)', $sql->sql);
-        $this->assertSame(['param1' => 2], $sql->params);
+        $oldsql = $sql->sql;
+        $oldparams = $sql->params;
+        $result = $sql->wrap('(', ')');
+        $this->assertSame($oldsql, $sql->sql);
+        $this->assertSame($oldparams, $sql->params);
+        $this->assertNotSame($sql, $result);
+        $this->assertSame('(a = :param1)', $result->sql);
+        $this->assertSame(['param1' => 2], $result->params);
 
         $sql = new sql('a = :param1', ['param1' => 2]);
-        $sql->wrap('', '');
+        $sql = $sql->wrap('', '');
         $this->assertSame('a = :param1', $sql->sql);
         $this->assertSame(['param1' => 2], $sql->params);
     }

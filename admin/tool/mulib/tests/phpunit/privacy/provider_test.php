@@ -173,7 +173,7 @@ final class provider_test extends \core_privacy\tests\provider_testcase {
 
         $userlist = new \core_privacy\local\request\userlist($syscontext, 'tool_mulib');
         provider::get_users_in_context($userlist);
-        $this->assertSame([(int)$users[0]->id, (int)$users[1]->id], $userlist->get_userids());
+        $this->assertEqualsCanonicalizing([$users[0]->id, $users[1]->id], $userlist->get_userids());
 
         $userlist = new \core_privacy\local\request\userlist($usercontext1, 'tool_mulib');
         provider::get_users_in_context($userlist);
