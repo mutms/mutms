@@ -412,7 +412,7 @@ final class supervisor {
             ['userlevel' => CONTEXT_USER]
         );
         if ($supervisorid) {
-            $sql->replace_comment('onesupervisor', "AND sup.id = ?", [$supervisorid]);
+            $sql = $sql->replace_comment('onesupervisor', "AND sup.id = ?", [$supervisorid]);
         }
         $rs = $DB->get_recordset_sql($sql->sql, $sql->params);
         foreach ($rs as $ra) {
@@ -439,7 +439,7 @@ final class supervisor {
             ['userlevel' => CONTEXT_USER]
         );
         if ($supervisorid) {
-            $sql->replace_comment('onesupervisor', "AND ra.itemid = ?", [$supervisorid]);
+            $sql = $sql->replace_comment('onesupervisor', "AND ra.itemid = ?", [$supervisorid]);
         }
         $rs = $DB->get_recordset_sql($sql->sql, $sql->params);
         foreach ($rs as $ra) {
@@ -619,8 +619,8 @@ final class supervisor {
            ORDER BY cm.cohortid ASC, cm.userid ASC"
         );
         if ($supervisor) {
-            $sql->replace_comment('supjoin', "AND c.id = ?", [$supervisor->teamcohortid]);
-            $sql->replace_comment('supwhere', "AND sup.id = ?", [$supervisor->id]);
+            $sql = $sql->replace_comment('supjoin', "AND c.id = ?", [$supervisor->teamcohortid]);
+            $sql = $sql->replace_comment('supwhere', "AND sup.id = ?", [$supervisor->id]);
         }
         $rs = $DB->get_recordset_sql($sql->sql, $sql->params);
         foreach ($rs as $cm) {
@@ -642,7 +642,7 @@ final class supervisor {
            ORDER BY c.id ASC, u.id ASC"
         );
         if ($supervisorid) {
-            $sql->replace_comment('supwhere', "AND sup.id = ?", [$supervisorid]);
+            $sql = $sql->replace_comment('supwhere', "AND sup.id = ?", [$supervisorid]);
         }
         $rs = $DB->get_recordset_sql($sql->sql, $sql->params);
         foreach ($rs as $cm) {
