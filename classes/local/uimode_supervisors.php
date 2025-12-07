@@ -235,7 +235,7 @@ final class uimode_supervisors {
 
         if ($canmanagepositions) {
             // Show empty positions that can be filled.
-            $sql->replace_comment(
+            $sql = $sql->replace_comment(
                 'canmanage',
                 "AND (sub.id IS NOT NULL OR f.subordinatecohortid IS NULL OR EXISTS (
                      SELECT 'x'
@@ -244,11 +244,11 @@ final class uimode_supervisors {
                 [$subuser->id]
             );
         } else {
-            $sql->replace_comment('canmanage', "AND sub.id IS NOT NULL");
+            $sql = $sql->replace_comment('canmanage', "AND sub.id IS NOT NULL");
         }
 
         if (mulib::is_mutenancy_active() && $subuser->tenantid) {
-            $sql->replace_comment(
+            $sql = $sql->replace_comment(
                 'tenant',
                 "AND (f.alltenants = 1 OR EXISTS (
                     SELECT 'x'
