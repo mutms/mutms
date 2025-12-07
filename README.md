@@ -46,11 +46,15 @@ Additional features:
 
 ## Installation via git
 
+In Moodle 5.0 use:
+
 ```bash
 cd moodle
-git clone -b MOODLE_405_STABLE https://github.com/mutms/moodle-mod_mubook.git mod/mubook
-git clone -b MOODLE_405_STABLE https://github.com/mutms/moodle-tool_mulib.git admin/tool/mulib
+git clone -b MOODLE_500_STABLE https://github.com/mutms/moodle-mod_mubook.git mod/mubook
+git clone -b MOODLE_500_STABLE https://github.com/mutms/moodle-tool_mulib.git admin/tool/mulib
 ```
+
+In Moodle 5.1 start with `cd moodle/public` instead. 
 
 _Note that the preview version is not compatible with Moodle 4.5 and earlier._
 
