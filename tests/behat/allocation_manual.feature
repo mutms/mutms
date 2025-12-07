@@ -388,3 +388,17 @@ Feature: Manual program allocation tests
     And I follow "Program 000"
     Then I should see "ASF2" in the "Test field 2" definition list item
     And I should not see "Test field 1"
+
+  @javascript
+  Scenario: Manager may enable Manual allocation when creating program
+    Given I log in as "manager1"
+    And I am on the "tool_muprog > All programs management" page
+
+    When I click on "Add program" "button"
+    And I set the following fields in the ".modal-dialog" "css_element" to these values:
+      | Program name      | Program 001 |
+      | Program ID        | PR01        |
+      | Manual allocation | 1           |
+    And I click on "Add program" "button" in the ".modal-dialog" "css_element"
+    And I follow "Allocation settings"
+    Then I should see "Active" in the "Manual allocation" definition list item

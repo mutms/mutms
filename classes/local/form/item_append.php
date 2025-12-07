@@ -22,6 +22,7 @@ namespace tool_muprog\local\form;
 use tool_muprog\local\content\set;
 use tool_muprog\external\form_autocomplete\item_append_trainingid;
 use tool_muprog\local\util;
+use tool_mulib\local\mulib;
 
 /**
  * Add program content item.
@@ -53,7 +54,7 @@ final class item_append extends \tool_mulib\local\ajax_form {
             ['multiple' => true, 'exclude' => $exclude, 'requiredcapabilities' => ['tool/muprog:addcourse']]
         );
 
-        if (util::is_mutrain_available() && $DB->record_exists('tool_mutrain_framework', ['archived' => 0])) {
+        if (mulib::is_mutrain_available() && $DB->record_exists('tool_mutrain_framework', ['archived' => 0])) {
             $args = ['programid' => $parentset->get_programid()];
             item_append_trainingid::add_element(
                 $mform,
@@ -132,7 +133,7 @@ final class item_append extends \tool_mulib\local\ajax_form {
             if (!$data['courses'] && empty($data['trainingid'])) {
                 $errors['courses'] = get_string('required');
             } else {
-                if (\tool_muprog\local\util::is_mutenancy_active()) {
+                if (mulib::is_mutenancy_active()) {
                     if ($context->tenantid) {
                         foreach ($data['courses'] as $courseid) {
                             // The caps are removed in other tenants, but we need to make sure

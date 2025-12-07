@@ -69,6 +69,15 @@ abstract class base {
     }
 
     /**
+     * Can a new source of this type be added to programs when creating program?
+     *
+     * @return bool
+     */
+    public static function is_new_allowed_in_new(): bool {
+        return false;
+    }
+
+    /**
      * Can existing source of this type be updated or deleted to programs?
      *
      * NOTE: Existing enabled sources in programs cannot be deleted/hidden
@@ -485,7 +494,7 @@ abstract class base {
         global $DB;
 
         /** @var base[] $sourceclasses */
-        $sourceclasses = \tool_muprog\local\allocation::get_source_classes();
+        $sourceclasses = allocation::get_source_classes();
         if (!isset($sourceclasses[$data->type])) {
             throw new \coding_exception('Invalid source type');
         }
@@ -496,48 +505,47 @@ abstract class base {
         $source = $DB->get_record('tool_muprog_source', ['type' => $sourcetype, 'programid' => $program->id]);
         if ($source) {
             $oldsource = clone($source);
+            if ($source->type !== $data->type) {
+                throw new \coding_exception('Invalid source type');
+            }
         } else {
-            $source = null;
             $oldsource = null;
-        }
-        if ($source && $source->type !== $data->type) {
-            throw new \coding_exception('Invalid source type');
+            $source = new stdClass();
+            $source->id = null;
+            $source->programid = $data->programid;
+            $source->type = $sourcetype;
         }
 
         if ($data->enable) {
-            if ($source) {
-                $source->datajson = $sourceclass::encode_datajson($data);
-                $source->auxint1 = $data->auxint1 ?? null;
-                $source->auxint2 = $data->auxint2 ?? null;
-                $source->auxint3 = $data->auxint3 ?? null;
+            $source->datajson = $sourceclass::encode_datajson($data);
+            for ($i = 1; $i < 5; $i++) {
+                $prop = 'auxint' . $i;
+                if (property_exists($data, $prop)) {
+                    $source->{$prop} = $data->{$prop};
+                }
+            }
+            if ($source->id) {
                 $DB->update_record('tool_muprog_source', $source);
             } else {
-                $source = new \stdClass();
-                $source->programid = $data->programid;
-                $source->type = $sourcetype;
-                $source->datajson = $sourceclass::encode_datajson($data);
-                $source->auxint1 = $data->auxint1 ?? null;
-                $source->auxint2 = $data->auxint2 ?? null;
-                $source->auxint3 = $data->auxint3 ?? null;
                 $source->id = $DB->insert_record('tool_muprog_source', $source);
             }
             $source = $DB->get_record('tool_muprog_source', ['id' => $source->id], '*', MUST_EXIST);
         } else {
-            if ($source) {
+            if ($source->id) {
                 if ($DB->record_exists('tool_muprog_allocation', ['sourceid' => $source->id])) {
                     throw new \coding_exception('Cannot delete source with allocations');
                 }
                 $DB->delete_records('tool_muprog_request', ['sourceid' => $source->id]);
                 $DB->delete_records('tool_muprog_src_cohort', ['sourceid' => $source->id]);
                 $DB->delete_records('tool_muprog_source', ['id' => $source->id]);
-                $source = null;
             }
+            $source = null;
         }
         $sourceclass::after_update($oldsource, $data, $source);
 
-        \tool_muprog\local\allocation::fix_allocation_sources($program->id, null);
-        \tool_muprog\local\allocation::fix_enrol_instances($program->id);
-        \tool_muprog\local\allocation::fix_user_enrolments($program->id, null);
+        allocation::fix_allocation_sources($program->id, null);
+        allocation::fix_enrol_instances($program->id);
+        allocation::fix_user_enrolments($program->id, null);
 
         return $source;
     }

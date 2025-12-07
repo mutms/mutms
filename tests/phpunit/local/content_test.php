@@ -26,6 +26,7 @@ use tool_muprog\local\content\item;
 use tool_muprog\local\content\set;
 use tool_muprog\local\content\top;
 use tool_muprog\local\content\training;
+use tool_mulib\local\mulib;
 
 /**
  * Program content test.
@@ -231,7 +232,7 @@ final class content_test extends \advanced_testcase {
     }
 
     public function test_append_training(): void {
-        if (!\tool_muprog\local\util::is_mutrain_available()) {
+        if (!mulib::is_mutrain_available()) {
             $this->markTestSkipped('mutrain not available');
         }
 
@@ -451,7 +452,7 @@ final class content_test extends \advanced_testcase {
     }
 
     public function test_update_training(): void {
-        if (!\tool_muprog\local\util::is_mutrain_available()) {
+        if (!mulib::is_mutrain_available()) {
             $this->markTestSkipped('mutrain not available');
         }
 
@@ -855,7 +856,7 @@ final class content_test extends \advanced_testcase {
     }
 
     public function test_content_import_training(): void {
-        if (!\tool_muprog\local\util::is_mutrain_available()) {
+        if (!mulib::is_mutrain_available()) {
             $this->markTestSkipped('mutrain not available');
         }
 

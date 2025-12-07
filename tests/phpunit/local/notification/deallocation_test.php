@@ -21,6 +21,7 @@
 namespace tool_muprog\phpunit\local\notification;
 
 use tool_muprog\local\source\manual;
+use tool_mulib\local\mulib;
 
 /**
  * Program notifications test.
@@ -108,5 +109,62 @@ final class deallocation_test extends \advanced_testcase {
         $messages = $sink->get_messages();
         $sink->close();
         $this->assertCount(0, $messages);
+    }
+
+    public function test_cc_supervisor(): void {
+        global $DB;
+        if (!mulib::is_murelatio_available()) {
+            return;
+        }
+
+        /** @var \tool_muprog_generator $generator */
+        $generator = $this->getDataGenerator()->get_plugin_generator('tool_muprog');
+
+        /** @var \tool_murelation_generator $relationgenerator */
+        $relationgenerator = $this->getDataGenerator()->get_plugin_generator('tool_murelation');
+
+        $user1 = $this->getDataGenerator()->create_user();
+        $user2 = $this->getDataGenerator()->create_user();
+        $user3 = $this->getDataGenerator()->create_user();
+
+        $framework1 = $relationgenerator->create_framework([
+            'uimode' => \tool_murelation\local\framework::UIMODE_SUPERVISORS,
+        ]);
+
+        $supervisor1 = $relationgenerator->create_supervisor([
+            'frameworkid' => $framework1->id,
+            'userid' => $user1->id,
+            'subuserid' => $user2->id,
+        ]);
+
+        $program1 = $generator->create_program(['sources' => ['manual' => []]]);
+        $source1 = $DB->get_record('tool_muprog_source', ['programid' => $program1->id, 'type' => 'manual'], '*', MUST_EXIST);
+
+        $this->setUser($user3);
+        manual::allocate_users($program1->id, $source1->id, [$user2->id]);
+        $allocation2 = $DB->get_record('tool_muprog_allocation', ['programid' => $program1->id, 'userid' => $user2->id], '*', MUST_EXIST);
+
+        $notification = $generator->create_program_notification([
+            'programid' => $program1->id,
+            'notificationtype' => 'deallocation',
+            'supervisorframeworkid' => $framework1->id,
+        ]);
+        $sink = $this->redirectMessages();
+        $this->setCurrentTimeStart();
+        manual::allocation_delete($program1, $source1, $allocation2);
+        $messages = $sink->get_messages();
+        $sink->close();
+        $this->assertCount(2, $messages);
+        $message = $messages[0];
+        $this->assertSame('Program deallocation notification', $message->subject);
+        $this->assertStringContainsString('you have been deallocated from program', $message->fullmessage);
+        $this->assertSame($user2->id, $message->useridto);
+        $this->assertSame('-10', $message->useridfrom);
+        $message = $messages[1];
+        $this->assertSame('Supervisor notification - Program 1', $message->subject);
+        $this->assertStringContainsString('a notification was sent to the following user', $message->fullmessage);
+        $this->assertStringContainsString('you have been deallocated from program', $message->fullmessage);
+        $this->assertSame($user1->id, $message->useridto);
+        $this->assertSame('-10', $message->useridfrom);
     }
 }

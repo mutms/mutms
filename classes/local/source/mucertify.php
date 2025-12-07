@@ -41,6 +41,16 @@ final class mucertify extends base {
         return 'mucertify';
     }
 
+    /**
+     * Can a new source of this type be added to programs when creating program?
+     *
+     * @return bool
+     */
+    public static function is_new_allowed_in_new(): bool {
+        $type = static::get_type();
+        return (bool)get_config('tool_muprog', 'source_' . $type . '_allownew');
+    }
+
     #[\Override]
     public static function is_allocation_update_possible(stdClass $program, stdClass $source, stdClass $allocation): bool {
         return false;

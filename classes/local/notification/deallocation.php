@@ -50,15 +50,17 @@ final class deallocation extends base {
      * @param stdClass $source
      * @param stdClass $allocation
      * @param stdClass $user
+     * @param stdClass|null $supervisoruser
      * @return array
      */
     public static function get_allocation_placeholders(
         stdClass $program,
         stdClass $source,
         stdClass $allocation,
-        stdClass $user
+        stdClass $user,
+        ?stdClass $supervisoruser = null
     ): array {
-        $a = parent::get_allocation_placeholders($program, $source, $allocation, $user);
+        $a = parent::get_allocation_placeholders($program, $source, $allocation, $user, $supervisoruser);
         $context = \context::instance_by_id($program->contextid);
         if (has_capability('tool/muprog:view', $context)) {
             $a['program_url'] = (new \moodle_url('/admin/tool/muprog/management/program.php', ['id' => $program->id]))->out(false);

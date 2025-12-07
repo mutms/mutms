@@ -20,6 +20,8 @@
 
 namespace tool_muprog\phpunit\local;
 
+use tool_mulib\local\mulib;
+
 /**
  * Program catalogue test.
  *
@@ -183,7 +185,7 @@ final class catalogue_test extends \advanced_testcase {
     public function test_get_programs_tenant(): void {
         global $DB;
 
-        if (!\tool_muprog\local\util::is_mutenancy_available()) {
+        if (!mulib::is_mutenancy_available()) {
             $this->markTestSkipped('tenant support not available');
         }
 
@@ -417,7 +419,7 @@ final class catalogue_test extends \advanced_testcase {
     public function test_is_program_visible_tenant(): void {
         global $DB;
 
-        if (!\tool_muprog\local\util::is_mutenancy_available()) {
+        if (!mulib::is_mutenancy_available()) {
             $this->markTestSkipped('tenant support not available');
         }
 

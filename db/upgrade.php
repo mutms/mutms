@@ -89,5 +89,21 @@ function xmldb_tool_muprog_upgrade($oldversion): bool {
         upgrade_plugin_savepoint(true, 2025092450.01, 'tool', 'muprog');
     }
 
+    if ($oldversion < 2025111845) {
+        $table = new xmldb_table('tool_muprog_source');
+
+        $field = new xmldb_field('auxint4', XMLDB_TYPE_INTEGER, '10', null, null, null, null, 'auxint3');
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
+        $field = new xmldb_field('auxint5', XMLDB_TYPE_INTEGER, '10', null, null, null, null, 'auxint4');
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
+        upgrade_plugin_savepoint(true, 2025111845, 'tool', 'muprog');
+    }
+
     return true;
 }

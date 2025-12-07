@@ -15,11 +15,13 @@
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 // phpcs:disable moodle.Files.BoilerplateComment.CommentEndedTooSoon
+// phpcs:disable moodle.Files.LineLength.TooLong
 
 namespace tool_muprog\external\form_autocomplete;
 
 use core_external\external_function_parameters;
 use core_external\external_value;
+use tool_mulib\local\sql;
 
 /**
  * Provides list of candidates for program allocation.
@@ -54,10 +56,13 @@ final class source_manual_allocate_users extends \tool_mulib\external\form_autoc
     public static function execute(string $query, int $programid): array {
         global $DB;
 
-        ['query' => $query, 'programid' => $programid] = self::validate_parameters(
-            self::execute_parameters(),
-            ['query' => $query, 'programid' => $programid]
-        );
+        [
+            'query' => $query,
+            'programid' => $programid,
+        ] = self::validate_parameters(self::execute_parameters(), [
+            'query' => $query,
+            'programid' => $programid,
+        ]);
 
         $program = $DB->get_record('tool_muprog_program', ['id' => $programid], '*', MUST_EXIST);
 
@@ -66,26 +71,31 @@ final class source_manual_allocate_users extends \tool_mulib\external\form_autoc
         self::validate_context($context);
         require_capability('tool/muprog:allocate', $context);
 
-        $fields = \core_user\fields::for_name()->with_identity($context, false);
-        $extrafields = $fields->get_required_fields([\core_user\fields::PURPOSE_IDENTITY]);
+        $sql = (
+            new sql(
+                "SELECT u.*
+                   FROM {user} u
+              LEFT JOIN {tool_muprog_allocation} pa ON (pa.userid = u.id AND pa.programid = :programid)
+                  WHERE pa.id IS NULL AND u.deleted = 0 AND u.confirmed = 1
+                        /* searchsql */ /* tenantwhere */
+               /* orderby */",
+                ['programid' => $programid]
+            )
+        )
+            ->replace_comment(
+                'searchsql',
+                self::get_user_search_query($query, 'u', $context)->wrap('AND ', '')
+            )
+            ->replace_comment(
+                'tenantwhere',
+                self::get_tenant_related_users_where('u.id', $context)->wrap('AND ', '')
+            )
+            ->replace_comment(
+                'orderby',
+                self::get_user_search_orderby($query, 'u', $context)->wrap('ORDER BY ', '')
+            );
 
-        [$searchsql, $searchparams] = users_search_sql($query, 'usr', true, $extrafields);
-        [$sortsql, $sortparams] = users_order_by_sql('usr', $query, $context);
-        $params = array_merge($searchparams, $sortparams);
-        $params['programid'] = $programid;
-
-        $tenantwhere = self::get_tenant_related_users_where('usr.id', $context);
-
-        $sql = <<<SQL
-            SELECT usr.*
-              FROM {user} usr
-         LEFT JOIN {tool_muprog_allocation} pa ON (pa.userid = usr.id AND pa.programid = :programid)
-             WHERE pa.id IS NULL AND {$searchsql} {$tenantwhere}
-                   AND usr.deleted = 0 AND usr.confirmed = 1
-          ORDER BY {$sortsql}
-SQL;
-
-        $users = $DB->get_records_sql($sql, $params, 0, self::MAX_RESULTS + 1);
+        $users = $DB->get_records_sql($sql->sql, $sql->params, 0, self::MAX_RESULTS + 1);
         return self::prepare_result($users, $context);
     }
 
