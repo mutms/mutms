@@ -19,6 +19,8 @@
 
 namespace tool_mutenancy\local\form;
 
+use tool_mutenancy\local\tenancy;
+
 /**
  * Archive tenant form.
  *
@@ -41,6 +43,6 @@ final class tenant_archive extends \tool_mulib\local\ajax_form {
         $mform->setType('id', PARAM_INT);
         $mform->setConstant('id', $tenant->id);
 
-        $this->add_action_buttons(true, get_string('tenant_archive', 'tool_mutenancy'));
+        $this->add_action_buttons(true, tenancy::get_tenant_string('tenant_archive'));
     }
 }

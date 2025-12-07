@@ -50,15 +50,17 @@ final class tenant_switch_test extends \advanced_testcase {
         $cohort4 = $this->getDataGenerator()->create_cohort();
 
         $tenant1 = $generator->create_tenant(['assoccohortid' => $cohort1->id]);
+        $tenantcontext1 = \context_tenant::instance($tenant1->id);
         $tenant2 = $generator->create_tenant(['assoccohortid' => $cohort2->id]);
+        $tenantcontext2 = \context_tenant::instance($tenant2->id);
         $tenant3 = $generator->create_tenant();
+        $tenantcontext3 = \context_tenant::instance($tenant3->id);
         $tenant4 = $generator->create_tenant(['archived' => 1, 'assoccohortid' => $cohort4->id]);
+        $tenantcontext4 = \context_tenant::instance($tenant4->id);
 
         $syscontext = \context_system::instance();
         $switchroleid = create_role('sw', 'sw', 'sw');
         assign_capability('tool/mutenancy:switch', CAP_ALLOW, $switchroleid, $syscontext->id);
-        $viewroleid = create_role('vw', 'vw', 'vw');
-        assign_capability('tool/mutenancy:view', CAP_ALLOW, $viewroleid, $syscontext->id);
 
         $admin = get_admin();
         $this->setUser($admin);
@@ -89,7 +91,6 @@ final class tenant_switch_test extends \advanced_testcase {
         $this->assertSame($expected, form::get_options());
 
         $user1 = $this->getDataGenerator()->create_user();
-        role_assign($switchroleid, $user1->id, $syscontext);
         $this->setUser($user1);
         $expected = [
             '' => [
@@ -97,7 +98,6 @@ final class tenant_switch_test extends \advanced_testcase {
             ],
         ];
         $this->assertSame($expected, form::get_options());
-        cohort_add_member($cohort1->id, $user1->id);
         cohort_add_member($cohort2->id, $user1->id);
         cohort_add_member($cohort4->id, $user1->id);
         $expected = [
@@ -105,37 +105,49 @@ final class tenant_switch_test extends \advanced_testcase {
                 0 => 'No tenant',
             ],
             'My tenants' => [
-                $tenant1->id => $tenant1->name,
                 $tenant2->id => $tenant2->name,
             ],
         ];
         $this->assertSame($expected, form::get_options());
-
-        $user2 = $this->getDataGenerator()->create_user();
-        role_assign($switchroleid, $user2->id, $syscontext);
-        role_assign($viewroleid, $user2->id, $syscontext);
-        $this->setUser($user2);
-        $expected = [
-            '' => [
-                0 => 'No tenant',
-            ],
-            'Tenants' => [
-                $tenant1->id => $tenant1->name,
-                $tenant2->id => $tenant2->name,
-                $tenant3->id => $tenant3->name,
-            ],
-        ];
-        $this->assertSame($expected, form::get_options());
-        cohort_add_member($cohort1->id, $user2->id);
+        role_assign($switchroleid, $user1->id, $tenantcontext1);
         $expected = [
             '' => [
                 0 => 'No tenant',
             ],
             'My tenants' => [
-                $tenant1->id => $tenant1->name,
+                $tenant2->id => $tenant2->name,
             ],
             'Other tenants' => [
+                $tenant1->id => $tenant1->name,
+            ],
+        ];
+        $this->assertSame($expected, form::get_options());
+        role_assign($switchroleid, $user1->id, $syscontext);
+        $expected = [
+            '' => [
+                0 => 'No tenant',
+            ],
+            'My tenants' => [
                 $tenant2->id => $tenant2->name,
+            ],
+            'Other tenants' => [
+                $tenant1->id => $tenant1->name,
+                $tenant3->id => $tenant3->name,
+            ],
+        ];
+        $this->assertSame($expected, form::get_options());
+
+        set_config('tenantentity', 'Unit', 'tool_mutenancy');
+        set_config('tenantentities', 'Units', 'tool_mutenancy');
+        $expected = [
+            '' => [
+                0 => 'No Unit',
+            ],
+            'My Units' => [
+                $tenant2->id => $tenant2->name,
+            ],
+            'Other Units' => [
+                $tenant1->id => $tenant1->name,
                 $tenant3->id => $tenant3->name,
             ],
         ];

@@ -93,13 +93,13 @@ if (has_capability('tool/mutenancy:admin', $context)) {
         && (!$membercount || has_capability('tool/mutenancy:allocate', context_system::instance()))
     ) {
         $url = new moodle_url('/admin/tool/mutenancy/management/tenant_delete.php', ['id' => $tenant->id]);
-        $button = new tool_mulib\output\ajax_form\button($url, get_string('tenant_delete', 'tool_mutenancy'));
+        $button = new tool_mulib\output\ajax_form\button($url, tenancy::get_tenant_string('tenant_delete'));
         $button->set_submitted_action($button::SUBMITTED_ACTION_REDIRECT);
         $buttons[] = $output->render($button);
     }
 
     $url = new moodle_url('/admin/tool/mutenancy/management/tenant_update.php', ['id' => $tenant->id]);
-    $button = new tool_mulib\output\ajax_form\button($url, get_string('tenant_update', 'tool_mutenancy'));
+    $button = new tool_mulib\output\ajax_form\button($url, tenancy::get_tenant_string('tenant_update'));
     $buttons[] = $output->render($button);
 }
 

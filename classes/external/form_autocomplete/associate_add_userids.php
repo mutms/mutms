@@ -20,9 +20,10 @@ namespace tool_mutenancy\external\form_autocomplete;
 
 use core_external\external_function_parameters;
 use core_external\external_value;
+use tool_mulib\local\sql;
 
 /**
- * Associate users candidates.
+ * Tenant associate users candidates.
  *
  * @package     tool_mutenancy
  * @copyright   2025 Petr Skoda
@@ -55,13 +56,10 @@ final class associate_add_userids extends \tool_mulib\external\form_autocomplete
         [
             'query' => $query,
             'tenantid' => $tenantid,
-        ] = self::validate_parameters(
-            self::execute_parameters(),
-            [
-                'query' => $query,
-                'tenantid' => $tenantid,
-            ]
-        );
+        ] = self::validate_parameters(self::execute_parameters(), [
+            'query' => $query,
+            'tenantid' => $tenantid,
+        ]);
 
         $context = \context_tenant::instance($tenantid);
         self::validate_context($context);
@@ -78,24 +76,29 @@ final class associate_add_userids extends \tool_mulib\external\form_autocomplete
         $cohortcontext = \context::instance_by_id($cohort->contextid);
         require_capability('moodle/cohort:assign', $cohortcontext);
 
-        $fields = \core_user\fields::for_name()->with_identity($context, false);
-        $extrafields = $fields->get_required_fields([\core_user\fields::PURPOSE_IDENTITY]);
+        $sql = (
+            new sql(
+                "SELECT u.*
+                   FROM {user} u
+              LEFT JOIN {cohort_members} cm ON cm.userid = u.id AND cm.cohortid = :assoccohortid
+                  WHERE cm.id IS NULL
+                        AND u.deleted = 0 AND u.confirmed = 1
+                        AND u.tenantid IS NULL
+                        /* searchsql */
+                 /* orderby */",
+                ['assoccohortid' => $cohort->id]
+            )
+        )
+            ->replace_comment(
+                'searchsql',
+                self::get_user_search_query($query, 'u', $context)->wrap('AND ', '')
+            )
+            ->replace_comment(
+                'orderby',
+                self::get_user_search_orderby($query, 'u', $context)->wrap('ORDER BY ', '')
+            );
 
-        [$searchsql, $searchparams] = users_search_sql($query, 'u', true, $extrafields);
-        [$sortsql, $sortparams] = users_order_by_sql('u', $query, $context);
-        $params = array_merge($searchparams, $sortparams);
-        $params['assoccohortid'] = $cohort->id;
-
-        $sql = "SELECT u.*
-                  FROM {user} u
-             LEFT JOIN {cohort_members} cm ON cm.userid = u.id AND cm.cohortid = :assoccohortid
-                 WHERE {$searchsql}
-                       AND cm.id IS NULL
-                       AND u.deleted = 0 AND u.confirmed = 1
-                       AND u.tenantid IS NULL
-              ORDER BY {$sortsql}";
-
-        $users = $DB->get_records_sql($sql, $params, 0, self::MAX_RESULTS + 1);
+        $users = $DB->get_records_sql($sql->sql, $sql->params, 0, self::MAX_RESULTS + 1);
         return self::prepare_result($users, $context);
     }
 
@@ -108,7 +111,7 @@ final class associate_add_userids extends \tool_mulib\external\form_autocomplete
             return get_string('error');
         }
 
-        // Only global users can be associated!
+        // Only global users can be associated with tenant!
         if ($user->tenantid) {
             return get_string('error');
         }
