@@ -20,6 +20,7 @@
 namespace tool_mucertify\local\form;
 
 use tool_mucertify\external\form_autocomplete\source_manual_assign_users;
+use tool_mulib\local\mulib;
 
 /**
  * assign users and cohorts manually.
@@ -37,6 +38,8 @@ final class source_manual_assign extends \tool_mulib\local\ajax_form {
     protected $dueoptional = true;
     /** @var \tool_mucertify\customfield\assignment_handler */
     protected $handler;
+    /** @var \stdClass */
+    protected $settings;
 
     #[\Override]
     protected function definition() {
@@ -46,6 +49,7 @@ final class source_manual_assign extends \tool_mulib\local\ajax_form {
         $context = $this->_customdata['context'];
 
         $settings = \tool_mucertify\local\certification::get_periods_settings($certification);
+        $this->settings = $settings;
 
         $this->arguments = ['certificationid' => $certification->id];
         source_manual_assign_users::add_element(
@@ -86,6 +90,15 @@ final class source_manual_assign extends \tool_mulib\local\ajax_form {
         }
         if ($settings->due1 !== null) {
             $mform->setDefault('timewindowdue', $now + $settings->due1);
+        }
+
+        if ($settings->recertify) {
+            $mform->addElement(
+                'date_time_selector',
+                'timeuntil',
+                get_string('untildate', 'tool_mucertify'),
+                ['optional' => true]
+            );
         }
 
         $mform->addElement('hidden', 'certificationid');
@@ -129,7 +142,7 @@ final class source_manual_assign extends \tool_mulib\local\ajax_form {
             if (!$cohort->visible && !has_capability('moodle/cohort:view', $cohortcontext)) {
                 $errors['cohortid'] = get_string('error');
             }
-            if (\tool_mucertify\local\util::is_mutenancy_active()) {
+            if (mulib::is_mutenancy_active()) {
                 if ($context->tenantid) {
                     if ($cohortcontext->tenantid && $context->tenantid != $cohortcontext->tenantid) {
                         $errors['cohortid'] = get_string('error');
@@ -149,6 +162,20 @@ final class source_manual_assign extends \tool_mulib\local\ajax_form {
                     $errors['users'] = $error;
                     break;
                 }
+            }
+        }
+
+        if (!$data['users'] && !$data['cohortid']) {
+            $errors['users'] = get_string('required');
+            $errors['cohortid'] = get_string('required');
+        }
+
+        if ($this->settings->recertify && !empty($data['timeuntil'])) {
+            if (
+                $data['timeuntil'] - $this->settings->recertify <= $data['timewindowstart']
+                || $data['timeuntil'] - $this->settings->recertify <= time()
+            ) {
+                $errors['timeuntil'] = get_string('error');
             }
         }
 

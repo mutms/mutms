@@ -21,6 +21,9 @@ namespace tool_mucertify\external\form_autocomplete;
 
 use core_external\external_function_parameters;
 use core_external\external_value;
+use tool_mulib\local\sql;
+use tool_mulib\local\context_map;
+use tool_mulib\local\mulib;
 
 /**
  * Provides list of program candidates for certification.
@@ -58,18 +61,15 @@ final class certification_periods_programid extends \tool_mulib\external\form_au
      * @return array
      */
     public static function execute(string $query, int $certificationid): array {
-        global $DB;
+        global $DB, $USER;
 
         [
             'query' => $query,
             'certificationid' => $certificationid,
-        ] = self::validate_parameters(
-            self::execute_parameters(),
-            [
-                'query' => $query,
-                'certificationid' => $certificationid,
-            ]
-        );
+        ] = self::validate_parameters(self::execute_parameters(), [
+            'query' => $query,
+            'certificationid' => $certificationid,
+        ]);
 
         $certification = $DB->get_record('tool_mucertify_certification', ['id' => $certificationid], '*', MUST_EXIST);
 
@@ -78,45 +78,39 @@ final class certification_periods_programid extends \tool_mulib\external\form_au
         self::validate_context($context);
         require_capability('tool/mucertify:edit', $context);
 
-        [$searchsql, $params] = \tool_muprog\local\management::get_program_search_query(null, $query, 'p');
+        $sql = (
+            new sql("
+                SELECT p.id, p.fullname
+                  FROM {tool_muprog_program} p
+                  JOIN {tool_muprog_source} s ON s.programid = p.id and s.type = 'mucertify'
+                  /* capsubquery */
+                  /* tenantjoin */
+                 WHERE p.archived = 0 /* searchsql */
+              ORDER BY p.fullname ASC")
+        )
+            ->replace_comment(
+                'searchsql',
+                \tool_muprog\local\management::get_program_search_query(null, $query, 'p')->wrap('AND ', '')
+            )
+            ->replace_comment(
+                'capsubquery',
+                context_map::get_contexts_by_capability_query(
+                    'tool/muprog:addtocertifications',
+                    $USER->id,
+                    new sql("(ctx.contextlevel = ? OR ctx.contextlevel = ?)", [\context_system::LEVEL, \context_coursecat::LEVEL])
+                )->wrap("JOIN (", ")capctx ON capctx.id = p.contextid")
+            );
 
-        $tenantselect = '';
-        if (\tool_mucertify\local\util::is_mutenancy_active()) {
-            $certificationtenantid = $DB->get_field('context', 'tenantid', ['id' => $context->id]);
-            if ($certificationtenantid) {
-                $tenantselect = "AND (ctx.tenantid = :tenantid OR ctx.tenantid IS NULL)";
-                $params['tenantid'] = $certificationtenantid;
+        if (mulib::is_mutenancy_active()) {
+            if ($context->tenantid) {
+                $sql = $sql->replace_comment(
+                    'tenantjoin',
+                    new sql("JOIN {context} tctx ON tctx.id = p.contextid AND (tctx.tenantid = ? OR tctx.tenantid IS NULL)", [$context->tenantid])
+                );
             }
         }
 
-        $sqlquery = <<<SQL
-            SELECT p.*
-              FROM {tool_muprog_program} p
-              JOIN {tool_muprog_source} s ON s.programid = p.id and s.type = 'mucertify'
-              JOIN {context} ctx ON ctx.id = p.contextid
-             WHERE p.archived = 0 AND $searchsql
-                   $tenantselect
-          ORDER BY p.fullname ASC
-SQL;
-
-        $rs = $DB->get_recordset_sql($sqlquery, $params);
-
-        $count = 0;
-        $programs = [];
-
-        foreach ($rs as $program) {
-            $pcontext = \context::instance_by_id($program->contextid);
-            if (!has_capability('tool/muprog:addtocertifications', $pcontext)) {
-                continue;
-            }
-            $programs[] = $program;
-            $count++;
-            if ($count > self::MAX_RESULTS) {
-                break;
-            }
-        }
-        $rs->close();
-
+        $programs = $DB->get_records_sql($sql->sql, $sql->params, 0, self::MAX_RESULTS + 1);
         return self::prepare_result($programs, $context);
     }
 
@@ -133,6 +127,15 @@ SQL;
         if ($program->id == $certification->programid1 || $program->id == $certification->programid2) {
             // Current value is always ok.
             return null;
+        }
+
+        $programcontext = \context::instance_by_id($program->contextid);
+        if (!has_capability('tool/muprog:addtocertifications', $programcontext)) {
+            return get_string('error');
+        }
+
+        if ($programcontext->tenantid && $context->tenantid && $programcontext->tenantid != $context->tenantid) {
+            return get_string('error');
         }
 
         return null;

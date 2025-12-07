@@ -233,7 +233,7 @@ final class notification_manager_test extends \advanced_testcase {
         );
 
         $this->setUser($user2);
-        $this->assertSame(null, \tool_mucertify\local\notification_manager::get_instance_management_url($certification1->id));
+        $this->assertSame('/', \tool_mucertify\local\notification_manager::get_instance_management_url($certification1->id)->out_as_local_url());
 
         $this->setAdminUser();
         $this->assertSame(

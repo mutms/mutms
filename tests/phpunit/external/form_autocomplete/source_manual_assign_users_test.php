@@ -20,6 +20,7 @@
 namespace tool_mucertify\phpunit\external\form_autocomplete;
 
 use tool_mucertify\external\form_autocomplete\source_manual_assign_users;
+use tool_mulib\local\mulib;
 
 /**
  * External API for certification assignment candidates test.
@@ -131,7 +132,7 @@ final class source_manual_assign_users_test extends \advanced_testcase {
 
     public function test_execution_tenant(): void {
         global $DB;
-        if (!\tool_mucertify\local\util::is_mutenancy_available()) {
+        if (!mulib::is_mutenancy_available()) {
             $this->markTestSkipped('tenant support not available');
         }
 

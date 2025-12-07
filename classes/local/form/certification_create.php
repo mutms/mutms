@@ -65,6 +65,18 @@ final class certification_create extends \tool_mulib\local\ajax_form {
         $this->handler = \tool_mucertify\customfield\certification_handler::create();
         $this->handler->instance_form_definition($mform);
 
+        $sources = [];
+        /** @var \tool_mucertify\local\source\base[] $sourceclasses */
+        $sourceclasses = \tool_mucertify\local\assignment::get_source_classes();
+        foreach ($sourceclasses as $sourceclass) {
+            if ($sourceclass::is_new_allowed_in_new()) {
+                $sources[] = $mform->createElement('advcheckbox', $sourceclass::get_type(), $sourceclass::get_name());
+            }
+        }
+        if ($sources) {
+            $mform->addElement('group', 'addsources', get_string('assignmentsources', 'tool_mucertify'), $sources, \html_writer::div('', 'w-100 mb-2'));
+        }
+
         $this->add_action_buttons(true, get_string('certification_create', 'tool_mucertify'));
 
         // Prepare custom fields data.

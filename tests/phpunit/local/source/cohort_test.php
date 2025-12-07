@@ -57,6 +57,10 @@ final class cohort_test extends \advanced_testcase {
         $this->assertFalse(cohort::is_new_allowed($certification));
     }
 
+    public function test_is_new_allowed_in_new(): void {
+        $this->assertFalse(cohort::is_new_allowed_in_new());
+    }
+
     public function test_is_update_allowed(): void {
         $certification = new \stdClass();
         $this->assertSame(true, cohort::is_update_allowed($certification));

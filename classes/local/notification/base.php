@@ -20,7 +20,7 @@
 namespace tool_mucertify\local\notification;
 
 use stdClass;
-use moodle_url;
+use core\exception\coding_exception;
 
 /**
  * Certification notification base.
@@ -59,13 +59,15 @@ abstract class base extends \tool_mulib\local\notification\notificationtype {
      * @param stdClass $source
      * @param stdClass $assignment
      * @param stdClass $user
+     * @param stdClass|null $supervisoruser
      * @return array
      */
     public static function get_assignment_placeholders(
         stdClass $certification,
         stdClass $source,
         stdClass $assignment,
-        stdClass $user
+        stdClass $user,
+        ?stdClass $supervisoruser = null
     ): array {
         /** @var \tool_mucertify\local\source\base[] $sourceclasses */
         $sourceclasses = \tool_mucertify\local\assignment::get_source_classes();
@@ -77,7 +79,7 @@ abstract class base extends \tool_mulib\local\notification\notificationtype {
         }
 
         if ($certification->id != $source->certificationid || $source->id != $assignment->sourceid || $user->id != $assignment->userid) {
-            throw new \coding_exception('invalid parameter mix');
+            throw new coding_exception('invalid parameter mix');
         }
 
         $a = [];
@@ -86,9 +88,31 @@ abstract class base extends \tool_mulib\local\notification\notificationtype {
         $a['user_lastname'] = s($user->lastname);
         $a['certification_fullname'] = format_string($certification->fullname);
         $a['certification_idnumber'] = s($certification->idnumber);
-        $a['certification_url'] = (new moodle_url('/admin/tool/mucertify/my/certification.php', ['id' => $certification->id]))->out(false);
+        $a['certification_url'] = (new \core\url('/admin/tool/mucertify/my/certification.php', ['id' => $certification->id]))->out(false);
         $a['certification_sourcename'] = $sourcename;
         $a['certification_status'] = \tool_mucertify\local\assignment::get_status_html($certification, $assignment);
+
+        if ($supervisoruser) {
+            $context = \context::instance_by_id($certification->contextid);
+            $a['supervisor_fullname'] = s(fullname($supervisoruser));
+            $a['supervisor_firstname'] = s($supervisoruser->firstname);
+            $a['supervisor_lastname'] = s($supervisoruser->lastname);
+            if (has_capability('tool/mucertify:view', $context, $supervisoruser)) {
+                $a['certification_url'] = (new \core\url('/admin/tool/mucertify/management/assignment.php', ['id' => $assignment->id]))->out(false);
+            } else {
+                $a['certification_url'] = (new \core\url('/admin/tool/mucertify/catalogue/certification.php', ['id' => $certification->id]))->out(false);
+            }
+            if (isset($supervisoruser->supervisortitle)) {
+                $a['supervisor_title'] = format_string($supervisoruser->supervisortitle);
+            } else {
+                $a['supervisor_title'] = get_string('supervisor', 'tool_murelation');
+            }
+            if (isset($supervisoruser->subordinatetitle)) {
+                $a['subordinate_title'] = format_string($supervisoruser->subordinatetitle);
+            } else {
+                $a['subordinate_title'] = get_string('subordinate', 'tool_murelation');
+            }
+        }
 
         return $a;
     }
@@ -101,6 +125,7 @@ abstract class base extends \tool_mulib\local\notification\notificationtype {
      * @param stdClass $assignment
      * @param stdClass $period
      * @param stdClass $user
+     * @param stdClass|null $supervisoruser
      * @return array
      */
     public static function get_period_placeholders(
@@ -108,10 +133,17 @@ abstract class base extends \tool_mulib\local\notification\notificationtype {
         stdClass $source,
         stdClass $assignment,
         stdClass $period,
-        stdClass $user
+        stdClass $user,
+        ?stdClass $supervisoruser = null
     ): array {
         if ($period->certificationid != $assignment->certificationid || $period->userid != $assignment->userid) {
             throw new \coding_exception('invalid parameter mix');
+        }
+
+        if ($supervisoruser) {
+            $timezone = $supervisoruser->timezone;
+        } else {
+            $timezone = $user->timezone;
         }
 
         $strnotset = get_string('notset', 'tool_mucertify');
@@ -119,23 +151,45 @@ abstract class base extends \tool_mulib\local\notification\notificationtype {
         $a = static::get_assignment_placeholders($certification, $source, $assignment, $user);
 
         $a['period_status'] = \tool_mucertify\local\period::get_status_html($certification, $assignment, $period);
-        $a['period_startdate'] = userdate($period->timewindowstart);
-        $a['period_duedate'] = (isset($period->timewindowdue) ? userdate($period->timewindowdue) : $strnotset);
-        $a['period_enddate'] = (isset($period->timewindowend) ? userdate($period->timewindowend) : $strnotset);
-        $a['period_fromdate'] = (isset($period->timefrom) ? userdate($period->timefrom) : $strnotset);
-        $a['period_untildate'] = (isset($period->timeuntil) ? userdate($period->timeuntil) : $strnotset);
+        $a['period_startdate'] = userdate($period->timewindowstart, '', $timezone);
+        $a['period_duedate'] = (isset($period->timewindowdue) ? userdate($period->timewindowdue, '', $timezone) : $strnotset);
+        $a['period_enddate'] = (isset($period->timewindowend) ? userdate($period->timewindowend, '', $timezone) : $strnotset);
+        $a['period_fromdate'] = (isset($period->timefrom) ? userdate($period->timefrom, '', $timezone) : $strnotset);
+        $a['period_untildate'] = (isset($period->timeuntil) ? userdate($period->timeuntil, '', $timezone) : $strnotset);
         if ($period->timerevoked) {
             $a['period_certificationdate'] = $strnotset;
             $a['period_recertificationdate'] = $strnotset;
         } else {
-            $a['period_certificationdate'] = (isset($period->timecertified) ? userdate($period->timecertified) : $strnotset);
+            $a['period_certificationdate'] = (isset($period->timecertified) ? userdate($period->timecertified, '', $timezone) : $strnotset);
             if (
                 isset($certification->recertify) && $period->recertifiable && $period->timeuntil
                 && !$certification->archived && !$assignment->archived
             ) {
-                $a['period_recertificationdate'] = userdate($period->timeuntil - $certification->recertify);
+                $a['period_recertificationdate'] = userdate($period->timeuntil - $certification->recertify, '', $timezone);
             } else {
                 $a['period_recertificationdate'] = $strnotset;
+            }
+        }
+
+        if ($supervisoruser) {
+            $context = \context::instance_by_id($certification->contextid);
+            $a['supervisor_fullname'] = s(fullname($supervisoruser));
+            $a['supervisor_firstname'] = s($supervisoruser->firstname);
+            $a['supervisor_lastname'] = s($supervisoruser->lastname);
+            if (has_capability('tool/mucertify:view', $context, $supervisoruser)) {
+                $a['certification_url'] = (new \core\url('/admin/tool/mucertify/management/assignment.php', ['id' => $assignment->id]))->out(false);
+            } else {
+                $a['certification_url'] = (new \core\url('/admin/tool/mucertify/catalogue/certification.php', ['id' => $certification->id]))->out(false);
+            }
+            if (isset($supervisoruser->supervisortitle)) {
+                $a['supervisor_title'] = format_string($supervisoruser->supervisortitle);
+            } else {
+                $a['supervisor_title'] = get_string('supervisor', 'tool_murelation');
+            }
+            if (isset($supervisoruser->subordinatetitle)) {
+                $a['subordinate_title'] = format_string($supervisoruser->subordinatetitle);
+            } else {
+                $a['subordinate_title'] = get_string('subordinate', 'tool_murelation');
             }
         }
 
@@ -163,12 +217,14 @@ abstract class base extends \tool_mulib\local\notification\notificationtype {
     ): void {
         global $DB;
 
+        $notificationtype = static::get_notificationtype();
+
         if ($certification->archived) {
             // Never send notifications for archived certification.
             return;
         }
 
-        if ($assignment->archived && static::get_notificationtype() !== 'unassignment') {
+        if ($assignment->archived && $notificationtype !== 'unassignment') {
             // Notification for unassigned is different because we require archiving before unassignment.
             return;
         }
@@ -182,11 +238,13 @@ abstract class base extends \tool_mulib\local\notification\notificationtype {
         $notification = $DB->get_record('tool_mulib_notification', [
             'instanceid' => $certification->id,
             'component' => static::get_component(),
-            'notificationtype' => static::get_notificationtype(),
+            'notificationtype' => $notificationtype,
         ]);
         if (!$notification || !$notification->enabled) {
             return;
         }
+
+        $supervisoruser = static::get_supervisor_user($assignment->userid, $notification->supervisorframeworkid);
 
         try {
             self::force_language($user->lang);
@@ -215,7 +273,35 @@ abstract class base extends \tool_mulib\local\notification\notificationtype {
             $message->contexturlname = $a['certification_fullname'];
             $message->contexturl = $a['certification_url'] ?? null;
 
-            self::message_send($message, $notification->id, $user->id, $assignment->id, $periodid, $alowmultiple);
+            $success = self::message_send($message, $notification->id, $user->id, $assignment->id, $periodid, $alowmultiple);
+
+            if ($success && $supervisoruser) {
+                self::revert_language();
+                self::force_language($supervisoruser->lang);
+
+                $a = static::get_assignment_placeholders($certification, $source, $assignment, $user, $supervisoruser);
+                $a['notification_name'] = static::get_name();
+
+                $ccsubject = self::format_subject(get_string('notification_cc_supervisor_subject', 'tool_mucertify'), $a);
+                $ccbody = self::format_body(get_string('notification_cc_supervisor_body', 'tool_mucertify'), FORMAT_MARKDOWN, $a);
+                $ccbody .= '<blockquote style="background: #f9f9f9;margin: 0;padding: 10px;border-left: 12px solid #ccc;">' . $body . '</blockquote>';
+
+                $ccmessage = new \core\message\message();
+                $ccmessage->notification = '1';
+                $ccmessage->component = static::get_component();
+                $ccmessage->name = 'cc_supervisor_notification';
+                $ccmessage->userfrom = static::get_notifier($certification, $assignment);
+                $ccmessage->userto = $supervisoruser;
+                $ccmessage->subject = $ccsubject;
+                $ccmessage->fullmessage = $ccbody;
+                $ccmessage->fullmessageformat = FORMAT_HTML;
+                $ccmessage->fullmessagehtml = $ccbody;
+                $ccmessage->smallmessage = $ccsubject;
+                $ccmessage->contexturlname = $a['certification_fullname'];
+                $ccmessage->contexturl = $a['certification_url'];
+
+                message_send($ccmessage);
+            }
         } finally {
             self::revert_language();
         }
@@ -236,7 +322,7 @@ abstract class base extends \tool_mulib\local\notification\notificationtype {
      * @param \stdClass $assignment
      * @return void
      */
-    public static function delete_assignment_notifications(\stdClass $assignment) {
+    public static function delete_assignment_notifications(\stdClass $assignment): void {
         global $DB;
 
         $notification = $DB->get_record('tool_mulib_notification', [

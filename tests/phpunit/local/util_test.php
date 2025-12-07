@@ -87,26 +87,6 @@ final class util_test extends \advanced_testcase {
         $this->assertFalse(util::is_mucertify_active());
     }
 
-    public function test_is_mutenancy_available(): void {
-        $this->assertSame(
-            file_exists(__DIR__ . '/../../../../../tool/mutenancy/version.php'),
-            util::is_mutenancy_available()
-        );
-    }
-
-    public function test_is_mutenancy_active(): void {
-        if (!util::is_mutenancy_available()) {
-            $this->assertFalse(util::is_mutenancy_active());
-            return;
-        }
-
-        \tool_mutenancy\local\tenancy::deactivate();
-        $this->assertFalse(util::is_mutenancy_active());
-
-        \tool_mutenancy\local\tenancy::activate();
-        $this->assertTrue(util::is_mutenancy_active());
-    }
-
     public function test_json_encode(): void {
         $this->assertSame('{"abc":"\\\\šk\"\'"}', util::json_encode(['abc' => '\šk"\'']));
     }

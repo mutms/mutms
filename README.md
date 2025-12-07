@@ -8,13 +8,14 @@ remains aligned with critical industry standards and regulations.
 
 ## Key features
 
-* tracking of compliance through certification periods tied to designated programs,
-* multiple sources for assigning certifications,
-* advanced recertification rules to match organizational needs,
-* intuitive _Certification management_ interface,
-* _Certification catalogue_ where users may browse all available certifications,
-* dedicated _My certifications profile page_,
-* _My certifications dashboard block_ for quick access to details.
+* tracking of compliance through certification periods tied to designated programs
+* multiple sources for assigning certifications
+* advanced recertification rules to match organizational needs
+* intuitive _Certification management_ interface
+* _Certification catalogue_ where users may browse all available certifications
+* dedicated _My certifications profile page_
+* _My certifications dashboard block_ for quick access to details
+* supervisors may receive copy of notifications sent to subordinates
 
 ## Requirements
 
@@ -28,6 +29,7 @@ Other recommended plugins:
 
 * [My certifications block](https://github.com/mutms/moodle-block_mucertify_my)
 * [My programs block](https://github.com/mutms/moodle-block_muprog_my)
+* [Supervisors and teams plugin](https://github.com/mutms/moodle-tool_murelation)
 * [Training plugin](https://github.com/mutms/moodle-tool_mutrain)
 * [Training value custom field](https://github.com/mutms/moodle-customfield_mutrain)
 * [Certificate plugin](https://github.com/moodleworkplace/moodle-tool_certificate)
@@ -37,7 +39,6 @@ Other recommended plugins:
 
 ## Documentation
 
-See [plugin documentation](https://github.com/mutms/moodle-tool_mucertify/blob/MOODLE_405_STABLE/docs/en/index.md)
 and [Wiki pages](https://github.com/mutms/moodle-tool_mucertify/wiki) for more information.
 
 ## Acknowledgement
@@ -52,5 +53,5 @@ This plugin is not suitable for existing customers of Open LMS due to the lack o
 
 * Target for production release and availability of paid support: Q2 2026
 * Planned features:
-    * integration of Supervisors and teams plugin for notifications and approvals
+    * integration of Supervisors and teams plugin for approvals
     * integration of Universal catalogue plugin

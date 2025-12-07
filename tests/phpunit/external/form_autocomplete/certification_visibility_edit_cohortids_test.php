@@ -20,6 +20,7 @@
 namespace tool_mucertify\phpunit\external\form_autocomplete;
 
 use tool_mucertify\external\form_autocomplete\certification_visibility_edit_cohortids;
+use tool_mulib\local\mulib;
 
 /**
  * External API for certification visibility cohorts test.
@@ -108,7 +109,7 @@ final class certification_visibility_edit_cohortids_test extends \advanced_testc
     public function test_execution_tenant(): void {
         global $DB;
 
-        if (!\tool_mucertify\local\util::is_mutenancy_available()) {
+        if (!mulib::is_mutenancy_available()) {
             $this->markTestSkipped('tenant support not available');
         }
 
