@@ -21,6 +21,7 @@ namespace tool_murelation\external\form_autocomplete;
 use core_external\external_function_parameters;
 use core_external\external_value;
 use tool_mulib\local\sql;
+use tool_mulib\local\context_map;
 
 /**
  * Cohort selection autocompletion.
@@ -49,40 +50,45 @@ final class framework_cohortid extends \tool_mulib\external\form_autocomplete\co
      * @return array
      */
     public static function execute(string $query): array {
-        global $DB;
+        global $DB, $USER;
 
-        ['query' => $query] = self::validate_parameters(self::execute_parameters(), ['query' => $query]);
+        [
+            'query' => $query,
+        ] = self::validate_parameters(self::execute_parameters(), [
+            'query' => $query,
+        ]);
 
         $context = \context_system::instance();
         self::validate_context($context);
         require_capability('tool/murelation:manageframeworks', $context);
 
-        $sql = new sql(
-            "SELECT ch.id, ch.name, ch.contextid, ch.visible
-               FROM {cohort} ch
-             /* where */
-           ORDER BY ch.name ASC"
-        );
-        $sql->replace_comment(
-            'where',
-            self::get_cohort_search_query($query, 'ch')->wrap('WHERE ', '')
-        );
-        $rs = $DB->get_recordset_sql($sql->sql, $sql->params);
+        $sql = (
+            new sql(
+                "SELECT ch.id, ch.name
+                   FROM {cohort} ch
+                   /* capsubquery */
+                  /* capwhere */ /* searchsql */
+               ORDER BY ch.name ASC"
+            )
+        )
+            ->replace_comment(
+                'capsubquery',
+                context_map::get_contexts_by_capability_query(
+                    'moodle/cohort:view',
+                    $USER->id,
+                    new sql("(ctx.contextlevel = ? OR ctx.contextlevel = ?)", [\context_system::LEVEL, \context_coursecat::LEVEL])
+                )->wrap("LEFT JOIN (", ")capctx ON capctx.id = ch.contextid")
+            )
+            ->replace_comment(
+                'capwhere',
+                "WHERE (ch.visible = 1 OR capctx.id IS NOT NULL)"
+            )
+            ->replace_comment(
+                'searchsql',
+                self::get_cohort_search_query($query, 'ch')->wrap('AND ', '')
+            );
 
-        $cohorts = [];
-        $i = 0;
-        foreach ($rs as $cohort) {
-            if (!self::is_cohort_visible($cohort)) {
-                continue;
-            }
-            $cohorts[$cohort->id] = $cohort;
-            $i++;
-            if ($i > self::MAX_RESULTS) {
-                break;
-            }
-        }
-        $rs->close();
-
+        $cohorts = $DB->get_records_sql($sql->sql, $sql->params, 0, self::MAX_RESULTS + 1);
         return self::prepare_result($cohorts, $context);
     }
 
@@ -93,7 +99,7 @@ final class framework_cohortid extends \tool_mulib\external\form_autocomplete\co
         if (!$cohort) {
             return get_string('error');
         }
-        $context = \context::instance_by_id($cohort->contextid, \IGNORE_MISSING);
+        $context = \context::instance_by_id($cohort->contextid, IGNORE_MISSING);
         if (!$context) {
             return get_string('error');
         }

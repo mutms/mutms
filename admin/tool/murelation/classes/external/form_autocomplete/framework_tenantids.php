@@ -56,7 +56,11 @@ final class framework_tenantids extends \tool_mulib\external\form_autocomplete\b
     public static function execute(string $query): array {
         global $DB;
 
-        ['query' => $query] = self::validate_parameters(self::execute_parameters(), ['query' => $query]);
+        [
+            'query' => $query,
+        ] = self::validate_parameters(self::execute_parameters(), [
+            'query' => $query,
+        ]);
 
         $context = \context_system::instance();
         self::validate_context($context);
@@ -66,17 +70,19 @@ final class framework_tenantids extends \tool_mulib\external\form_autocomplete\b
             return self::prepare_result([], $context);
         }
 
-        $sql = new sql(
-            "SELECT t.id, t.name
-               FROM {tool_mutenancy_tenant} t
-              WHERE t.archived = 0 /* search */
-           ORDER BY t.name ASC"
-        );
-        $sql->replace_comment(
-            'search',
-            self::get_search_query($query, ['name', 'idnumber'], 't')->wrap('AND ', '')
-        );
-        $tenants = $DB->get_records_sql($sql->sql, $sql->params);
+        $sql = (
+            new sql(
+                "SELECT t.id, t.name
+                   FROM {tool_mutenancy_tenant} t
+                  WHERE t.archived = 0 /* search */
+               ORDER BY t.name ASC"
+            )
+        )
+            ->replace_comment(
+                'search',
+                self::get_search_query($query, ['name', 'idnumber'], 't')->wrap('AND ', '')
+            );
+        $tenants = $DB->get_records_sql($sql->sql, $sql->params, 0, self::MAX_RESULTS + 1);
 
         return self::prepare_result($tenants, $context);
     }

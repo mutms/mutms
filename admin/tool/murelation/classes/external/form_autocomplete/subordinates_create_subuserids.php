@@ -90,34 +90,37 @@ final class subordinates_create_subuserids extends \tool_mulib\external\form_aut
             throw new \core\exception\invalid_parameter_exception('Cannot bulk create subordinates');
         }
 
-        $sql = new sql(
-            "SELECT usr.*
-               FROM {user} usr
-               /* cohortjoin */
-          LEFT JOIN {tool_murelation_subordinate} sub ON sub.userid = usr.id AND sub.frameworkid = :fwid
-              WHERE sub.id IS NULL AND usr.deleted = 0 AND usr.confirmed = 1 AND usr.id <> :supuserid
-                    /* search */ /* tenant */
-            /* orderby */",
-            ['fwid' => $framework->id, 'supuserid' => $supuserid]
-        );
+        $sql = (
+            new sql(
+                "SELECT usr.*
+                   FROM {user} usr
+                   /* cohortjoin */
+              LEFT JOIN {tool_murelation_subordinate} sub ON sub.userid = usr.id AND sub.frameworkid = :fwid
+                  WHERE sub.id IS NULL AND usr.deleted = 0 AND usr.confirmed = 1 AND usr.id <> :supuserid
+                        /* search */ /* tenant */
+                /* orderby */",
+                ['fwid' => $framework->id, 'supuserid' => $supuserid]
+            )
+        )
+            ->replace_comment(
+                'search',
+                self::get_user_search_query($query, 'usr', $context)->wrap('AND ', '')
+            )
+            ->replace_comment(
+                'tenant',
+                self::get_tenant_related_users_where('usr.id', $context)->wrap('AND ', '')
+            )
+            ->replace_comment(
+                'orderby',
+                self::get_user_search_orderby($query, 'usr', $context)->wrap('ORDER BY ', '')
+            );
+
         if ($framework->subordinatecohortid) {
-            $sql->replace_comment(
+            $sql = $sql->replace_comment(
                 'cohortjoin',
                 new sql("JOIN {cohort_members} cm ON cm.userid = usr.id AND cm.cohortid = ?", [$framework->subordinatecohortid])
             );
         }
-        $sql->replace_comment(
-            'search',
-            self::get_user_search_query($query, 'usr', $context)->wrap('AND ', '')
-        );
-        $sql->replace_comment(
-            'tenant',
-            self::get_tenant_related_users_where('usr.id', $context, 'AND')
-        );
-        $sql->replace_comment(
-            'orderby',
-            self::get_user_search_orderby($query, 'usr', $context)->wrap('ORDER BY ', '')
-        );
 
         $users = $DB->get_records_sql($sql->sql, $sql->params, 0, $CFG->maxusersperpage + 1);
 
