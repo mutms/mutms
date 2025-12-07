@@ -70,7 +70,7 @@ if ($form->is_cancelled()) {
 
 if ($data = $form->get_data()) {
     $certification = certification::create($data);
-    $returnurl = new moodle_url('/admin/tool/mucertify/management/certification.php', ['id' => $certification->id]);
+    $returnurl = new moodle_url('/admin/tool/mucertify/management/certification_settings.php', ['id' => $certification->id]);
     $form->ajax_form_submitted($returnurl);
 }
 

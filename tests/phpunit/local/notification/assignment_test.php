@@ -19,6 +19,9 @@
 
 namespace tool_mucertify\phpunit\local\notification;
 
+use tool_mucertify\local\source\manual;
+use tool_mulib\local\mulib;
+
 /**
  * Certification notification test.
  *
@@ -47,7 +50,7 @@ final class assignment_test extends \advanced_testcase {
         $syscontext = \context_system::instance();
         $user1 = $this->getDataGenerator()->create_user();
         $user2 = $this->getDataGenerator()->create_user();
-        $program = $programgenerator->create_program(['sources' => 'mucertify', 'archived' => 1]);
+        $program = $programgenerator->create_program(['sources' => 'mucertify']);
         $certification = $generator->create_certification([
             'sources' => 'manual',
             'programid1' => $program->id,
@@ -62,14 +65,14 @@ final class assignment_test extends \advanced_testcase {
 
         $this->setAdminUser();
         $sink = $this->redirectMessages();
-        \tool_mucertify\local\source\manual::assign_users($certification->id, $source->id, [$user1->id], []);
+        manual::assign_users($certification->id, $source->id, [$user1->id], []);
         $messages = $sink->get_messages();
         $sink->close();
         $this->assertCount(0, $messages);
 
         $notification = $generator->create_certifiction_notification(['certificationid' => $certification->id, 'notificationtype' => 'assignment']);
         $sink = $this->redirectMessages();
-        \tool_mucertify\local\source\manual::assign_users($certification->id, $source->id, [$user2->id], []);
+        manual::assign_users($certification->id, $source->id, [$user2->id], []);
         $messages = $sink->get_messages();
         $sink->close();
         $this->assertCount(1, $messages);
@@ -86,5 +89,73 @@ final class assignment_test extends \advanced_testcase {
         $this->assertSame('assignment_notification', $message->eventtype);
         $this->assertSame("$CFG->wwwroot/admin/tool/mucertify/my/certification.php?id=$certification->id", $message->contexturl);
         $this->assertSame('1', $message->notification);
+    }
+
+    public function test_cc_supervisor(): void {
+        global $DB;
+        if (!mulib::is_murelatio_available()) {
+            return;
+        }
+
+        /** @var \tool_mucertify_generator $generator */
+        $generator = $this->getDataGenerator()->get_plugin_generator('tool_mucertify');
+        /** @var \tool_muprog_generator $programgenerator */
+        $programgenerator = $this->getDataGenerator()->get_plugin_generator('tool_muprog');
+
+        /** @var \tool_murelation_generator $relationgenerator */
+        $relationgenerator = $this->getDataGenerator()->get_plugin_generator('tool_murelation');
+
+        $user1 = $this->getDataGenerator()->create_user();
+        $user2 = $this->getDataGenerator()->create_user();
+        $user3 = $this->getDataGenerator()->create_user();
+
+        $framework1 = $relationgenerator->create_framework([
+            'uimode' => \tool_murelation\local\framework::UIMODE_SUPERVISORS,
+        ]);
+
+        $supervisor1 = $relationgenerator->create_supervisor([
+            'frameworkid' => $framework1->id,
+            'userid' => $user1->id,
+            'subuserid' => $user2->id,
+        ]);
+
+        $syscontext = \context_system::instance();
+        $program = $programgenerator->create_program(['sources' => 'mucertify']);
+        $certification = $generator->create_certification([
+            'sources' => 'manual',
+            'programid1' => $program->id,
+            'contextid' => $syscontext->id,
+        ]);
+        $source = $DB->get_record(
+            'tool_mucertify_source',
+            ['type' => 'manual', 'certificationid' => $certification->id],
+            '*',
+            MUST_EXIST
+        );
+
+        $this->setUser($user3);
+
+        $notification = $generator->create_certifiction_notification([
+            'certificationid' => $certification->id,
+            'notificationtype' => 'assignment',
+            'supervisorframeworkid' => $framework1->id,
+        ]);
+        $sink = $this->redirectMessages();
+        $this->setCurrentTimeStart();
+        manual::assign_users($certification->id, $source->id, [$user2->id]);
+        $messages = $sink->get_messages();
+        $sink->close();
+        $this->assertCount(2, $messages);
+        $message = $messages[0];
+        $this->assertSame('Certification assignment notification', $message->subject);
+        $this->assertStringContainsString('you have been assigned to certification', $message->fullmessage);
+        $this->assertSame($user2->id, $message->useridto);
+        $this->assertSame('-10', $message->useridfrom);
+        $message = $messages[1];
+        $this->assertSame('Supervisor notification - Certification 1', $message->subject);
+        $this->assertStringContainsString('a notification was sent to the following user', $message->fullmessage);
+        $this->assertStringContainsString('you have been assigned to certification', $message->fullmessage);
+        $this->assertSame($user1->id, $message->useridto);
+        $this->assertSame('-10', $message->useridfrom);
     }
 }

@@ -76,6 +76,9 @@ if ($data = $form->get_data()) {
     }
     if ($userids) {
         $dateoverrides = ['timewindowstart' => $data->timewindowstart, 'timewindowdue' => $data->timewindowdue];
+        if (!empty($data->timeuntil)) {
+            $dateoverrides['timeuntil'] = $data->timeuntil;
+        }
         $assignmentids = manual::assign_users($certification->id, $source->id, $userids, $dateoverrides);
     }
 

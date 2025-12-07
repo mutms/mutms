@@ -19,6 +19,8 @@
 
 namespace tool_mucertify\local;
 
+use stdClass;
+
 /**
  * Certifications notification manager.
  *
@@ -32,7 +34,7 @@ final class notification_manager extends \tool_mulib\local\notification\manager 
     /**
      * Returns list of all notifications in plugin.
      *
-     * @return array of PHP class names with notificationtype as keys
+     * @return class-string<\tool_mucertify\local\notification\base>[] of PHP class names with notificationtype as keys
      */
     public static function get_all_types(): array {
         // Note: order here affects cron task execution.
@@ -62,8 +64,6 @@ final class notification_manager extends \tool_mulib\local\notification\manager 
             unset($types[$notification->notificationtype]);
         }
 
-        // phpcs:ignore moodle.Commenting.InlineComment.TypeHintingForeach
-        /** @var class-string<notification\base> $classname */
         foreach ($types as $type => $classname) {
             $types[$type] = $classname::get_name();
         }
@@ -75,12 +75,13 @@ final class notification_manager extends \tool_mulib\local\notification\manager 
      * Returns context of instance for notifications.
      *
      * @param int $instanceid
+     * @param int $strictness
      * @return null|\context
      */
-    public static function get_instance_context(int $instanceid): ?\context {
+    public static function get_instance_context(int $instanceid, int $strictness = MUST_EXIST): ?\context {
         global $DB;
 
-        $certification = $DB->get_record('tool_mucertify_certification', ['id' => $instanceid]);
+        $certification = $DB->get_record('tool_mucertify_certification', ['id' => $instanceid], '*', $strictness);
         if (!$certification) {
             return null;
         }
@@ -141,30 +142,30 @@ final class notification_manager extends \tool_mulib\local\notification\manager 
      * Returns url of UI that shows all plugin notifications for given instance id.
      *
      * @param int $instanceid
-     * @return \moodle_url|null
+     * @return \core\url
      */
-    public static function get_instance_management_url(int $instanceid): ?\moodle_url {
+    public static function get_instance_management_url(int $instanceid): \core\url {
         global $DB;
         $certification = $DB->get_record('tool_mucertify_certification', ['id' => $instanceid]);
         if (!$certification) {
-            return null;
+            return new \core\url('/');
         }
 
         $context = \context::instance_by_id($certification->contextid);
         if (!has_capability('tool/mucertify:view', $context)) {
-            return null;
+            return new \core\url('/');
         }
 
-        return new \moodle_url('/admin/tool/mucertify/management/certification_notifications.php', ['id' => $certification->id]);
+        return new \core\url('/admin/tool/mucertify/management/certification_notifications.php', ['id' => $certification->id]);
     }
 
     /**
      * Set up notification/view.php page.
      *
-     * @param \stdClass $notification
+     * @param stdClass $notification
      * @return void
      */
-    public static function setup_view_page(\stdClass $notification): void {
+    public static function setup_view_page(stdClass $notification): void {
         global $PAGE, $DB, $OUTPUT;
 
         $certification = $DB->get_record('tool_mucertify_certification', ['id' => $notification->instanceid]);
@@ -208,8 +209,6 @@ final class notification_manager extends \tool_mulib\local\notification\manager 
         }
 
         $types = self::get_all_types();
-
-        /** @var class-string<notification\base> $classname */
         foreach ($types as $classname) {
             $classname::notify_users($certification, $user);
         }
@@ -218,10 +217,10 @@ final class notification_manager extends \tool_mulib\local\notification\manager 
     /**
      * To be called when deleting certification assignment.
      *
-     * @param \stdClass $assignment
+     * @param stdClass $assignment
      * @return void
      */
-    public static function delete_assignment_notifications(\stdClass $assignment) {
+    public static function delete_assignment_notifications(stdClass $assignment): void {
         global $DB;
 
         if (!property_exists($assignment, 'sourceid')) {
@@ -246,10 +245,10 @@ final class notification_manager extends \tool_mulib\local\notification\manager 
     /**
      * To be called when deleting certification period.
      *
-     * @param \stdClass $period
+     * @param stdClass $period
      * @return void
      */
-    public static function delete_period_notifications(\stdClass $period) {
+    public static function delete_period_notifications(stdClass $period) {
         global $DB;
 
         if (!property_exists($period, 'programid')) {
@@ -274,10 +273,10 @@ final class notification_manager extends \tool_mulib\local\notification\manager 
     /**
      * To be called when deleting certification.
      *
-     * @param \stdClass $certification
+     * @param stdClass $certification
      * @return void
      */
-    public static function delete_certification_notifications(\stdClass $certification) {
+    public static function delete_certification_notifications(stdClass $certification) {
         global $DB;
 
         if (!property_exists($certification, 'publicaccess')) {

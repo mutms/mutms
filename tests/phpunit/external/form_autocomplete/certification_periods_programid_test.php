@@ -20,6 +20,7 @@
 namespace tool_mucertify\phpunit\external\form_autocomplete;
 
 use tool_mucertify\external\form_autocomplete\certification_periods_programid;
+use tool_mulib\local\mulib;
 
 /**
  * External API for form program selection.
@@ -96,9 +97,9 @@ final class certification_periods_programid_test extends \advanced_testcase {
         $user2 = $this->getDataGenerator()->create_user();
 
         $editorroleid = $this->getDataGenerator()->create_role();
-        \assign_capability('tool/mucertify:edit', CAP_ALLOW, $editorroleid, $syscontext);
-        \assign_capability('tool/muprog:addtocertifications', CAP_ALLOW, $editorroleid, $syscontext);
-        \role_assign($editorroleid, $user1->id, $catcontext1->id);
+        assign_capability('tool/mucertify:edit', CAP_ALLOW, $editorroleid, $syscontext);
+        assign_capability('tool/muprog:addtocertifications', CAP_ALLOW, $editorroleid, $syscontext);
+        role_assign($editorroleid, $user1->id, $catcontext1->id);
 
         $certification1 = $generator->create_certification([
             'contextid' => $syscontext->id,
@@ -151,7 +152,7 @@ final class certification_periods_programid_test extends \advanced_testcase {
     }
 
     public function test_execute_tenant(): void {
-        if (!\tool_mucertify\local\util::is_mutenancy_available()) {
+        if (!mulib::is_mutenancy_available()) {
             $this->markTestSkipped('tenant support not available');
         }
 
@@ -199,11 +200,11 @@ final class certification_periods_programid_test extends \advanced_testcase {
         $user2 = $this->getDataGenerator()->create_user(['tenantid' => $tenant1->id]);
 
         $editorroleid = $this->getDataGenerator()->create_role();
-        \assign_capability('tool/mucertify:edit', CAP_ALLOW, $editorroleid, $syscontext);
-        \assign_capability('tool/muprog:addtocertifications', CAP_ALLOW, $editorroleid, $syscontext);
-        \role_assign($editorroleid, $user0->id, $syscontext->id);
-        \role_assign($editorroleid, $user1->id, $syscontext->id);
-        \role_assign($editorroleid, $user2->id, $syscontext->id);
+        assign_capability('tool/mucertify:edit', CAP_ALLOW, $editorroleid, $syscontext);
+        assign_capability('tool/muprog:addtocertifications', CAP_ALLOW, $editorroleid, $syscontext);
+        role_assign($editorroleid, $user0->id, $syscontext->id);
+        role_assign($editorroleid, $user1->id, $syscontext->id);
+        role_assign($editorroleid, $user2->id, $syscontext->id);
 
         $certification0 = $generator->create_certification([
             'contextid' => $syscontext->id,

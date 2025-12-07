@@ -51,27 +51,6 @@ final class util {
     }
 
     /**
-     * Is multi-tenancy available?
-     *
-     * @return bool
-     */
-    public static function is_mutenancy_available(): bool {
-        return class_exists(\tool_mutenancy\local\tenancy::class);
-    }
-
-    /**
-     * Is multi-tenancy active?
-     *
-     * @return bool
-     */
-    public static function is_mutenancy_active(): bool {
-        if (!self::is_mutenancy_available()) {
-            return false;
-        }
-        return \tool_mutenancy\local\tenancy::is_active();
-    }
-
-    /**
      * Encode JSON date in a consistent way.
      *
      * @param mixed $data

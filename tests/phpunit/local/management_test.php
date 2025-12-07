@@ -20,6 +20,7 @@
 namespace tool_mucertify\phpunit\local;
 
 use tool_mucertify\local\management;
+use tool_mulib\local\mulib;
 
 /**
  * certification management helper test.
@@ -78,7 +79,7 @@ final class management_test extends \advanced_testcase {
     }
 
     public function test_get_management_url_tenant(): void {
-        if (!\tool_mucertify\local\util::is_mutenancy_available()) {
+        if (!mulib::is_mutenancy_available()) {
             $this->markTestSkipped('multitenancy not available');
         }
         \tool_mutenancy\local\tenancy::activate();
