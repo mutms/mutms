@@ -570,7 +570,9 @@ function has_capability($capability, context $context, $user = null, $doanything
         if (!$userid || isguestuser($userid)) {
             // Do not allow guests to access tenants.
             if ($context->tenantid) {
-                return false;
+                if (!get_config('tool_mutenancy', 'allowguests')) {
+                    return false;
+                }
             }
         } else if ($context->tenantid) {
             // Prevent access of tenant members to other tenants.
@@ -5152,6 +5154,22 @@ function get_sorted_contexts($select, $params = array()) {
     if ($select) {
         $select = 'WHERE ' . $select;
     }
+
+    if (mutenancy_is_active()) {
+        return $DB->get_records_sql("
+            SELECT ctx.*
+              FROM {context} ctx
+              LEFT JOIN {tool_mutenancy_tenant} t ON ctx.contextlevel = " . CONTEXT_TENANT . " AND t.id = ctx.instanceid
+              LEFT JOIN {user} u ON ctx.contextlevel = " . CONTEXT_USER . " AND u.id = ctx.instanceid
+              LEFT JOIN {course_categories} cat ON ctx.contextlevel = " . CONTEXT_COURSECAT . " AND cat.id = ctx.instanceid
+              LEFT JOIN {course} c ON ctx.contextlevel = " . CONTEXT_COURSE . " AND c.id = ctx.instanceid
+              LEFT JOIN {course_modules} cm ON ctx.contextlevel = " . CONTEXT_MODULE . " AND cm.id = ctx.instanceid
+              LEFT JOIN {block_instances} bi ON ctx.contextlevel = " . CONTEXT_BLOCK . " AND bi.id = ctx.instanceid
+           $select
+          ORDER BY ctx.contextlevel, bi.defaultregion, COALESCE(cat.sortorder, c.sortorder, cm.section, bi.defaultweight), u.lastname, u.firstname, cm.id, t.name
+            ", $params);
+    }
+
     return $DB->get_records_sql("
             SELECT ctx.*
               FROM {context} ctx
@@ -5247,10 +5265,19 @@ function get_with_capability_sql(context $context, $capability) {
 
     $capjoin = get_with_capability_join($context, $capability, $prefix . 'u.id');
 
+    $tenantwhere = "";
+    if (mutenancy_is_active()) {
+        // Prevent tenant members having any capabilities in other tenants,
+        // this is in effect even if tenant guest access is allowed.
+        if ($context->tenantid) {
+            $tenantwhere = "AND ({$prefix}u.tenantid IS NULL OR {$prefix}u.tenantid = {$context->tenantid})";
+        }
+    }
+
     $sql = "SELECT DISTINCT {$prefix}u.id
               FROM {user} {$prefix}u
             $capjoin->joins
-             WHERE {$prefix}u.deleted = 0 AND $capjoin->wheres";
+             WHERE {$prefix}u.deleted = 0 AND $capjoin->wheres $tenantwhere";
 
     return array($sql, $capjoin->params);
 }

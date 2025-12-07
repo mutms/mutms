@@ -107,6 +107,10 @@ class core_user_external extends \core_external\external_api {
                 ]
             ), 'User preferences', VALUE_OPTIONAL),
         ];
+        if (mutenancy_is_active()) {
+            $userfields['tenantid'] = new external_value(PARAM_INT, 'user tenant membership', VALUE_OPTIONAL);
+        }
+
         return new external_function_parameters(
             [
                 'users' => new external_multiple_structure(
@@ -1164,6 +1168,9 @@ class core_user_external extends \core_external\external_api {
         );
         if (!empty($additionalfields)) {
             $userfields = array_merge($userfields, $additionalfields);
+        }
+        if (mutenancy_is_active()) {
+            $userfields['tenantid'] = new external_value(PARAM_INT, 'user tenant membership', VALUE_OPTIONAL);
         }
         return new external_single_structure($userfields);
     }
