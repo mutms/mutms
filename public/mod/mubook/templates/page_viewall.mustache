@@ -1,0 +1,76 @@
+{{!
+This file is part of MuTMS suite of plugins for Moodle™ LMS.
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
+@copyright  2025 Petr Skoda
+@license    https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+
+}}
+{{!
+    @template mod_mubook/page_viewall
+
+    All book chapters with TOC at the top.
+
+    Example context (json):
+    {
+        "chapters": [
+            {
+                "chapterid": "123",
+                "numbers": "1",
+                "relurl": "#mubook-chapter-123",
+                "title": "Some chapter",
+                "subchapter": 0,
+                "contents": "<p>some text</p>"
+            },
+            {
+                "chapterid": "125",
+                "numbers": "1.1",
+                "relurl": "#mubook-chapter-125",
+                "title": "Some sub-chapter",
+                "subchapter": 1,
+                "contents": "<p>some text</p>"
+            },
+            {
+                "chapterid": "130",
+                "numbers": "2",
+                "relurl": "#mubook-chapter-130",
+                "title": "Some other chapter",
+                "subchapter": 0,
+                "contents": "<p>some text</p>"
+            }
+        ]
+    }
+
+}}
+<article class="mubook-page">
+    <h2>{{#str}}toc,mod_mubook{{/str}}</h2>
+    <div id="mubook-toc">
+        <ul class="list-unstyled p-0">
+        {{#chapters}}
+            <li class="d-flex">
+                {{#numbers}}<span class="mubook-chapter-numbers">{{.}}</span>{{/numbers}}
+                <span class="mubook-chapter-title d-block"><a href="{{{relurl}}}">{{{title}}}</a></span>
+            </li>
+        {{/chapters}}
+        </ul>
+    </div>
+    {{#chapters}}
+    <div id="mubook-chapter-{{chapterid}}" class="mubook-chapter mb-5">
+        {{^subchapter}}<h2 class="mubook-chapter-title h2 mb-5 mt-2">{{#numbers}}<span class="mubook-chapter-numbers">{{.}}</span> {{/numbers}}{{{title}}}</h2>{{/subchapter}}
+        {{#subchapter}}<h3 class="mubook-subchapter-title h2 mb-5 mt-2">{{#numbers}}<span class="mubook-chapter-numbers">{{.}}</span> {{/numbers}}{{{title}}}</h3>{{/subchapter}}
+        {{{contents}}}
+    </div>
+    {{/chapters}}
+</article>
