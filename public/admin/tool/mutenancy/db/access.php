@@ -45,10 +45,12 @@ $capabilities = [
             'manager' => CAP_ALLOW, // Excluded from tenantmanager archetype.
         ],
     ],
-    // Switch to tenant site - not applicable to tenant members, view cap is also needed in tenant.
+    // Switch to tenant site - this does not grant any additional privileges.
+    // Switching should be treated as visual stuff only, the restrictions are relaxed for performance reasons,
+    // also role overrides may not always work as expected.
     'tool/mutenancy:switch' => [
         'captype' => 'write',
-        'contextlevel' => CONTEXT_SYSTEM,
+        'contextlevel' => CONTEXT_TENANT,
         'archetypes' => [
             'manager' => CAP_ALLOW,
         ],

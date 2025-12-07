@@ -100,3 +100,25 @@ Feature: Multi-tenancy features of user profile page
     And I click on "Tenant 2" "text" in the ".modal-dialog" "css_element"
     And I click on "Allocate user" "button" in the ".modal-dialog" "css_element"
     Then I should see "No" in the "Tenant member" definition list item
+
+  Scenario: Admin may see custom tenant membership name and association on user profile page
+    Given the following config values are set as admin:
+      | tenantentity   | Faculty   | tool_mutenancy |
+      | tenantentities | Faculties | tool_mutenancy |
+    And I log in as "admin"
+
+    When I am on the profile page of user "student0"
+    Then I should see "No" in the "Faculty member" definition list item
+    And I should not see "Associated with Faculties"
+
+    When the following "cohort members" exist:
+      | user     | cohort  |
+      | student0 | cohort1 |
+      | student0 | cohort2 |
+    And I am on the profile page of user "student0"
+    Then I should see "No" in the "Faculty member" definition list item
+    And I should see "Tenant 1, Tenant 2" in the "Associated with Faculties" definition list item
+
+    When I am on the profile page of user "student1"
+    Then I should see "Tenant 1" in the "Faculty member" definition list item
+    And I should not see "Associated with Faculties"

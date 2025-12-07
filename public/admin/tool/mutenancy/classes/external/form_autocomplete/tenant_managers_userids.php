@@ -20,6 +20,7 @@ namespace tool_mutenancy\external\form_autocomplete;
 
 use core_external\external_function_parameters;
 use core_external\external_value;
+use tool_mulib\local\sql;
 
 /**
  * Tenant managers assignment candidates.
@@ -55,36 +56,36 @@ final class tenant_managers_userids extends \tool_mulib\external\form_autocomple
         [
             'query' => $query,
             'tenantid' => $tenantid,
-        ] = self::validate_parameters(
-            self::execute_parameters(),
-            [
+        ] = self::validate_parameters(self::execute_parameters(), [
             'query' => $query,
             'tenantid' => $tenantid,
-            ]
-        );
+        ]);
 
         $context = \context_tenant::instance($tenantid);
         self::validate_context($context);
         require_capability('tool/mutenancy:admin', $context);
 
-        $tenant = $DB->get_record('tool_mutenancy_tenant', ['id' => $tenantid], '*', MUST_EXIST);
+        $sql = (
+            new sql(
+                "SELECT u.*
+                   FROM {user} u
+                  WHERE u.deleted = 0 AND u.confirmed = 1
+                        AND (u.tenantid IS NULL OR u.tenantid = :tenantid)
+                        /* searchsql */
+               /* orderby */",
+                ['tenantid' => $tenantid]
+            )
+        )
+            ->replace_comment(
+                'searchsql',
+                self::get_user_search_query($query, 'u', $context)->wrap('AND ', '')
+            )
+            ->replace_comment(
+                'orderby',
+                self::get_user_search_orderby($query, 'u', $context)->wrap('ORDER BY ', '')
+            );
 
-        $fields = \core_user\fields::for_name()->with_identity($context, false);
-        $extrafields = $fields->get_required_fields([\core_user\fields::PURPOSE_IDENTITY]);
-
-        [$searchsql, $searchparams] = users_search_sql($query, 'u', true, $extrafields);
-        [$sortsql, $sortparams] = users_order_by_sql('u', $query, $context);
-        $params = array_merge($searchparams, $sortparams);
-        $params['tenantid'] = $tenant->id;
-
-        $sql = "SELECT u.*
-                  FROM {user} u
-                 WHERE {$searchsql}
-                       AND u.deleted = 0 AND u.confirmed = 1
-                       AND u.tenantid IS NULL OR u.tenantid = :tenantid
-              ORDER BY {$sortsql}";
-
-        $users = $DB->get_records_sql($sql, $params, 0, self::MAX_RESULTS + 1);
+        $users = $DB->get_records_sql($sql->sql, $sql->params, 0, self::MAX_RESULTS + 1);
         return self::prepare_result($users, $context);
     }
 

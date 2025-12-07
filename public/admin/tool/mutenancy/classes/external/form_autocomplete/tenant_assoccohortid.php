@@ -15,11 +15,14 @@
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 // phpcs:disable moodle.Files.BoilerplateComment.CommentEndedTooSoon
+// phpcs:disable moodle.Files.LineLength.TooLong
 
 namespace tool_mutenancy\external\form_autocomplete;
 
 use core_external\external_function_parameters;
 use core_external\external_value;
+use tool_mulib\local\sql;
+use tool_mulib\local\context_map;
 
 /**
  * Associated users cohort autocompletion.
@@ -55,18 +58,15 @@ final class tenant_assoccohortid extends \tool_mulib\external\form_autocomplete\
      * @return array
      */
     public static function execute(string $query, int $tenantid): array {
-        global $DB;
+        global $DB, $USER;
 
         [
             'query' => $query,
             'tenantid' => $tenantid,
-        ] = self::validate_parameters(
-            self::execute_parameters(),
-            [
-                'query' => $query,
-                'tenantid' => $tenantid,
-            ]
-        );
+        ] = self::validate_parameters(self::execute_parameters(), [
+            'query' => $query,
+            'tenantid' => $tenantid,
+        ]);
 
         if ($tenantid) {
             $context = \context_tenant::instance($tenantid);
@@ -76,37 +76,37 @@ final class tenant_assoccohortid extends \tool_mulib\external\form_autocomplete\
         self::validate_context($context);
         require_capability('tool/mutenancy:admin', $context);
 
-        [$searchsql, $params] = self::get_cohort_search_query($query, 'ch');
-        if ($tenantid) {
-            $params['tenantid'] = $tenantid;
-            $ortenantid = "OR c.tenantid = :tenantid";
-        } else {
-            $ortenantid = "";
-        }
+        $sql = (
+            new sql(
+                "SELECT ch.id, ch.name, ch.contextid
+                   FROM {cohort} ch
+                   JOIN {context} c ON c.id = ch.contextid AND (c.tenantid IS NULL OR c.tenantid = :tenantid)
+                   /* capsubquery */
+                  WHERE (ch.component = '' OR ch.component IS NULL)
+                        /* capwhere */
+                        /* searchsql */
+               ORDER BY ch.name ASC",
+                ['tenantid' => $tenantid]
+            )
+        )
+            ->replace_comment(
+                'searchsql',
+                self::get_cohort_search_query($query, 'ch')->wrap('AND ', '')
+            )
+            ->replace_comment(
+                'capsubquery',
+                context_map::get_contexts_by_capability_query(
+                    'moodle/cohort:view',
+                    $USER->id,
+                    new sql("(ctx.contextlevel = ? OR ctx.contextlevel = ?)", [\context_system::LEVEL, \context_coursecat::LEVEL])
+                )->wrap("LEFT JOIN (", ")capctx ON capctx.id = c.id")
+            )
+            ->replace_comment(
+                'capwhere',
+                "AND (ch.visible = 1 OR capctx.id IS NOT NULL)"
+            );
 
-        $sql = "SELECT ch.id, ch.name, ch.contextid, ch.visible
-                  FROM {cohort} ch
-                  JOIN {context} c ON c.id = ch.contextid AND (c.tenantid IS NULL $ortenantid)
-             LEFT JOIN {tool_mutenancy_tenant} t ON t.cohortid = ch.id
-                 WHERE t.id IS NULL AND $searchsql
-              ORDER BY ch.name ASC";
-
-        $cohorts = [];
-        $rs = $DB->get_recordset_sql($sql, $params);
-        $i = 0;
-        foreach ($rs as $cohort) {
-            if (!self::is_cohort_visible($cohort)) {
-                continue;
-            }
-            $i++;
-            if ($i > self::MAX_RESULTS) {
-                $rs->close();
-                return self::get_overflow_result();
-            }
-            $cohorts[$cohort->id] = $cohort;
-        }
-        $rs->close();
-
+        $cohorts = $DB->get_records_sql($sql->sql, $sql->params, 0, self::MAX_RESULTS + 1);
         return self::get_list_result($cohorts, $context);
     }
 

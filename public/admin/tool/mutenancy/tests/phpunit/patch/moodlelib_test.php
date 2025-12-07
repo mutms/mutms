@@ -133,6 +133,8 @@ final class moodlelib_test extends \advanced_testcase {
         $this->getDataGenerator()->enrol_user($user2->id, $course1->id, 'student');
         $this->getDataGenerator()->enrol_user($user2->id, $course2->id, 'student');
 
+        $this->assertSame('0', get_config('tool_mutenancy', 'allowguests'));
+
         $this->setUser(null);
         try {
             require_login($course0, false, null, false, true);
@@ -172,6 +174,52 @@ final class moodlelib_test extends \advanced_testcase {
             $this->assertInstanceOf(\require_login_exception::class, $ex);
             $this->assertSame('Course or activity not accessible. (No guest)', $ex->getMessage());
         }
+
+        $this->setUser($admin);
+        require_login($course0, false, null, false, true);
+        require_login($course1, false, null, false, true);
+        require_login($course2, false, null, false, true);
+
+        $this->setUser($user1);
+        require_login($course0, false, null, false, true);
+        require_login($course1, false, null, false, true);
+        try {
+            require_login($course2, false, null, false, true);
+            $this->fail('Exception expected');
+        } catch (\moodle_exception $ex) {
+            $this->assertInstanceOf(\require_login_exception::class, $ex);
+            $this->assertSame('Course or activity not accessible. (No other tenant access)', $ex->getMessage());
+        }
+
+        set_config('allowguests', '1', 'tool_mutenancy');
+
+        $this->setUser(null);
+        try {
+            require_login($course0, false, null, false, true);
+            $this->fail('Exception expected');
+        } catch (\moodle_exception $ex) {
+            $this->assertInstanceOf(\require_login_exception::class, $ex);
+            $this->assertSame('Course or activity not accessible. (You are not logged in)', $ex->getMessage());
+        }
+        try {
+            require_login($course1, false, null, false, true);
+            $this->fail('Exception expected');
+        } catch (\moodle_exception $ex) {
+            $this->assertInstanceOf(\require_login_exception::class, $ex);
+            $this->assertSame('Course or activity not accessible. (You are not logged in)', $ex->getMessage());
+        }
+        try {
+            require_login($course2, false, null, false, true);
+            $this->fail('Exception expected');
+        } catch (\moodle_exception $ex) {
+            $this->assertInstanceOf(\require_login_exception::class, $ex);
+            $this->assertSame('Course or activity not accessible. (You are not logged in)', $ex->getMessage());
+        }
+
+        $this->setUser($guest);
+        require_login($course0, false, null, false, true);
+        require_login($course1, false, null, false, true);
+        require_login($course2, false, null, false, true);
 
         $this->setUser($admin);
         require_login($course0, false, null, false, true);

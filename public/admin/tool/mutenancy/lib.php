@@ -118,7 +118,7 @@ function tool_mutenancy_myprofile_navigation(\core_user\output\myprofile\tree $t
     $tree->add_node(new core_user\output\myprofile\node(
         'contact',
         'tenant',
-        get_string('tenant_member', 'tool_mutenancy'),
+        tenancy::get_tenant_string('tenant_member'),
         null,
         null,
         $name . $allocate
@@ -140,7 +140,7 @@ function tool_mutenancy_myprofile_navigation(\core_user\output\myprofile\tree $t
             $tree->add_node(new core_user\output\myprofile\node(
                 'contact',
                 'associatedtenants',
-                get_string('user_tenants', 'tool_mutenancy'),
+                tenancy::get_tenants_string('user_tenants'),
                 null,
                 null,
                 implode(', ', $list)
@@ -163,7 +163,7 @@ function tool_mutenancy_render_navbar_output(renderer_base $renderer): string {
     $url = new moodle_url('/admin/tool/mutenancy/tenant_switch.php');
     $icon = new \tool_mulib\output\ajax_form\icon(
         $url,
-        get_string('tenant_switch', 'tool_mutenancy'),
+        tenancy::get_tenant_string('tenant_switch'),
         'switch',
         'tool_mutenancy'
     );

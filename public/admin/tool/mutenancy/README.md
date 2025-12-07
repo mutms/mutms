@@ -20,7 +20,7 @@ MuTMS suite of plugins is not associated with Moodle HQ in any way.
 ## Roadmap
 
 * Target for production release and availability of paid support: Q2 2026
-* Additional planned feature: improved tenant switching, improved tenant separation
+* Additional planned feature: improved tenant separation
 
 ## Documentation
 

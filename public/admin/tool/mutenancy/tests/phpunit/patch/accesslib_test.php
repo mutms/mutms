@@ -16,6 +16,7 @@
 
 // phpcs:disable moodle.Files.BoilerplateComment.CommentEndedTooSoon
 // phpcs:disable moodle.Files.LineLength.TooLong
+// phpcs:disable moodle.Files.LineLength.MaxExceeded
 // phpcs:disable moodle.Commenting.DocblockDescription.Missing
 
 namespace tool_mutenancy\phpunit\patch;
@@ -55,7 +56,7 @@ final class accesslib_test extends \advanced_testcase {
      * @covers ::has_capability()
      */
     public function test_has_capability(): void {
-        global $DB;
+        global $DB, $CFG;
         tenancy::activate();
 
         /** @var \tool_mutenancy_generator $generator */
@@ -85,7 +86,6 @@ final class accesslib_test extends \advanced_testcase {
         assign_capability($capability, CAP_ALLOW, $userrole->id, $syscontext->id);
         $guestrole = $DB->get_record('role', ['shortname' => 'guest'], '*', MUST_EXIST);
         assign_capability($capability, CAP_ALLOW, $guestrole->id, $syscontext->id);
-        ;
 
         $admin = get_admin();
         $admincontext = \context_user::instance($admin->id);
@@ -215,6 +215,62 @@ final class accesslib_test extends \advanced_testcase {
         $this->assertTrue(has_capability($capability, $coursecontext1));
         $this->setUser($user2);
         $this->assertFalse(has_capability($capability, $coursecontext1));
+
+        $this->assertSame('0', get_config('tool_mutenancy', 'allowguests'));
+
+        assign_capability('moodle/course:view', CAP_ALLOW, $CFG->guestroleid, $syscontext->id);
+        assign_capability('moodle/course:view', CAP_ALLOW, $CFG->notloggedinroleid, $syscontext->id);
+        assign_capability('moodle/course:update', CAP_ALLOW, $CFG->guestroleid, $syscontext->id);
+        assign_capability('moodle/course:update', CAP_ALLOW, $CFG->notloggedinroleid, $syscontext->id);
+        assign_capability('moodle/course:update', CAP_ALLOW, $userrole->id, $syscontext->id);
+
+        $this->setUser();
+
+        $this->assertTrue(has_capability('moodle/course:view', $coursecontext0));
+        $this->assertTrue(has_capability('moodle/course:view', $coursecontext0, $guest));
+        $this->assertTrue(has_capability('moodle/course:view', $coursecontext0, $user0));
+        $this->assertTrue(has_capability('moodle/course:view', $coursecontext0, $user1));
+        $this->assertTrue(has_capability('moodle/course:view', $coursecontext0, $user2));
+        $this->assertfalse(has_capability('moodle/course:update', $coursecontext0));
+        $this->assertfalse(has_capability('moodle/course:update', $coursecontext0, $guest));
+        $this->assertTrue(has_capability('moodle/course:update', $coursecontext0, $user0));
+        $this->assertTrue(has_capability('moodle/course:update', $coursecontext0, $user1));
+        $this->assertTrue(has_capability('moodle/course:update', $coursecontext0, $user2));
+
+        $this->assertfalse(has_capability('moodle/course:view', $coursecontext1));
+        $this->assertfalse(has_capability('moodle/course:view', $coursecontext1, $guest));
+        $this->assertTrue(has_capability('moodle/course:view', $coursecontext1, $user0));
+        $this->assertTrue(has_capability('moodle/course:view', $coursecontext1, $user1));
+        $this->assertfalse(has_capability('moodle/course:view', $coursecontext1, $user2));
+        $this->assertfalse(has_capability('moodle/course:update', $coursecontext1));
+        $this->assertfalse(has_capability('moodle/course:update', $coursecontext1, $guest));
+        $this->assertTrue(has_capability('moodle/course:update', $coursecontext1, $user0));
+        $this->assertTrue(has_capability('moodle/course:update', $coursecontext1, $user1));
+        $this->assertfalse(has_capability('moodle/course:update', $coursecontext1, $user2));
+
+        set_config('allowguests', '1', 'tool_mutenancy');
+
+        $this->assertTrue(has_capability('moodle/course:view', $coursecontext0));
+        $this->assertTrue(has_capability('moodle/course:view', $coursecontext0, $guest));
+        $this->assertTrue(has_capability('moodle/course:view', $coursecontext0, $user0));
+        $this->assertTrue(has_capability('moodle/course:view', $coursecontext0, $user1));
+        $this->assertTrue(has_capability('moodle/course:view', $coursecontext0, $user2));
+        $this->assertfalse(has_capability('moodle/course:update', $coursecontext0));
+        $this->assertfalse(has_capability('moodle/course:update', $coursecontext0, $guest));
+        $this->assertTrue(has_capability('moodle/course:update', $coursecontext0, $user0));
+        $this->assertTrue(has_capability('moodle/course:update', $coursecontext0, $user1));
+        $this->assertTrue(has_capability('moodle/course:update', $coursecontext0, $user2));
+
+        $this->assertTrue(has_capability('moodle/course:view', $coursecontext1));
+        $this->assertTrue(has_capability('moodle/course:view', $coursecontext1, $guest));
+        $this->assertTrue(has_capability('moodle/course:view', $coursecontext1, $user0));
+        $this->assertTrue(has_capability('moodle/course:view', $coursecontext1, $user1));
+        $this->assertfalse(has_capability('moodle/course:view', $coursecontext1, $user2));
+        $this->assertfalse(has_capability('moodle/course:update', $coursecontext1));
+        $this->assertfalse(has_capability('moodle/course:update', $coursecontext1, $guest));
+        $this->assertTrue(has_capability('moodle/course:update', $coursecontext1, $user0));
+        $this->assertTrue(has_capability('moodle/course:update', $coursecontext1, $user1));
+        $this->assertfalse(has_capability('moodle/course:update', $coursecontext1, $user2));
     }
 
     /**
@@ -404,7 +460,6 @@ final class accesslib_test extends \advanced_testcase {
         assign_capability($capability, CAP_ALLOW, $userrole->id, $syscontext->id);
         $guestrole = $DB->get_record('role', ['shortname' => 'guest'], '*', MUST_EXIST);
         assign_capability($capability, CAP_ALLOW, $guestrole->id, $syscontext->id);
-        ;
 
         $admin = get_admin();
         $admincontext = \context_user::instance($admin->id);
@@ -442,6 +497,70 @@ final class accesslib_test extends \advanced_testcase {
     }
 
     /**
+     * @covers ::get_with_capability_sql()
+     */
+    public function test_get_with_capability_sql(): void {
+        global $DB;
+        tenancy::activate();
+
+        /** @var \tool_mutenancy_generator $generator */
+        $generator = $this->getDataGenerator()->get_plugin_generator('tool_mutenancy');
+
+        $syscontext = \context_system::instance();
+        $category0 = $DB->get_record('course_categories', ['parent' => 0], '*', MUST_EXIST);
+
+        $tenant1 = $generator->create_tenant();
+        $tenantcontext1 = \context_tenant::instance($tenant1->id);
+        $tenant2 = $generator->create_tenant();
+        $tenantcontext2 = \context_tenant::instance($tenant2->id);
+
+        $categorycontext0  = \context_coursecat::instance($category0->id);
+        $categorycontext1  = \context_coursecat::instance($tenant1->categoryid);
+        $categorycontext2  = \context_coursecat::instance($tenant2->categoryid);
+        $course0 = $this->getDataGenerator()->create_course(['category' => $category0->id]);
+        $coursecontext0 = \context_course::instance($course0->id);
+        $course1 = $this->getDataGenerator()->create_course(['category' => $tenant1->categoryid]);
+        $coursecontext1 = \context_course::instance($course1->id);
+        $course2 = $this->getDataGenerator()->create_course(['category' => $tenant2->categoryid]);
+        $coursecontext2 = \context_course::instance($course2->id);
+
+        // Any capability will do here, the default user role override.
+        $capability = 'moodle/course:view';
+        $userrole = $DB->get_record('role', ['shortname' => 'user'], '*', MUST_EXIST);
+        assign_capability($capability, CAP_ALLOW, $userrole->id, $syscontext->id);
+        $guestrole = $DB->get_record('role', ['shortname' => 'guest'], '*', MUST_EXIST);
+        assign_capability($capability, CAP_ALLOW, $guestrole->id, $syscontext->id);
+
+        $admin = get_admin();
+        $admincontext = \context_user::instance($admin->id);
+        $guest = guest_user();
+        $user0 = $this->getDataGenerator()->create_user();
+        $usercontext0 = \context_user::instance($user0->id);
+        $user1 = $this->getDataGenerator()->create_user(['tenantid' => $tenant1->id]);
+        $usercontext1 = \context_user::instance($user1->id);
+        $user2 = $this->getDataGenerator()->create_user(['tenantid' => $tenant2->id]);
+        $usercontext2 = \context_user::instance($user2->id);
+
+        [$sql, $params] = get_with_capability_sql($coursecontext0, $capability);
+        $this->assertEqualsCanonicalizing(
+            [$admin->id, $user0->id, $user1->id, $user2->id],
+            $DB->get_fieldset_sql($sql, $params)
+        );
+
+        [$sql, $params] = get_with_capability_sql($coursecontext1, $capability);
+        $this->assertEqualsCanonicalizing(
+            [$admin->id, $user0->id, $user1->id],
+            $DB->get_fieldset_sql($sql, $params)
+        );
+
+        [$sql, $params] = get_with_capability_sql($coursecontext2, $capability);
+        $this->assertEqualsCanonicalizing(
+            [$admin->id, $user0->id, $user2->id],
+            $DB->get_fieldset_sql($sql, $params)
+        );
+    }
+
+    /**
      * @covers ::role_get_name()
      */
     public function test_role_get_name(): void {
@@ -463,6 +582,50 @@ final class accesslib_test extends \advanced_testcase {
         $this->assertStringContainsString(
             'Tenant manager role gets assigned to all tenant mangers automatically',
             role_get_description($role)
+        );
+    }
+
+    /**
+     * @covers ::get_sorted_contexts()
+     */
+    public function test_get_sorted_contexts(): void {
+        if (tenancy::is_active()) {
+            tenancy::deactivate();
+        }
+
+        $site = get_site();
+        $category0 = \core_course_category::get_default();
+        $guest = guest_user();
+        $admin = get_admin();
+
+        $syscontext = \context_system::instance();
+        $sitecontext = \context_course::instance($site->id);
+        $categorycontext0 = \context_coursecat::instance($category0->id);
+        $guestcontext = \context_user::instance($guest->id);
+        $admincontext = \context_user::instance($admin->id);
+
+        $contexts = get_sorted_contexts('ctx.contextlevel <= 50');
+        $this->assertEquals(
+            [$syscontext->id, $guestcontext->id, $admincontext->id, $categorycontext0->id, $sitecontext->id],
+            array_keys($contexts)
+        );
+
+        tenancy::activate();
+
+        /** @var \tool_mutenancy_generator $generator */
+        $generator = $this->getDataGenerator()->get_plugin_generator('tool_mutenancy');
+
+        $tenant1 = $generator->create_tenant();
+        $tenantcontext1 = \context_tenant::instance($tenant1->id);
+        $tenant2 = $generator->create_tenant();
+        $tenantcontext2 = \context_tenant::instance($tenant2->id);
+        $categorycontext1 = \context_coursecat::instance($tenant1->categoryid);
+        $categorycontext2 = \context_coursecat::instance($tenant2->categoryid);
+
+        $contexts = get_sorted_contexts('ctx.contextlevel <= 50');
+        $this->assertEquals(
+            [$syscontext->id, $tenantcontext1->id, $tenantcontext2->id, $guestcontext->id, $admincontext->id, $categorycontext0->id, $categorycontext1->id, $categorycontext2->id, $sitecontext->id],
+            array_keys($contexts)
         );
     }
 }

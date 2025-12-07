@@ -21,6 +21,7 @@ namespace tool_mutenancy\local\form;
 
 use tool_mutenancy\external\form_autocomplete\tenant_assoccohortid;
 use tool_mutenancy\local\tenant;
+use tool_mutenancy\local\tenancy;
 
 /**
  * Update tenant form.
@@ -90,7 +91,7 @@ final class tenant_update extends \tool_mulib\local\ajax_form {
         $mform->addElement('hidden', 'id');
         $mform->setType('id', PARAM_INT);
 
-        $this->add_action_buttons(true, get_string('tenant_update', 'tool_mutenancy'));
+        $this->add_action_buttons(true, tenancy::get_tenant_string('tenant_update'));
         $this->set_data($tenant);
     }
 
