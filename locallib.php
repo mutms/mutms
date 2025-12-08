@@ -36,14 +36,14 @@ use core_tag\output\tagindex;
  * @param core_tag_tag $tag
  * @param bool $exclusivemode if set to true it means that no other entities tagged with this tag
  *             are displayed on the page and the per-page limit may be bigger
- * @param int $fromctx context id where the link was displayed, may be used by callbacks
+ * @param int|null $fromctx context id where the link was displayed, may be used by callbacks
  *            to display items in the same context first
  * @param int $ctx context id where to search for records
  * @param bool $rec search in subcontexts as well
  * @param int $page 0-based number of page being displayed
  * @return tagindex|null
  */
-function mod_mubook_get_tagged_chapters(core_tag_tag $tag, bool $exclusivemode = false, int $fromctx = 0, int $ctx = 0, bool $rec = true, int $page = 0): ?tagindex {
+function mod_mubook_get_tagged_chapters(core_tag_tag $tag, $exclusivemode = false, $fromctx = 0, $ctx = 0, $rec = true, $page = 0): ?tagindex {
     global $OUTPUT;
     $perpage = $exclusivemode ? 20 : 5;
 
