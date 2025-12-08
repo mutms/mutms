@@ -33,7 +33,7 @@ Feature: Managers can manage training custom program fields
       | Name       | Test field |
       | Short name | testfield  |
     And I click on "Save changes" "button" in the "Adding a new Training value custom field" "dialogue"
-    And I click on "Edit" "link" in the "Test field" "table_row"
+    And I click on "Edit custom field: Test field" "button" in the "Test field" "table_row"
     And I set the following fields to these values:
       | Name | Edited field |
     And I click on "Save changes" "button" in the "Updating Test field" "dialogue"
@@ -50,7 +50,7 @@ Feature: Managers can manage training custom program fields
       | Name       | Test field |
       | Short name | testfield  |
     And I click on "Save changes" "button" in the "Adding a new Training value custom field" "dialogue"
-    And I click on "Delete" "link" in the "Test field" "table_row"
+    And I click on "Delete custom field: Test field" "button" in the "Test field" "table_row"
     And I click on "Yes" "button" in the "Confirm" "dialogue"
     And I wait until the page is ready
     And I wait until "Test field" "text" does not exist
