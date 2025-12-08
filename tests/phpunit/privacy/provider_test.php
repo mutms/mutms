@@ -95,13 +95,11 @@ final class provider_test extends \core_privacy\tests\provider_testcase {
 
         $list = provider::get_contexts_for_userid($users[0]->id);
         $contextids = $list->get_contextids();
-        asort($contextids);
-        $this->assertSame([(string)$tenant1context->id, (string)$tenant2context->id], $contextids);
+        $this->assertEqualsCanonicalizing([$tenant1context->id, $tenant2context->id], $contextids);
 
         $list = provider::get_contexts_for_userid($users[1]->id);
         $contextids = $list->get_contextids();
-        asort($contextids);
-        $this->assertSame([(string)$tenant1context->id], $contextids);
+        $this->assertEqualsCanonicalizing([$tenant1context->id], $contextids);
 
         $list = provider::get_contexts_for_userid($users[2]->id);
         $contextids = $list->get_contextids();
