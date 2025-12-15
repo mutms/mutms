@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<XMLDB PATH="admin/tool/muprog/db" VERSION="20250419" COMMENT="XMLDB file for tool_muprog plugin"
+<XMLDB PATH="admin/tool/muprog/db" VERSION="20251211" COMMENT="XMLDB file for tool_muprog plugin"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:noNamespaceSchemaLocation="../../../../lib/xmldb/xmldb.xsd"
 >
@@ -21,6 +21,7 @@
         <FIELD NAME="startdatejson" TYPE="text" NOTNULL="true" SEQUENCE="false" COMMENT="Calculation rules for user start date in program allocation"/>
         <FIELD NAME="duedatejson" TYPE="text" NOTNULL="true" SEQUENCE="false" COMMENT="Calculation rules for user due date in program allocation"/>
         <FIELD NAME="enddatejson" TYPE="text" NOTNULL="true" SEQUENCE="false" COMMENT="Calculation rules for user end date in program allocation"/>
+        <FIELD NAME="itemscount" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="Cached count of program items excluding all sets - used for progress tracking"/>
         <FIELD NAME="timecreated" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
       </FIELDS>
       <KEYS>
@@ -38,7 +39,7 @@
         <FIELD NAME="programid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
         <FIELD NAME="topitem" TYPE="int" LENGTH="1" NOTNULL="false" SEQUENCE="false" COMMENT="1 for top most item representing program itself, NULL for all other items"/>
         <FIELD NAME="courseid" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false" COMMENT="Course reference, NULL if item is course-set (must not be set for top item)"/>
-        <FIELD NAME="trainingid" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false" COMMENT="Training framework reference, NULL for sets (must not be set for top item)"/>
+        <FIELD NAME="creditframeworkid" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false" COMMENT="Credits credits framework reference, NULL for sets (must not be set for top item)"/>
         <FIELD NAME="previtemid" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false" COMMENT="Previous item needs to be completed in order to allow courseid access, this is ignored for sets"/>
         <FIELD NAME="fullname" TYPE="char" LENGTH="254" NOTNULL="true" SEQUENCE="false" COMMENT="Human readable name of course-set, copy of course.fullname if courseid set, copy of program name for top item"/>
         <FIELD NAME="sequencejson" TYPE="text" NOTNULL="true" SEQUENCE="false" COMMENT="List of children with ordering and completion rules, optional start delay info if courseid set"/>
@@ -58,7 +59,7 @@
         <INDEX NAME="points" UNIQUE="false" FIELDS="points"/>
         <INDEX NAME="minpoints" UNIQUE="false" FIELDS="minpoints"/>
         <INDEX NAME="programid-courseid" UNIQUE="false" FIELDS="programid, courseid"/>
-        <INDEX NAME="trainingid" UNIQUE="false" FIELDS="trainingid" COMMENT="references optional tool_mutrain_framework table"/>
+        <INDEX NAME="creditframeworkid" UNIQUE="false" FIELDS="creditframeworkid" COMMENT="references optional tool_mutrain_framework table"/>
       </INDEXES>
     </TABLE>
     <TABLE NAME="tool_muprog_group" COMMENT="Course groups that were created for course items">
@@ -160,6 +161,7 @@
         <FIELD NAME="timeend" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false" COMMENT="Date when program closes for this user (progress is fronzen after this date and enrolments are suspended)"/>
         <FIELD NAME="timecompleted" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false" COMMENT="User program completion date, NULL means program not completed"/>
         <FIELD NAME="calendarupdated" TYPE="int" LENGTH="1" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="1 means calendar needs update - used when program name or description changes"/>
+        <FIELD NAME="itemscompleted" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="Cached count of completed program items excluding all sets - used for progress tracking"/>
         <FIELD NAME="timecreated" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
       </FIELDS>
       <KEYS>

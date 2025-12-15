@@ -37,8 +37,8 @@ final class top extends set {
     /** @var course[] list of orphaned courses in program */
     protected $orphanedcourses = [];
 
-    /** @var training[] list of orphaned trainings in program */
-    protected $orphanedtrainings = [];
+    /** @var credits[] list of orphaned credits in program */
+    protected $orphanedcredits = [];
 
     /** @var set[] list of orphaned sets in program */
     protected $orphanedsets = [];
@@ -113,13 +113,13 @@ final class top extends set {
                         $top->problemdetected = true;
                     }
                     $top->orphanedcourses[$orphan->id] = $orphan;
-                } else if ($record->trainingid !== null) {
+                } else if ($record->creditframeworkid !== null) {
                     $fakerecords = [];
-                    $orphan = training::init_from_record($record, $top, $fakerecords, $prerequisites);
+                    $orphan = credits::init_from_record($record, $top, $fakerecords, $prerequisites);
                     if ($orphan->problemdetected) {
                         $top->problemdetected = true;
                     }
-                    $top->orphanedtrainings[$orphan->id] = $orphan;
+                    $top->orphanedcredits[$orphan->id] = $orphan;
                 } else {
                     $record = clone($record);
                     $fakerecords = [];  // We do not want to load any children for orphaned sets.
@@ -150,12 +150,12 @@ final class top extends set {
     }
 
     /**
-     * Returns list of program trainings that are not correctly linked to any valid set.
+     * Returns list of program credits that are not correctly linked to any valid set.
      *
-     * @return training[]
+     * @return credits[]
      */
-    public function get_orphaned_trainings(): array {
-        return $this->orphanedtrainings;
+    public function get_orphaned_credits(): array {
+        return $this->orphanedcredits;
     }
 
     /**
@@ -177,8 +177,8 @@ final class top extends set {
         if (isset($this->orphanedcourses[$itemid])) {
             return $this->orphanedcourses[$itemid];
         }
-        if (isset($this->orphanedtrainings[$itemid])) {
-            return $this->orphanedtrainings[$itemid];
+        if (isset($this->orphanedcredits[$itemid])) {
+            return $this->orphanedcredits[$itemid];
         }
         if (isset($this->orphanedsets[$itemid])) {
             return $this->orphanedsets[$itemid];
@@ -243,7 +243,7 @@ final class top extends set {
             'programid' => (string)$this->programid,
             'topitem' => null,
             'courseid' => (string)$course->id,
-            'trainingid' => null,
+            'creditframeworkid' => null,
             'previtemid' => null,
             'fullname' => $course->fullname,
             'sequencejson' => util::json_encode([]),
@@ -276,14 +276,14 @@ final class top extends set {
     }
 
     /**
-     * Add new training item to given parent set.
+     * Add new credits item to given parent set.
      *
      * @param set $parent
-     * @param int $trainingid
+     * @param int $creditframeworkid
      * @param array $data
-     * @return training
+     * @return credits
      */
-    public function append_training(set $parent, int $trainingid, array $data = []): training {
+    public function append_credits(set $parent, int $creditframeworkid, array $data = []): credits {
         global $DB;
 
         if ($parent->programid != $this->programid) {
@@ -312,14 +312,14 @@ final class top extends set {
             throw new \core\exception\coding_exception('mutrain is not avialable');
         }
 
-        $framework = $DB->get_record('tool_mutrain_framework', ['id' => $trainingid], '*', MUST_EXIST);
+        $framework = $DB->get_record('tool_mutrain_framework', ['id' => $creditframeworkid], '*', MUST_EXIST);
 
         $record = [
             'id' => null,
             'programid' => (string)$this->programid,
             'topitem' => null,
             'courseid' => null,
-            'trainingid' => (string)$framework->id,
+            'creditframeworkid' => (string)$framework->id,
             'previtemid' => null,
             'fullname' => $framework->name,
             'sequencejson' => util::json_encode([]),
@@ -330,8 +330,8 @@ final class top extends set {
         ];
         $fakerecords = [];
         $fakeprerequisites = [];
-        /** @var training $item */
-        $item = training::init_from_record((object)$record, null, $fakerecords, $fakeprerequisites);
+        /** @var credits $item */
+        $item = credits::init_from_record((object)$record, null, $fakerecords, $fakeprerequisites);
 
         $trans = $DB->start_delegated_transaction();
         $item->id = (string)$DB->insert_record('tool_muprog_item', (object)$item->get_record());
@@ -421,7 +421,7 @@ final class top extends set {
             'programid' => (string)$this->programid,
             'topitem' => null,
             'courseid' => null,
-            'trainingid' => null,
+            'creditframeworkid' => null,
             'previtemid' => null,
             'fullname' => $fullname,
             'sequencejson' => util::json_encode($sequence),
@@ -585,43 +585,43 @@ final class top extends set {
     }
 
     /**
-     * Update training item.
+     * Update credits item.
      *
-     * @param training $training
+     * @param credits $credits
      * @param array $data
-     * @return training
+     * @return credits
      */
-    public function update_training(training $training, array $data): training {
+    public function update_credits(credits $credits, array $data): credits {
         global $DB;
 
-        if ($training->programid != $this->programid) {
+        if ($credits->programid != $this->programid) {
             throw new \coding_exception('invalid programid');
         }
         $program = $DB->get_record('tool_muprog_program', ['id' => $this->programid], '*', MUST_EXIST);
 
         if (!array_key_exists('points', $data)) {
-            return $training;
+            return $credits;
         }
 
         if ($data['points'] < 0) {
             throw new \invalid_parameter_exception('Points cannot be negative');
         }
 
-        $training->points = (string)(int)$data['points'];
+        $credits->points = (string)(int)$data['points'];
 
         if (array_key_exists('completiondelay', $data)) {
             if ($data['completiondelay'] < 0) {
                 throw new \invalid_parameter_exception('Completion delay cannot be negative');
             }
-            $training->completiondelay = (int)$data['completiondelay'];
+            $credits->completiondelay = (int)$data['completiondelay'];
         }
 
         $trans = $DB->start_delegated_transaction();
-        $DB->update_record('tool_muprog_item', (object)$training->get_record());
+        $DB->update_record('tool_muprog_item', (object)$credits->get_record());
 
         $this->fix_content();
 
-        \tool_muprog\event\program_updated::create_from_program($program, 'item_update', $training->id)->trigger();
+        \tool_muprog\event\program_updated::create_from_program($program, 'item_update', $credits->id)->trigger();
 
         $trans->allow_commit();
 
@@ -629,7 +629,7 @@ final class top extends set {
         allocation::fix_enrol_instances($this->programid);
         allocation::fix_user_enrolments($this->programid, null);
 
-        return $training;
+        return $credits;
     }
 
     /**
@@ -779,8 +779,8 @@ final class top extends set {
             $parent = null;
             if ($item instanceof course) {
                 unset($this->orphanedcourses[$item->get_id()]);
-            } else if ($item instanceof training) {
-                unset($this->orphanedtrainings[$item->get_id()]);
+            } else if ($item instanceof credits) {
+                unset($this->orphanedcredits[$item->get_id()]);
             } else {
                 unset($this->orphanedsets[$item->get_id()]);
             }
@@ -862,8 +862,8 @@ final class top extends set {
                     'points' => $item->get_points(),
                     'completiondelay' => $item->get_completiondelay(),
                 ]);
-            } else if ($item instanceof training) {
-                $top->append_training($newparent, $item->get_trainingid(), [
+            } else if ($item instanceof credits) {
+                $top->append_credits($newparent, $item->get_creditframeworkid(), [
                     'points' => $item->get_points(),
                     'completiondelay' => $item->get_completiondelay(),
                 ]);
@@ -924,7 +924,7 @@ final class top extends set {
         foreach ($this->get_orphaned_courses() as $item) {
             $saveclosure($item);
         }
-        foreach ($this->get_orphaned_trainings() as $item) {
+        foreach ($this->get_orphaned_credits() as $item) {
             $saveclosure($item);
         }
         foreach ($this->get_orphaned_sets() as $item) {
@@ -937,6 +937,8 @@ final class top extends set {
         foreach ($prerequisites as $prerequisite) {
             $DB->delete_records('tool_muprog_prerequisite', ['id' => $prerequisite->id]);
         }
+
+        program::fix_itemscount($this->programid);
     }
 
     /**

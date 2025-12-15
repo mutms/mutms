@@ -132,6 +132,7 @@ Feature: Import program content
     And I click on category "Cat 1" in the management interface
     And I click on "delete" action for "Course 1" in management course listing
     And I press "Delete"
+    And I press "Continue"
     And I log out
 
     And I log in as "manager1"

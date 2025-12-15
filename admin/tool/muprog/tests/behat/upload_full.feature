@@ -24,7 +24,7 @@ Feature: Program upload full tests
       | Program viewer  | pviewer   |
       | Program manager | pmanager  |
     And the following "permission overrides" exist:
-      | capability                     | permission | role     | contextlevel | reference |
+      | capability                  | permission | role     | contextlevel | reference |
       | tool/muprog:view            | Allow      | pmanager | System       |           |
       | tool/muprog:upload          | Allow      | pmanager | System       |           |
     And the following "role assigns" exist:
@@ -116,7 +116,7 @@ Feature: Program upload full tests
     And I should see "Inactive" in the "Automatic cohort allocation" definition list item
 
   @_file_upload
-  Scenario: System manager can upload all programs into original categories using normal JSON without training
+  Scenario: System manager can upload all programs into original categories using normal JSON without credits
     Given I log in as "manager1"
     And I am on the "tool_muprog > All programs management" page
 
@@ -222,17 +222,17 @@ Feature: Program upload full tests
     And I follow "Program 00"
 
   @_file_upload @tool_mutrain
-  Scenario: System manager can upload all programs into original categories using normal JSON with training
+  Scenario: System manager can upload all programs into original categories using normal JSON with credits
     Given I skip tests if "tool_mutrain" is not installed
     And the following "tool_mutrain > frameworks" exist:
-      | name         | idnumber | publicaccess | requiredtraining |
-      | Training FW1 | TFW1     | 1            | 10               |
-      | Training FW2 |          | 1            | 20               |
+      | name        | idnumber | publicaccess | requiredcredits  |
+      | Credits FW1 | TFW1     | 1            | 10               |
+      | Credits FW2 |          | 1            | 20               |
     And I log in as "manager1"
     And I am on the "tool_muprog > All programs management" page
 
     When I click on "Upload programs" action from "Programs actions" dropdown
-    And I upload "admin/tool/muprog/tests/fixtures/upload/programs_training.json" file to "Files" filemanager
+    And I upload "admin/tool/muprog/tests/fixtures/upload/programs_credits.json" file to "Files" filemanager
     And I press "Continue"
     And the following fields match these values:
       | usecategory | 1 |
@@ -298,9 +298,9 @@ Feature: Program upload full tests
     And the following should exist in the "program_content" table:
       | Item         | Points | Completion type          |
       | Program 02   |        | All in any order         |
-      | Training FW1 | 1      | Required training: 10    |
-      | Training FW2 | 2      | Required training: 20    |
-      | Training FW2 | 2      | Completion delay: 1 day  |
+      | Credits FW1 | 1      | Required credits: 10    |
+      | Credits FW2 | 2      | Required credits: 20    |
+      | Credits FW2 | 2      | Completion delay: 1 day  |
     And I follow "Allocation settings"
     And I should see "Not set" in the "Allocation start" definition list item
     And I should see "Not set" in the "Allocation end" definition list item
@@ -562,7 +562,7 @@ Feature: Program upload full tests
     And I should see "Inactive" in the "Automatic cohort allocation" definition list item
 
   @_file_upload
-  Scenario: System manager can upload all programs into original categories using extracted CSV without training
+  Scenario: System manager can upload all programs into original categories using extracted CSV without credits
     Given I log in as "manager1"
     And I am on the "tool_muprog > All programs management" page
 
@@ -671,18 +671,18 @@ Feature: Program upload full tests
       | Program 02   | Category 2 | P02        | 0       | 0           | No     |
 
   @_file_upload @tool_mutrain
-  Scenario: System manager can upload all programs into original categories using extracted CSV with training
+  Scenario: System manager can upload all programs into original categories using extracted CSV with credits
     Given I skip tests if "tool_mutrain" is not installed
     And the following "tool_mutrain > frameworks" exist:
-      | name         | idnumber | publicaccess | requiredtraining |
-      | Training FW1 | TFW1     | 1            | 10               |
-      | Training FW2 |          | 1            | 20               |
+      | name        | idnumber | publicaccess | requiredcredits  |
+      | Credits FW1 | TFW1     | 1            | 10               |
+      | Credits FW2 |          | 1            | 20               |
     And I log in as "manager1"
     And I am on the "tool_muprog > All programs management" page
 
     When I click on "Upload programs" action from "Programs actions" dropdown
     And I upload "admin/tool/muprog/tests/fixtures/upload/programs.csv" file to "Files" filemanager
-    And I upload "admin/tool/muprog/tests/fixtures/upload/programs_contents_training.csv" file to "Files" filemanager
+    And I upload "admin/tool/muprog/tests/fixtures/upload/programs_contents_credits.csv" file to "Files" filemanager
     And I upload "admin/tool/muprog/tests/fixtures/upload/programs_sources.csv" file to "Files" filemanager
     And I press "Continue"
     And the following fields match these values:
@@ -749,9 +749,9 @@ Feature: Program upload full tests
     And the following should exist in the "program_content" table:
       | Item         | Points | Completion type          |
       | Program 02   |        | All in any order         |
-      | Training FW1 | 1      | Required training: 10    |
-      | Training FW2 | 2      | Required training: 20    |
-      | Training FW2 | 2      | Completion delay: 1 day  |
+      | Credits FW1 | 1      | Required credits: 10    |
+      | Credits FW2 | 2      | Required credits: 20    |
+      | Credits FW2 | 2      | Completion delay: 1 day  |
     And I follow "Allocation settings"
     And I should see "Not set" in the "Allocation start" definition list item
     And I should see "Not set" in the "Allocation end" definition list item

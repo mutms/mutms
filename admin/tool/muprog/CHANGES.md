@@ -1,10 +1,22 @@
 # Changelog
 
+## mu-5.0.4-02
+
+Release date: 16/12/2025
+
+* Added program progress as percentage of completed non-set items.
+* Training points were renamed to Training credits.
+* Training item was renamed to Credits item.
+* Training credits use decimal values.
+* Credits aggregation is now instant, it does not depend on cron anymore.
+* Fixed placement of custom fields in program creation form.
+* Added support for generated program images.
+
 ## mu-5.0.4-01
 
 Release date: 08/12/2025
 
-* Updated use of sql fragments API.
+* Updated use of SQL fragments API.
 * Fixed timezones in notifications.
 * Added option to send copy of subordinate notifications to supervisors.
 * Added option for enabling of Manual and Certification allocations during program creation.

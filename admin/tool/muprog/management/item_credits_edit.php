@@ -28,7 +28,7 @@
  */
 
 use tool_muprog\local\program;
-use tool_muprog\local\content\training;
+use tool_muprog\local\content\credits;
 use tool_mulib\local\mulib;
 
 /** @var moodle_database $DB */
@@ -53,7 +53,7 @@ if (!mulib::is_mutrain_available()) {
     throw new \core\exception\coding_exception('mutrain is not available');
 }
 
-$currenturl = new moodle_url('/admin/tool/muprog/management/item_training_edit.php', ['id' => $item->id]);
+$currenturl = new moodle_url('/admin/tool/muprog/management/item_credits_edit.php', ['id' => $item->id]);
 $PAGE->set_context($context);
 $PAGE->set_url($currenturl);
 
@@ -64,19 +64,19 @@ if ($program->archived) {
 }
 
 $top = program::load_content($program->id);
-$training = $top->find_item($item->id);
-if (!$training || !($training instanceof training)) {
+$credits = $top->find_item($item->id);
+if (!$credits || !($credits instanceof credits)) {
     redirect($returnurl);
 }
 
-$form = new \tool_muprog\local\form\item_training_edit(null, ['training' => $training, 'context' => $context]);
+$form = new \tool_muprog\local\form\item_credits_edit(null, ['credits' => $credits, 'context' => $context]);
 
 if ($form->is_cancelled()) {
     $form->ajax_form_cancelled($returnurl);
 }
 
 if ($data = $form->get_data()) {
-    $top->update_training($training, (array)$data);
+    $top->update_credits($credits, (array)$data);
     $form->ajax_form_submitted($returnurl);
 }
 

@@ -134,6 +134,26 @@ final class allocation extends base {
             ->add_callback([format::class, 'userdate'], $dateformat);
 
         $columns[] = (new column(
+            'progress',
+            new lang_string('programprogress', 'tool_muprog'),
+            $this->get_entity_name()
+        ))
+            ->add_joins($this->get_joins())
+            ->add_join($this->get_program_join())
+            ->set_type(column::TYPE_FLOAT)
+            ->add_field("CASE
+                            WHEN {$programalias}.itemscount = 0 THEN null
+                            ELSE 100.0 * {$allocationalias}.itemscompleted / {$programalias}.itemscount
+                        END", 'progress')
+            ->set_is_sortable(true)
+            ->add_callback(static function ($value, \stdClass $row): string {
+                if ($value === null) {
+                    return '';
+                }
+                return round($value) . ' %';
+            });
+
+        $columns[] = (new column(
             'status',
             new lang_string('programstatus', 'tool_muprog'),
             $this->get_entity_name()

@@ -83,12 +83,12 @@ if ($data = $form->get_data()) {
         }
         $top->append_course($set, $cid, $idata);
     }
-    if (!empty($data->trainingid)) {
+    if (!empty($data->creditframeworkid)) {
         $idata = ['points' => $data->points];
         if (!empty($data->completiondelay)) {
             $idata['completiondelay'] = $data->completiondelay;
         }
-        $top->append_training($set, $data->trainingid, $idata);
+        $top->append_credits($set, $data->creditframeworkid, $idata);
     }
 
     $form->ajax_form_submitted($returnurl);

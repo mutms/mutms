@@ -127,15 +127,15 @@ final class export_test extends \advanced_testcase {
             (object)['sourcetype' => 'selfallocation', 'data' => (object)['allowsignup' => 1, 'maxusers' => 10, 'key' => 'abc']],
         ], $programs[0]->sources);
 
-        // Add some training.
+        // Add some credits.
         if (!mulib::is_mutrain_available()) {
             return;
         }
 
         $course1 = $this->getDataGenerator()->create_course();
         $course2 = $this->getDataGenerator()->create_course();
-        /** @var \tool_mutrain_generator $traininggenerator */
-        $traininggenerator = $this->getDataGenerator()->get_plugin_generator('tool_mutrain');
+        /** @var \tool_mutrain_generator $creditsgenerator */
+        $creditsgenerator = $this->getDataGenerator()->get_plugin_generator('tool_mutrain');
         $fielcategory = $this->getDataGenerator()->create_custom_field_category(
             ['component' => 'core_course', 'area' => 'course']
         );
@@ -147,12 +147,12 @@ final class export_test extends \advanced_testcase {
             'idnumber' => 'fid1',
             'fields' => [$field1->get('id')],
         ];
-        $framework1 = $traininggenerator->create_framework($data);
+        $framework1 = $creditsgenerator->create_framework($data);
 
         $top0 = top::load($program0->id);
         $set1 = $top0->append_set($top0, ['fullname' => 'Optional set', 'sequencetype' => set::SEQUENCE_TYPE_ATLEAST, 'minprerequisites' => 2]);
         $item1x1 = $top0->append_course($set1, $course1->id);
-        $item1x2 = $top0->append_training($set1, $framework1->id);
+        $item1x2 = $top0->append_credits($set1, $framework1->id);
 
         $programs = \tool_muprog\local\export::export_programs('id = ?', [$program0->id]);
         $this->assertDebuggingNotCalled();
@@ -166,7 +166,7 @@ final class export_test extends \advanced_testcase {
                             'itemtype' => 'course', 'reference' => $course1->shortname, 'points' => 1, 'completiondelay' => 0,
                         ],
                         (object)[
-                            'itemtype' => 'training', 'reference' => $framework1->idnumber, 'points' => 1, 'completiondelay' => 0,
+                            'itemtype' => 'credits', 'reference' => $framework1->idnumber, 'points' => 1, 'completiondelay' => 0,
                         ],
                     ],
                     'points' => 1, 'setname' => 'Optional set', 'minprerequisites' => 2,
@@ -189,8 +189,8 @@ final class export_test extends \advanced_testcase {
         $course2 = $this->getDataGenerator()->create_course();
 
         if (mulib::is_mutrain_available()) {
-            /** @var \tool_mutrain_generator $traininggenerator */
-            $traininggenerator = $this->getDataGenerator()->get_plugin_generator('tool_mutrain');
+            /** @var \tool_mutrain_generator $creditsgenerator */
+            $creditsgenerator = $this->getDataGenerator()->get_plugin_generator('tool_mutrain');
             $fielcategory = $this->getDataGenerator()->create_custom_field_category(
                 ['component' => 'core_course', 'area' => 'course']
             );
@@ -201,7 +201,7 @@ final class export_test extends \advanced_testcase {
                 'name' => 'Some framework',
                 'fields' => [$field1->get('id')],
             ];
-            $framework1 = $traininggenerator->create_framework($data);
+            $framework1 = $creditsgenerator->create_framework($data);
         } else {
             $framework1 = null;
         }
@@ -213,7 +213,7 @@ final class export_test extends \advanced_testcase {
         $set1 = $top0->append_set($top0, ['fullname' => 'Optional set', 'sequencetype' => set::SEQUENCE_TYPE_ATLEAST, 'minprerequisites' => 2]);
         $item1x1 = $top0->append_course($set1, $course1->id);
         if ($framework1) {
-            $item1x2 = $top0->append_training($set1, $framework1->id);
+            $item1x2 = $top0->append_credits($set1, $framework1->id);
         }
 
         $program1 = $generator->create_program([
@@ -270,8 +270,8 @@ final class export_test extends \advanced_testcase {
         $course2 = $this->getDataGenerator()->create_course();
 
         if (mulib::is_mutrain_available()) {
-            /** @var \tool_mutrain_generator $traininggenerator */
-            $traininggenerator = $this->getDataGenerator()->get_plugin_generator('tool_mutrain');
+            /** @var \tool_mutrain_generator $creditsgenerator */
+            $creditsgenerator = $this->getDataGenerator()->get_plugin_generator('tool_mutrain');
             $fielcategory = $this->getDataGenerator()->create_custom_field_category(
                 ['component' => 'core_course', 'area' => 'course']
             );
@@ -282,7 +282,7 @@ final class export_test extends \advanced_testcase {
                 'name' => 'Some framework',
                 'fields' => [$field1->get('id')],
             ];
-            $framework1 = $traininggenerator->create_framework($data);
+            $framework1 = $creditsgenerator->create_framework($data);
         } else {
             $framework1 = null;
         }
@@ -294,7 +294,7 @@ final class export_test extends \advanced_testcase {
         $set1 = $top0->append_set($top0, ['fullname' => 'Optional set', 'sequencetype' => set::SEQUENCE_TYPE_ATLEAST, 'minprerequisites' => 2]);
         $item1x1 = $top0->append_course($set1, $course1->id);
         if ($framework1) {
-            $item1x2 = $top0->append_training($set1, $framework1->id);
+            $item1x2 = $top0->append_credits($set1, $framework1->id);
         }
 
         $program1 = $generator->create_program([

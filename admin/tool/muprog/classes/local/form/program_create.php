@@ -64,10 +64,6 @@ final class program_create extends \tool_mulib\local\ajax_form {
         $mform->addElement('editor', 'description_editor', get_string('description'), ['rows' => 5], $editoroptions);
         $mform->setType('description_editor', PARAM_RAW);
 
-        // Add custom fields to the form.
-        $this->handler = \tool_muprog\customfield\program_handler::create();
-        $this->handler->instance_form_definition($mform);
-
         $sources = [];
         /** @var \tool_muprog\local\source\base[] $sourceclasses */
         $sourceclasses = \tool_muprog\local\allocation::get_source_classes();
@@ -79,6 +75,10 @@ final class program_create extends \tool_mulib\local\ajax_form {
         if ($sources) {
             $mform->addElement('group', 'addsources', get_string('allocationsources', 'tool_muprog'), $sources, '<div class="w-100 mb-2" />');
         }
+
+        // Add custom fields to the form.
+        $this->handler = \tool_muprog\customfield\program_handler::create();
+        $this->handler->instance_form_definition($mform);
 
         $this->add_action_buttons(true, get_string('program_create', 'tool_muprog'));
 

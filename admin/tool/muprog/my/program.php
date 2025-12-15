@@ -46,7 +46,7 @@ $usercontext = context_user::instance($USER->id);
 $PAGE->set_context($usercontext);
 $PAGE->set_url(new moodle_url('/admin/tool/muprog/my/program.php', ['id' => $id]));
 
-if (!\tool_muprog\local\util::is_muprog_active()) {
+if (!\tool_mulib\local\mulib::is_muprog_active()) {
     redirect(new moodle_url('/'));
 }
 if (isguestuser()) {

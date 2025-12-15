@@ -34,10 +34,6 @@ $callbacks = [
         'callback' => [\tool_muprog\callback\tool_mutrain::class, 'framework_usage'],
     ],
     [
-        'hook' => \tool_mutrain\hook\completion_updated::class,
-        'callback' => [\tool_muprog\callback\tool_mutrain::class, 'completion_updated'],
-    ],
-    [
         'hook' => \tool_mutenancy\hook\tenant_management_menu::class,
         'callback' => [\tool_muprog\callback\tool_mutenancy::class, 'tenant_management_menu'],
     ],

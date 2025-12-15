@@ -174,14 +174,14 @@
                 "sequencetype": "allinanyorder",
                 "items": [
                     {
-                        "itemtype": "training",
+                        "itemtype": "credits",
                         "reference": "TFW1",
                         "points": 1,
                         "completiondelay": 0
                     },
                     {
-                        "itemtype": "training",
-                        "reference": "Training FW2",
+                        "itemtype": "credits",
+                        "reference": "Credits FW2",
                         "points": 2,
                         "completiondelay": 86400
                     }

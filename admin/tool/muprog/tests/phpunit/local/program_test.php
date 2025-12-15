@@ -209,6 +209,91 @@ final class program_test extends \advanced_testcase {
         $this->assertSame('0', $program->archived);
     }
 
+    public function test_update_image(): void {
+        $syscontext = \context_system::instance();
+        $data = (object)[
+            'fullname' => 'Some program',
+            'idnumber' => 'SP1',
+            'contextid' => $syscontext->id,
+        ];
+
+        $program = program::create($data);
+
+        $admin = get_admin();
+        $this->setUser($admin);
+        $draftid = \file_get_unused_draft_itemid();
+        $fs = get_file_storage();
+        $context = \context_user::instance($admin->id);
+        $record = [
+            'contextid' => $context->id,
+            'component' => 'user',
+            'filearea' => 'draft',
+            'itemid' => $draftid,
+            'filepath' => '/',
+            'filename' => 'image.png',
+        ];
+        $fs->create_file_from_string($record, 'content is irrelevant');
+
+        $program = program::update_general((object)[
+            'id' => $program->id,
+            'image' => $draftid,
+        ]);
+        $this->assertSame('{"image":"image.png"}', $program->presentationjson);
+    }
+
+    public function test_get_image_uri(): void {
+        $syscontext = \context_system::instance();
+
+        $admin = get_admin();
+        $this->setUser($admin);
+        $draftid = \file_get_unused_draft_itemid();
+        $fs = get_file_storage();
+        $context = \context_user::instance($admin->id);
+        $record = [
+            'contextid' => $context->id,
+            'component' => 'user',
+            'filearea' => 'draft',
+            'itemid' => $draftid,
+            'filepath' => '/',
+            'filename' => 'image.png',
+        ];
+        $fs->create_file_from_string($record, 'content is irrelevant');
+        $data = (object)[
+            'fullname' => 'Some program',
+            'idnumber' => 'SP1',
+            'contextid' => $syscontext->id,
+            'image' => $draftid,
+        ];
+        $program1 = program::create($data);
+        $this->assertSame('{"image":"image.png"}', $program1->presentationjson);
+
+        $data = (object)[
+            'fullname' => 'Some other program',
+            'idnumber' => 'SP2',
+            'contextid' => $syscontext->id,
+        ];
+        $program2 = program::create($data);
+        $this->assertSame('[]', $program2->presentationjson);
+
+        $this->assertSame(
+            "https://www.example.com/moodle/pluginfile.php/{$syscontext->id}/tool_muprog/image/{$program1->id}/image.png",
+            program::get_image_uri($program1, false)
+        );
+        $this->assertSame(
+            "https://www.example.com/moodle/pluginfile.php/{$syscontext->id}/tool_muprog/image/{$program1->id}/image.png",
+            program::get_image_uri($program1, true)
+        );
+
+        $this->assertSame(
+            null,
+            program::get_image_uri($program2, false)
+        );
+        $this->assertStringStartsWith(
+            'data:image/svg+xml;base64',
+            program::get_image_uri($program2, true)
+        );
+    }
+
     public function test_archive(): void {
         $syscontext = \context_system::instance();
         $data = (object)[
@@ -570,16 +655,37 @@ final class program_test extends \advanced_testcase {
     public function test_delete(): void {
         global $DB;
 
+        /** @var \tool_muprog_generator $generator */
+        $generator = $this->getDataGenerator()->get_plugin_generator('tool_muprog');
+
         $syscontext = \context_system::instance();
         $data = (object)[
             'fullname' => 'Some program',
             'idnumber' => 'SP1',
             'contextid' => $syscontext->id,
         ];
-        $program = program::create($data);
+        $program = $generator->create_program($data);
 
         program::delete($program->id);
         $this->assertFalse($DB->record_exists('tool_muprog_program', ['id' => $program->id]));
+
+        $syscontext = \context_system::instance();
+        $data = (object)[
+            'fullname' => 'Some program',
+            'idnumber' => 'SP1',
+            'contextid' => $syscontext->id,
+        ];
+        $program = $generator->create_program($data);
+        $user1 = $this->getDataGenerator()->create_user();
+        $allocation1 = $generator->create_program_allocation(['programid' => $program->id, 'userid' => $user1->id]);
+
+        $favservice = \core_favourites\service_factory::get_service_for_component('tool_muprog');
+        $ufservice = \core_favourites\service_factory::get_service_for_user_context(\context_user::instance($user1->id));
+        $ufservice->create_favourite('tool_muprog', 'programs', $program->id, $syscontext);
+        $this->assertTrue($ufservice->favourite_exists('tool_muprog', 'programs', $program->id, $syscontext));
+
+        program::delete($program->id);
+        $this->assertFalse($ufservice->favourite_exists('tool_muprog', 'programs', $program->id, $syscontext));
     }
 
     public function test_load_content(): void {

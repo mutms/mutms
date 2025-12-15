@@ -129,14 +129,14 @@ function tool_muprog_core_calendar_provide_event_action(
 function tool_muprog_myprofile_navigation(core_user\output\myprofile\tree $tree, $user, $iscurrentuser, $course) {
     global $USER;
 
-    if (!\tool_muprog\local\util::is_muprog_active()) {
+    if (!\tool_mulib\local\mulib::is_muprog_active()) {
         return;
     }
 
     if ($USER->id == $user->id) {
         $link = get_string('myprograms', 'tool_muprog');
         $url = new moodle_url('/admin/tool/muprog/my/index.php');
-        $node = new core_user\output\myprofile\node('miscellaneous', 'enrolprograms_programs', $link, null, $url);
+        $node = new core_user\output\myprofile\node('miscellaneous', 'muprog_programs', $link, null, $url);
         $tree->add_node($node);
     }
 }
@@ -153,7 +153,7 @@ function tool_muprog_get_fontawesome_icon_map() {
         'tool_muprog:itemcourse' => 'fa-graduation-cap',
         'tool_muprog:itemset' => 'fa-list',
         'tool_muprog:itemtop' => 'fa-cubes',
-        'tool_muprog:itemtraining' => 'fa-solid fa-grip',
+        'tool_muprog:itemcredits' => 'fa-solid fa-grip',
         'tool_muprog:move' => 'fa-arrows',
         'tool_muprog:program' => 'fa-cubes',
         'tool_muprog:myprograms' => 'fa-cubes',

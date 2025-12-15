@@ -228,8 +228,8 @@ final class generator_test extends \advanced_testcase {
             return;
         }
 
-        /** @var \tool_mutrain_generator $traininggenerator */
-        $traininggenerator = $this->getDataGenerator()->get_plugin_generator('tool_mutrain');
+        /** @var \tool_mutrain_generator $creditsgenerator */
+        $creditsgenerator = $this->getDataGenerator()->get_plugin_generator('tool_mutrain');
         $fielcategory = $this->getDataGenerator()->create_custom_field_category(
             ['component' => 'core_course', 'area' => 'course']
         );
@@ -243,34 +243,34 @@ final class generator_test extends \advanced_testcase {
             'name' => 'Some framework',
             'fields' => [$field1->get('id')],
         ];
-        $framework1 = $traininggenerator->create_framework($data);
+        $framework1 = $creditsgenerator->create_framework($data);
         $data = (object)[
             'name' => 'Other framework',
             'fields' => [$field2->get('id')],
         ];
-        $framework2 = $traininggenerator->create_framework($data);
+        $framework2 = $creditsgenerator->create_framework($data);
 
         $record = [
             'programid' => $program->id,
-            'trainingid' => $framework1->id,
+            'creditframeworkid' => $framework1->id,
             'parent' => 'First set',
         ];
         $item6 = $generator->create_program_item($record);
-        $this->assertInstanceOf(\tool_muprog\local\content\training::class, $item6);
+        $this->assertInstanceOf(\tool_muprog\local\content\credits::class, $item6);
         $this->assertSame($program->id, (string)$item6->get_programid());
-        $this->assertSame($framework1->id, (string)$item6->get_trainingid());
+        $this->assertSame($framework1->id, (string)$item6->get_creditframeworkid());
         $top = program::load_content($program->id);
         $this->assertSame($item6->get_id(), $top->get_children()[2]->get_children()[2]->get_id());
 
         $record = [
             'programid' => $program->id,
-            'training' => $framework2->name,
+            'credits' => $framework2->name,
             'parent' => 'First set',
         ];
         $item7 = $generator->create_program_item($record);
-        $this->assertInstanceOf(\tool_muprog\local\content\training::class, $item7);
+        $this->assertInstanceOf(\tool_muprog\local\content\credits::class, $item7);
         $this->assertSame($program->id, (string)$item7->get_programid());
-        $this->assertSame($framework2->id, (string)$item7->get_trainingid());
+        $this->assertSame($framework2->id, (string)$item7->get_creditframeworkid());
         $top = program::load_content($program->id);
         $this->assertSame($item7->get_id(), $top->get_children()[2]->get_children()[3]->get_id());
     }

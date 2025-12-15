@@ -87,7 +87,7 @@ final class course extends item {
      * @return course
      */
     protected static function init_from_record(\stdClass $record, ?item $previous, array &$unusedrecords, array &$prerequisites): item {
-        if ($record->topitem || !$record->courseid || $record->trainingid !== null) {
+        if ($record->topitem || !$record->courseid || $record->creditframeworkid !== null) {
             throw new \coding_exception('Invalid course item');
         }
         $item = new course();
@@ -152,7 +152,7 @@ final class course extends item {
             'programid' => (string)$this->programid,
             'topitem' => null,
             'courseid' => (string)$this->courseid,
-            'trainingid' => null,
+            'creditframeworkid' => null,
             'previtemid' => (isset($this->previous) ? (string)$this->previous->id : null),
             'fullname' => $fullname,
             'sequencejson' => util::json_encode([]),

@@ -318,6 +318,8 @@ final class program {
                 \core_tag_tag::set_item_tags('tool_muprog', 'tool_muprog_program', $data->id, $oldcontext, null);
             }
             $record->contextid = $context->id;
+            // Fix favourites.
+            $DB->set_field('favourite', 'contextid', $context->id, ['component' => 'tool_muprog', 'itemtype' => 'programs', 'itemid' => $record->id]);
         } else {
             $record->contextid = $oldprogram->contextid;
             $context = \context::instance_by_id($record->contextid);
@@ -406,6 +408,8 @@ final class program {
             }
         }
 
+        self::fix_itemscount($program->id);
+
         if ($invalidatecalendarevents) {
             calendar::invalidate_program_events($program->id);
         }
@@ -453,6 +457,43 @@ final class program {
         }
 
         return $program;
+    }
+
+    /**
+     * Returns program image - either file URL or generated URI.
+     *
+     * @param stdClass $program must include id, contextid and presentationjson property.
+     * @param bool $generateifmissing
+     * @return string|null
+     */
+    public static function get_image_uri(stdClass $program, bool $generateifmissing): ?string {
+        global $CFG;
+
+        $presentation = (array)json_decode($program->presentationjson);
+        if (!empty($presentation['image'])) {
+            $context = \context::instance_by_id($program->contextid);
+            $imageurl = \core\url::make_file_url(
+                "$CFG->wwwroot/pluginfile.php",
+                '/' . $context->id . '/tool_muprog/image/' . $program->id . '/' . $presentation['image']
+            );
+            return $imageurl->out(false);
+        }
+
+        if (!$generateifmissing) {
+            return null;
+        }
+
+        $colornumbers = range(1, 10);
+        $basecolors = [];
+        foreach ($colornumbers as $number) {
+            $basecolors[] = get_config('core_admin', 'coursecolor' . $number);
+        }
+        $color = $basecolors[($program->id + 5) % 10]; // Do not start with the same colour as courses.
+
+        $pattern = new \core_geopattern();
+        $pattern->setColor($color);
+        $pattern->patternbyid('program_' . $program->id);
+        return $pattern->datauri();
     }
 
     /**
@@ -507,6 +548,9 @@ final class program {
         $trans = $DB->start_delegated_transaction();
 
         $DB->set_field('tool_muprog_program', 'archived', '0', ['id' => $program->id]);
+
+        self::fix_itemscount($program->id);
+
         $program = $DB->get_record('tool_muprog_program', ['id' => $program->id], '*', MUST_EXIST);
 
         \tool_muprog\event\program_restored::create_from_program($program)->trigger();
@@ -568,6 +612,8 @@ final class program {
             }
         }
 
+        self::fix_itemscount($data->id);
+
         $program = $DB->get_record('tool_muprog_program', ['id' => $data->id], '*', MUST_EXIST);
 
         \tool_muprog\event\program_updated::create_from_program($program)->trigger();
@@ -579,6 +625,27 @@ final class program {
         allocation::fix_user_enrolments($program->id, null);
 
         return $program;
+    }
+
+    /**
+     * Fixed cached count of items in program record.
+     *
+     * @param int $programid record may be updated
+     * @return void
+     */
+    public static function fix_itemscount(int $programid): void {
+        global $DB;
+
+        $sql = "SELECT COUNT('x')
+                  FROM {tool_muprog_item} i
+                 WHERE i.programid = :programid
+                       AND (i.courseid IS NOT NULL OR i.creditframeworkid IS NOT NULL)";
+        $count = $DB->count_records_sql($sql, ['programid' => $programid]);
+
+        $sql = "UPDATE {tool_muprog_program}
+                   SET itemscount = :count1
+                 WHERE id = :programid AND itemscount <> :count2";
+        $DB->execute($sql, ['programid' => $programid, 'count1' => $count, 'count2' => $count]);
     }
 
     /**
@@ -899,6 +966,9 @@ final class program {
 
         $program = $DB->get_record('tool_muprog_program', ['id' => $id], '*', MUST_EXIST);
         $context = \context::instance_by_id($program->contextid);
+
+        $favservice = \core_favourites\service_factory::get_service_for_component('tool_muprog');
+        $favservice->delete_favourites_by_type_and_item('programs', $program->id);
 
         $pgs = $DB->get_records('tool_muprog_group', ['programid' => $program->id]);
         foreach ($pgs as $pg) {

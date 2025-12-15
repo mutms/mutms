@@ -1,8 +1,6 @@
-
-#page-admin-tool-muprog-catalogue-index img.programimage,
-#page-admin-tool-muprog-management-program .programimage img {
-    max-width: 300px;
-    max-height: 200px;
+.path-admin-tool-muprog img.programimage {
+    max-width: 200px;
+    max-height: 100px;
     width: auto;
     height: auto;
 }
@@ -13,12 +11,4 @@
     display: inline;
     height: 2rem;
     border: 2px dashed #343a40;
-}
-
-#page-admin-tool-muprog-catalogue-program .programimage img,
-#page-admin-tool-muprog-my-program .programimage img {
-    max-width: 200px;
-    max-height: 100px;
-    width: auto;
-    height: auto;
 }

@@ -72,8 +72,8 @@ $functions = [
         'ajax' => true,
         'loginrequired' => true,
     ],
-    'tool_muprog_form_autocomplete_item_append_trainingid' => [
-        'classname' => \tool_muprog\external\form_autocomplete\item_append_trainingid::class,
+    'tool_muprog_form_autocomplete_item_append_creditframeworkid' => [
+        'classname' => \tool_muprog\external\form_autocomplete\item_append_creditframeworkid::class,
         'description' => 'Return list of framework candidates for adding of items.',
         'type' => 'read',
         'ajax' => true,

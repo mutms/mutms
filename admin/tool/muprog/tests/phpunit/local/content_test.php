@@ -25,7 +25,7 @@ use tool_muprog\local\content\course;
 use tool_muprog\local\content\item;
 use tool_muprog\local\content\set;
 use tool_muprog\local\content\top;
-use tool_muprog\local\content\training;
+use tool_muprog\local\content\credits;
 use tool_mulib\local\mulib;
 
 /**
@@ -231,7 +231,7 @@ final class content_test extends \advanced_testcase {
         $this->assertSame([], $setitem4->get_children());
     }
 
-    public function test_append_training(): void {
+    public function test_append_credits(): void {
         if (!mulib::is_mutrain_available()) {
             $this->markTestSkipped('mutrain not available');
         }
@@ -239,8 +239,8 @@ final class content_test extends \advanced_testcase {
         /** @var \tool_muprog_generator $generator */
         $generator = $this->getDataGenerator()->get_plugin_generator('tool_muprog');
 
-        /** @var \tool_mutrain_generator $traininggenerator */
-        $traininggenerator = $this->getDataGenerator()->get_plugin_generator('tool_mutrain');
+        /** @var \tool_mutrain_generator $creditsgenerator */
+        $creditsgenerator = $this->getDataGenerator()->get_plugin_generator('tool_mutrain');
 
         $fielcategory = $this->getDataGenerator()->create_custom_field_category(
             ['component' => 'core_course', 'area' => 'course']
@@ -262,12 +262,12 @@ final class content_test extends \advanced_testcase {
             'name' => 'Some framework',
             'fields' => [$field1->get('id')],
         ];
-        $framework1 = $traininggenerator->create_framework($data);
+        $framework1 = $creditsgenerator->create_framework($data);
         $data = (object)[
             'name' => 'Other framework',
             'fields' => [$field2->get('id')],
         ];
-        $framework2 = $traininggenerator->create_framework($data);
+        $framework2 = $creditsgenerator->create_framework($data);
 
         $course1 = $this->getDataGenerator()->create_course(['customfield_field1' => 1]);
         $course2 = $this->getDataGenerator()->create_course(['customfield_field1' => 2]);
@@ -279,18 +279,18 @@ final class content_test extends \advanced_testcase {
         $program2 = $generator->create_program(['fullname' => 'pokus']);
 
         $top2 = top::load($program2->id);
-        $top2->append_training($top2, $framework1->id);
-        $top2->append_training($top2, $framework2->id);
+        $top2->append_credits($top2, $framework1->id);
+        $top2->append_credits($top2, $framework2->id);
 
-        /** @var training $trainingitem1 */
-        $trainingitem1 = $top2->get_children()[0];
-        $this->assertInstanceOf(training::class, $trainingitem1);
-        $this->assertSame((int)$program2->id, $trainingitem1->get_programid());
-        $this->assertSame($framework1->name, $trainingitem1->get_fullname());
-        $this->assertSame(false, $trainingitem1->is_problem_detected());
-        $this->assertSame([], $trainingitem1->get_children());
-        $this->assertSame((int)$framework1->id, $trainingitem1->get_trainingid());
-        $this->assertSame(null, $trainingitem1->get_previous());
+        /** @var credits $creditsitem1 */
+        $creditsitem1 = $top2->get_children()[0];
+        $this->assertInstanceOf(credits::class, $creditsitem1);
+        $this->assertSame((int)$program2->id, $creditsitem1->get_programid());
+        $this->assertSame($framework1->name, $creditsitem1->get_fullname());
+        $this->assertSame(false, $creditsitem1->is_problem_detected());
+        $this->assertSame([], $creditsitem1->get_children());
+        $this->assertSame((int)$framework1->id, $creditsitem1->get_creditframeworkid());
+        $this->assertSame(null, $creditsitem1->get_previous());
     }
 
     public function test_update_set(): void {
@@ -451,7 +451,7 @@ final class content_test extends \advanced_testcase {
         $this->assertSame(0, $courseitem1->get_completiondelay());
     }
 
-    public function test_update_training(): void {
+    public function test_update_credits(): void {
         if (!mulib::is_mutrain_available()) {
             $this->markTestSkipped('mutrain not available');
         }
@@ -459,8 +459,8 @@ final class content_test extends \advanced_testcase {
         /** @var \tool_muprog_generator $generator */
         $generator = $this->getDataGenerator()->get_plugin_generator('tool_muprog');
 
-        /** @var \tool_mutrain_generator $traininggenerator */
-        $traininggenerator = $this->getDataGenerator()->get_plugin_generator('tool_mutrain');
+        /** @var \tool_mutrain_generator $creditsgenerator */
+        $creditsgenerator = $this->getDataGenerator()->get_plugin_generator('tool_mutrain');
 
         $fielcategory = $this->getDataGenerator()->create_custom_field_category(
             ['component' => 'core_course', 'area' => 'course']
@@ -482,12 +482,12 @@ final class content_test extends \advanced_testcase {
             'name' => 'Some framework',
             'fields' => [$field1->get('id')],
         ];
-        $framework1 = $traininggenerator->create_framework($data);
+        $framework1 = $creditsgenerator->create_framework($data);
         $data = (object)[
             'name' => 'Other framework',
             'fields' => [$field2->get('id')],
         ];
-        $framework2 = $traininggenerator->create_framework($data);
+        $framework2 = $creditsgenerator->create_framework($data);
 
         $course1 = $this->getDataGenerator()->create_course(['customfield_field1' => 1]);
         $course2 = $this->getDataGenerator()->create_course(['customfield_field1' => 2]);
@@ -499,37 +499,37 @@ final class content_test extends \advanced_testcase {
         $program2 = $generator->create_program(['fullname' => 'pokus']);
 
         $top = top::load($program1->id);
-        $top->append_training($top, $framework1->id);
+        $top->append_credits($top, $framework1->id);
 
-        /** @var training $trainingitem1 */
-        $trainingitem1 = $top->get_children()[0];
-        $this->assertSame((int)$program1->id, $trainingitem1->get_programid());
-        $this->assertSame($framework1->name, $trainingitem1->get_fullname());
-        $this->assertSame(false, $trainingitem1->is_problem_detected());
-        $this->assertSame(1, $trainingitem1->get_points());
+        /** @var credits $creditsitem1 */
+        $creditsitem1 = $top->get_children()[0];
+        $this->assertSame((int)$program1->id, $creditsitem1->get_programid());
+        $this->assertSame($framework1->name, $creditsitem1->get_fullname());
+        $this->assertSame(false, $creditsitem1->is_problem_detected());
+        $this->assertSame(1, $creditsitem1->get_points());
 
-        $trainingitem1 = $top->update_training($trainingitem1, []);
-        $this->assertSame($framework1->name, $trainingitem1->get_fullname());
-        $this->assertSame(false, $trainingitem1->is_problem_detected());
-        $this->assertSame(1, $trainingitem1->get_points());
+        $creditsitem1 = $top->update_credits($creditsitem1, []);
+        $this->assertSame($framework1->name, $creditsitem1->get_fullname());
+        $this->assertSame(false, $creditsitem1->is_problem_detected());
+        $this->assertSame(1, $creditsitem1->get_points());
 
-        $trainingitem1 = $top->update_training($trainingitem1, ['points' => 23, 'completiondelay' => HOURSECS * 3]);
-        $this->assertSame($framework1->name, $trainingitem1->get_fullname());
-        $this->assertSame(false, $trainingitem1->is_problem_detected());
-        $this->assertSame(23, $trainingitem1->get_points());
-        $this->assertSame(HOURSECS * 3, $trainingitem1->get_completiondelay());
+        $creditsitem1 = $top->update_credits($creditsitem1, ['points' => 23, 'completiondelay' => HOURSECS * 3]);
+        $this->assertSame($framework1->name, $creditsitem1->get_fullname());
+        $this->assertSame(false, $creditsitem1->is_problem_detected());
+        $this->assertSame(23, $creditsitem1->get_points());
+        $this->assertSame(HOURSECS * 3, $creditsitem1->get_completiondelay());
 
-        $trainingitem1 = $top->update_training($trainingitem1, []);
-        $this->assertSame($framework1->name, $trainingitem1->get_fullname());
-        $this->assertSame(false, $trainingitem1->is_problem_detected());
-        $this->assertSame(23, $trainingitem1->get_points());
-        $this->assertSame(HOURSECS * 3, $trainingitem1->get_completiondelay());
+        $creditsitem1 = $top->update_credits($creditsitem1, []);
+        $this->assertSame($framework1->name, $creditsitem1->get_fullname());
+        $this->assertSame(false, $creditsitem1->is_problem_detected());
+        $this->assertSame(23, $creditsitem1->get_points());
+        $this->assertSame(HOURSECS * 3, $creditsitem1->get_completiondelay());
 
-        $trainingitem1 = $top->update_training($trainingitem1, ['points' => 0, 'completiondelay' => 0]);
-        $this->assertSame($framework1->name, $trainingitem1->get_fullname());
-        $this->assertSame(false, $trainingitem1->is_problem_detected());
-        $this->assertSame(0, $trainingitem1->get_points());
-        $this->assertSame(0, $trainingitem1->get_completiondelay());
+        $creditsitem1 = $top->update_credits($creditsitem1, ['points' => 0, 'completiondelay' => 0]);
+        $this->assertSame($framework1->name, $creditsitem1->get_fullname());
+        $this->assertSame(false, $creditsitem1->is_problem_detected());
+        $this->assertSame(0, $creditsitem1->get_points());
+        $this->assertSame(0, $creditsitem1->get_completiondelay());
     }
 
     public function test_move_item(): void {
@@ -742,8 +742,8 @@ final class content_test extends \advanced_testcase {
 
         if ($source instanceof course) {
             self::assertSame($source->get_courseid(), $target->get_courseid());
-        } else if ($source instanceof training) {
-            self::assertSame($source->get_trainingid(), $target->get_trainingid());
+        } else if ($source instanceof credits) {
+            self::assertSame($source->get_creditframeworkid(), $target->get_creditframeworkid());
         } else if ($source instanceof set) {
             self::assertSame($source->get_sequencetype_info(), $target->get_sequencetype_info());
         } else {
@@ -855,7 +855,7 @@ final class content_test extends \advanced_testcase {
         $this->assertItemCloned($top1->get_children()[1], $top2->get_children()[2]);
     }
 
-    public function test_content_import_training(): void {
+    public function test_content_import_credits(): void {
         if (!mulib::is_mutrain_available()) {
             $this->markTestSkipped('mutrain not available');
         }
@@ -863,8 +863,8 @@ final class content_test extends \advanced_testcase {
         /** @var \tool_muprog_generator $generator */
         $generator = $this->getDataGenerator()->get_plugin_generator('tool_muprog');
 
-        /** @var \tool_mutrain_generator $traininggenerator */
-        $traininggenerator = $this->getDataGenerator()->get_plugin_generator('tool_mutrain');
+        /** @var \tool_mutrain_generator $creditsgenerator */
+        $creditsgenerator = $this->getDataGenerator()->get_plugin_generator('tool_mutrain');
 
         $fielcategory = $this->getDataGenerator()->create_custom_field_category(
             ['component' => 'core_course', 'area' => 'course']
@@ -886,12 +886,12 @@ final class content_test extends \advanced_testcase {
             'name' => 'Some framework',
             'fields' => [$field1->get('id')],
         ];
-        $framework1 = $traininggenerator->create_framework($data);
+        $framework1 = $creditsgenerator->create_framework($data);
         $data = (object)[
             'name' => 'Other framework',
             'fields' => [$field2->get('id')],
         ];
-        $framework2 = $traininggenerator->create_framework($data);
+        $framework2 = $creditsgenerator->create_framework($data);
 
         $course1 = $this->getDataGenerator()->create_course(['customfield_field1' => 1]);
         $course2 = $this->getDataGenerator()->create_course(['customfield_field1' => 2]);
@@ -903,7 +903,7 @@ final class content_test extends \advanced_testcase {
         $program2 = $generator->create_program(['fullname' => 'pokus']);
 
         $top1 = top::load($program1->id);
-        $top1->append_training($top1, $framework1->id);
+        $top1->append_credits($top1, $framework1->id);
         $top2 = top::load($program2->id);
 
         $top2->content_import((object)['id' => $program2->id, 'fromprogram' => $program1->id]);

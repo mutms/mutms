@@ -115,12 +115,12 @@ final class upload {
                             'completiondelay' => $item->completiondelay ?? 0,
                         ];
                         $top->append_course($parent, $item->courseid, $data);
-                    } else if ($item->itemtype === 'training') {
+                    } else if ($item->itemtype === 'credits') {
                         $data = [
                             'points' => $item->points ?? 1,
                             'completiondelay' => $item->completiondelay ?? 0,
                         ];
-                        $top->append_training($parent, $item->trainingid, $data);
+                        $top->append_credits($parent, $item->creditframeworkid, $data);
                     } else if ($item->itemtype === 'set') {
                         $data = [
                             'points' => $item->points ?? 1,
@@ -302,9 +302,9 @@ final class upload {
                     if ($item->itemtype === 'course') {
                         $coursename = $DB->get_field('course', 'fullname', ['id' => $item->courseid]);
                         return [$padding . format_string($coursename)];
-                    } else if ($item->itemtype === 'training') {
+                    } else if ($item->itemtype === 'credits') {
                         if (mulib::is_mutrain_available()) {
-                            $frameworkname = $DB->get_field('tool_mutrain_framework', 'name', ['id' => $item->trainingid]);
+                            $frameworkname = $DB->get_field('tool_mutrain_framework', 'name', ['id' => $item->creditframeworkid]);
                             return [$padding . format_string($frameworkname)];
                         } else {
                             return [$padding . get_string('error')];
@@ -485,7 +485,7 @@ final class upload {
     }
 
     /**
-     * Check program idnumber uniqueness, category names, course and training references, etc.
+     * Check program idnumber uniqueness, category names, course and credits references, etc.
      *
      * NOTE: This is done only once right after file upload for performance reasons.
      *
@@ -576,17 +576,17 @@ final class upload {
                             return get_string('error');
                         }
                         return null;
-                    } else if ($item->itemtype === 'training' && mulib::is_mutrain_available()) {
+                    } else if ($item->itemtype === 'credits' && mulib::is_mutrain_available()) {
                         unset($item->items);
                         $frameworks = $DB->get_records('tool_mutrain_framework', ['idnumber' => $item->reference]);
                         if (count($frameworks) === 1) {
                             $framework = reset($frameworks);
-                            $item->trainingid = $framework->id;
+                            $item->creditframeworkid = $framework->id;
                         } else if (count($frameworks) === 0) {
                             $frameworks = $DB->get_records('tool_mutrain_framework', ['name' => $item->reference]);
                             if (count($frameworks) === 1) {
                                 $framework = reset($frameworks);
-                                $item->trainingid = $framework->id;
+                                $item->creditframeworkid = $framework->id;
                             } else {
                                 return get_string('error');
                             }
@@ -900,7 +900,7 @@ final class upload {
                     $parent->items[] = $set;
                     $si++;
                     $setmap[$si] = $set;
-                } else if ($rawitem['itemtype'] === 'course' || $rawitem['itemtype'] === 'training') {
+                } else if ($rawitem['itemtype'] === 'course' || $rawitem['itemtype'] === 'credits') {
                     if (isset($rawitem['parentset']) && isset($setmap[$rawitem['parentset']])) {
                         $parent = $setmap[$rawitem['parentset']];
                     }

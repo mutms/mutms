@@ -16,6 +16,7 @@
 
 // phpcs:disable moodle.Files.BoilerplateComment.CommentEndedTooSoon
 // phpcs:disable moodle.Files.LineLength.TooLong
+// phpcs:disable Universal.OOStructures.AlphabeticExtendsImplements
 
 namespace tool_muprog\privacy;
 

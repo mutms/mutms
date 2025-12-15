@@ -125,7 +125,7 @@ class set extends item {
      * @return set
      */
     protected static function init_from_record(\stdClass $record, ?item $previous, array &$unusedrecords, array &$prerequisites): item {
-        if ($record->courseid !== null || $record->trainingid !== null) {
+        if ($record->courseid !== null || $record->creditframeworkid !== null) {
             throw new \coding_exception('Invalid set item');
         }
         if ($record->topitem) {
@@ -157,8 +157,8 @@ class set extends item {
                 unset($unusedrecords[$childitemid]);
                 if ($childrecord->courseid !== null) {
                     $child = course::init_from_record($childrecord, $previous, $unusedrecords, $prerequisites);
-                } else if ($childrecord->trainingid !== null) {
-                    $child = training::init_from_record($childrecord, $previous, $unusedrecords, $prerequisites);
+                } else if ($childrecord->creditframeworkid !== null) {
+                    $child = credits::init_from_record($childrecord, $previous, $unusedrecords, $prerequisites);
                 } else {
                     $child = self::init_from_record($childrecord, $previous, $unusedrecords, $prerequisites);
                 }
@@ -324,7 +324,7 @@ class set extends item {
             'programid' => (string)$this->programid,
             'topitem' => null,
             'courseid' => null,
-            'trainingid' => null,
+            'creditframeworkid' => null,
             'previtemid' => null,
             'fullname' => $this->fullname,
             'sequencejson' => util::json_encode($sequence),
