@@ -151,10 +151,12 @@ final class plugin_test extends \advanced_testcase {
 
         $field1 = $DB->get_record('customfield_data', ['fieldid' => $cf1->get('id')]);
         $this->assertSame(null, $field1->intvalue);
+        $this->assertSame(null, $field1->decvalue);
         $this->assertSame('', $field1->value);
         $field2 = $DB->get_record('customfield_data', ['fieldid' => $cf2->get('id')]);
-        $this->assertSame('20', $field2->intvalue);
-        $this->assertSame('20', $field2->value);
+        $this->assertSame(null, $field2->intvalue);
+        $this->assertSame('20.00000', $field2->decvalue);
+        $this->assertSame('20.00', $field2->value);
 
         // Negative number.
         $submitdata['customfield_myfield1'] = '-99999';
@@ -188,10 +190,10 @@ final class plugin_test extends \advanced_testcase {
             'configdata' => []]
         );
 
-        $cfdata1 = $generator->add_instance_data($cfields1, $course1->id, 1);
+        $cfdata1 = $generator->add_instance_data($cfields1, $course1->id, '1.50');
 
-        $this->assertSame(1, $cfdata1->get_value());
-        $this->assertSame(1, $cfdata1->export_value());
+        $this->assertSame(1.5, $cfdata1->get_value());
+        $this->assertSame('1.5', $cfdata1->export_value());
 
         // Field without data but with a default value.
         $d = \core_customfield\data_controller::create(0, null, $cfields3);
