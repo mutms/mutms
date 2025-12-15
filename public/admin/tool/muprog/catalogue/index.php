@@ -45,7 +45,7 @@ $PAGE->set_secondary_navigation(false);
 require_login();
 require_capability('tool/muprog:viewcatalogue', $syscontext);
 
-if (!\tool_muprog\local\util::is_muprog_active()) {
+if (!\tool_mulib\local\mulib::is_muprog_active()) {
     redirect(new moodle_url('/'));
 }
 

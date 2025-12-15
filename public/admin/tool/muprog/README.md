@@ -15,7 +15,7 @@ efficient way to manage both small-scale and large-scale learning initiatives an
 
 ## Key features
 
-* program content created as a hierarchy of courses, training frameworks and course sets with flexible sequencing rules
+* program content created as a hierarchy of courses, credit frameworks and course sets with flexible sequencing rules
 * multiple sources for allocation of students to programs
 * advanced program scheduling settings
 * efficient course enrolment automation
@@ -37,8 +37,8 @@ Other recommended plugins:
 
 * [My programs block](https://github.com/mutms/moodle-block_muprog_my)
 * [Supervisors and teams plugin](https://github.com/mutms/moodle-tool_murelation)
-* [Training plugin](https://github.com/mutms/moodle-tool_mutrain)
-* [Training value custom field](https://github.com/mutms/moodle-customfield_mutrain)
+* [Training credits plugin](https://github.com/mutms/moodle-tool_mutrain)
+* [Training credits custom field](https://github.com/mutms/moodle-customfield_mutrain)
 * [Certificate plugin](https://github.com/moodleworkplace/moodle-tool_certificate)
 * [Program fields for Certificate plugin](https://github.com/mutms/moodle-certificateelement_muprog)
 * [Multi-tenancy](https://github.com/mutms/moodle-tool_mutenancy)

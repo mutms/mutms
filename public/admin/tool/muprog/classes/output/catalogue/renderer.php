@@ -63,20 +63,17 @@ class renderer extends \plugin_renderer_base {
             }
         }
 
-        $programimage = '';
-        $presentation = (array)json_decode($program->presentationjson);
-        if (!empty($presentation['image'])) {
-            $imageurl = \moodle_url::make_file_url(
-                "$CFG->wwwroot/pluginfile.php",
-                '/' . $context->id . '/tool_muprog/image/' . $program->id . '/' . $presentation['image'],
-                false
-            );
-            $programimage = '<div class="programimage">' . \html_writer::img($imageurl, '') . '</div>';
+        $imageuri = program::get_image_uri($program, false);
+        if ($imageuri) {
+            $programimage = \html_writer::img($imageuri, '', ['class' => 'programimage float-end']);
+        } else {
+            $programimage = '';
         }
 
         $result = $this->output->heading($fullname);
         $result .= $tagsdiv;
-        $result .= "<div class='d-flex'><div class='w-100'>$description</div><div class='flex-shrink-1'>$programimage</div></div>";
+        $result .= "<div>$description</div>";
+        $result .= $programimage;
 
         $details = new \tool_mulib\output\entity_details();
 

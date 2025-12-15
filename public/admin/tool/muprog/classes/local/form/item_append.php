@@ -20,7 +20,7 @@
 namespace tool_muprog\local\form;
 
 use tool_muprog\local\content\set;
-use tool_muprog\external\form_autocomplete\item_append_trainingid;
+use tool_muprog\external\form_autocomplete\item_append_creditframeworkid;
 use tool_muprog\local\util;
 use tool_mulib\local\mulib;
 
@@ -56,11 +56,11 @@ final class item_append extends \tool_mulib\local\ajax_form {
 
         if (mulib::is_mutrain_available() && $DB->record_exists('tool_mutrain_framework', ['archived' => 0])) {
             $args = ['programid' => $parentset->get_programid()];
-            item_append_trainingid::add_element(
+            item_append_creditframeworkid::add_element(
                 $mform,
                 $args,
-                'trainingid',
-                get_string('training', 'tool_muprog'),
+                'creditframeworkid',
+                get_string('credits', 'tool_muprog'),
                 $context
             );
         }
@@ -130,7 +130,7 @@ final class item_append extends \tool_mulib\local\ajax_form {
                 }
             }
         } else {
-            if (!$data['courses'] && empty($data['trainingid'])) {
+            if (!$data['courses'] && empty($data['creditframeworkid'])) {
                 $errors['courses'] = get_string('required');
             } else {
                 if (mulib::is_mutenancy_active()) {
@@ -149,11 +149,11 @@ final class item_append extends \tool_mulib\local\ajax_form {
             }
         }
 
-        if (!empty($data['trainingid'])) {
+        if (!empty($data['creditframeworkid'])) {
             $args = ['programid' => $parentset->get_programid()];
-            $error = item_append_trainingid::validate_value($data['trainingid'], $args, $context);
+            $error = item_append_creditframeworkid::validate_value($data['creditframeworkid'], $args, $context);
             if ($error !== null) {
-                $errors['trainingid'] = $error;
+                $errors['creditframeworkid'] = $error;
             }
         }
 

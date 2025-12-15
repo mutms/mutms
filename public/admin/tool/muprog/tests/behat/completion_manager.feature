@@ -105,18 +105,21 @@ Feature: Program completion by managers tests
       | Details                        | no need! |
     And I click on "Update" "button" in the ".modal-dialog" "css_element"
     And I should see "Open" in the "Program status" definition list item
+    And I should see "25 %" in the "Progress" definition list item
     And I click on "Update other evidence" "link" in the "Course 3" "table_row"
     And I set the following fields in the ".modal-dialog" "css_element" to these values:
       | evidencetimecompleted[enabled] | 1        |
       | Details                        | no need! |
     And I click on "Update" "button" in the ".modal-dialog" "css_element"
     And I should see "Open" in the "Program status" definition list item
+    And I should see "50 %" in the "Progress" definition list item
     And I click on "Update other evidence" "link" in the "Course 2" "table_row"
     And I set the following fields in the ".modal-dialog" "css_element" to these values:
       | evidencetimecompleted[enabled] | 1        |
       | Details                        | no need! |
     And I click on "Update" "button" in the ".modal-dialog" "css_element"
     Then I should see "Completed" in the "Program status" definition list item
+    And I should see "75 %" in the "Progress" definition list item
     And I should see "no need!"
 
   @javascript

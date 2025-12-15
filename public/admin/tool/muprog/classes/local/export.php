@@ -151,9 +151,9 @@ final class export {
                     return $result;
                 }
 
-                if ($item instanceof \tool_muprog\local\content\training) {
+                if ($item instanceof \tool_muprog\local\content\credits) {
                     if (mulib::is_mutrain_available()) {
-                        $framework = $DB->get_record('tool_mutrain_framework', ['id' => $item->get_trainingid()]);
+                        $framework = $DB->get_record('tool_mutrain_framework', ['id' => $item->get_creditframeworkid()]);
                         if ($framework) {
                             $reference = $framework->idnumber ?? $framework->name;
                         } else {
@@ -163,7 +163,7 @@ final class export {
                         $reference = null; // Error - this will fail during validation.
                     }
                     $result = [
-                        'itemtype' => 'training',
+                        'itemtype' => 'credits',
                         'reference' => $reference,
                         'points' => $item->get_points(),
                         'completiondelay' => $item->get_completiondelay(),
