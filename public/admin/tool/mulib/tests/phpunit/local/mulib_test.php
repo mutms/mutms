@@ -37,11 +37,42 @@ final class mulib_test extends \advanced_testcase {
         $this->resetAfterTest();
     }
 
+    public function test_is_muprog_available(): void {
+        $this->assertSame(
+            file_exists(__DIR__ . '/../../../../../tool/muprog/version.php'),
+            mulib::is_muprog_available()
+        );
+    }
+
+    public function test_is_muprog_active(): void {
+        $this->assertFalse(mulib::is_muprog_active());
+
+        set_config('active', '1', 'tool_muprog');
+
+        if (mulib::is_muprog_available()) {
+            $this->assertTrue(mulib::is_muprog_active());
+        } else {
+            $this->assertFalse(mulib::is_muprog_active());
+        }
+    }
+
     public function test_is_mutrain_available(): void {
         $this->assertSame(
             file_exists(__DIR__ . '/../../../../../tool/mutrain/version.php'),
             mulib::is_mutrain_available()
         );
+    }
+
+    public function test_is_mutrain_active(): void {
+        $this->assertFalse(mulib::is_mutrain_active());
+
+        set_config('active', '1', 'tool_mutrain');
+
+        if (mulib::is_mutrain_available()) {
+            $this->assertTrue(mulib::is_mutrain_active());
+        } else {
+            $this->assertFalse(mulib::is_mutrain_active());
+        }
     }
 
     public function test_is_mutenancy_available(): void {

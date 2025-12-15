@@ -362,7 +362,7 @@ final class util_test extends \advanced_testcase {
      * @covers ::filter_multilang
      */
     public function test_filter_multilang2(): void {
-        if (!\get_config('filter_multilang2', 'version')) {
+        if (!get_config('filter_multilang2', 'version')) {
             $this->markTestSkipped('Test requires filter_multilang2 plugin');
         }
 
