@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<XMLDB PATH="admin/tool/mutrain/db" VERSION="20250416" COMMENT="XMLDB file for training"
+<XMLDB PATH="admin/tool/mutrain/db" VERSION="20251210" COMMENT="XMLDB file for training"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:noNamespaceSchemaLocation="../../../../lib/xmldb/xmldb.xsd"
 >
   <TABLES>
-    <TABLE NAME="tool_mutrain_framework" COMMENT="Stores the list of training frameworks and their configuration">
+    <TABLE NAME="tool_mutrain_framework" COMMENT="Stores the list of credit frameworks and their configuration">
       <FIELDS>
         <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
         <FIELD NAME="contextid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="System of category context for framework management access control, will also be used for multi-tenancy"/>
@@ -12,10 +12,11 @@
         <FIELD NAME="idnumber" TYPE="char" LENGTH="100" NOTNULL="false" SEQUENCE="false" COMMENT="External identifier - globally unique"/>
         <FIELD NAME="description" TYPE="text" NOTNULL="true" SEQUENCE="false" COMMENT="Description of the framework intended use"/>
         <FIELD NAME="descriptionformat" TYPE="int" LENGTH="2" NOTNULL="true" SEQUENCE="false"/>
-        <FIELD NAME="publicaccess" TYPE="int" LENGTH="1" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="If not public then user has to have manage framework capability to use"/>
-        <FIELD NAME="requiredtraining" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="Required training amount for completion"/>
-        <FIELD NAME="restrictedcompletion" TYPE="int" LENGTH="1" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="1 means completions before program start are ignored, 0 means all completions are considered"/>
-        <FIELD NAME="archived" TYPE="int" LENGTH="1" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="Archived frameworks cannot be added to programs and completions are not updated"/>
+        <FIELD NAME="publicaccess" TYPE="int" LENGTH="1" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="If not public then user has to have manage framework capability to see and use the framework"/>
+        <FIELD NAME="requiredcredits" TYPE="number" LENGTH="10" NOTNULL="true" SEQUENCE="false" DECIMALS="5" COMMENT="Credits required for completion"/>
+        <FIELD NAME="restrictafter" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false" COMMENT="Not null means aggregation restricted to date later than timestamp"/>
+        <FIELD NAME="restrictcontext" TYPE="int" LENGTH="1" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="1 means aggregate credits in context and subcontexts, 0 means all contexts"/>
+        <FIELD NAME="archived" TYPE="int" LENGTH="1" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="Archived frameworks are hidden, cannot be added to programs and credits cache is purged"/>
         <FIELD NAME="timecreated" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
       </FIELDS>
       <KEYS>
@@ -26,7 +27,7 @@
         <INDEX NAME="idnumber" UNIQUE="true" FIELDS="idnumber" COMMENT="Enforce unique idnumber for all frameworks if defined"/>
       </INDEXES>
     </TABLE>
-    <TABLE NAME="tool_mutrain_field" COMMENT="Custom training fields associated with training framework">
+    <TABLE NAME="tool_mutrain_field" COMMENT="Custom fields associated with credit framework">
       <FIELDS>
         <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
         <FIELD NAME="frameworkid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
@@ -59,6 +60,23 @@
       <INDEXES>
         <INDEX NAME="fieldid-instanceid-userid" UNIQUE="true" FIELDS="fieldid, instanceid, userid"/>
         <INDEX NAME="timecompleted" UNIQUE="false" FIELDS="timecompleted"/>
+      </INDEXES>
+    </TABLE>
+    <TABLE NAME="tool_mutrain_credit" COMMENT="Cached obtained credits for each user that has any completions in framework">
+      <FIELDS>
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+        <FIELD NAME="frameworkid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="userid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="User with credits"/>
+        <FIELD NAME="credits" TYPE="number" LENGTH="10" NOTNULL="false" SEQUENCE="false" DECIMALS="5" COMMENT="Sum of obtained credits via completion, NULL means not calculated yet"/>
+        <FIELD NAME="timereached" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false" COMMENT="Date when event that user reached required number of credits was triggered, may reset back to NULL later"/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+        <KEY NAME="frameworkid" TYPE="foreign" FIELDS="frameworkid" REFTABLE="tool_mutrain_framework" REFFIELDS="id"/>
+        <KEY NAME="userid" TYPE="foreign" FIELDS="userid" REFTABLE="user" REFFIELDS="id"/>
+      </KEYS>
+      <INDEXES>
+        <INDEX NAME="frameworkid-userid" UNIQUE="true" FIELDS="frameworkid, userid"/>
       </INDEXES>
     </TABLE>
   </TABLES>

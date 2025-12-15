@@ -48,16 +48,16 @@ final class field_add_fieldid_test extends \advanced_testcase {
             ['component' => 'core_course', 'area' => 'course']
         );
         $field1 = $this->getDataGenerator()->create_custom_field(
-            ['categoryid' => $fielcategory->get('id'), 'type' => 'mutrain', 'shortname' => 'field1']
+            ['categoryid' => $fielcategory->get('id'), 'type' => 'mutrain', 'shortname' => 'field1', 'name' => 'F1']
         );
         $field2 = $this->getDataGenerator()->create_custom_field(
-            ['categoryid' => $fielcategory->get('id'), 'type' => 'mutrain', 'shortname' => 'field2']
+            ['categoryid' => $fielcategory->get('id'), 'type' => 'mutrain', 'shortname' => 'field2', 'name' => 'F2']
         );
         $field3 = $this->getDataGenerator()->create_custom_field(
-            ['categoryid' => $fielcategory->get('id'), 'type' => 'mutrain', 'shortname' => 'field3']
+            ['categoryid' => $fielcategory->get('id'), 'type' => 'mutrain', 'shortname' => 'field3', 'name' => 'F3']
         );
         $field4 = $this->getDataGenerator()->create_custom_field(
-            ['categoryid' => $fielcategory->get('id'), 'type' => 'text', 'shortname' => 'field4']
+            ['categoryid' => $fielcategory->get('id'), 'type' => 'text', 'shortname' => 'field4', 'name' => 'F4']
         );
 
         $category = $this->getDataGenerator()->create_category([]);
@@ -72,9 +72,9 @@ final class field_add_fieldid_test extends \advanced_testcase {
         $user3 = $this->getDataGenerator()->create_user();
 
         $managerroleid = $this->getDataGenerator()->create_role();
-        \assign_capability('tool/mutrain:manageframeworks', CAP_ALLOW, $managerroleid, $syscontext);
-        \role_assign($managerroleid, $user1->id, $syscontext->id);
-        \role_assign($managerroleid, $user2->id, $catcontext->id);
+        assign_capability('tool/mutrain:manageframeworks', CAP_ALLOW, $managerroleid, $syscontext);
+        role_assign($managerroleid, $user1->id, $syscontext->id);
+        role_assign($managerroleid, $user2->id, $catcontext->id);
 
         $this->setUser($user1);
 
@@ -130,16 +130,16 @@ final class field_add_fieldid_test extends \advanced_testcase {
             ['component' => 'core_course', 'area' => 'course']
         );
         $field1 = $this->getDataGenerator()->create_custom_field(
-            ['categoryid' => $fielcategory->get('id'), 'type' => 'mutrain', 'shortname' => 'field1']
+            ['categoryid' => $fielcategory->get('id'), 'type' => 'mutrain', 'shortname' => 'field1', 'name' => 'F1']
         );
         $field2 = $this->getDataGenerator()->create_custom_field(
-            ['categoryid' => $fielcategory->get('id'), 'type' => 'mutrain', 'shortname' => 'field2']
+            ['categoryid' => $fielcategory->get('id'), 'type' => 'mutrain', 'shortname' => 'field2', 'name' => 'F2']
         );
         $field3 = $this->getDataGenerator()->create_custom_field(
-            ['categoryid' => $fielcategory->get('id'), 'type' => 'mutrain', 'shortname' => 'field3']
+            ['categoryid' => $fielcategory->get('id'), 'type' => 'mutrain', 'shortname' => 'field3', 'name' => 'F3']
         );
         $field4 = $this->getDataGenerator()->create_custom_field(
-            ['categoryid' => $fielcategory->get('id'), 'type' => 'text', 'shortname' => 'field4']
+            ['categoryid' => $fielcategory->get('id'), 'type' => 'text', 'shortname' => 'field4', 'name' => 'F4']
         );
 
         $category = $this->getDataGenerator()->create_category([]);

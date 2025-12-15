@@ -22,7 +22,7 @@ namespace tool_mutrain\phpunit\local;
 use tool_mutrain\local\management;
 
 /**
- * Training management helper test.
+ * Credit framework management helper test.
  *
  * @group      MuTMS
  * @package    tool_mutrain
@@ -53,12 +53,12 @@ final class management_test extends \advanced_testcase {
         $guest = guest_user();
         $manager = $this->getDataGenerator()->create_user();
         $managerrole = $DB->get_record('role', ['shortname' => 'manager']);
-        \role_assign($managerrole->id, $manager->id, $catcontext2->id);
+        role_assign($managerrole->id, $manager->id, $catcontext2->id);
 
         $viewer = $this->getDataGenerator()->create_user();
         $viewerroleid = $this->getDataGenerator()->create_role();
-        \assign_capability('tool/mutrain:viewframeworks', CAP_ALLOW, $viewerroleid, $syscontext);
-        \role_assign($viewerroleid, $viewer->id, $catcontext1->id);
+        assign_capability('tool/mutrain:viewframeworks', CAP_ALLOW, $viewerroleid, $syscontext);
+        role_assign($viewerroleid, $viewer->id, $catcontext1->id);
 
         $this->setUser(null);
         $this->assertNull(management::get_management_url());
@@ -78,7 +78,7 @@ final class management_test extends \advanced_testcase {
     }
 
     public function test_get_management_url_tenant(): void {
-        if (!\tool_mutrain\local\util::is_mutenancy_available()) {
+        if (!\tool_mulib\local\mulib::is_mutenancy_available()) {
             $this->markTestSkipped('multitenancy not available');
         }
         \tool_mutenancy\local\tenancy::activate();

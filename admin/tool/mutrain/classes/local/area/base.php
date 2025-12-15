@@ -73,7 +73,7 @@ abstract class base {
                     SELECT 'x'
                       FROM {customfield_data} cd
                       JOIN {customfield_field} cf ON cf.id = cd.fieldid AND cf.type = 'mutrain'
-                     WHERE {tool_mutrain_completion}.fieldid = cf.id AND cd.intvalue > 0
+                     WHERE {tool_mutrain_completion}.fieldid = cf.id AND cd.decvalue IS NOT NULl
 
                  )";
         $DB->execute($sql);

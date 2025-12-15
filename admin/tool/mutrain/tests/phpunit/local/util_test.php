@@ -21,9 +21,10 @@
 namespace tool_mutrain\phpunit\local;
 
 use tool_mutrain\local\util;
+use tool_mulib\local\mulib;
 
 /**
- * Training framework helper test.
+ * Credit frameworks helper test.
  *
  * @group      MuTMS
  * @package    tool_mutrain
@@ -38,23 +39,19 @@ final class util_test extends \advanced_testcase {
         $this->resetAfterTest();
     }
 
-    public function test_is_mutenancy_available(): void {
-        $this->assertSame(
-            file_exists(__DIR__ . '/../../../../../tool/mutenancy/version.php'),
-            util::is_mutenancy_available()
-        );
-    }
+    public function test_fix_active_flag(): void {
+        /** @var \tool_mutrain_generator $generator */
+        $generator = $this->getDataGenerator()->get_plugin_generator('tool_mutrain');
 
-    public function test_is_mutenancy_active(): void {
-        if (!util::is_mutenancy_available()) {
-            $this->assertFalse(util::is_mutenancy_active());
-            return;
-        }
+        $this->assertSame(false, get_config('tool_mutrain', 'active'));
+        $this->assertFalse(mulib::is_mutrain_active());
 
-        \tool_mutenancy\local\tenancy::deactivate();
-        $this->assertFalse(util::is_mutenancy_active());
+        $framework = $generator->create_framework();
+        $this->assertSame('1', get_config('tool_mutrain', 'active'));
+        $this->assertTrue(mulib::is_mutrain_active());
 
-        \tool_mutenancy\local\tenancy::activate();
-        $this->assertTrue(util::is_mutenancy_active());
+        \tool_mutrain\local\framework::delete($framework->id);
+        $this->assertSame('0', get_config('tool_mutrain', 'active'));
+        $this->assertFalse(mulib::is_mutrain_active());
     }
 }

@@ -19,8 +19,11 @@
 
 namespace tool_mutrain\local\area;
 
+use tool_mutrain\local\framework;
+use tool_mulib\local\mudb;
+
 /**
- * Program completion training area.
+ * Program completion credits area.
  *
  * @package    tool_mutrain
  * @copyright  2025 Petr Skoda
@@ -44,17 +47,28 @@ final class tool_muprog_program extends base {
         global $DB;
 
         if (!class_exists(\tool_muprog\local\program::class)) {
+            $sql = "DELETE
+                  FROM {tool_mutrain_completion}
+                 WHERE EXISTS (
+
+                    SELECT 'x'
+                      FROM {customfield_data} cd
+                      JOIN {customfield_field} cf ON cf.id = cd.fieldid AND cf.type = 'mutrain'
+                      JOIN {customfield_category} cat ON cat.id = cf.categoryid AND cat.component = 'tool_muprog' AND cat.area = 'program'
+                     WHERE {tool_mutrain_completion}.fieldid = cf.id
+
+                 )";
+            $DB->execute($sql);
             return;
         }
 
         // Add completions.
-        $sql = "INSERT INTO {tool_mutrain_completion}
-                       (fieldid, instanceid, userid, timecompleted, contextid)
+        $sql = "INSERT INTO {tool_mutrain_completion} (fieldid, instanceid, userid, timecompleted, contextid)
 
                 SELECT DISTINCT cd.fieldid, cd.instanceid, pa.userid, pa.timecompleted, p.contextid
                   FROM {tool_muprog_allocation} pa
                   JOIN {tool_muprog_program} p ON p.id = pa.programid
-                  JOIN {customfield_data} cd ON cd.instanceid = p.id AND cd.intvalue > 0
+                  JOIN {customfield_data} cd ON cd.instanceid = p.id AND cd.decvalue IS NOT NULL
                   JOIN {customfield_field} cf ON cf.id = cd.fieldid AND cf.type = 'mutrain'
                   JOIN {customfield_category} cat ON cat.id = cf.categoryid AND cat.component = 'tool_muprog' AND cat.area = 'program'
                   JOIN {user} u ON u.id = pa.userid AND u.deleted = 0 AND u.confirmed = 1
@@ -76,10 +90,10 @@ final class tool_muprog_program extends base {
 
                  ) AND NOT EXISTS (
 
-                    SELECT pa.id
+                    SELECT 'x'
                       FROM {tool_muprog_allocation} pa
                       JOIN {tool_muprog_program} p ON p.id = pa.programid
-                      JOIN {customfield_data} cd ON cd.instanceid = p.id
+                      JOIN {customfield_data} cd ON cd.instanceid = p.id AND cd.decvalue IS NOT NULL
                       JOIN {customfield_field} cf ON cf.id = cd.fieldid AND cf.type = 'mutrain'
                       JOIN {customfield_category} cat ON cat.id = cf.categoryid AND cat.component = 'tool_muprog' AND cat.area = 'program'
                      WHERE {tool_mutrain_completion}.fieldid = cf.id
@@ -106,7 +120,7 @@ final class tool_muprog_program extends base {
                    )
                  WHERE EXISTS (
 
-                        SELECT pa.id
+                        SELECT 'x'
                           FROM {tool_muprog_allocation} pa
                           JOIN {tool_muprog_program} p ON p.id = pa.programid
                           JOIN {customfield_data} cd ON cd.instanceid = p.id
@@ -133,7 +147,7 @@ final class tool_muprog_program extends base {
                    )
                  WHERE EXISTS (
 
-                        SELECT p.id
+                        SELECT 'x'
                           FROM {tool_muprog_program} p
                           JOIN {customfield_data} cd ON cd.instanceid = p.id
                           JOIN {customfield_field} cf ON cf.id = cd.fieldid AND cf.type = 'mutrain'
@@ -159,49 +173,40 @@ final class tool_muprog_program extends base {
         }
         $program = $event->get_record_snapshot('tool_muprog_program', $allocation->programid);
 
-        $sql = "SELECT cf.*, ctc.id AS ctcid
+        $sql = "SELECT cf.*
                   FROM {customfield_field} cf
                   JOIN {customfield_category} cat ON cat.id = cf.categoryid AND cat.component = 'tool_muprog' AND cat.area = 'program'
-                  JOIN {customfield_data} cd ON cd.fieldid = cf.id AND cd.instanceid = :programid AND cd.intvalue > 0
-             LEFT JOIN {tool_mutrain_completion} ctc ON ctc.fieldid = cf.id AND ctc.instanceid = cd.instanceid AND ctc.userid = :userid
+                  JOIN {customfield_data} cd ON cd.fieldid = cf.id AND cd.instanceid = :programid AND cd.decvalue IS NOT NULL
                  WHERE cf.type = 'mutrain'
               ORDER BY cd.id ASC";
         $params = ['programid' => $program->id, 'userid' => $allocation->userid];
 
-        $inserted = [];
         $fields = $DB->get_records_sql($sql, $params);
-        foreach ($fields as $field) {
-            if ($field->ctcid) {
-                $DB->set_field(
-                    'tool_mutrain_completion',
-                    'timecompleted',
-                    $allocation->timecompleted,
-                    ['id' => $field->ctcid]
-                );
-            } else {
-                $record = (object)[
-                    'fieldid' => $field->id,
-                    'instanceid' => $program->id,
-                    'userid' => $allocation->userid,
-                    'timecompleted' => $allocation->timecompleted,
-                    'contextid' => $program->contextid,
-                ];
-                $inserted[] = (int)$DB->insert_record('tool_mutrain_completion', $record);
-            }
+        if (!$fields) {
+            return;
         }
 
-        if ($inserted) {
-            $inserted = implode(',', $inserted);
-            $sql = "SELECT DISTINCT tf.frameworkid
-                      FROM {tool_mutrain_field} tf
-                      JOIN {tool_mutrain_framework} tfw ON tfw.id = tf.frameworkid
-                     WHERE tfw.archived = 0 AND tf.fieldid IN ($inserted)";
-            $frameworkids = $DB->get_fieldset_sql($sql);
-            if ($frameworkids) {
-                // This should trigger things like program completion recalculation when user completes program.
-                $hook = new \tool_mutrain\hook\completion_updated($allocation->userid, $frameworkids);
-                \core\di::get(\core\hook\manager::class)->dispatch($hook);
-            }
+        foreach ($fields as $field) {
+            $record = [
+                'fieldid' => $field->id,
+                'instanceid' => $program->id,
+                'userid' => $allocation->userid,
+                'timecompleted' => $allocation->timecompleted,
+                'contextid' => $program->contextid,
+            ];
+            mudb::upsert_record('tool_mutrain_completion', $record, ['fieldid', 'instanceid', 'userid']);
+        }
+
+        $fieldids = array_keys($fields);
+        $fieldids = implode(',', $fieldids);
+
+        $sql = "SELECT DISTINCT tf.frameworkid
+                  FROM {tool_mutrain_field} tf
+                  JOIN {tool_mutrain_framework} tfw ON tfw.id = tf.frameworkid
+                 WHERE tfw.archived = 0 AND tf.fieldid IN ($fieldids)";
+        $frameworkids = $DB->get_fieldset_sql($sql);
+        foreach ($frameworkids as $frameworkid) {
+            framework::sync_credits($allocation->userid, $frameworkid);
         }
     }
 
