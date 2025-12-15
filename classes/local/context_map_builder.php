@@ -507,35 +507,13 @@ final class context_map_builder {
      * @return void does nothing if context parameters are invalid
      */
     public static function upsert_context_parent(int $contextid, int $parentcontextid): void {
-        global $DB;
-
         if ($contextid < 1 || $parentcontextid < 1 || $contextid == $parentcontextid) {
             debugging('invalid context parameters', DEBUG_DEVELOPER);
             return;
         }
 
-        $dbfamily = $DB->get_dbfamily();
-        if ($dbfamily === 'postgres') {
-            $sql = "INSERT INTO {tool_mulib_context_parent} (contextid, parentcontextid) VALUES ($contextid,$parentcontextid)
-                    ON CONFLICT (contextid) DO UPDATE SET parentcontextid = excluded.parentcontextid";
-            $DB->execute($sql);
-        } else if ($dbfamily === 'mysql') {
-            $sql = "INSERT INTO {tool_mulib_context_parent} (contextid, parentcontextid) VALUES ($contextid,$parentcontextid)
-                    ON DUPLICATE KEY UPDATE parentcontextid = VALUES(parentcontextid)";
-            $DB->execute($sql);
-        } else {
-            $data = ['contextid' => $contextid, 'parentcontextid' => $parentcontextid];
-            if ($DB->record_exists('tool_mulib_context_parent', $data)) {
-                $DB->set_field('tool_mulib_context_parent', 'parentcontextid', $parentcontextid, ['contextid' => $contextid]);
-            } else {
-                try {
-                    $DB->insert_record('tool_mulib_context_parent', $data, false);
-                } catch (\Exception $ex) {
-                    // Could be a concurrent insert.
-                    $DB->set_field('tool_mulib_context_parent', 'parentcontextid', $parentcontextid, ['contextid' => $contextid]);
-                }
-            }
-        }
+        $record = ['contextid' => $contextid, 'parentcontextid' => $parentcontextid];
+        mudb::upsert_record('tool_mulib_context_parent', $record, ['contextid']);
     }
 
     /**
