@@ -36,7 +36,6 @@ require_once("$CFG->libdir/externallib.php");
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class issues extends \external_api {
-
     /**
      * Returns the delete_issue() parameters.
      *
@@ -119,16 +118,6 @@ class issues extends \external_api {
 
         // Regenerate the issue file.
         $template->create_issue_file($issue, true);
-        // Update issue userfullname data.
-        if ($user = $DB->get_record('user', ['id' => $issue->userid])) {
-            $issuedata = @json_decode($issue->data, true);
-            $issuedata['userfullname'] = fullname($user);
-            $issue->data = json_encode($issuedata);
-            $DB->update_record('tool_certificate_issues', $issue);
-        }
-
-        // Trigger event.
-        \tool_certificate\event\certificate_regenerated::create_from_issue($issue)->trigger();
     }
 
     /**
@@ -159,10 +148,12 @@ class issues extends \external_api {
      * @return array
      */
     public static function potential_users_selector(string $search, int $itemid): array {
-        global $DB, $CFG;
+        global $DB;
 
-        $params = self::validate_parameters(self::potential_users_selector_parameters(),
-            ['search' => $search, 'itemid' => $itemid]);
+        $params = self::validate_parameters(
+            self::potential_users_selector_parameters(),
+            ['search' => $search, 'itemid' => $itemid]
+        );
         $search = $params['search'];
         $itemid = $params['itemid'];
 
@@ -183,21 +174,11 @@ class issues extends \external_api {
 
         $params = [];
         $params['templateid'] = $itemid;
-        $params['now'] = time();
+        $params['now'] = \core\di::get(\core\clock::class)->time();
 
-        if ($CFG->version < 2021050700) {
-            // Moodle 3.9-3.10.
-            $fields = get_all_user_name_fields(true, 'u');
-            $extrasearchfields = [];
-            if (!empty($CFG->showuseridentity) && has_capability('moodle/site:viewuseridentity', $context)) {
-                $extrasearchfields = explode(',', $CFG->showuseridentity);
-            }
-        } else {
-            // Moodle 3.11 and above.
-            $fields = \core_user\fields::for_name()->get_sql('u', false, '', '', false)->selects;
-            // TODO Does not support custom user profile fields (MDL-70456).
-            $extrasearchfields = \core_user\fields::get_identity_fields($context, false);
-        }
+        $fields = \core_user\fields::for_name()->get_sql('u', false, '', '', false)->selects;
+        // TODO Does not support custom user profile fields (MDL-70456).
+        $extrasearchfields = \core_user\fields::get_identity_fields($context, false);
 
         if (in_array('email', $extrasearchfields)) {
             $fields .= ', u.email';
@@ -205,20 +186,20 @@ class issues extends \external_api {
             $fields .= ', null AS email';
         }
 
-        list($wheresql, $whereparams) = users_search_sql($search, 'u', true, $extrasearchfields);
+        [$wheresql, $whereparams] = users_search_sql($search, 'u', true, $extrasearchfields);
         $query = "SELECT u.id, $fields
             FROM {user} u $join
             WHERE ($where) AND $wheresql";
         $params += $whereparams;
 
-        list($sortsql, $sortparams) = users_order_by_sql('u', $search, $context);
+        [$sortsql, $sortparams] = users_order_by_sql('u', $search, $context);
         $query .= " ORDER BY {$sortsql}";
         $params += $sortparams;
 
         $result = $DB->get_records_sql($query, $params);
         $viewfullnames = has_capability('moodle/site:viewfullnames', $context);
         if ($result) {
-            $result = array_map(function($record) use ($viewfullnames) {
+            $result = array_map(function ($record) use ($viewfullnames) {
                 return (object)['id' => $record->id, 'fullname' => fullname($record, $viewfullnames), 'email' => $record->email];
             }, $result);
         }
@@ -233,13 +214,19 @@ class issues extends \external_api {
         global $CFG;
         require_once($CFG->dirroot . '/user/externallib.php');
         return new \external_multiple_structure(new \external_single_structure([
-            'id' => new \external_value(\core_user::get_property_type('id'),
-                'ID of the user'),
-            'fullname' => new \external_value(\core_user::get_property_type('firstname'),
-                'The fullname of the user'),
-            'email' => new \external_value(\core_user::get_property_type('email'),
-                'An email address', VALUE_OPTIONAL),
+            'id' => new \external_value(
+                \core_user::get_property_type('id'),
+                'ID of the user'
+            ),
+            'fullname' => new \external_value(
+                \core_user::get_property_type('firstname'),
+                'The fullname of the user'
+            ),
+            'email' => new \external_value(
+                \core_user::get_property_type('email'),
+                'An email address',
+                VALUE_OPTIONAL
+            ),
         ]));
     }
-
 }
