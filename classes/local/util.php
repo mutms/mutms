@@ -19,7 +19,7 @@
 namespace tool_mutrain\local;
 
 /**
- * Utility class for training.
+ * Utility class for training credits.
  *
  * @package    tool_mutrain
  * @copyright  2025 Petr Skoda
@@ -27,23 +27,12 @@ namespace tool_mutrain\local;
  */
 final class util {
     /**
-     * Is multi-tenancy available?
-     *
-     * @return bool
+     * Cache existence of programs.
      */
-    public static function is_mutenancy_available(): bool {
-        return class_exists(\tool_mutenancy\local\tenancy::class);
-    }
+    public static function fix_active_flag(): void {
+        global $DB;
 
-    /**
-     * Is multi-tenancy active?
-     *
-     * @return bool
-     */
-    public static function is_mutenancy_active(): bool {
-        if (!self::is_mutenancy_available()) {
-            return false;
-        }
-        return \tool_mutenancy\local\tenancy::is_active();
+        $active = (int)$DB->record_exists('tool_mutrain_framework', []);
+        set_config('active', $active, 'tool_mutrain');
     }
 }

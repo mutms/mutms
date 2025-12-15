@@ -38,6 +38,7 @@ final class framework extends base {
     protected function get_default_tables(): array {
         return [
             'tool_mutrain_framework',
+            'tool_mutrain_credit',
             'context',
         ];
     }
@@ -157,25 +158,48 @@ final class framework extends base {
             });
 
         $columns[] = (new column(
-            'requiredtraining',
-            new lang_string('requiredtraining', 'tool_mutrain'),
+            'requiredcredits',
+            new lang_string('requiredcredits', 'tool_mutrain'),
             $this->get_entity_name()
         ))
             ->add_joins($this->get_joins())
-            ->set_type(column::TYPE_INTEGER)
-            ->add_field("{$frameworkalias}.requiredtraining")
+            ->set_type(column::TYPE_FLOAT)
+            ->add_field("{$frameworkalias}.requiredcredits")
             ->set_is_sortable(true);
 
         $columns[] = (new column(
-            'restrictedcompletion',
-            new lang_string('restrictedcompletion', 'tool_mutrain'),
+            'restrictafter',
+            new lang_string('restrictafter', 'tool_mutrain'),
+            $this->get_entity_name()
+        ))
+            ->add_joins($this->get_joins())
+            ->set_type(column::TYPE_TIMESTAMP)
+            ->add_fields("{$frameworkalias}.restrictafter")
+            ->set_is_sortable(true)
+            ->set_callback(static function (?int $value, \stdClass $row): string {
+                if (!$value) {
+                    return get_string('notset', 'tool_mulib');
+                }
+
+                return userdate($value, get_string('strftimedatetimeshort'));
+            });
+
+        $columns[] = (new column(
+            'restrictcontext',
+            new lang_string('restrictcontext', 'tool_mutrain'),
             $this->get_entity_name()
         ))
             ->add_joins($this->get_joins())
             ->set_type(column::TYPE_BOOLEAN)
-            ->add_fields("{$frameworkalias}.restrictedcompletion")
+            ->add_fields("{$frameworkalias}.restrictcontext, {$frameworkalias}.contextid")
             ->set_is_sortable(true)
-            ->set_callback([format::class, 'boolean_as_text']);
+            ->set_callback(static function (bool $value, \stdClass $row): string {
+                if (!$value) {
+                    return get_string('no');
+                }
+                $context = \context::instance_by_id($row->contextid);
+                return $context->get_context_name(false);
+            });
 
         $columns[] = (new column(
             'archived',

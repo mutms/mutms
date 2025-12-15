@@ -28,7 +28,7 @@ defined('MOODLE_INTERNAL') || die();
 require_once($CFG->libdir . '/tablelib.php');
 
 /**
- * All training frameworks.
+ * All credit frameworks.
  *
  * @package    tool_mutrain
  * @copyright  2024 Open LMS (https://www.openlms.net/)

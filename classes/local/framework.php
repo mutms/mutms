@@ -15,13 +15,18 @@
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 // phpcs:disable moodle.Files.BoilerplateComment.CommentEndedTooSoon
+// phpcs:disable moodle.Files.LineLength.TooLong
+// phpcs:disable moodle.Commenting.ValidTags.Invalid
+// phpcs:disable moodle.Commenting.InlineComment.DocBlock
 
 namespace tool_mutrain\local;
 
 use stdClass;
+use tool_mulib\local\sql;
+use core\exception\invalid_parameter_exception;
 
 /**
- * Framework helper class.
+ * Credit framework helper class.
  *
  * @package    tool_mutrain
  * @copyright  2024 Open LMS (https://www.openlms.net/)
@@ -45,20 +50,20 @@ final class framework {
 
         $context = \context::instance_by_id($data->contextid);
         if (!($context instanceof \context_system) && !($context instanceof \context_coursecat)) {
-            throw new \coding_exception('training framework contextid must be a system or course category');
+            throw new \coding_exception('framework contextid must be a system or course category');
         }
         $record->contextid = $context->id;
 
         $record->name = trim($data->name ?? '');
         if ($record->name === '') {
-            throw new \invalid_parameter_exception('framework name cannot be empty');
+            throw new invalid_parameter_exception('framework name cannot be empty');
         }
         $record->idnumber = trim($data->idnumber ?? '');
         if ($record->idnumber === '') {
             $record->idnumber = null;
         } else {
             if ($DB->record_exists_select('tool_mutrain_framework', "LOWER(idnumber) = LOWER(?)", [$record->idnumber])) {
-                throw new \invalid_parameter_exception('framework idnumber must be unique');
+                throw new invalid_parameter_exception('framework idnumber must be unique');
             }
         }
         if (isset($data->description_editor)) {
@@ -68,25 +73,34 @@ final class framework {
             $record->description = $data->description ?? '';
             $record->descriptionformat = $data->descriptionformat ?? FORMAT_HTML;
         }
-
-        $record->restrictedcompletion = (int)($data->restrictedcompletion ?? 0);
-        if ($record->restrictedcompletion !== 0 && $record->restrictedcompletion !== 1) {
-            throw new \invalid_parameter_exception('framework restrictedcompletion must be 1 or 0');
-        }
-
         $record->publicaccess = (int)($data->publicaccess ?? 0);
         if ($record->publicaccess !== 0 && $record->publicaccess !== 1) {
-            throw new \invalid_parameter_exception('framework public must be 1 or 0');
+            throw new invalid_parameter_exception('framework public must be 1 or 0');
         }
 
-        $record->requiredtraining = (int)$data->requiredtraining;
-        if ($record->requiredtraining <= 0) {
-            throw new \invalid_parameter_exception('framework requiredtraining must be positive integer');
+        $data->requiredcredits = str_replace(',', '.', $data->requiredcredits);
+        if (!is_numeric($data->requiredcredits) || $data->requiredcredits <= 0) {
+            throw new invalid_parameter_exception('framework requiredcredits must be positive number');
+        }
+        $record->requiredcredits = format_float($data->requiredcredits, 2, false);
+
+        $record->restrictafter = $data->restrictafter ?? null;
+        if ($record->restrictafter <= 0) {
+            $record->restrictafter = null;
+        }
+
+        if ($context instanceof \context_system) {
+            $record->restrictcontext = 0;
+        } else {
+            $record->restrictcontext = (int)($data->restrictcontext ?? 0);
+            if ($record->restrictcontext !== 0 && $record->restrictcontext !== 1) {
+                throw new invalid_parameter_exception('framework restrictcontext must be 1 or 0');
+            }
         }
 
         $record->archived = (int)($data->archived ?? 0); // New frameworks should not be archived unless testing.
         if ($record->archived !== 0 && $record->archived !== 1) {
-            throw new \invalid_parameter_exception('framework archived must be 1 or 0');
+            throw new invalid_parameter_exception('framework archived must be 1 or 0');
         }
 
         $record->timecreated = time();
@@ -97,6 +111,10 @@ final class framework {
         $framework = $DB->get_record('tool_mutrain_framework', ['id' => $id]);
 
         $trans->allow_commit();
+
+        util::fix_active_flag();
+
+        self::sync_credits(null, $framework->id);
 
         return $framework;
     }
@@ -116,10 +134,10 @@ final class framework {
         $record = clone($oldrecord);
 
         if (isset($data->contextid) && $data->contextid != $oldrecord->contextid) {
-            // Cohort was moved to another context.
+            // Framework was moved to another context.
             $context = \context::instance_by_id($data->contextid);
             if (!($context instanceof \context_system) && !($context instanceof \context_coursecat)) {
-                throw new \coding_exception('program contextid must be a system or course category');
+                throw new \coding_exception('framework contextid must be a system or course category');
             }
             $record->contextid = $context->id;
         } else {
@@ -129,7 +147,7 @@ final class framework {
         if (property_exists($data, 'name')) {
             $record->name = trim($data->name ?? '');
             if ($record->name === '') {
-                throw new \invalid_parameter_exception('framework name cannot be empty');
+                throw new invalid_parameter_exception('framework name cannot be empty');
             }
         }
         if (property_exists($data, 'idnumber')) {
@@ -139,7 +157,7 @@ final class framework {
             } else {
                 $select = "id <> ? AND LOWER(idnumber) = LOWER(?)";
                 if ($DB->record_exists_select('tool_mutrain_framework', $select, [$record->id, $record->idnumber])) {
-                    throw new \invalid_parameter_exception('framework idnumber must be unique');
+                    throw new invalid_parameter_exception('framework idnumber must be unique');
                 }
             }
         }
@@ -161,24 +179,38 @@ final class framework {
             $record->description = (string)$data->description;
             $record->descriptionformat = $data->descriptionformat ?? $record->descriptionformat;
         }
-        if (property_exists($data, 'restrictedcompletion')) {
-            $record->restrictedcompletion = (int)$data->restrictedcompletion;
-            if ($record->restrictedcompletion !== 0 && $record->restrictedcompletion !== 1) {
-                throw new \invalid_parameter_exception('framework restrictedcompletion must be 1 or 0');
-            }
-        }
         if (property_exists($data, 'publicaccess')) {
             $record->publicaccess = (int)$data->publicaccess;
             if ($record->publicaccess !== 0 && $record->publicaccess !== 1) {
-                throw new \invalid_parameter_exception('framework public must be 1 or 0');
+                throw new invalid_parameter_exception('framework public must be 1 or 0');
             }
         }
-        if (property_exists($data, 'requiredtraining')) {
-            $record->requiredtraining = (int)$data->requiredtraining;
-            if ($record->requiredtraining <= 0) {
-                throw new \invalid_parameter_exception('framework requiredtraining must be positive integer');
+        if (property_exists($data, 'requiredcredits')) {
+            $data->requiredcredits = str_replace(',', '.', $data->requiredcredits);
+            if (!is_numeric($data->requiredcredits) || $data->requiredcredits <= 0) {
+                throw new invalid_parameter_exception('framework requiredcredits must be positive number');
+            }
+            $record->requiredcredits = format_float($data->requiredcredits, 2, false);
+        }
+
+        if (property_exists($data, 'restrictafter')) {
+            $record->restrictafter = $data->restrictafter;
+            if ($record->restrictafter <= 0) {
+                $record->restrictafter = null;
             }
         }
+
+        if ($context instanceof \context_system) {
+            $record->restrictcontext = 0;
+        } else {
+            if (property_exists($data, 'restrictcontext')) {
+                $record->restrictcontext = (int)($data->restrictcontext ?? 0);
+                if ($record->restrictcontext !== 0 && $record->restrictcontext !== 1) {
+                    throw new invalid_parameter_exception('framework restrictcontext must be 1 or 0');
+                }
+            }
+        }
+
         // Do not change archived flag here!
         if (isset($data->archived) && $data->archived != $oldrecord->archived) {
             debugging('Use framework::archive() and framework::restore() to change archived flag', DEBUG_DEVELOPER);
@@ -191,7 +223,9 @@ final class framework {
 
         $trans->allow_commit();
 
-        // NOTE: programs will be updated later via cron.
+        util::fix_active_flag();
+
+        self::sync_credits(null, $framework->id);
 
         return $framework;
     }
@@ -218,6 +252,8 @@ final class framework {
 
         $trans->allow_commit();
 
+        self::sync_credits(null, $framework->id);
+
         return $framework;
     }
 
@@ -242,6 +278,8 @@ final class framework {
         $framework = $DB->get_record('tool_mutrain_framework', ['id' => $framework->id], '*', MUST_EXIST);
 
         $trans->allow_commit();
+
+        self::sync_credits(null, $framework->id);
 
         return $framework;
     }
@@ -282,7 +320,7 @@ final class framework {
         $framework = $DB->get_record('tool_mutrain_framework', ['id' => $frameworkid], '*', MUST_EXIST);
         $allfields = self::get_all_training_fields();
         if (!isset($allfields[$fieldid])) {
-            throw new \invalid_parameter_exception('Invalid field: ' . $fieldid);
+            throw new invalid_parameter_exception('Invalid field: ' . $fieldid);
         }
 
         $record = $DB->get_record('tool_mutrain_field', ['frameworkid' => $framework->id, 'fieldid' => $fieldid]);
@@ -295,7 +333,11 @@ final class framework {
             'fieldid' => $fieldid,
         ];
         $record->id = $DB->insert_record('tool_mutrain_field', $record);
-        return $DB->get_record('tool_mutrain_field', ['id' => $record->id], '*', MUST_EXIST);
+        $record = $DB->get_record('tool_mutrain_field', ['id' => $record->id], '*', MUST_EXIST);
+
+        self::sync_credits(null, $framework->id);
+
+        return $record;
     }
 
     /**
@@ -311,6 +353,8 @@ final class framework {
             'tool_mutrain_field',
             ['frameworkid' => $frameworkid, 'fieldid' => $fieldid]
         );
+
+        self::sync_credits(null, $frameworkid);
     }
 
     /**
@@ -357,10 +401,15 @@ final class framework {
 
         $trans = $DB->start_delegated_transaction();
 
+        $DB->delete_records('tool_mutrain_credit', ['frameworkid' => $record->id]);
         $DB->delete_records('tool_mutrain_field', ['frameworkid' => $record->id]);
         $DB->delete_records('tool_mutrain_framework', ['id' => $record->id]);
 
         $trans->allow_commit();
+
+        self::sync_credits(null, $frameworkid);
+
+        util::fix_active_flag();
     }
 
     /**
@@ -385,5 +434,274 @@ final class framework {
     public static function is_area_compatible(string $component, string $area): bool {
         $classname = area\base::get_area_class($component, $area);
         return ($classname !== null);
+    }
+
+    /**
+     * Update values in tool_mutrain_credit table.
+     *
+     * @param int|null $userid
+     * @param int|null $frameworkid
+     * @param \progress_trace|null $trace
+     * @return void
+     */
+    public static function sync_credits(?int $userid, ?int $frameworkid, ?\progress_trace $trace = null): void {
+        global $DB;
+
+        if (!$DB->record_exists('customfield_field', ['type' => 'mutrain'])) {
+            // No need to do any other processing, there cannot be any completions.
+            $DB->delete_records('tool_mutrain_credit', []);
+            return;
+        }
+
+        if ($trace) {
+            $trace->output(self::class . '::sync_credits');
+        }
+
+        // Add missing rows.
+        $sql = new sql(
+            "INSERT INTO {tool_mutrain_credit} (frameworkid, userid)
+
+             SELECT tfr.id, ctc.userid
+               FROM {tool_mutrain_completion} ctc
+               JOIN {user} u ON u.id = ctc.userid AND u.deleted = 0
+               JOIN {customfield_field} cf ON cf.id = ctc.fieldid
+               JOIN {customfield_data} cd ON cd.fieldid = cf.id AND cd.instanceid = ctc.instanceid AND cd.decvalue IS NOT NULL
+               JOIN {tool_mutrain_field} tf ON tf.fieldid = cf.id
+               JOIN {tool_mutrain_framework} tfr ON tfr.id = tf.frameworkid AND tfr.archived = 0
+          LEFT JOIN {tool_mulib_context_map} cm ON cm.contextid = ctc.contextid AND cm.relatedcontextid = tfr.contextid
+          LEFT JOIN {tool_mutrain_credit} cmr ON cmr.frameworkid = tfr.id AND cmr.userid = ctc.userid
+              WHERE cmr.id IS NULL
+                    AND (tfr.restrictafter IS NULL OR ctc.timecompleted >= tfr.restrictafter)
+                    AND (tfr.restrictcontext = 0 OR cm.id IS NOT NULL)
+                    /* userwhere */ /* frameworkwhere */
+           GROUP BY tfr.id, ctc.userid"
+        );
+        if ($userid) {
+            $sql = $sql->replace_comment(
+                'userwhere',
+                "AND ctc.userid = :userid",
+                ['userid' => $userid]
+            );
+        }
+        if ($frameworkid) {
+            $sql = $sql->replace_comment(
+                'frameworkwhere',
+                "AND tfr.id = :frameworkid",
+                ['frameworkid' => $frameworkid]
+            );
+        }
+        $DB->execute($sql->sql, $sql->params);
+
+        // Set credits to NULL if there are no completions.
+        $sql = new sql("
+            UPDATE {tool_mutrain_credit}
+               SET credits = null
+             WHERE credits IS NOT NULL
+                   /* userwhere */ /* frameworkwhere */
+                   AND NOT EXISTS (
+
+                          SELECT 'x'
+                            FROM {tool_mutrain_completion} ctc
+                            JOIN {user} u ON u.id = ctc.userid AND u.deleted = 0
+                            JOIN {customfield_field} cf ON cf.id = ctc.fieldid
+                            JOIN {customfield_data} cd ON cd.fieldid = cf.id AND cd.instanceid = ctc.instanceid AND cd.decvalue IS NOT NULL
+                            JOIN {tool_mutrain_field} tf ON tf.fieldid = cf.id
+                            JOIN {tool_mutrain_framework} tfr ON tfr.id = tf.frameworkid AND tfr.archived = 0
+                       LEFT JOIN {tool_mulib_context_map} cm ON cm.contextid = ctc.contextid AND cm.relatedcontextid = tfr.contextid
+                           WHERE (tfr.restrictafter IS NULL OR ctc.timecompleted >= tfr.restrictafter)
+                                 AND (tfr.restrictcontext = 0 OR cm.id IS NOT NULL)
+                                 AND tfr.id = {tool_mutrain_credit}.frameworkid AND ctc.userid = {tool_mutrain_credit}.userid
+
+                  )");
+        if ($userid) {
+            $sql = $sql->replace_comment(
+                'userwhere',
+                "AND userid = :userid",
+                ['userid' => $userid]
+            );
+        }
+        if ($frameworkid) {
+            $sql = $sql->replace_comment(
+                'frameworkwhere',
+                "AND frameworkid = :frameworkid",
+                ['frameworkid' => $frameworkid]
+            );
+        }
+        $DB->execute($sql->sql, $sql->params);
+
+        // Update tool_mutrain_credit records.
+        $subsql = new sql("
+            SELECT tfr.id AS frameworkid, ctc.userid, SUM(cd.decvalue) AS newcredits
+              FROM {tool_mutrain_completion} ctc
+              JOIN {user} u ON u.id = ctc.userid AND u.deleted = 0
+              JOIN {customfield_field} cf ON cf.id = ctc.fieldid
+              JOIN {customfield_data} cd ON cd.fieldid = cf.id AND cd.instanceid = ctc.instanceid AND cd.decvalue IS NOT NULL
+              JOIN {tool_mutrain_field} tf ON tf.fieldid = cf.id
+              JOIN {tool_mutrain_framework} tfr ON tfr.id = tf.frameworkid AND tfr.archived = 0
+         LEFT JOIN {tool_mulib_context_map} cm ON cm.contextid = ctc.contextid AND cm.relatedcontextid = tfr.contextid
+             WHERE (tfr.restrictafter IS NULL OR ctc.timecompleted >= tfr.restrictafter)
+                   AND (tfr.restrictcontext = 0 OR cm.id IS NOT NULL)
+                   /* userwhere1 */ /* frameworkwhere1 */
+          GROUP BY tfr.id, ctc.userid");
+
+        if ($DB->get_dbfamily() === 'mysql') {
+            $sql = new sql(/** @lang=MySQL */"
+                UPDATE {tool_mutrain_credit} AS mcr, (/* subsql */) AS xc
+                   SET mcr.credits = xc.newcredits
+                WHERE xc.frameworkid = mcr.frameworkid AND xc.userid = mcr.userid
+                      AND (mcr.credits IS NULL OR mcr.credits <> xc.newcredits)
+                      /* userwhere2 */ /* frameworkwhere2 */");
+            if ($userid) {
+                $sql = $sql->replace_comment(
+                    'userwhere2',
+                    "AND mcr.userid = :userid",
+                    ['userid' => $userid]
+                );
+            }
+            if ($frameworkid) {
+                $sql = $sql->replace_comment(
+                    'frameworkwhere2',
+                    "AND mcr.frameworkid = :frameworkid",
+                    ['frameworkid' => $frameworkid]
+                );
+            }
+        } else {
+            $sql = new sql(/** @lang=PostgreSQL */"
+                UPDATE {tool_mutrain_credit}
+                   SET credits = xc.newcredits
+                  FROM (/* subsql */) xc
+                WHERE xc.frameworkid = {tool_mutrain_credit}.frameworkid AND xc.userid = {tool_mutrain_credit}.userid
+                      AND ({tool_mutrain_credit}.credits IS NULL OR {tool_mutrain_credit}.credits <> xc.newcredits)
+                      /* userwhere2 */ /* frameworkwhere2 */");
+            if ($userid) {
+                $sql = $sql->replace_comment(
+                    'userwhere2',
+                    "AND {tool_mutrain_credit}.userid = :userid",
+                    ['userid' => $userid]
+                );
+            }
+            if ($frameworkid) {
+                $sql = $sql->replace_comment(
+                    'frameworkwhere2',
+                    "AND {tool_mutrain_credit}.frameworkid = :frameworkid",
+                    ['frameworkid' => $frameworkid]
+                );
+            }
+        }
+        $sql = $sql->replace_comment('subsql', $subsql);
+        if ($userid) {
+            $sql = $sql->replace_comment(
+                'userwhere1',
+                "AND ctc.userid = :userid",
+                ['userid' => $userid]
+            );
+        }
+        if ($frameworkid) {
+            $sql = $sql->replace_comment(
+                'frameworkwhere1',
+                "AND tfr.id = :frameworkid",
+                ['frameworkid' => $frameworkid]
+            );
+        }
+        $DB->execute($sql->sql, $sql->params);
+
+        // Trigger unreached events.
+        $sql = new sql("
+            SELECT mcr.*
+              FROM {tool_mutrain_credit} mcr
+              JOIN {tool_mutrain_framework} tfr ON tfr.id = mcr.frameworkid
+             WHERE (mcr.credits IS NULL OR mcr.credits < tfr.requiredcredits) AND timereached IS NOT NULL
+                   /* userwhere */ /* frameworkwhere */
+          ORDER BY frameworkid, userid");
+        if ($userid) {
+            $sql = $sql->replace_comment(
+                'userwhere',
+                "AND mcr.userid = :userid",
+                ['userid' => $userid]
+            );
+        }
+        if ($frameworkid) {
+            $sql = $sql->replace_comment(
+                'frameworkwhere',
+                "AND mcr.frameworkid = :frameworkid",
+                ['frameworkid' => $frameworkid]
+            );
+        }
+        $rs = $DB->get_recordset_sql($sql->sql, $sql->params);
+        $framework = null;
+        foreach ($rs as $credit) {
+            if (!$framework || $framework->id != $credit->frameworkid) {
+                $framework = $DB->get_record('tool_mutrain_framework', ['id' => $credit->frameworkid]);
+                if (!$framework) {
+                    continue;
+                }
+            }
+            $DB->set_field('tool_mutrain_credit', 'timereached', null, ['id' => $credit->id]);
+            if ($framework->archived) {
+                continue;
+            }
+            \tool_mutrain\event\required_credits_unreached::create_from_credit($credit, $framework)->trigger();
+        }
+        $rs->close();
+
+        // Delete entries with NULL credits.
+        $sql = new sql("
+            DELETE
+              FROM {tool_mutrain_credit}
+             WHERE credits IS NULL
+                   /* userwhere */ /* frameworkwhere */");
+        if ($userid) {
+            $sql = $sql->replace_comment(
+                'userwhere',
+                "AND userid = :userid",
+                ['userid' => $userid]
+            );
+        }
+        if ($frameworkid) {
+            $sql = $sql->replace_comment(
+                'frameworkwhere',
+                "AND frameworkid = :frameworkid",
+                ['frameworkid' => $frameworkid]
+            );
+        }
+        $DB->execute($sql->sql, $sql->params);
+
+        // Trigger reached events.
+        $sql = new sql("
+            SELECT mcr.*
+              FROM {tool_mutrain_credit} mcr
+              JOIN {tool_mutrain_framework} tfr ON tfr.id = mcr.frameworkid
+             WHERE mcr.credits >= tfr.requiredcredits AND mcr.timereached IS NULL
+                   AND tfr.archived = 0
+                   /* userwhere */ /* frameworkwhere */
+          ORDER BY mcr.frameworkid, mcr.userid");
+        if ($userid) {
+            $sql = $sql->replace_comment(
+                'userwhere',
+                "AND mcr.userid = :userid",
+                ['userid' => $userid]
+            );
+        }
+        if ($frameworkid) {
+            $sql = $sql->replace_comment(
+                'frameworkwhere',
+                "AND mcr.frameworkid = :frameworkid",
+                ['frameworkid' => $frameworkid]
+            );
+        }
+        $rs = $DB->get_recordset_sql($sql->sql, $sql->params);
+        $framework = null;
+        foreach ($rs as $credit) {
+            if (!$framework || $framework->id != $credit->frameworkid) {
+                $framework = $DB->get_record('tool_mutrain_framework', ['id' => $credit->frameworkid]);
+                if (!$framework) {
+                    continue;
+                }
+            }
+            $credit->timereached = (string)time();
+            $DB->set_field('tool_mutrain_credit', 'timereached', $credit->timereached, ['id' => $credit->id]);
+            \tool_mutrain\event\required_credits_reached::create_from_credit($credit, $framework)->trigger();
+        }
+        $rs->close();
     }
 }

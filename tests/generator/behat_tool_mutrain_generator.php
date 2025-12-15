@@ -36,8 +36,23 @@ class behat_tool_mutrain_generator extends behat_generator_base {
             'frameworks' => [
                 'singular' => 'framework',
                 'datagenerator' => 'framework',
-                'required' => [],
+                'required' => ['name'],
             ],
         ];
+    }
+
+    /**
+     * Pre-process framework, populate contextid property.
+     *
+     * @param array $framework
+     * @return array
+     */
+    protected function preprocess_framework(array $framework): array {
+        if (!empty($framework['contextlevel'])) {
+            $framework['contextid'] = $this->get_context($framework['contextlevel'], $framework['reference'])->id;
+            unset($framework['contextlevel'], $framework['reference']);
+        }
+
+        return $framework;
     }
 }

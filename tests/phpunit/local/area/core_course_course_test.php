@@ -68,13 +68,13 @@ final class core_course_course_test extends \advanced_testcase {
             ['component' => 'core_course', 'area' => 'course']
         );
         $field1 = $this->getDataGenerator()->create_custom_field(
-            ['categoryid' => $fielcategory->get('id'), 'type' => 'mutrain', 'shortname' => 'field1']
+            ['categoryid' => $fielcategory->get('id'), 'type' => 'mutrain', 'shortname' => 'field1', 'name' => 'F1']
         );
         $field2 = $this->getDataGenerator()->create_custom_field(
-            ['categoryid' => $fielcategory->get('id'), 'type' => 'mutrain', 'shortname' => 'field2']
+            ['categoryid' => $fielcategory->get('id'), 'type' => 'mutrain', 'shortname' => 'field2', 'name' => 'F2']
         );
         $field3 = $this->getDataGenerator()->create_custom_field(
-            ['categoryid' => $fielcategory->get('id'), 'type' => 'text', 'shortname' => 'field3']
+            ['categoryid' => $fielcategory->get('id'), 'type' => 'text', 'shortname' => 'field3', 'name' => 'F3']
         );
 
         $course1 = $this->getDataGenerator()->create_course(['customfield_field1' => 10, 'customfield_field2' => 1, 'enablecompletion' => 1]);
@@ -180,13 +180,13 @@ final class core_course_course_test extends \advanced_testcase {
             ['component' => 'core_course', 'area' => 'course']
         );
         $field1 = $this->getDataGenerator()->create_custom_field(
-            ['categoryid' => $fielcategory->get('id'), 'type' => 'mutrain', 'shortname' => 'field1']
+            ['categoryid' => $fielcategory->get('id'), 'type' => 'mutrain', 'shortname' => 'field1', 'name' => 'F1']
         );
         $field2 = $this->getDataGenerator()->create_custom_field(
-            ['categoryid' => $fielcategory->get('id'), 'type' => 'mutrain', 'shortname' => 'field2']
+            ['categoryid' => $fielcategory->get('id'), 'type' => 'mutrain', 'shortname' => 'field2', 'name' => 'F2']
         );
         $field3 = $this->getDataGenerator()->create_custom_field(
-            ['categoryid' => $fielcategory->get('id'), 'type' => 'text', 'shortname' => 'field3']
+            ['categoryid' => $fielcategory->get('id'), 'type' => 'text', 'shortname' => 'field3', 'name' => 'F3']
         );
 
         $course1 = $this->getDataGenerator()->create_course(['customfield_field1' => 10, 'customfield_field2' => 1, 'enablecompletion' => 1]);
@@ -254,13 +254,13 @@ final class core_course_course_test extends \advanced_testcase {
             ['component' => 'core_course', 'area' => 'course']
         );
         $field1 = $this->getDataGenerator()->create_custom_field(
-            ['categoryid' => $fielcategory->get('id'), 'type' => 'mutrain', 'shortname' => 'field1']
+            ['categoryid' => $fielcategory->get('id'), 'type' => 'mutrain', 'shortname' => 'field1', 'name' => 'F1']
         );
         $field2 = $this->getDataGenerator()->create_custom_field(
-            ['categoryid' => $fielcategory->get('id'), 'type' => 'mutrain', 'shortname' => 'field2']
+            ['categoryid' => $fielcategory->get('id'), 'type' => 'mutrain', 'shortname' => 'field2', 'name' => 'F2']
         );
         $field3 = $this->getDataGenerator()->create_custom_field(
-            ['categoryid' => $fielcategory->get('id'), 'type' => 'text', 'shortname' => 'field3']
+            ['categoryid' => $fielcategory->get('id'), 'type' => 'text', 'shortname' => 'field3', 'name' => 'F3']
         );
 
         $course1 = $this->getDataGenerator()->create_course(['customfield_field1' => 10, 'customfield_field2' => 1, 'enablecompletion' => 1]);
@@ -305,7 +305,7 @@ final class core_course_course_test extends \advanced_testcase {
     public function test_program_course_completions_purged(): void {
         global $DB;
 
-        if (!\get_config('tool_muprog', 'version')) {
+        if (!\tool_mulib\local\mulib::is_muprog_available()) {
             $this->markTestSkipped('tool_muprog not installed');
         }
 
@@ -316,13 +316,13 @@ final class core_course_course_test extends \advanced_testcase {
             ['component' => 'core_course', 'area' => 'course']
         );
         $field1 = $this->getDataGenerator()->create_custom_field(
-            ['categoryid' => $fielcategory->get('id'), 'type' => 'mutrain', 'shortname' => 'field1']
+            ['categoryid' => $fielcategory->get('id'), 'type' => 'mutrain', 'shortname' => 'field1', 'name' => 'F1']
         );
         $field2 = $this->getDataGenerator()->create_custom_field(
-            ['categoryid' => $fielcategory->get('id'), 'type' => 'mutrain', 'shortname' => 'field2']
+            ['categoryid' => $fielcategory->get('id'), 'type' => 'mutrain', 'shortname' => 'field2', 'name' => 'F2']
         );
         $field3 = $this->getDataGenerator()->create_custom_field(
-            ['categoryid' => $fielcategory->get('id'), 'type' => 'text', 'shortname' => 'field3']
+            ['categoryid' => $fielcategory->get('id'), 'type' => 'text', 'shortname' => 'field3', 'name' => 'F3']
         );
 
         $course1 = $this->getDataGenerator()->create_course(['customfield_field1' => 10, 'customfield_field2' => 1, 'enablecompletion' => 1]);

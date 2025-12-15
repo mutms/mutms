@@ -53,9 +53,11 @@ final class generator_test extends \advanced_testcase {
         $this->assertSame(null, $framework->idnumber);
         $this->assertSame('', $framework->description);
         $this->assertSame('1', $framework->descriptionformat);
-        $this->assertSame('0', $framework->publicaccess);
-        $this->assertSame('100', $framework->requiredtraining);
-        $this->assertSame('0', $framework->restrictedcompletion);
+        $this->assertSame('1', $framework->publicaccess);
+        $this->assertSame('100.00000', $framework->requiredcredits);
+        $this->assertSame(null, $framework->restrictafter);
+        $this->assertSame('0', $framework->restrictcontext);
+        $this->assertSame('0', $framework->restrictcontext);
         $this->assertSame('0', $framework->archived);
         $this->assertTimeCurrent($framework->timecreated);
 
@@ -66,16 +68,16 @@ final class generator_test extends \advanced_testcase {
             ['component' => 'core_course', 'area' => 'course']
         );
         $field1 = $this->getDataGenerator()->create_custom_field(
-            ['categoryid' => $fielcategory->get('id'), 'type' => 'mutrain', 'shortname' => 'field1']
+            ['categoryid' => $fielcategory->get('id'), 'type' => 'mutrain', 'shortname' => 'field1', 'name' => 'F1']
         );
         $field2 = $this->getDataGenerator()->create_custom_field(
-            ['categoryid' => $fielcategory->get('id'), 'type' => 'mutrain', 'shortname' => 'field2']
+            ['categoryid' => $fielcategory->get('id'), 'type' => 'mutrain', 'shortname' => 'field2', 'name' => 'F2']
         );
         $field3 = $this->getDataGenerator()->create_custom_field(
-            ['categoryid' => $fielcategory->get('id'), 'type' => 'mutrain', 'shortname' => 'field3']
+            ['categoryid' => $fielcategory->get('id'), 'type' => 'mutrain', 'shortname' => 'field3', 'name' => 'F3']
         );
         $field4 = $this->getDataGenerator()->create_custom_field(
-            ['categoryid' => $fielcategory->get('id'), 'type' => 'text', 'shortname' => 'field4']
+            ['categoryid' => $fielcategory->get('id'), 'type' => 'text', 'shortname' => 'field4', 'name' => 'F4']
         );
 
         $category = $this->getDataGenerator()->create_category([]);
@@ -87,8 +89,9 @@ final class generator_test extends \advanced_testcase {
             'description' => 'Some desc',
             'descriptionformat' => '2',
             'publicaccess' => '1',
-            'requiredtraining' => '50',
-            'restrictedcompletion' => '1',
+            'requiredcredits' => '50.3',
+            'restrictafter' => (string)(time() - DAYSECS),
+            'restrictcontext' => 1,
             'archived' => '1',
             'fields' => [$field1->get('id')],
         ];
@@ -102,8 +105,9 @@ final class generator_test extends \advanced_testcase {
         $this->assertSame($data->description, $framework->description);
         $this->assertSame($data->descriptionformat, $framework->descriptionformat);
         $this->assertSame($data->publicaccess, $framework->publicaccess);
-        $this->assertSame($data->requiredtraining, $framework->requiredtraining);
-        $this->assertSame($data->restrictedcompletion, $framework->restrictedcompletion);
+        $this->assertSame((float)$data->requiredcredits, (float)$framework->requiredcredits);
+        $this->assertSame($data->restrictafter, $framework->restrictafter);
+        $this->assertSame('1', $framework->restrictcontext);
         $this->assertSame($data->archived, $framework->archived);
         $this->assertTimeCurrent($framework->timecreated);
 
@@ -116,7 +120,7 @@ final class generator_test extends \advanced_testcase {
         $catcontext2 = \context_coursecat::instance($category2->id);
         $framework = $generator->create_framework([
             'category' => $category2->name,
-            'requiredtraining' => 100,
+            'requiredcredits' => 100,
             'fields' => $field1->get('shortname') . ',' . $field2->get('shortname'),
         ]);
         $this->assertSame((string)$catcontext2->id, $framework->contextid);

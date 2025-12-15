@@ -229,13 +229,13 @@ final class tool_muprog_program_test extends \advanced_testcase {
             ['component' => 'tool_muprog', 'area' => 'program']
         );
         $field1 = $this->getDataGenerator()->create_custom_field(
-            ['categoryid' => $fielcategory->get('id'), 'type' => 'mutrain', 'shortname' => 'field1']
+            ['categoryid' => $fielcategory->get('id'), 'type' => 'mutrain', 'shortname' => 'field1', 'name' => 'F1']
         );
         $field2 = $this->getDataGenerator()->create_custom_field(
-            ['categoryid' => $fielcategory->get('id'), 'type' => 'mutrain', 'shortname' => 'field2']
+            ['categoryid' => $fielcategory->get('id'), 'type' => 'mutrain', 'shortname' => 'field2', 'name' => 'F2']
         );
         $field3 = $this->getDataGenerator()->create_custom_field(
-            ['categoryid' => $fielcategory->get('id'), 'type' => 'text', 'shortname' => 'field3']
+            ['categoryid' => $fielcategory->get('id'), 'type' => 'text', 'shortname' => 'field3', 'name' => 'F3']
         );
 
         $program1 = $programgenerator->create_program(['customfield_field1' => 10, 'customfield_field2' => 1]);
@@ -283,13 +283,13 @@ final class tool_muprog_program_test extends \advanced_testcase {
             ['component' => 'tool_muprog', 'area' => 'program']
         );
         $field1 = $this->getDataGenerator()->create_custom_field(
-            ['categoryid' => $fielcategory->get('id'), 'type' => 'mutrain', 'shortname' => 'field1']
+            ['categoryid' => $fielcategory->get('id'), 'type' => 'mutrain', 'shortname' => 'field1', 'name' => 'F1']
         );
         $field2 = $this->getDataGenerator()->create_custom_field(
-            ['categoryid' => $fielcategory->get('id'), 'type' => 'mutrain', 'shortname' => 'field2']
+            ['categoryid' => $fielcategory->get('id'), 'type' => 'mutrain', 'shortname' => 'field2', 'name' => 'F2']
         );
         $field3 = $this->getDataGenerator()->create_custom_field(
-            ['categoryid' => $fielcategory->get('id'), 'type' => 'text', 'shortname' => 'field3']
+            ['categoryid' => $fielcategory->get('id'), 'type' => 'text', 'shortname' => 'field3', 'name' => 'F3']
         );
 
         $program1 = $programgenerator->create_program(['customfield_field1' => 10, 'customfield_field2' => 1]);
@@ -335,13 +335,13 @@ final class tool_muprog_program_test extends \advanced_testcase {
             ['component' => 'tool_muprog', 'area' => 'program']
         );
         $field1 = $this->getDataGenerator()->create_custom_field(
-            ['categoryid' => $fielcategory->get('id'), 'type' => 'mutrain', 'shortname' => 'field1']
+            ['categoryid' => $fielcategory->get('id'), 'type' => 'mutrain', 'shortname' => 'field1', 'name' => 'F1']
         );
         $field2 = $this->getDataGenerator()->create_custom_field(
-            ['categoryid' => $fielcategory->get('id'), 'type' => 'mutrain', 'shortname' => 'field2']
+            ['categoryid' => $fielcategory->get('id'), 'type' => 'mutrain', 'shortname' => 'field2', 'name' => 'F2']
         );
         $field3 = $this->getDataGenerator()->create_custom_field(
-            ['categoryid' => $fielcategory->get('id'), 'type' => 'text', 'shortname' => 'field3']
+            ['categoryid' => $fielcategory->get('id'), 'type' => 'text', 'shortname' => 'field3', 'name' => 'F3']
         );
 
         $program1 = $programgenerator->create_program(['customfield_field1' => 10, 'customfield_field2' => 1]);
