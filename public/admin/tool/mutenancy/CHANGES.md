@@ -1,8 +1,14 @@
 # Changelog
 
-## mu-5.1.0-03
+## mu-5.1.1-02
 
-Release date: xx/11/2025
+Release date: 16/11/2025
+
+* No changes.
+
+## mu-5.1.1-01
+
+Release date: 08/11/2025
 
 * Added new setting to allow guest access to tenants.
 * Added tenant restriction to get_with_capability_sql().
