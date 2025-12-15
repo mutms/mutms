@@ -21,6 +21,7 @@ namespace block_muprog_my\phpunit;
 /**
  * My programs overview block tests.
  *
+ * @group       MuTMS
  * @package     block_muprog_my
  * @copyright   2025 Petr Skoda
  * @license     https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
