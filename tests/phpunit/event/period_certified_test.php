@@ -81,12 +81,12 @@ final class period_certified_test extends \advanced_testcase {
         ]);
         $events = $sink->get_events();
         $sink->close();
-        $this->assertCount(3, $events); // The other 2 are calendar event deletions.
-        $event = reset($events);
-        $this->assertInstanceOf(\tool_muprog\event\allocation_completed::class, $event);
+        $this->assertInstanceOf(\tool_muprog\event\allocation_completed::class, $events[0]);
+        $this->assertInstanceOf(\core\event\calendar_event_deleted::class, $events[1]);
+        $this->assertCount(2, $events);
 
         $sink = $this->redirectEvents();
-        \tool_mucertify\local\event_observer::allocation_completed($event);
+        \tool_mucertify\local\event_observer::allocation_completed($events[0]);
         $events = $sink->get_events();
         $sink->close();
         $this->assertCount(1, $events);
