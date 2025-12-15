@@ -21,55 +21,75 @@ namespace tool_mutrain\reportbuilder\local\systemreports;
 
 use tool_mutrain\reportbuilder\local\entities\framework;
 use core_reportbuilder\system_report;
-use core_reportbuilder\local\helpers\database;
-use core_reportbuilder\local\report\filter;
-use core_reportbuilder\local\filters\boolean_select;
+use core_reportbuilder\local\report\column;
 use lang_string;
 
 /**
- * Embedded credit frameworks report.
+ * Embedded user credits report.
  *
  * @package     tool_mutrain
  * @copyright   2025 Petr Skoda
  * @license     https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-final class frameworks extends system_report {
+final class frameworks_user extends system_report {
     /** @var framework */
     protected $frameworkentity;
     /** @var string */
     protected $frameworkalias;
+    /** @var string */
+    protected $creditalias;
 
     #[\Override]
     protected function initialise(): void {
         $this->frameworkentity = new framework();
         $this->frameworkalias = $this->frameworkentity->get_table_alias('tool_mutrain_framework');
+        $this->creditalias = $this->frameworkentity->get_table_alias('tool_mutrain_credit');
 
         $this->set_main_table('tool_mutrain_framework', $this->frameworkalias);
         $this->add_entity($this->frameworkentity);
 
-        $this->add_base_fields("{$this->frameworkalias}.id, {$this->frameworkalias}.archived");
+        $this->add_base_fields("{$this->frameworkalias}.id");
 
         $contextalias = $this->frameworkentity->get_table_alias('context');
         $this->add_join($this->frameworkentity->get_context_join());
 
-        // Make sure only frameworks from context and its subcontexts are shown.
-        $context = $this->get_context();
-        $paramlike = database::generate_param_name();
-        $this->add_base_condition_sql("({$contextalias}.id = {$context->id} OR {$contextalias}.path LIKE :$paramlike)", [$paramlike => $context->path . '/%']);
+        $this->add_join("JOIN {tool_mutrain_credit} {$this->creditalias} ON {$this->creditalias}.frameworkid = {$this->frameworkalias}.id");
+
+        $usercontext = $this->get_context();
+        $userid = $usercontext->instanceid;
+
+        $basewhere = "{$this->creditalias}.userid = $userid AND {$this->frameworkalias}.publicaccess = 1 AND {$this->frameworkalias}.archived = 0";
+
+        if (\tool_mulib\local\mulib::is_mutenancy_active()) {
+            if ($usercontext->tenantid) {
+                $basewhere .= "AND ({$contextalias}.tenantid IS NULL OR {$contextalias}.tenantid = $usercontext->tenantid)";
+            }
+        }
+
+        $this->add_base_condition_sql($basewhere);
 
         $this->add_columns();
         $this->add_filters();
 
         $this->set_downloadable(true);
-        $this->set_default_no_results_notice(new lang_string('error_noframeworks', 'tool_mutrain'));
+        $this->set_default_no_results_notice(new lang_string('error_nocredits', 'tool_mutrain'));
     }
 
     #[\Override]
     protected function can_view(): bool {
+        global $USER;
         if (isguestuser() || !isloggedin()) {
             return false;
         }
-        return has_capability('tool/mutrain:viewframeworks', $this->get_context());
+        $usercontext = $this->get_context();
+        if (!$usercontext instanceof \context_user) {
+            return false;
+        }
+        if ($usercontext->instanceid === $USER->id) {
+            return true;
+        }
+
+        return has_capability('tool/mutrain:viewusercredits', $usercontext);
     }
 
     /**
@@ -78,16 +98,23 @@ final class frameworks extends system_report {
     public function add_columns(): void {
         $columns = [
             'framework:name',
-            'framework:idnumber',
-            'framework:context',
-            'framework:publicaccess',
-            'framework:fieldcount',
-            'framework:requiredcredits',
             'framework:restrictcontext',
             'framework:restrictafter',
-            'framework:archived',
         ];
         $this->add_columns_from_entities($columns);
+
+        $column = (new column(
+            'credits',
+            new lang_string('credits_current', 'tool_mutrain'),
+            $this->frameworkentity->get_entity_name()
+        ))
+            ->add_joins($this->get_joins())
+            ->set_type(column::TYPE_FLOAT)
+            ->add_field("{$this->creditalias}.credits")
+            ->set_is_sortable(true);
+        $this->add_column($column);
+
+        $this->add_column_from_entity('framework:requiredcredits');
 
         $this->set_initial_sort_column('framework:name', SORT_ASC);
     }
@@ -98,30 +125,7 @@ final class frameworks extends system_report {
     protected function add_filters(): void {
         $filters = [
             'framework:name',
-            'framework:idnumber',
-            'framework:publicaccess',
-            'framework:archived',
         ];
         $this->add_filters_from_entities($filters);
-        $context = $this->get_context();
-
-        $filter = new filter(
-            boolean_select::class,
-            'currentcontextonly',
-            new lang_string('currentcontextonly', 'tool_mutrain'),
-            $this->frameworkentity->get_entity_name(),
-            "CASE WHEN {$this->frameworkalias}.contextid = {$context->id} THEN 1 ELSE 0 END"
-        );
-        $this->add_filter($filter);
-    }
-
-    /**
-     * Row class.
-     *
-     * @param \stdClass $row
-     * @return string
-     */
-    public function get_row_class(\stdClass $row): string {
-        return $row->archived ? 'text-muted' : '';
     }
 }

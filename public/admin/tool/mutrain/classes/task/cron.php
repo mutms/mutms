@@ -19,7 +19,7 @@
 namespace tool_mutrain\task;
 
 /**
- * Training cron.
+ * Training credits cron.
  *
  * @package    tool_mutrain
  * @copyright  2024 Open LMS (https://www.openlms.net/)
@@ -38,13 +38,15 @@ class cron extends \core\task\scheduled_task {
     }
 
     /**
-     * Run task for all program cron stuff.
+     * Run training credits cron task.
      */
     public function execute() {
 
         $trace = new \text_progress_trace();
 
         \tool_mutrain\local\area\base::sync_all_completions($trace);
+
+        \tool_mutrain\local\framework::sync_credits(null, null, $trace);
 
         $trace->finished();
     }

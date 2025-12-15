@@ -46,3 +46,37 @@ function tool_mutrain_extend_navigation_category_settings($navigation, $courseca
     $settingsnode->set_force_into_more_menu(true);
     $navigation->add_node($settingsnode);
 }
+
+/**
+ * Add nodes to myprofile page.
+ *
+ * @param \core_user\output\myprofile\tree $tree Tree object
+ * @param stdClass $user user object
+ * @param bool $iscurrentuser
+ * @param stdClass $course Course object
+ */
+function tool_mutrain_myprofile_navigation(core_user\output\myprofile\tree $tree, $user, $iscurrentuser, $course) {
+    global $USER;
+
+    if (!\tool_mulib\local\mulib::is_mutrain_active()) {
+        return;
+    }
+
+    if ($USER->id == $user->id) {
+        $link = get_string('credits_my', 'tool_mutrain');
+        $url = new moodle_url('/admin/tool/mutrain/my/index.php');
+        $node = new core_user\output\myprofile\node('miscellaneous', 'mutrain_credits', $link, null, $url);
+        $tree->add_node($node);
+        return;
+    }
+
+    $usercontext = context_user::instance($user->id);
+    if (!has_capability('tool/mutrain:viewusercredits', $usercontext)) {
+        return;
+    }
+
+    $link = get_string('credits', 'tool_mutrain');
+    $url = new moodle_url('/admin/tool/mutrain/my/index.php', ['userid' => $user->id]);
+    $node = new core_user\output\myprofile\node('miscellaneous', 'mutrain_credits', $link, null, $url);
+    $tree->add_node($node);
+}

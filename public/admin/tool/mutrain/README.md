@@ -1,15 +1,15 @@
-# Training points plugin for Moodle™ LMS
+# Training credits plugin for Moodle™ LMS
 
 ![Moodle Plugin CI](https://github.com/mutms/moodle-tool_mutrain/actions/workflows/moodle-ci.yml/badge.svg)
 
-Training points plugin is designed to allow teachers to assign training values
-to courses and programs via Training value custom fields.
+Training credits plugin is designed to allow teachers to assign credits
+to courses and programs via Training credits custom fields.
 
-Programs completion may be set up to depend on training points users obtain
-by completing courses and other activities.
+Programs completion may be set up to depend on credits users obtain
+by completing courses and programs.
 
 To use this plugin you need to install [Programs plugin for Moodle™ LMS](https://github.com/mutms/moodle-tool_muprog) 
-and [Training value custom field for Moodle™ LMS](https://github.com/mutms/moodle-customfield_mutrain) plugins.
+and [Training credits custom field for Moodle™ LMS](https://github.com/mutms/moodle-customfield_mutrain) plugins.
 
 See [online documentation](https://github.com/mutms/moodle-tool_mutrain/wiki) for more information.
 

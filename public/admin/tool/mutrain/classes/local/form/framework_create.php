@@ -15,6 +15,7 @@
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 // phpcs:disable moodle.Files.BoilerplateComment.CommentEndedTooSoon
+// phpcs:disable moodle.Files.LineLength.TooLong
 
 namespace tool_mutrain\local\form;
 
@@ -33,6 +34,7 @@ final class framework_create extends \tool_mulib\local\ajax_form {
         $mform = $this->_form;
         $data = $this->_customdata['data'];
         $editoroptions = $this->_customdata['editoroptions'];
+        $syscontext = \context_system::instance();
 
         $mform->addElement('text', 'name', get_string('framework_name', 'tool_mutrain'), 'maxlength="254" size="50"');
         $mform->addRule('name', get_string('required'), 'required', null, 'client');
@@ -41,7 +43,7 @@ final class framework_create extends \tool_mulib\local\ajax_form {
         $mform->addElement('text', 'idnumber', get_string('framework_idnumber', 'tool_mutrain'), 'maxlength="100" size="50"');
         $mform->setType('idnumber', PARAM_RAW); // Idnumbers are plain text.
 
-        $mform->addElement('autocomplete', 'contextid', get_string('context', 'role'), $this->get_category_options());
+        $mform->addElement('autocomplete', 'contextid', get_string('category'), $this->get_category_options());
         $mform->addRule('contextid', get_string('required'), 'required', null, 'client');
 
         $mform->addElement('advcheckbox', 'publicaccess', get_string('publicaccess', 'tool_mutrain'), ' ');
@@ -49,11 +51,13 @@ final class framework_create extends \tool_mulib\local\ajax_form {
         $mform->addElement('editor', 'description_editor', get_string('description'), ['rows' => 3], $editoroptions);
         $mform->setType('description_editor', PARAM_RAW);
 
-        $mform->addElement('text', 'requiredtraining', get_string('requiredtraining', 'tool_mutrain'));
-        $mform->setType('requiredtraining', PARAM_INT);
-        $mform->addRule('requiredtraining', get_string('required'), 'required', null, 'client');
+        $mform->addElement('text', 'requiredcredits', get_string('requiredcredits', 'tool_mutrain'));
+        $mform->setType('requiredcredits', PARAM_RAW);
+        $mform->addRule('requiredcredits', get_string('required'), 'required', null, 'client');
 
-        $mform->addElement('advcheckbox', 'restrictedcompletion', get_string('restrictedcompletion', 'tool_mutrain'), ' ');
+        $mform->addElement('advcheckbox', 'restrictcontext', get_string('restrictcontext', 'tool_mutrain'), ' ');
+
+        $mform->addElement('date_time_selector', 'restrictafter', get_string('restrictafter', 'tool_mutrain'), ['optional' => true]);
 
         $this->add_action_buttons(true, get_string('framework_create', 'tool_mutrain'));
 
@@ -71,8 +75,9 @@ final class framework_create extends \tool_mulib\local\ajax_form {
             }
         }
 
-        if ($data['requiredtraining'] <= 0) {
-            $errors['requiredtraining'] = get_string('error');
+        $requiredcredits = str_replace(',', '.', $data['requiredcredits']);
+        if (!is_numeric($requiredcredits) || $requiredcredits <= 0) {
+            $errors['requiredcredits'] = get_string('error');
         }
 
         $context = \context::instance_by_id($data['contextid'], IGNORE_MISSING);

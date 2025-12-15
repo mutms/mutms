@@ -29,6 +29,14 @@
 defined('MOODLE_INTERNAL') || die();
 
 $capabilities = [
+    'tool/mutrain:viewusercredits' => [
+        'captype' => 'read',
+        'riskbitmask' => RISK_PERSONAL,
+        'contextlevel' => CONTEXT_USER,
+        'archetypes' => [
+            'manager' => CAP_ALLOW,
+        ],
+    ],
     'tool/mutrain:viewframeworks' => [
         'captype' => 'read',
         'contextlevel' => CONTEXT_COURSECAT,
