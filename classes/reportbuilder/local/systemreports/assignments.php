@@ -121,9 +121,9 @@ final class assignments extends system_report {
 
         $this->add_column_from_entity('assignment:timecertifiedfrom');
         $this->add_column_from_entity('assignment:timecertifieduntil');
-        $this->add_column_from_entity('assignment:status');
         $this->add_column_from_entity('source:type');
         $this->add_column_from_entity('assignment:archived');
+        $this->add_column_from_entity('assignment:status');
 
         $this->set_initial_sort_column('user:fullname', SORT_ASC);
     }
