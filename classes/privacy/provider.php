@@ -15,6 +15,7 @@
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 // phpcs:disable moodle.Files.BoilerplateComment.CommentEndedTooSoon
+// phpcs:disable Universal.OOStructures.AlphabeticExtendsImplements
 
 namespace tool_mutrain\privacy;
 
@@ -58,6 +59,17 @@ class provider implements
                 'timecompleted' => 'privacy:metadata:timecompleted',
             ],
             'privacy:metadata:tool_mutrain_completion:tableexplanation'
+        );
+
+        $collection->add_database_table(
+            'tool_mutrain_credit',
+            [
+                'frameworkid' => 'privacy:metadata:frameworkid',
+                'userid' => 'privacy:metadata:userid',
+                'credits' => 'privacy:metadata:credits',
+                'timereached' => 'privacy:metadata:timereached',
+            ],
+            'privacy:metadata:tool_mutrain_credit:tableexplanation'
         );
 
         return $collection;

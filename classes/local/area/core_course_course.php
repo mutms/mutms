@@ -19,8 +19,11 @@
 
 namespace tool_mutrain\local\area;
 
+use tool_mutrain\local\framework;
+use tool_mulib\local\mudb;
+
 /**
- * Course completion training area.
+ * Course completion credits area.
  *
  * @package    tool_mutrain
  * @copyright  2024 Open LMS (https://www.openlms.net/)
@@ -48,13 +51,12 @@ final class core_course_course extends base {
         $courselevel = CONTEXT_COURSE;
 
         // Add completions.
-        $sql = "INSERT INTO {tool_mutrain_completion}
-                       (fieldid, instanceid, userid, timecompleted, contextid)
+        $sql = "INSERT INTO {tool_mutrain_completion} (fieldid, instanceid, userid, timecompleted, contextid)
 
                 SELECT DISTINCT cd.fieldid, cd.instanceid, cc.userid, cc.timecompleted, ctx.id AS contextid
                   FROM {course_completions} cc
                   JOIN {course} c ON c.id = cc.course AND c.enablecompletion = 1
-                  JOIN {customfield_data} cd ON cd.instanceid = cc.course AND cd.intvalue > 0
+                  JOIN {customfield_data} cd ON cd.instanceid = cc.course AND cd.decvalue IS NOT NULL
                   JOIN {customfield_field} cf ON cf.id = cd.fieldid AND cf.type = 'mutrain'
                   JOIN {customfield_category} cat ON cat.id = cf.categoryid AND cat.component = 'core_course' AND cat.area = 'course'
                   JOIN {user} u ON u.id = cc.userid AND u.deleted = 0 AND u.confirmed = 1
@@ -77,10 +79,10 @@ final class core_course_course extends base {
 
                  ) AND NOT EXISTS (
 
-                    SELECT cc.id
+                    SELECT 'x'
                       FROM {course_completions} cc
                       JOIN {course} c ON c.id = cc.course AND c.enablecompletion = 1
-                      JOIN {customfield_data} cd ON cd.instanceid = cc.course
+                      JOIN {customfield_data} cd ON cd.instanceid = cc.course AND cd.decvalue IS NOT NULL
                       JOIN {customfield_field} cf ON cf.id = cd.fieldid AND cf.type = 'mutrain'
                       JOIN {customfield_category} cat ON cat.id = cf.categoryid AND cat.component = 'core_course' AND cat.area = 'course'
                      WHERE {tool_mutrain_completion}.fieldid = cf.id
@@ -107,7 +109,7 @@ final class core_course_course extends base {
                    )
                  WHERE EXISTS (
 
-                        SELECT cc.id
+                        SELECT 'x'
                           FROM {course_completions} cc
                           JOIN {course} c ON c.id = cc.course AND c.enablecompletion = 1
                           JOIN {customfield_data} cd ON cd.instanceid = cc.course
@@ -138,51 +140,42 @@ final class core_course_course extends base {
         if ($completion->timecompleted === null) {
             return;
         }
+        $context = \context_course::instance($courseid);
 
-        $sql = "SELECT cf.*, ctc.id AS ctcid
+        $sql = "SELECT cf.*
                   FROM {customfield_field} cf
                   JOIN {customfield_category} cat ON cat.id = cf.categoryid AND cat.component = 'core_course' AND cat.area = 'course'
-                  JOIN {customfield_data} cd ON cd.fieldid = cf.id AND cd.instanceid = :courseid AND cd.intvalue > 0
-             LEFT JOIN {tool_mutrain_completion} ctc ON ctc.fieldid = cf.id AND ctc.instanceid = cd.instanceid AND ctc.userid = :userid
+                  JOIN {customfield_data} cd ON cd.fieldid = cf.id AND cd.instanceid = :courseid AND cd.decvalue IS NOT NULL
                  WHERE cf.type = 'mutrain'
               ORDER BY cd.id ASC";
         $params = ['courseid' => $courseid, 'userid' => $userid];
 
-        $inserted = [];
         $fields = $DB->get_records_sql($sql, $params);
-        foreach ($fields as $field) {
-            if ($field->ctcid) {
-                $DB->set_field(
-                    'tool_mutrain_completion',
-                    'timecompleted',
-                    $completion->timecompleted,
-                    ['id' => $field->ctcid]
-                );
-            } else {
-                $context = \context_course::instance($courseid);
-                $record = (object)[
-                    'fieldid' => $field->id,
-                    'instanceid' => $courseid,
-                    'userid' => $userid,
-                    'timecompleted' => $completion->timecompleted,
-                    'contextid' => $context->id,
-                ];
-                $inserted[] = (int)$DB->insert_record('tool_mutrain_completion', $record);
-            }
+        if (!$fields) {
+            return;
         }
 
-        if ($inserted) {
-            $inserted = implode(',', $inserted);
-            $sql = "SELECT DISTINCT tf.frameworkid
-                      FROM {tool_mutrain_field} tf
-                      JOIN {tool_mutrain_framework} tfw ON tfw.id = tf.frameworkid
-                     WHERE tfw.archived = 0 AND tf.fieldid IN ($inserted)";
-            $frameworkids = $DB->get_fieldset_sql($sql);
-            if ($frameworkids) {
-                // This should trigger things like program completion recalculation when user completes course.
-                $hook = new \tool_mutrain\hook\completion_updated($userid, $frameworkids);
-                \core\di::get(\core\hook\manager::class)->dispatch($hook);
-            }
+        foreach ($fields as $field) {
+            $record = [
+                'fieldid' => $field->id,
+                'instanceid' => $courseid,
+                'userid' => $userid,
+                'timecompleted' => $completion->timecompleted,
+                'contextid' => $context->id,
+            ];
+            mudb::upsert_record('tool_mutrain_completion', $record, ['fieldid', 'instanceid', 'userid']);
+        }
+
+        $fieldids = array_keys($fields);
+        $fieldids = implode(',', $fieldids);
+
+        $sql = "SELECT DISTINCT tf.frameworkid
+                  FROM {tool_mutrain_field} tf
+                  JOIN {tool_mutrain_framework} tfw ON tfw.id = tf.frameworkid
+                 WHERE tfw.archived = 0 AND tf.fieldid IN ($fieldids)";
+        $frameworkids = $DB->get_fieldset_sql($sql);
+        foreach ($frameworkids as $frameworkid) {
+            framework::sync_credits($userid, $frameworkid);
         }
     }
 
