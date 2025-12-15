@@ -39,8 +39,7 @@ use tool_certificate\template;
  * @copyright 2017 Mark Nelson <markn@moodle.com>
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class verify_certificate_result implements templatable, renderable {
-
+class verify_certificate_result implements renderable, templatable {
     /**
      * @var string The URL to the user's profile.
      */
@@ -96,7 +95,7 @@ class verify_certificate_result implements templatable, renderable {
         $this->expires = $issue->expires > 0
             ? userdate($issue->expires, $strftimedatetime)
             : get_string('never');
-        $this->expired = ($issue->expires > 0) && ($issue->expires <= time());
+        $this->expired = ($issue->expires > 0) && ($issue->expires <= \core\di::get(\core\clock::class)->time());
     }
 
     /**

@@ -31,7 +31,6 @@ use tool_certificate\permission;
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class mobile {
-
     /**
      * Returns the data required to display the user's certificates.
      *
@@ -51,7 +50,7 @@ class mobile {
                 'coursename' => format_string($issue->coursename, true, ['context' => $context]),
                 'timecreated' => (int)$issue->timecreated,
                 'expires' => (int)$issue->expires,
-                'isexpired' => (int)$issue->expires && (int)$issue->expires <= time(),
+                'isexpired' => (int)$issue->expires && (int)$issue->expires <= \core\di::get(\core\clock::class)->time(),
                 'code' => $issue->code,
                 'verifyurl' => (new \moodle_url('/admin/tool/certificate/index.php', ['code' => $issue->code]))->out(),
                 'fileurl' => (new \moodle_url('/admin/tool/certificate/view.php', ['code' => $issue->code]))->out(),
@@ -81,8 +80,12 @@ class mobile {
 
         $userid = $args->userid ?: $USER->id;
         if (!permission::can_view_list((int)$userid)) {
-            throw new \required_capability_exception(\context_system::instance(), 'tool/certificate:viewallcertificates',
-                'nopermission', 'error');
+            throw new \required_capability_exception(
+                \context_system::instance(),
+                'tool/certificate:viewallcertificates',
+                'nopermission',
+                'error'
+            );
         }
 
         $data = self::mobile_my_certificates_data((int) $userid);

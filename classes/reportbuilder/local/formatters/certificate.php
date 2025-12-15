@@ -34,7 +34,6 @@ use context_system;
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class certificate {
-
     /**
      * Formats a string
      *
@@ -67,7 +66,7 @@ class certificate {
      * @return string
      */
     public static function certificate_issued_status(?string $value, stdClass $row): string {
-        $status = $row->expires && $row->expires <= time() ? 'expired' : 'valid';
+        $status = $row->expires && $row->expires <= \core\di::get(\core\clock::class)->time() ? 'expired' : 'valid';
         return get_string($status, 'tool_certificate');
     }
 
@@ -98,8 +97,11 @@ class certificate {
         $badge = '';
 
         if ($row->shared) {
-            $badge = html_writer::tag('span', get_string('shared', 'tool_certificate'),
-                ['class' => 'badge bg-secondary text-dark ms-1']);
+            $badge = html_writer::tag(
+                'span',
+                get_string('shared', 'tool_certificate'),
+                ['class' => 'badge bg-secondary text-dark ms-1']
+            );
         }
 
         return $fullname . ' ' . $badge;

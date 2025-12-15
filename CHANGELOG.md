@@ -1,5 +1,14 @@
 # Changelog
 
+## 5.0.4 - 2025-12-09
+### Added
+- Added bulk certificate regeneration
+### Changed
+- Updated all time and date handling to use the new Clock API
+- Compatibility with latest codechecker standards
+### Fixed
+- Fixed exception when editing a certificate on a new site
+
 ## 5.0.3 - 2025-10-07
 ### Added
 - Added support for Moodle 5.1
