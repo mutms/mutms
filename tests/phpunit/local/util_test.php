@@ -63,31 +63,6 @@ final class util_test extends \advanced_testcase {
         $this->assertSame('0', get_config('tool_muprog', 'active'));
     }
 
-    public function test_is_muprog_active(): void {
-        /** @var \tool_muprog_generator $generator */
-        $generator = $this->getDataGenerator()->get_plugin_generator('tool_muprog');
-
-        $this->assertFalse(util::is_muprog_active());
-
-        $program1 = $generator->create_program(['archived' => 1]);
-        $this->assertFalse(util::is_muprog_active());
-
-        $program2 = $generator->create_program(['archived' => 0]);
-        $this->assertTrue(util::is_muprog_active());
-
-        $program2 = \tool_muprog\local\program::archive($program2->id);
-        $this->assertFalse(util::is_muprog_active());
-
-        $program2 = \tool_muprog\local\program::restore($program2->id);
-        $this->assertTrue(util::is_muprog_active());
-
-        \tool_muprog\local\program::delete($program2->id);
-        $this->assertFalse(util::is_muprog_active());
-
-        \tool_muprog\local\program::delete($program1->id);
-        $this->assertFalse(util::is_muprog_active());
-    }
-
     public function test_json_encode(): void {
         $this->assertSame('{"abc":"\\\\šk\"\'"}', util::json_encode(['abc' => '\šk"\'']));
     }

@@ -352,7 +352,7 @@ final class catalogue {
      * @return ?\moodle_url null of programs disabled or user cannot access catalogue
      */
     public static function get_catalogue_url(): ?\moodle_url {
-        if (!\tool_muprog\local\util::is_muprog_active()) {
+        if (!\tool_mulib\local\mulib::is_muprog_active()) {
             return null;
         }
         if (!isloggedin()) {

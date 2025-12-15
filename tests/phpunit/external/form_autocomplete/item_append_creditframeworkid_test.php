@@ -19,11 +19,11 @@
 
 namespace tool_muprog\phpunit\external\form_autocomplete;
 
-use tool_muprog\external\form_autocomplete\item_append_trainingid;
+use tool_muprog\external\form_autocomplete\item_append_creditframeworkid;
 use tool_mulib\local\mulib;
 
 /**
- * External API for adding of training to program.
+ * External API for adding of credits to program.
  *
  * @group      MuTMS
  * @package    tool_muprog
@@ -32,9 +32,9 @@ use tool_mulib\local\mulib;
  * @author     Petr Skoda
  * @license    https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  *
- * @covers \tool_muprog\external\form_autocomplete\item_append_trainingid
+ * @covers \tool_muprog\external\form_autocomplete\item_append_creditframeworkid
  */
-final class item_append_trainingid_test extends \advanced_testcase {
+final class item_append_creditframeworkid_test extends \advanced_testcase {
     public function setUp(): void {
         parent::setUp();
         if (!mulib::is_mutrain_available()) {
@@ -51,8 +51,8 @@ final class item_append_trainingid_test extends \advanced_testcase {
         $category1 = $this->getDataGenerator()->create_category([]);
         $catcontext1 = \context_coursecat::instance($category1->id);
 
-        /** @var \tool_mutrain_generator $traininggenerator */
-        $traininggenerator = $this->getDataGenerator()->get_plugin_generator('tool_mutrain');
+        /** @var \tool_mutrain_generator $creditsgenerator */
+        $creditsgenerator = $this->getDataGenerator()->get_plugin_generator('tool_mutrain');
 
         $fielcategory = $this->getDataGenerator()->create_custom_field_category(
             ['component' => 'core_course', 'area' => 'course']
@@ -75,28 +75,28 @@ final class item_append_trainingid_test extends \advanced_testcase {
             'publicaccess' => 1,
             'fields' => [$field1->get('id')],
         ];
-        $framework1 = $traininggenerator->create_framework($data);
+        $framework1 = $creditsgenerator->create_framework($data);
         $data = (object)[
             'name' => 'Other framework',
             'publicaccess' => 1,
             'idnumber' => 'ofr2',
             'fields' => [$field2->get('id')],
         ];
-        $framework2 = $traininggenerator->create_framework($data);
+        $framework2 = $creditsgenerator->create_framework($data);
         $data = (object)[
             'name' => 'Another framework',
             'contextid' => $catcontext1->id,
             'publicaccess' => 0,
             'fields' => [],
         ];
-        $framework3 = $traininggenerator->create_framework($data);
+        $framework3 = $creditsgenerator->create_framework($data);
         $data = (object)[
             'name' => 'Grrr framework',
             'publicaccess' => 1,
             'archived' => 1,
             'fields' => [],
         ];
-        $framework4 = $traininggenerator->create_framework($data);
+        $framework4 = $creditsgenerator->create_framework($data);
 
         $program1 = $generator->create_program([
             'contextid' => $syscontext->id,
@@ -121,9 +121,9 @@ final class item_append_trainingid_test extends \advanced_testcase {
         role_assign($fviewerroleid, $user1->id, $syscontext->id);
 
         $this->setUser($user1);
-        $response = item_append_trainingid::execute('', $program1->id);
-        $results = item_append_trainingid::clean_returnvalue(
-            item_append_trainingid::execute_returns(),
+        $response = item_append_creditframeworkid::execute('', $program1->id);
+        $results = item_append_creditframeworkid::clean_returnvalue(
+            item_append_creditframeworkid::execute_returns(),
             $response
         );
         $this->assertFalse($results['overflow']);
@@ -134,9 +134,9 @@ final class item_append_trainingid_test extends \advanced_testcase {
         ];
         $this->assertSame($expectedlist, $results['list']);
 
-        $response = item_append_trainingid::execute('framework', $program1->id);
-        $results = item_append_trainingid::clean_returnvalue(
-            item_append_trainingid::execute_returns(),
+        $response = item_append_creditframeworkid::execute('framework', $program1->id);
+        $results = item_append_creditframeworkid::clean_returnvalue(
+            item_append_creditframeworkid::execute_returns(),
             $response
         );
         $this->assertFalse($results['overflow']);
@@ -147,9 +147,9 @@ final class item_append_trainingid_test extends \advanced_testcase {
         ];
         $this->assertSame($expectedlist, $results['list']);
 
-        $response = item_append_trainingid::execute('Another', $program1->id);
-        $results = item_append_trainingid::clean_returnvalue(
-            item_append_trainingid::execute_returns(),
+        $response = item_append_creditframeworkid::execute('Another', $program1->id);
+        $results = item_append_creditframeworkid::clean_returnvalue(
+            item_append_creditframeworkid::execute_returns(),
             $response
         );
         $this->assertFalse($results['overflow']);
@@ -158,9 +158,9 @@ final class item_append_trainingid_test extends \advanced_testcase {
         ];
         $this->assertSame($expectedlist, $results['list']);
 
-        $response = item_append_trainingid::execute('fr2', $program1->id);
-        $results = item_append_trainingid::clean_returnvalue(
-            item_append_trainingid::execute_returns(),
+        $response = item_append_creditframeworkid::execute('fr2', $program1->id);
+        $results = item_append_creditframeworkid::clean_returnvalue(
+            item_append_creditframeworkid::execute_returns(),
             $response
         );
         $this->assertFalse($results['overflow']);
@@ -169,9 +169,9 @@ final class item_append_trainingid_test extends \advanced_testcase {
         ];
         $this->assertSame($expectedlist, $results['list']);
 
-        $response = item_append_trainingid::execute('xxx', $program1->id);
-        $results = item_append_trainingid::clean_returnvalue(
-            item_append_trainingid::execute_returns(),
+        $response = item_append_creditframeworkid::execute('xxx', $program1->id);
+        $results = item_append_creditframeworkid::clean_returnvalue(
+            item_append_creditframeworkid::execute_returns(),
             $response
         );
         $this->assertFalse($results['overflow']);
@@ -179,9 +179,9 @@ final class item_append_trainingid_test extends \advanced_testcase {
         $this->assertSame($expectedlist, $results['list']);
 
         $this->setUser($user2);
-        $response = item_append_trainingid::execute('', $program1->id);
-        $results = item_append_trainingid::clean_returnvalue(
-            item_append_trainingid::execute_returns(),
+        $response = item_append_creditframeworkid::execute('', $program1->id);
+        $results = item_append_creditframeworkid::clean_returnvalue(
+            item_append_creditframeworkid::execute_returns(),
             $response
         );
         $this->assertFalse($results['overflow']);
@@ -192,9 +192,9 @@ final class item_append_trainingid_test extends \advanced_testcase {
         $this->assertSame($expectedlist, $results['list']);
 
         $this->setUser($user3);
-        $response = item_append_trainingid::execute('', $program2->id);
-        $results = item_append_trainingid::clean_returnvalue(
-            item_append_trainingid::execute_returns(),
+        $response = item_append_creditframeworkid::execute('', $program2->id);
+        $results = item_append_creditframeworkid::clean_returnvalue(
+            item_append_creditframeworkid::execute_returns(),
             $response
         );
         $this->assertFalse($results['overflow']);
@@ -206,7 +206,7 @@ final class item_append_trainingid_test extends \advanced_testcase {
 
         $this->setUser($user3);
         try {
-            item_append_trainingid::execute('', $program1->id);
+            item_append_creditframeworkid::execute('', $program1->id);
             $this->fail('Exception expected');
         } catch (\moodle_exception $ex) {
             $this->assertInstanceOf(\required_capability_exception::class, $ex);
@@ -214,7 +214,7 @@ final class item_append_trainingid_test extends \advanced_testcase {
 
         $this->setUser($user4);
         try {
-            item_append_trainingid::execute('', $program1->id);
+            item_append_creditframeworkid::execute('', $program1->id);
             $this->fail('Exception expected');
         } catch (\moodle_exception $ex) {
             $this->assertInstanceOf(\required_capability_exception::class, $ex);
@@ -250,29 +250,29 @@ final class item_append_trainingid_test extends \advanced_testcase {
         $user1 = $this->getDataGenerator()->create_user(['tenantid' => $tenant1->id]);
         $user2 = $this->getDataGenerator()->create_user(['tenantid' => $tenant2->id]);
 
-        /** @var \tool_mutrain_generator $traininggenerator */
-        $traininggenerator = $this->getDataGenerator()->get_plugin_generator('tool_mutrain');
+        /** @var \tool_mutrain_generator $creditsgenerator */
+        $creditsgenerator = $this->getDataGenerator()->get_plugin_generator('tool_mutrain');
 
         $data = (object)[
             'name' => 'Framework 0',
             'contextid' => $syscontext->id,
             'publicaccess' => 1,
         ];
-        $framework0 = $traininggenerator->create_framework($data);
+        $framework0 = $creditsgenerator->create_framework($data);
 
         $data = (object)[
             'name' => 'Framework 1',
             'contextid' => $tenant1catcontext->id,
             'publicaccess' => 1,
         ];
-        $framework1 = $traininggenerator->create_framework($data);
+        $framework1 = $creditsgenerator->create_framework($data);
 
         $data = (object)[
             'name' => 'Framework 2',
             'contextid' => $tenant2catcontext->id,
             'publicaccess' => 1,
         ];
-        $framework2 = $traininggenerator->create_framework($data);
+        $framework2 = $creditsgenerator->create_framework($data);
 
         $syscontext = \context_system::instance();
         $editorroleid = $this->getDataGenerator()->create_role();
@@ -282,9 +282,9 @@ final class item_append_trainingid_test extends \advanced_testcase {
         role_assign($editorroleid, $user2->id, $tenant2catcontext->id);
 
         $this->setUser($user0);
-        $response = item_append_trainingid::execute('', $program0->id);
-        $results = item_append_trainingid::clean_returnvalue(
-            item_append_trainingid::execute_returns(),
+        $response = item_append_creditframeworkid::execute('', $program0->id);
+        $results = item_append_creditframeworkid::clean_returnvalue(
+            item_append_creditframeworkid::execute_returns(),
             $response
         );
         $this->assertFalse($results['overflow']);
@@ -295,9 +295,9 @@ final class item_append_trainingid_test extends \advanced_testcase {
         ];
         $this->assertSame($expectedlist, $results['list']);
 
-        $response = item_append_trainingid::execute('', $program1->id);
-        $results = item_append_trainingid::clean_returnvalue(
-            item_append_trainingid::execute_returns(),
+        $response = item_append_creditframeworkid::execute('', $program1->id);
+        $results = item_append_creditframeworkid::clean_returnvalue(
+            item_append_creditframeworkid::execute_returns(),
             $response
         );
         $this->assertFalse($results['overflow']);
@@ -307,9 +307,9 @@ final class item_append_trainingid_test extends \advanced_testcase {
         ];
         $this->assertSame($expectedlist, $results['list']);
 
-        $response = item_append_trainingid::execute('', $program2->id);
-        $results = item_append_trainingid::clean_returnvalue(
-            item_append_trainingid::execute_returns(),
+        $response = item_append_creditframeworkid::execute('', $program2->id);
+        $results = item_append_creditframeworkid::clean_returnvalue(
+            item_append_creditframeworkid::execute_returns(),
             $response
         );
         $this->assertFalse($results['overflow']);
@@ -320,9 +320,9 @@ final class item_append_trainingid_test extends \advanced_testcase {
         $this->assertSame($expectedlist, $results['list']);
 
         $this->setUser($user2);
-        $response = item_append_trainingid::execute('', $program2->id);
-        $results = item_append_trainingid::clean_returnvalue(
-            item_append_trainingid::execute_returns(),
+        $response = item_append_creditframeworkid::execute('', $program2->id);
+        $results = item_append_creditframeworkid::clean_returnvalue(
+            item_append_creditframeworkid::execute_returns(),
             $response
         );
         $this->assertFalse($results['overflow']);

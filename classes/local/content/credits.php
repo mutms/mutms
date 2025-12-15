@@ -23,7 +23,7 @@ use tool_muprog\local\util;
 use stdClass;
 
 /**
- * Program training item.
+ * Credits item.
  *
  * @package    tool_muprog
  * @copyright  2022 Open LMS (https://www.openlms.net/)
@@ -31,89 +31,83 @@ use stdClass;
  * @author     Petr Skoda
  * @license    https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-final class training extends item {
+final class credits extends item {
     /** @var int */
-    protected $trainingid;
+    protected $creditframeworkid;
 
-    /** @var ?item Previous item is not actually used because there is no concept of start of training */
+    /** @var ?item Previous item is not actually used because there is no concept of start of credits */
     protected $previous;
 
     /**
-     * ReturnGet training id.
+     * ReturnGet credit credit framework id.
      *
      * @return int
      */
-    public function get_trainingid(): int {
-        return $this->trainingid;
+    public function get_creditframeworkid(): int {
+        return $this->creditframeworkid;
     }
 
     /**
      * What is the required total learning?
      *
-     * @return int|null
+     * @return string|null decimal number
      */
-    public function get_required_training(): ?int {
+    public function get_required_credits(): ?string {
         global $DB;
-        $framework = $DB->get_record('tool_mutrain_framework', ['id' => $this->trainingid]);
+        $framework = $DB->get_record('tool_mutrain_framework', ['id' => $this->creditframeworkid]);
         if (!$framework) {
             return null;
         }
-        return $framework->requiredtraining;
+        return $framework->requiredcredits;
     }
 
     /**
-     * What is the current sum of completed training?
+     * What is the current sum of completed credits?
+     *
      * @param stdClass $allocation
      * @return int
      */
-    public function get_completed_training(stdClass $allocation): int {
+    public function get_completed_credits(stdClass $allocation): int {
         global $DB;
-        $sql = "SELECT SUM(cd.intvalue) AS completed
-                  FROM {tool_mutrain_completion} ctc
-                  JOIN {customfield_field} cf ON cf.id = ctc.fieldid
-                  JOIN {customfield_data} cd ON cd.fieldid = cf.id AND cd.instanceid = ctc.instanceid
-                  JOIN {tool_mutrain_field} tf ON tf.fieldid = cf.id
-                  JOIN {tool_mutrain_framework} tfr ON tfr.id = tf.frameworkid
-                 WHERE tfr.id = :trainingid AND ctc.userid = :userid AND cd.intvalue IS NOT NULL
-                       AND (tfr.restrictedcompletion = 0 OR ctc.timecompleted >= :timestart)";
-        $params = [
-            'trainingid' => $this->trainingid,
+
+        return (int)$DB->get_field('tool_mutrain_credit', 'credits', [
+            'frameworkid' => $this->creditframeworkid,
             'userid' => $allocation->userid,
-            'timestart' => $allocation->timestart,
-        ];
-        return (int)$DB->get_field_sql($sql, $params);
+        ]);
     }
 
     /**
      * Current progress for current active program allocations,
-     * required training in all other cases.
+     * required credits in all other cases.
      *
      * @param stdClass $allocation
      * @return string
      */
-    public function get_training_progress(stdClass $allocation): string {
+    public function get_current_credits(stdClass $allocation): string {
         global $DB;
 
         $now = time();
 
-        $framework = $DB->get_record('tool_mutrain_framework', ['id' => $this->trainingid]);
+        $framework = $DB->get_record('tool_mutrain_framework', ['id' => $this->creditframeworkid]);
         if (!$framework) {
             return get_string('error');
         }
+
+        $requiredcredits = format_float($framework->requiredcredits, 2, true, true);
 
         if (
             $framework->archived || $allocation->archived
             || $allocation->timestart > $now || ($allocation->timeend && $allocation->timeend <= $now)
         ) {
-            return get_string('trainingcompletion', 'tool_muprog', $framework->requiredtraining);
+            return get_string('credits_requiredcredits', 'tool_muprog', $requiredcredits);
         }
 
         $data = [
-            'current' => self::get_completed_training($allocation),
-            'total' => $framework->requiredtraining,
+            'current' => self::get_completed_credits($allocation),
+            'total' => $requiredcredits,
         ];
 
-        return get_string('trainingprogress', 'tool_muprog', $data);
+        return get_string('credits_progress', 'tool_muprog', $data);
     }
 
     /**
@@ -129,7 +123,7 @@ final class training extends item {
     }
 
     /**
-     * Return item that must be completed before allowing access to this training.
+     * Return item that must be completed before allowing access to this credits item.
      *
      * @return item|null
      */
@@ -154,16 +148,16 @@ final class training extends item {
      * @param item|null $previous
      * @param array $unusedrecords
      * @param array $prerequisites
-     * @return training
+     * @return credits
      */
     protected static function init_from_record(\stdClass $record, ?item $previous, array &$unusedrecords, array &$prerequisites): item {
-        if ($record->topitem || $record->courseid !== null || $record->trainingid === null) {
-            throw new \coding_exception('Invalid training item');
+        if ($record->topitem || $record->courseid !== null || $record->creditframeworkid === null) {
+            throw new \coding_exception('Invalid credits item');
         }
-        $item = new training();
+        $item = new credits();
         $item->id = $record->id;
         $item->programid = $record->programid;
-        $item->trainingid = $record->trainingid;
+        $item->creditframeworkid = $record->creditframeworkid;
         $item->previous = $previous;
         if ($previous) {
             if ($previous->id == $record->id) {
@@ -188,7 +182,7 @@ final class training extends item {
             $item->problemdetected = true;
         }
 
-        // NOTE: Prerequisites are verified in set that contains this training.
+        // NOTE: Prerequisites are verified in set that contains this credits item.
 
         return $item;
     }
@@ -212,7 +206,7 @@ final class training extends item {
     protected function get_record(): array {
         global $DB;
 
-        $fullname = $DB->get_field('tool_mutrain_framework', 'name', ['id' => $this->trainingid]);
+        $fullname = $DB->get_field('tool_mutrain_framework', 'name', ['id' => $this->creditframeworkid]);
         if ($fullname === false) {
             $fullname = $this->fullname;
         }
@@ -222,7 +216,7 @@ final class training extends item {
             'programid' => (string)$this->programid,
             'topitem' => null,
             'courseid' => null,
-            'trainingid' => (string)$this->trainingid,
+            'creditframeworkid' => (string)$this->creditframeworkid,
             'previtemid' => (isset($this->previous) ? (string)$this->previous->id : null),
             'fullname' => $fullname,
             'sequencejson' => util::json_encode([]),

@@ -203,13 +203,13 @@ class tool_muprog_generator extends component_generator_base {
                 $course = $DB->get_record('course', ['fullname' => $record->course], '*', MUST_EXIST);
             }
             return $top->append_course($parent, $course->id);
-        } else if (!empty($record->trainingid) || !empty($record->training)) {
-            if (!empty($record->trainingid)) {
-                $framework = $DB->get_record('tool_mutrain_framework', ['id' => $record->trainingid], '*', MUST_EXIST);
+        } else if (!empty($record->creditframeworkid) || !empty($record->credits)) {
+            if (!empty($record->creditframeworkid)) {
+                $framework = $DB->get_record('tool_mutrain_framework', ['id' => $record->creditframeworkid], '*', MUST_EXIST);
             } else {
-                $framework = $DB->get_record('tool_mutrain_framework', ['name' => $record->training], '*', MUST_EXIST);
+                $framework = $DB->get_record('tool_mutrain_framework', ['name' => $record->credits], '*', MUST_EXIST);
             }
-            return $top->append_training($parent, $framework->id);
+            return $top->append_credits($parent, $framework->id);
         } else {
             if (!empty($record->sequencetype)) {
                 $types = \tool_muprog\local\content\set::get_sequencetype_types();

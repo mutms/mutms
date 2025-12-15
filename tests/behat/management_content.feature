@@ -318,23 +318,23 @@ Feature: Program content management tests
     And I should see "Course 3"
 
   @javascript @tool_mutrain
-  Scenario: Manager may add, update and delete training in program
+  Scenario: Manager may add, update and delete credits in program
     Given I skip tests if "tool_mutrain" is not installed
     And the following "custom field categories" exist:
       | name              | component   | area   | itemid |
       | Category for test | core_course | course | 0      |
     And the following "custom fields" exist:
-      | name             | category           | type    | shortname | configdata            |
-      | Training Field 1 | Category for test  | mutrain | training1 |                       |
-      | Training Field 2 | Category for test  | mutrain | training2 |                       |
-      | Training Field 3 | Category for test  | mutrain | training3 |                       |
+      | name             | category          | type    | shortname | configdata            |
+      | Credits Field 1 | Category for test  | mutrain | credits1  |                       |
+      | Credits Field 2 | Category for test  | mutrain | credits2  |                       |
+      | Credits Field 3 | Category for test  | mutrain | credits3  |                       |
     And the following "tool_mutrain > frameworks" exist:
-      | name    | fields    | category | publicaccess | requiredtraining | restrictedcompletion |
-      | TFR 001 | training1 |          | 1            | 10               | 0                    |
-      | TFR 002 | training2 | Cat 2    | 1            | 20               | 1                    |
-      | TFR 003 | training1 |          | 0            | 30               | 0                    |
+      | name    | fields   | category | publicaccess | requiredcredits  | restrictedcompletion |
+      | TFR 001 | credits1 |          | 1            | 10               | 0                    |
+      | TFR 002 | credits2 | Cat 2    | 1            | 20               | 1                    |
+      | TFR 003 | credits1 |          | 0            | 30               | 0                    |
     And the following "courses" exist:
-      | fullname | shortname | format | category | customfield_training1 | customfield_training2 |
+      | fullname | shortname | format | category | customfield_credits1  | customfield_credits2  |
       | Course 7 | C7        | topics | CAT2     | 7                     | 1                     |
       | Course 8 | C8        | topics | CAT2     | 13                    | 2                     |
       | Course 9 | C9        | topics | CAT2     | 29                    | 3                     |
@@ -345,23 +345,23 @@ Feature: Program content management tests
 
     When I click on "Append item" "link" in the "Program 000" "table_row"
     And I set the following fields to these values:
-      | Training                  | TFR 001   |
+      | Credits                  | TFR 001   |
     And I click on "Append item" "button" in the ".modal-dialog" "css_element"
-    Then I should see "Required training: 10" in the "TFR 001" "table_row"
+    Then I should see "Required credits: 10" in the "TFR 001" "table_row"
 
-    When I click on "Update training" "link" in the "TFR 001" "table_row"
+    When I click on "Update credits" "link" in the "TFR 001" "table_row"
     And I set the following fields to these values:
       | Points                    | 789              |
       | completiondelay[enabled]  | 1                |
       | completiondelay[number]   | 3                |
       | completiondelay[timeunit] | days             |
-    And I click on "Update training" "button" in the ".modal-dialog" "css_element"
+    And I click on "Update credits" "button" in the ".modal-dialog" "css_element"
     Then I should see "789" in the "TFR 001" "table_row"
     And I should see "Completion delay: 3 days" in the "TFR 001" "table_row"
-    And I should see "Required training: 10" in the "TFR 001" "table_row"
+    And I should see "Required credits: 10" in the "TFR 001" "table_row"
 
-    When I click on "Remove training" "link" in the "TFR 001" "table_row"
-    And I click on "Remove training" "button" in the ".modal-dialog" "css_element"
+    When I click on "Remove credits" "link" in the "TFR 001" "table_row"
+    And I click on "Remove credits" "button" in the ".modal-dialog" "css_element"
     Then I should not see "TFR 001"
 
   @javascript @tool_mutenancy

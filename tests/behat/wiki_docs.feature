@@ -21,7 +21,7 @@ Feature: Programs plugin English wiki documentation image generator
       | First Aid Fundamentals                    | CFB1      | HS       |
       | Emergency First Aid Toolkit               | CFB2      | HS       |
       | Emergency Preparedness 101                | CFB3      | HS       |
-      | Hands-On First Aid Training               | CFB4      | HS       |
+      | Hands-On First Aid Credits                | CFB4      | HS       |
       | Critical Care Made Simple                 | CFB5      | HS       |
       | Emergency Response Essentials             | CFB6      | HS       |
       | Beyond the Basics: Advanced First Aid     | CFA1      | HS       |
@@ -34,8 +34,8 @@ Feature: Programs plugin English wiki documentation image generator
       | Chain and Sprocket Maintenance            | M4        | ME       |
     And the following "tool_muprog > programs" exist:
       | fullname                             | idnumber | category | publicaccess | archived | description                                     | image                                           | cohorts            |
-      | Basic First Aid                      | FA1      | HS       | 1            | 0        | Sample program for basic first aid training.    | admin/tool/muprog/tests/fixtures/docs/bfa.jpeg  |                    |
-      | Advanced First Aid                   | FA2      | HS       | 1            | 0        | Sample program for advanced first aid training. | admin/tool/muprog/tests/fixtures/docs/afa.jpeg  |                    |
+      | Basic First Aid                      | FA1      | HS       | 1            | 0        | Sample program for basic first aid credits.    | admin/tool/muprog/tests/fixtures/docs/bfa.jpeg  |                    |
+      | Advanced First Aid                   | FA2      | HS       | 1            | 0        | Sample program for advanced first aid credits. | admin/tool/muprog/tests/fixtures/docs/afa.jpeg  |                    |
       | Motorcycle Maintenance for Beginners | ME       | ME       | 1            | 0        | Basics of motorcycle maintenance.               | admin/tool/muprog/tests/fixtures/docs/mm.jpeg   |                    |
       | Motorcycle Track Days                | MTD      | WF       | 0            | 0        | Learn how to become a better track rider.       | admin/tool/muprog/tests/fixtures/docs/td.jpeg   | Petrol Heads       |
       | Horse Riding Trips                   | HRT      | WF       | 1            | 1        | Discontinued horse riding.                      |                                                 |                    |
@@ -46,7 +46,7 @@ Feature: Programs plugin English wiki documentation image generator
       | Basic First Aid                      | Mandatory courses | First Aid Fundamentals                |                   |                  |                  |
       | Basic First Aid                      | Mandatory courses | Emergency First Aid Toolkit           |                   |                  |                  |
       | Basic First Aid                      | Optional courses  | Emergency Preparedness 101            |                   |                  |                  |
-      | Basic First Aid                      | Optional courses  | Hands-On First Aid Training           |                   |                  |                  |
+      | Basic First Aid                      | Optional courses  | Hands-On First Aid Credits            |                   |                  |                  |
       | Basic First Aid                      | Optional courses  | Critical Care Made Simple             |                   |                  |                  |
       | Basic First Aid                      | Optional courses  | Emergency Response Essentials         |                   |                  |                  |
       | Advanced First Aid                   |                   |                                       | Mandatory courses | All in order     |                  |

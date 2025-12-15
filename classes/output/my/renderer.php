@@ -26,7 +26,7 @@ use tool_muprog\local\content\item,
     tool_muprog\local\content\top,
     tool_muprog\local\content\set,
     tool_muprog\local\content\course,
-    tool_muprog\local\content\training;
+    tool_muprog\local\content\credits;
 use stdClass, moodle_url;
 
 /**
@@ -62,20 +62,17 @@ class renderer extends \plugin_renderer_base {
             }
         }
 
-        $programimage = '';
-        $presentation = (array)json_decode($program->presentationjson);
-        if (!empty($presentation['image'])) {
-            $imageurl = \moodle_url::make_file_url(
-                "$CFG->wwwroot/pluginfile.php",
-                '/' . $context->id . '/tool_muprog/image/' . $program->id . '/' . $presentation['image'],
-                false
-            );
-            $programimage = '<div class="programimage">' . \html_writer::img($imageurl, '') . '</div>';
+        $imageuri = program::get_image_uri($program, false);
+        if ($imageuri) {
+            $programimage = \html_writer::img($imageuri, '', ['class' => 'programimage float-end']);
+        } else {
+            $programimage = '';
         }
 
         $result = $this->output->heading($fullname);
         $result .= $tagsdiv;
-        $result .= "<div class='d-flex'><div class='w-100'>$description</div><div class='flex-shrink-1'>$programimage</div></div>";
+        $result .= "<div>$description</div>";
+        $result .= $programimage;
 
         return $result;
     }
@@ -106,6 +103,10 @@ class renderer extends \plugin_renderer_base {
         $details->add(
             get_string('programstatus', 'tool_muprog'),
             allocation::get_completion_status_html($program, $allocation)
+        );
+        $details->add(
+            get_string('programprogress', 'tool_muprog'),
+            allocation::get_progress_percentage($program, $allocation)
         );
         $details->add(
             get_string('source', 'tool_muprog'),
@@ -164,8 +165,8 @@ class renderer extends \plugin_renderer_base {
 
             if ($item instanceof set) {
                 $completiontype = $item->get_sequencetype_info();
-            } else if ($item instanceof training) {
-                $completiontype = $item->get_training_progress($allocation);
+            } else if ($item instanceof credits) {
+                $completiontype = $item->get_current_credits($allocation);
             } else {
                 $completiontype = '';
             }
@@ -202,8 +203,8 @@ class renderer extends \plugin_renderer_base {
                 $itemname = $this->output->pix_icon('itemtop', get_string('program', 'tool_muprog'), 'tool_muprog') . '&nbsp;' . $fullname;
             } else if ($item instanceof course) {
                 $itemname = $padding . $this->output->pix_icon('itemcourse', get_string('course'), 'tool_muprog') . $fullname;
-            } else if ($item instanceof training) {
-                $itemname = $padding . $this->output->pix_icon('itemtraining', get_string('training', 'tool_muprog'), 'tool_muprog') . $fullname;
+            } else if ($item instanceof credits) {
+                $itemname = $padding . $this->output->pix_icon('itemcredits', get_string('credits', 'tool_muprog'), 'tool_muprog') . $fullname;
             } else {
                 $itemname = $padding . $this->output->pix_icon('itemset', get_string('set', 'tool_muprog'), 'tool_muprog') . $fullname;
             }
@@ -273,21 +274,28 @@ class renderer extends \plugin_renderer_base {
             $fullname = \html_writer::link($detailurl, $fullname);
             $row[] = $fullname;
 
-            $row[] = \tool_muprog\local\allocation::get_completion_status_html($program, $allocation);
-
             $row[] = userdate($allocation->timestart, $dateformat);
 
             $row[] = (isset($allocation->timedue) ? userdate($allocation->timedue, $dateformat) : $strnotset);
 
             $row[] = (isset($allocation->timeend) ? userdate($allocation->timeend, $dateformat) : $strnotset);
 
+            $row[] = \tool_muprog\local\allocation::get_progress_percentage($program, $allocation);
+
+            $row[] = \tool_muprog\local\allocation::get_completion_status_html($program, $allocation);
+
             $data[] = $row;
         }
 
         $table = new \html_table();
-        $table->head = [get_string('programname', 'tool_muprog'), get_string('programstatus', 'tool_muprog'),
-            get_string('programstart', 'tool_muprog'), get_string('programdue', 'tool_muprog'),
-            get_string('programend', 'tool_muprog')];
+        $table->head = [
+            get_string('programname', 'tool_muprog'),
+            get_string('programstart', 'tool_muprog'),
+            get_string('programdue', 'tool_muprog'),
+            get_string('programend', 'tool_muprog'),
+            get_string('programprogress', 'tool_muprog'),
+            get_string('programstatus', 'tool_muprog'),
+        ];
         $table->attributes['class'] = 'table table-striped';
         $table->data = $data;
         return \html_writer::table($table);

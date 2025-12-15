@@ -118,36 +118,29 @@ Feature: Program completion by students tests
     When I log in as "student1"
     And I am on the "tool_muprog > My programs" page
     And I follow "Program 000"
+    And I should see "Open" in the "Program status" definition list item
+    And I should see "0 %" in the "Progress" definition list item
     And I follow "Course 1"
     And I follow "Sample page"
-    # The cron job has to be executed twice with a pause.
-    And I run the "core\task\completion_regular_task" task
-    And I wait "1" seconds
-    And I run the "core\task\completion_regular_task" task
 
     And I am on the "tool_muprog > My programs" page
     And I follow "Program 000"
     And I should see "Open" in the "Program status" definition list item
+    And I should see "25 %" in the "Progress" definition list item
     And I follow "Course 2"
     And I follow "Sample page"
-    # The cron job has to be executed twice with a pause.
-    And I run the "core\task\completion_regular_task" task
-    And I wait "1" seconds
-    And I run the "core\task\completion_regular_task" task
 
     And I am on the "tool_muprog > My programs" page
     And I follow "Program 000"
     And I should see "Open" in the "Program status" definition list item
+    And I should see "50 %" in the "Progress" definition list item
     And I follow "Course 3"
     And I follow "Sample page"
-    # The cron job has to be executed twice with a pause.
-    And I run the "core\task\completion_regular_task" task
-    And I wait "1" seconds
-    And I run the "core\task\completion_regular_task" task
 
     And I am on the "tool_muprog > My programs" page
     And I follow "Program 000"
     Then I should see "Completed" in the "Program status" definition list item
+    And I should see "75 %" in the "Progress" definition list item
 
   @javascript
   Scenario: Student may see that course is missing which prevents completion

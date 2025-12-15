@@ -18,10 +18,10 @@
 
 namespace tool_muprog\local\form;
 
-use tool_muprog\local\content\training;
+use tool_muprog\local\content\credits;
 
 /**
- * Edit program training item.
+ * Edit program credits item.
  *
  * @package    tool_muprog
  * @copyright  2022 Open LMS (https://www.openlms.net/)
@@ -29,18 +29,18 @@ use tool_muprog\local\content\training;
  * @author     Petr Skoda
  * @license    https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-final class item_training_edit extends \tool_mulib\local\ajax_form {
+final class item_credits_edit extends \tool_mulib\local\ajax_form {
     #[\Override]
     protected function definition() {
         $mform = $this->_form;
-        /** @var training $training */
-        $training = $this->_customdata['training'];
+        /** @var credits $credits */
+        $credits = $this->_customdata['credits'];
 
-        $mform->addElement('static', 'staticfullname', get_string('fullname'), format_string($training->get_fullname()));
+        $mform->addElement('static', 'staticfullname', get_string('fullname'), format_string($credits->get_fullname()));
 
         $mform->addElement('text', 'points', get_string('itempoints', 'tool_muprog'));
         $mform->setType('points', PARAM_INT);
-        $mform->setDefault('points', $training->get_points());
+        $mform->setDefault('points', $credits->get_points());
 
         $mform->addElement(
             'duration',
@@ -48,13 +48,13 @@ final class item_training_edit extends \tool_mulib\local\ajax_form {
             get_string('completiondelay', 'tool_muprog'),
             ['optional' => true, 'defaultunit' => DAYSECS]
         );
-        $mform->setDefault('completiondelay', $training->get_completiondelay());
+        $mform->setDefault('completiondelay', $credits->get_completiondelay());
 
         $mform->addElement('hidden', 'id');
         $mform->setType('id', PARAM_INT);
-        $mform->setDefault('id', $training->get_id());
+        $mform->setDefault('id', $credits->get_id());
 
-        $this->add_action_buttons(true, get_string('updatetraining', 'tool_muprog'));
+        $this->add_action_buttons(true, get_string('updatecredits', 'tool_muprog'));
     }
 
     #[\Override]

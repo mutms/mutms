@@ -83,7 +83,7 @@ final class my_allocations extends system_report {
         global $USER;
 
         // Everybody may view own programs.
-        if (!\tool_muprog\local\util::is_muprog_active()) {
+        if (!\tool_mulib\local\mulib::is_muprog_active()) {
             return false;
         }
         if (isguestuser() || !isloggedin()) {
@@ -140,6 +140,7 @@ final class my_allocations extends system_report {
             });
         $this->add_column($column);
 
+        $this->add_column_from_entity('allocation:progress');
         $this->add_column_from_entity('allocation:status');
 
         $this->set_initial_sort_column('program:fullname', SORT_ASC);
