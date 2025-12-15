@@ -74,6 +74,7 @@ if ($actions->has_items()) {
 }
 
 echo $OUTPUT->header();
+echo $OUTPUT->heading($title);
 
 $report = \core_reportbuilder\system_report_factory::create(
     \tool_mucertify\reportbuilder\local\systemreports\my_assignments::class,

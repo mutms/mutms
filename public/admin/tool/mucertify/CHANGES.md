@@ -1,5 +1,11 @@
 # Changelog
 
+## mu-5.0.4-02
+
+Release date: 16/12/2025
+
+* Fixed placement of custom fields in certification creation form.
+
 ## mu-5.0.4-01
 
 Release date: 08/12/2025

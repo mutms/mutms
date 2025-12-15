@@ -61,10 +61,6 @@ final class certification_create extends \tool_mulib\local\ajax_form {
         $mform->addElement('editor', 'description_editor', get_string('description'), ['rows' => 5], $editoroptions);
         $mform->setType('description_editor', PARAM_RAW);
 
-        // Add custom fields to the form.
-        $this->handler = \tool_mucertify\customfield\certification_handler::create();
-        $this->handler->instance_form_definition($mform);
-
         $sources = [];
         /** @var \tool_mucertify\local\source\base[] $sourceclasses */
         $sourceclasses = \tool_mucertify\local\assignment::get_source_classes();
@@ -76,6 +72,10 @@ final class certification_create extends \tool_mulib\local\ajax_form {
         if ($sources) {
             $mform->addElement('group', 'addsources', get_string('assignmentsources', 'tool_mucertify'), $sources, \html_writer::div('', 'w-100 mb-2'));
         }
+
+        // Add custom fields to the form.
+        $this->handler = \tool_mucertify\customfield\certification_handler::create();
+        $this->handler->instance_form_definition($mform);
 
         $this->add_action_buttons(true, get_string('certification_create', 'tool_mucertify'));
 

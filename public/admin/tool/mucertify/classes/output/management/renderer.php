@@ -515,6 +515,13 @@ class renderer extends \plugin_renderer_base {
         }
         $details->add(get_string('programstatus', 'tool_muprog'), $programstatus);
 
+        if ($allocation) {
+            $details->add(
+                get_string('programprogress', 'tool_muprog'),
+                \tool_muprog\local\allocation::get_progress_percentage($program, $allocation)
+            );
+        }
+
         $details->add(
             get_string('windowstartdate', 'tool_mucertify'),
             period::get_windowstart_html($certification, $assignment, $period)
