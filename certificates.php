@@ -23,7 +23,7 @@
  */
 
 require_once('../../../config.php');
-require_once($CFG->libdir.'/adminlib.php');
+require_once($CFG->libdir . '/adminlib.php');
 
 $download = optional_param('download', null, PARAM_ALPHA);
 $templateid = required_param('templateid', PARAM_INT);
@@ -48,8 +48,11 @@ if (!$template->can_view_issues()) {
 
 $heading = $title = $template->get_formatted_name();
 if ($template->get_shared()) {
-    $heading .= html_writer::tag('div', get_string('shared', 'tool_certificate'),
-        ['class' => 'badge rounded-pill bg-secondary text-dark font-small ms-2 align-middle']);
+    $heading .= html_writer::tag(
+        'div',
+        get_string('shared', 'tool_certificate'),
+        ['class' => 'badge rounded-pill bg-secondary text-dark font-small ms-2 align-middle']
+    );
 }
 $PAGE->navbar->add($title, $pageurl);
 $PAGE->set_title($title);
@@ -70,6 +73,8 @@ if ($template->can_issue_to_anybody()) {
         'addbuttonicon' => true, ];
 }
 $PAGE->requires->js_call_amd('tool_certificate/issues-list', 'init');
+
+$data['bulkactionsselect'] = true;
 
 echo $OUTPUT->header();
 echo $OUTPUT->render_from_template('tool_certificate/content_with_heading', $data);
