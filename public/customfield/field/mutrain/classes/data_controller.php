@@ -21,7 +21,7 @@ namespace customfield_mutrain;
 use tool_mutrain\local\framework;
 
 /**
- * Data class for training custom field
+ * Data class for training credits custom field
  *
  * @package    customfield_mutrain
  * @copyright  2024 Open LMS (https://www.openlms.net/)
@@ -35,7 +35,7 @@ class data_controller extends \core_customfield\data_controller {
      * @return string
      */
     public function datafield(): string {
-        return 'intvalue';
+        return 'decvalue';
     }
 
     /**
@@ -82,7 +82,8 @@ class data_controller extends \core_customfield\data_controller {
         }
 
         if ($data[$elementname] !== '' && $data[$elementname] !== null) {
-            if (!is_number($data[$elementname]) || $data[$elementname] < 0) {
+            $value = str_replace(',', '.', $data[$elementname]);
+            if (!is_numeric($value) || $value < 0) {
                 $errors[$elementname] = get_string('error');
             }
         }
@@ -102,6 +103,7 @@ class data_controller extends \core_customfield\data_controller {
      */
     public function instance_form_before_set_data(\stdClass $instance): void {
         $value = $this->get_value();
+        $value = format_float($value, 2, true, true);
         $instance->{$this->get_form_element_name()} = $value;
     }
 
@@ -142,16 +144,14 @@ class data_controller extends \core_customfield\data_controller {
         }
 
         $value = $datanew->$elementname;
-        if ($value === '') {
+        if (empty($value) || trim($value) === '') {
             $value = null;
-        } else if ($value !== null) {
-            if ($value < 0) {
-                throw new \invalid_parameter_exception('training value cannot be negative');
+        } else {
+            $value = str_replace(',', '.', $value);
+            if (!is_numeric($value) || $value < 0) {
+                throw new \invalid_parameter_exception('if provided training credits must be a positive number');
             }
-            $value = (int)$value;
-            if ($value == 0) {
-                $value = null;
-            }
+            $value = format_float($value, 2, false, false);
         }
 
         $this->data->set($this->datafield(), $value);
@@ -165,7 +165,11 @@ class data_controller extends \core_customfield\data_controller {
      * @return string|null value or null if empty
      */
     public function export_value() {
-        // Do not use parent::export_value() here, we do not want any nulls here.
-        return $this->get_value();
+        // Do not use parent::export_value() here.
+        $value = $this->get_value();
+        if ($value === null) {
+            return null;
+        }
+        return format_float($value, 2, true, true);
     }
 }
