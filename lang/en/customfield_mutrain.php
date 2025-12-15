@@ -17,7 +17,7 @@
 // phpcs:disable moodle.Files.BoilerplateComment.CommentEndedTooSoon
 
 /**
- * Training customfield lang strings.
+ * Training credits customfield lang strings.
  *
  * @package    customfield_mutrain
  * @copyright  2024 Open LMS (https://www.openlms.net/)
@@ -27,5 +27,5 @@
  */
 
 
-$string['pluginname'] = 'Training value custom field';
-$string['privacy:metadata'] = 'Training value custom field does not store any personal data.';
+$string['pluginname'] = 'Training credits';
+$string['privacy:metadata'] = 'Training credits custom field does not store any personal data.';

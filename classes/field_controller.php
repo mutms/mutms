@@ -21,7 +21,7 @@ namespace customfield_mutrain;
 use tool_mutrain\local\framework;
 
 /**
- * Data class for training custom field
+ * Data class for training credits custom field
  *
  * @package    customfield_mutrain
  * @copyright  2024 Open LMS (https://www.openlms.net/)

@@ -1,8 +1,8 @@
-# Training value custom field for Moodle™ LMS
+# Training credits custom field for Moodle™ LMS
 
 ![Moodle Plugin CI](https://github.com/mutms/moodle-customfield_mutrain/actions/workflows/moodle-ci.yml/badge.svg)
 
-This plugin is required by [Training plugin for Moodle™ LMS](https://github.com/mutms/moodle-tool_mutrain).
+This plugin is required by [Training credits plugin for Moodle™ LMS](https://github.com/mutms/moodle-tool_mutrain).
 
 Please note that this plugin does not do anything useful by itself.
 
