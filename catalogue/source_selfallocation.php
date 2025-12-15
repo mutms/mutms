@@ -45,7 +45,7 @@ $PAGE->set_url(new moodle_url('/admin/tool/muprog/catalogue/source_selfallocatio
 require_login();
 require_capability('tool/muprog:viewcatalogue', context_system::instance());
 
-if (!\tool_muprog\local\util::is_muprog_active()) {
+if (!\tool_mulib\local\mulib::is_muprog_active()) {
     redirect(new moodle_url('/'));
 }
 

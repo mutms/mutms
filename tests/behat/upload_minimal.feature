@@ -24,7 +24,7 @@ Feature: Program minimal upload tests
       | Program viewer  | pviewer   |
       | Program manager | pmanager  |
     And the following "permission overrides" exist:
-      | capability                     | permission | role     | contextlevel | reference |
+      | capability                  | permission | role     | contextlevel | reference |
       | tool/muprog:view            | Allow      | pmanager | System       |           |
       | tool/muprog:upload          | Allow      | pmanager | System       |           |
     And the following "role assigns" exist:

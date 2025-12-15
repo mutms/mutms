@@ -213,7 +213,7 @@
                           "type": "object",
                           "properties": {
                             "itemtype": {
-                              "enum": ["training"]
+                              "enum": ["credits"]
                             },
                             "reference": {
                               "type": "string",

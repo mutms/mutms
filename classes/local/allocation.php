@@ -16,6 +16,8 @@
 
 // phpcs:disable moodle.Files.BoilerplateComment.CommentEndedTooSoon
 // phpcs:disable moodle.Files.LineLength.TooLong
+// phpcs:disable moodle.Commenting.ValidTags.Invalid
+// phpcs:disable moodle.Commenting.InlineComment.DocBlock
 
 namespace tool_muprog\local;
 
@@ -29,6 +31,7 @@ use tool_muprog\local\source\program;
 use tool_muprog\local\source\extdb;
 use stdClass;
 use tool_mulib\local\mulib;
+use tool_mulib\local\sql;
 
 /**
  * Program allocation abstraction.
@@ -544,16 +547,16 @@ final class allocation {
                        $programselect $userselect";
         $DB->execute($sql, $params);
 
-        $select = "trainingid IS NOT NULL";
+        $select = "creditframeworkid IS NOT NULL";
         $params = [];
         if ($programid) {
             $select .= " AND programid = :programid";
             $params['programid'] = $programid;
         }
         if ($DB->record_exists_select('tool_muprog_item', $select, $params)) {
-            // Aggregate training progress unless the training framework is archived.
+            // Aggregate current credits unless the credits framework is archived.
             if ($trace) {
-                $trace->output('aggregating training progress', 1);
+                $trace->output('aggregating current credits', 1);
             }
             $params = [];
             $programselect = '';
@@ -578,21 +581,10 @@ final class allocation {
                       FROM {tool_muprog_allocation} pa
                       JOIN {tool_muprog_program} p ON p.id = pa.programid
                       JOIN {tool_muprog_item} pi ON pi.programid = pa.programid
-                      JOIN {tool_mutrain_framework} tfr ON tfr.id = pi.trainingid
+                      JOIN {tool_mutrain_framework} tfr ON tfr.id = pi.creditframeworkid
+                      JOIN {tool_mutrain_credit} mcr ON mcr.frameworkid = pi.creditframeworkid AND mcr.userid = pa.userid AND tfr.requiredcredits <= mcr.credits
                  LEFT JOIN {tool_muprog_completion} pc ON pc.allocationid = pa.id AND pc.itemid = pi.id
                      WHERE pc.id IS NULL
-                           AND EXISTS (
-
-                               SELECT SUM(cd.intvalue)
-                                 FROM {tool_mutrain_completion} ctc
-                                 JOIN {customfield_field} cf ON cf.id = ctc.fieldid
-                                 JOIN {customfield_data} cd ON cd.fieldid = cf.id AND cd.instanceid = ctc.instanceid
-                                 JOIN {tool_mutrain_field} tf ON tf.fieldid = cf.id
-                                WHERE tf.frameworkid = tfr.id AND ctc.userid = pa.userid AND cd.intvalue IS NOT NULL
-                                      AND (tfr.restrictedcompletion = 0 OR ctc.timecompleted >= pa.timestart)
-                               HAVING SUM(cd.intvalue) >= tfr.requiredtraining
-
-                           )
                            AND p.archived = 0 AND pa.archived = 0 AND tfr.archived = 0
                            AND (pa.timestart <= :now1)
                            AND (pa.timeend IS NULL OR pa.timeend > :now2)
@@ -921,6 +913,94 @@ final class allocation {
             groups_add_member($cm->groupid, $cm->userid, 'tool_muprog', $cm->programid);
         }
         $rs->close();
+
+        if ($DB->get_dbfamily() === 'mysql') {
+            $sql = new sql(/** @lang=MySQL */
+                "UPDATE {tool_muprog_allocation} a, (
+
+                            SELECT a.id AS allocationid, COUNT(c.id) AS ic
+                              FROM {tool_muprog_allocation} a
+                              JOIN {tool_muprog_item} i ON i.programid = a.programid
+                         LEFT JOIN {tool_muprog_completion} c ON c.allocationid = a.id AND c.itemid = i.id AND c.timecompleted IS NOT NULL
+                             WHERE (i.courseid IS NOT NULL OR i.creditframeworkid IS NOT NULL)
+                                   /* programselect1 */ /* userselect1 */
+                          GROUP BY a.id
+
+                        ) c
+                    SET a.itemscompleted = c.ic
+                  WHERE a.id = c.allocationid
+                        AND a.itemscompleted <> c.ic
+                        /* programselect2 */ /* userselect2 */"
+            );
+            if ($programid) {
+                $sql = $sql->replace_comment(
+                    'programselect1',
+                    "AND a.programid = :programid",
+                    ['programid' => $programid]
+                );
+                $sql = $sql->replace_comment(
+                    'programselect2',
+                    "AND a.programid = :programid",
+                    ['programid' => $programid]
+                );
+            }
+            if ($userid) {
+                $sql = $sql->replace_comment(
+                    'userselect1',
+                    " AND a.userid = :userid",
+                    ['userid' => $userid]
+                );
+                $sql = $sql->replace_comment(
+                    'userselect2',
+                    " AND a.userid = :userid",
+                    ['userid' => $userid]
+                );
+            }
+        } else {
+            $sql = new sql(
+                "UPDATE {tool_muprog_allocation}
+                    SET itemscompleted = c.ic
+                   FROM (
+
+                            SELECT a.id AS allocationid, COUNT(c.id) AS ic
+                              FROM {tool_muprog_allocation} a
+                              JOIN {tool_muprog_item} i ON i.programid = a.programid
+                         LEFT JOIN {tool_muprog_completion} c ON c.allocationid = a.id AND c.itemid = i.id AND c.timecompleted IS NOT NULL
+                             WHERE (i.courseid IS NOT NULL OR i.creditframeworkid IS NOT NULL)
+                                   /* programselect1 */ /* userselect1 */
+                          GROUP BY a.id
+
+                        ) c
+                  WHERE {tool_muprog_allocation}.id = c.allocationid
+                        AND {tool_muprog_allocation}.itemscompleted <> c.ic
+                        /* programselect2 */ /* userselect2 */"
+            );
+            if ($programid) {
+                $sql = $sql->replace_comment(
+                    'programselect1',
+                    "AND a.programid = :programid",
+                    ['programid' => $programid]
+                );
+                $sql = $sql->replace_comment(
+                    'programselect2',
+                    "AND {tool_muprog_allocation}.programid = :programid",
+                    ['programid' => $programid]
+                );
+            }
+            if ($userid) {
+                $sql = $sql->replace_comment(
+                    'userselect1',
+                    " AND a.userid = :userid",
+                    ['userid' => $userid]
+                );
+                $sql = $sql->replace_comment(
+                    'userselect2',
+                    " AND {tool_muprog_allocation}.userid = :userid",
+                    ['userid' => $userid]
+                );
+            }
+        }
+        $DB->execute($sql->sql, $sql->params);
     }
 
     /**
@@ -1005,6 +1085,8 @@ final class allocation {
 
         notification\reset::notify_now($user, $program, $source, $allocation);
 
+        $allocation = $DB->get_record('tool_muprog_allocation', ['id' => $record->id], '*', MUST_EXIST);
+
         return $allocation;
     }
 
@@ -1043,6 +1125,9 @@ final class allocation {
         $trans->allow_commit();
 
         self::fix_user_enrolments($allocation->programid, $allocation->userid);
+
+        $allocation = $DB->get_record('tool_muprog_allocation', ['id' => $data->allocationid], '*', MUST_EXIST);
+
         calendar::fix_allocation_events($allocation, $program);
     }
 
@@ -1136,6 +1221,36 @@ final class allocation {
     }
 
     /**
+     * Returns completion status as array of status text plus NS badge type.
+     *
+     * @param stdClass $program
+     * @param stdClass $allocation
+     * @return string
+     */
+    public static function get_completion_status(stdClass $program, stdClass $allocation): array {
+        $now = time();
+
+        if ($program->archived || $allocation->archived) {
+            if ($allocation->timecompleted) {
+                return [get_string('programstatus_archivedcompleted', 'tool_muprog'), 'bg-success'];
+            } else {
+                return [get_string('programstatus_archived', 'tool_muprog'), 'bg-dark'];
+            }
+        } else if ($allocation->timecompleted) {
+            return [get_string('programstatus_completed', 'tool_muprog'), 'bg-success'];
+        } else if ($allocation->timestart > $now) {
+            return [get_string('programstatus_future', 'tool_muprog'), 'bg-light text-dark'];
+        } else if ($allocation->timeend && $allocation->timeend < $now) {
+            return [get_string('programstatus_failed', 'tool_muprog'), 'bg-danger'];
+        } else if ($allocation->timedue && $allocation->timedue < $now) {
+            return [get_string('programstatus_overdue', 'tool_muprog'), 'bg-warning text-dark'];
+        } else {
+            // We need something different from tags that use 'bg-info'.
+            return [get_string('programstatus_open', 'tool_muprog'), 'bg-primary'];
+        }
+    }
+
+    /**
      * Returns completion status as plain text.
      *
      * @param stdClass $program
@@ -1143,28 +1258,8 @@ final class allocation {
      * @return string
      */
     public static function get_completion_status_plain(stdClass $program, stdClass $allocation): string {
-        $now = time();
-
-        if ($program->archived || $allocation->archived) {
-            if ($allocation->timecompleted) {
-                return get_string('programstatus_archivedcompleted', 'tool_muprog');
-            } else {
-                return get_string('programstatus_archived', 'tool_muprog');
-            }
-        }
-
-        if ($allocation->timecompleted) {
-            return get_string('programstatus_completed', 'tool_muprog');
-        } else if ($allocation->timestart > $now) {
-            return get_string('programstatus_future', 'tool_muprog');
-        } else if ($allocation->timeend && $allocation->timeend < $now) {
-            return get_string('programstatus_failed', 'tool_muprog');
-        } else if ($allocation->timedue && $allocation->timedue < $now) {
-            return get_string('programstatus_overdue', 'tool_muprog');
-        } else {
-            // We need something different from tags that use 'badge-info'.
-            return get_string('programstatus_open', 'tool_muprog');
-        }
+        [$status, $badge] = self::get_completion_status($program, $allocation);
+        return $status;
     }
 
     /**
@@ -1175,30 +1270,36 @@ final class allocation {
      * @return string
      */
     public static function get_completion_status_html(stdClass $program, stdClass $allocation): string {
-        $result = [];
+        [$status, $class] = self::get_completion_status($program, $allocation);
+        return '<span class="badge ' . $class . '">' . $status . '</span>';
+    }
 
-        $now = time();
-
-        if ($program->archived || $allocation->archived) {
-            if ($allocation->timecompleted) {
-                $result[] = '<span class="badge bg-success">' . get_string('programstatus_archivedcompleted', 'tool_muprog') . '</span>';
-            } else {
-                $result[] = '<span class="badge bg-dark">' . get_string('programstatus_archived', 'tool_muprog') . '</span>';
-            }
-        } else if ($allocation->timecompleted) {
-            $result[] = '<div class="badge bg-success">' . get_string('programstatus_completed', 'tool_muprog') . '</div>';
-        } else if ($allocation->timestart > $now) {
-            $result[] = '<div class="badge bg-light text-dark">' . get_string('programstatus_future', 'tool_muprog') . '</div>';
-        } else if ($allocation->timeend && $allocation->timeend < $now) {
-            $result[] = '<div class="badge bg-danger">' . get_string('programstatus_failed', 'tool_muprog') . '</div>';
-        } else if ($allocation->timedue && $allocation->timedue < $now) {
-            $result[] = '<div class="badge bg-warning text-dark">' . get_string('programstatus_overdue', 'tool_muprog') . '</div>';
-        } else {
-            // We need something different from tags that use 'badge-info'.
-            $result[] = '<div class="badge bg-primary">' . get_string('programstatus_open', 'tool_muprog') . '</div>';
+    /**
+     * Returns program progress as integer of completed items where 100 is 100 %.
+     *
+     * @param stdClass $program
+     * @param stdClass $allocation
+     * @return int|null
+     */
+    public static function get_progress_integer(stdClass $program, stdClass $allocation): ?int {
+        if (!$program->itemscount) {
+            return null;
         }
+        return (round(100.0 * $allocation->itemscompleted / $program->itemscount));
+    }
 
-        return implode(' ', $result);
+    /**
+     * Returns program progress as percentage of completed items.
+     *
+     * @param stdClass $program
+     * @param stdClass $allocation
+     * @return string
+     */
+    public static function get_progress_percentage(stdClass $program, stdClass $allocation): string {
+        if (!$program->itemscount) {
+            return '';
+        }
+        return (round(100.0 * $allocation->itemscompleted / $program->itemscount)) . ' %';
     }
 
     /**

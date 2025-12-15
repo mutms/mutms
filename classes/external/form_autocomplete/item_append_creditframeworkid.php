@@ -34,8 +34,8 @@ use tool_mulib\local\mulib;
  * @author      Petr Skoda
  * @license     https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-final class item_append_trainingid extends \tool_mulib\external\form_autocomplete\base {
-    /** @var string|null training framework table */
+final class item_append_creditframeworkid extends \tool_mulib\external\form_autocomplete\base {
+    /** @var string|null credits framework table */
     protected const ITEM_TABLE = 'tool_mutrain_framework';
     /** @var string|null field used for item name */
     protected const ITEM_FIELD = 'name';
@@ -48,13 +48,13 @@ final class item_append_trainingid extends \tool_mulib\external\form_autocomplet
     #[\Override]
     public static function execute_parameters(): external_function_parameters {
         return new external_function_parameters([
-            'query' => new external_value(\PARAM_RAW, 'The search query', \VALUE_REQUIRED),
-            'programid' => new external_value(\PARAM_INT, 'Program id', \VALUE_REQUIRED),
+            'query' => new external_value(PARAM_RAW, 'The search query', VALUE_REQUIRED),
+            'programid' => new external_value(PARAM_INT, 'Program id', VALUE_REQUIRED),
         ]);
     }
 
     /**
-     * Finds candidates for adding training frameworks to program.
+     * Finds candidates for adding credits frameworks to program.
      *
      * @param string $query The search request.
      * @param int $programid The framework.

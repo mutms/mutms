@@ -131,16 +131,16 @@ abstract class item {
     }
 
     /**
-     * Is this a training item?
+     * Is this a credits item?
      *
      * @return bool
      */
-    final public function is_training(): bool {
-        return ($this instanceof training);
+    final public function is_credits(): bool {
+        return ($this instanceof credits);
     }
 
     /**
-     * Is this a training item?
+     * Is this a credits item?
      *
      * @return bool
      */

@@ -15,9 +15,10 @@
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 // phpcs:disable moodle.Files.BoilerplateComment.CommentEndedTooSoon
+// phpcs:disable moodle.Files.LineLength.TooLong
 
 /**
- * Program enrolment uninstallation.
+ * Programs plugin upgrade.
  *
  * @package    tool_muprog
  * @copyright  2022 Open LMS (https://www.openlms.net/)
@@ -103,6 +104,60 @@ function xmldb_tool_muprog_upgrade($oldversion): bool {
         }
 
         upgrade_plugin_savepoint(true, 2025111845, 'tool', 'muprog');
+    }
+
+    if ($oldversion < 2025120945) {
+        $table = new xmldb_table('tool_muprog_item');
+
+        $index = new xmldb_index('trainingid', XMLDB_INDEX_NOTUNIQUE, ['trainingid']);
+        if ($dbman->index_exists($table, $index)) {
+            $dbman->drop_index($table, $index);
+        }
+
+        $field = new xmldb_field('trainingid', XMLDB_TYPE_INTEGER, '10', null, null, null, null, 'courseid');
+        if ($dbman->field_exists($table, $field)) {
+            $dbman->rename_field($table, $field, 'creditframeworkid');
+        }
+
+        $index = new xmldb_index('creditframeworkid', XMLDB_INDEX_NOTUNIQUE, ['creditframeworkid']);
+        if (!$dbman->index_exists($table, $index)) {
+            $dbman->add_index($table, $index);
+        }
+
+        upgrade_plugin_savepoint(true, 2025120945, 'tool', 'muprog');
+    }
+
+    if ($oldversion < 2025121145) {
+        $table = new xmldb_table('tool_muprog_program');
+        $field = new xmldb_field('itemscount', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, '0', 'enddatejson');
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
+        $sql = "UPDATE {tool_muprog_program}
+                   SET itemscount = (SELECT COUNT('x')
+                                       FROM {tool_muprog_item} i
+                                      WHERE i.programid = {tool_muprog_program}.id
+                                            AND (i.courseid IS NOT NULL OR i.creditframeworkid IS NOT NULL)
+                                    )";
+        $DB->execute($sql);
+
+        $table = new xmldb_table('tool_muprog_allocation');
+        $field = new xmldb_field('itemscompleted', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, '0', 'calendarupdated');
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+        $sql = "UPDATE {tool_muprog_allocation}
+                   SET itemscompleted = (SELECT COUNT('x')
+                                          FROM {tool_muprog_completion} c
+                                          JOIN {tool_muprog_item} i ON i.id = c.itemid AND i.programid = {tool_muprog_allocation}.programid
+                                         WHERE c.allocationid = {tool_muprog_allocation}.id
+                                               AND (i.courseid IS NOT NULL OR i.creditframeworkid IS NOT NULL)
+                                               AND c.timecompleted IS NOT NULL
+                                       )";
+        $DB->execute($sql);
+
+        upgrade_plugin_savepoint(true, 2025121145, 'tool', 'muprog');
     }
 
     return true;

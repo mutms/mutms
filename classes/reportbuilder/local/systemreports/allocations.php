@@ -122,9 +122,10 @@ final class allocations extends system_report {
         $this->add_column_from_entity('allocation:timestart');
         $this->add_column_from_entity('allocation:timedue');
         $this->add_column_from_entity('allocation:timeend');
-        $this->add_column_from_entity('allocation:status');
         $this->add_column_from_entity('source:type');
         $this->add_column_from_entity('allocation:archived');
+        $this->add_column_from_entity('allocation:progress');
+        $this->add_column_from_entity('allocation:status');
 
         $this->set_initial_sort_column('user:fullname', SORT_ASC);
     }
