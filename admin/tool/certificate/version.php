@@ -19,14 +19,14 @@
  *
  * @package    tool_certificate
  * @copyright  2013 Mark Nelson <markn@moodle.com>
- * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or late
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 defined('MOODLE_INTERNAL') || die();
 
 $plugin->component    = 'tool_certificate';
-$plugin->release      = '5.0.3';
-$plugin->version      = 2025100700;
+$plugin->release      = '5.0.4';
+$plugin->version      = 2025120900;
 $plugin->requires     = 2025041400.00;
 $plugin->maturity     = MATURITY_STABLE;
 $plugin->supported    = [500, 501];
