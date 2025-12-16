@@ -80,17 +80,17 @@ Feature: Programs plugin English wiki documentation image generator
       | manager   | manager       | System       |           |
     And the following "tool_muprog > program_allocations" exist:
       | program                              | user     | timeallocated          | timedue                |
-      | Basic First Aid                      | a        | ## 2025-04-26 10:00 ## | ## 2025-07-26 10:00 ## |
-      | Basic First Aid                      | b        | ## 2025-01-01 10:00 ## | ## 2025-03-01 10:00 ## |
-      | Basic First Aid                      | c        | ## 2025-04-26 10:00 ## | ## 2025-07-26 10:00 ## |
-      | Basic First Aid                      | d        | ## 2025-04-26 10:00 ## | ## 2025-07-26 10:00 ## |
-      | Basic First Aid                      | e        | ## 2025-04-26 10:00 ## | ## 2025-07-26 10:00 ## |
-      | Basic First Aid                      | f        | ## 2025-04-26 10:00 ## | ## 2025-07-26 10:00 ## |
-      | Basic First Aid                      | g        | ## 2025-04-26 10:00 ## | ## 2025-07-26 10:00 ## |
+      | Basic First Aid                      | a        | ##14 days ago##        | ##tomorrow + 30 days## |
+      | Basic First Aid                      | b        | ##30 days ago##        | ##14 days ago##        |
+      | Basic First Aid                      | c        | ##14 days ago##        | ##tomorrow + 30 days## |
+      | Basic First Aid                      | d        | ##14 days ago##        | ##tomorrow + 30 days## |
+      | Basic First Aid                      | e        | ##14 days ago##        | ##tomorrow + 30 days## |
+      | Basic First Aid                      | f        | ##14 days ago##        | ##tomorrow + 30 days## |
+      | Basic First Aid                      | g        | ##14 days ago##        | ##tomorrow + 30 days## |
       | Advanced First Aid                   | h        |                        |                        |
       | Advanced First Aid                   | i        |                        |                        |
       | Advanced First Aid                   | j        |                        |                        |
-      | Motorcycle Maintenance for Beginners | c        | ## 2025-01-15 08:00 ## |                        |
+      | Motorcycle Maintenance for Beginners | c        | ##30 days ago##        |                        |
       | Motorcycle Maintenance for Beginners | e        |                        |                        |
       | Motorcycle Maintenance for Beginners | g        |                        |                        |
       | Motorcycle Maintenance for Beginners | i        |                        |                        |
@@ -139,7 +139,7 @@ Feature: Programs plugin English wiki documentation image generator
       | timeallocationstart[enabled] | 1    |
       | timeallocationstart[day]     | 1    |
       | timeallocationstart[month]   | 1    |
-      | timeallocationstart[year]    | 2025 |
+      | timeallocationstart[year]    | 2026 |
       | timeallocationstart[hour]    | 10   |
       | timeallocationstart[minute]  | 00   |
     And I click on "Update allocations" "button" in the ".modal-dialog" "css_element"
@@ -191,6 +191,12 @@ Feature: Programs plugin English wiki documentation image generator
     And I turn editing mode on
     And I open the "Recently accessed items" blocks action menu
     And I follow "Delete Recently accessed items block"
+    And I click on "Delete" "button" in the "Delete block?" "dialogue"
+    And I open the "Recently accessed courses" blocks action menu
+    And I follow "Delete Recently accessed courses block"
+    And I click on "Delete" "button" in the "Delete block?" "dialogue"
+    And I open the "Timeline" blocks action menu
+    And I follow "Delete Timeline block"
     And I click on "Delete" "button" in the "Delete block?" "dialogue"
     And I open the "Timeline" blocks action menu
     And I follow "Delete Timeline block"
