@@ -207,19 +207,22 @@ final class tenant extends base {
                     return '';
                 }
 
+                $loginurl = \tool_mutenancy\local\tenant::get_login_url($row->id);
+                if (!$loginurl) {
+                    return '';
+                }
+
                 // Report builder download script is missing NO_DEBUG_DISPLAY
                 // and template rendering is changing session after it is closed,
                 // add a hacky workaround for now.
                 if ($SCRIPT === '/reportbuilder/download.php') {
-                    $url = \tool_mutenancy\local\tenant::get_login_url($row->id);
-                    if ($url) {
-                        return $url->out(false);
-                    } else {
-                        return '';
-                    }
+                    return \html_writer::link($loginurl, $loginurl);
                 }
 
-                $loginurl = new \tool_mutenancy\output\loginurl($row->id);
+                $loginurl = new \tool_mulib\output\url_clipboard(
+                    $loginurl,
+                    get_string('tenant_loginurl_copy', 'tool_mutenancy')
+                );
                 return $OUTPUT->render($loginurl);
             });
 
