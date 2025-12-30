@@ -45,7 +45,7 @@ class block_mucertify_my extends block_base {
             return null;
         }
 
-        if (!\tool_mucertify\local\util::is_mucertify_active()) {
+        if (!\tool_mulib\local\mulib::is_mucertify_active()) {
             return null;
         }
 
@@ -71,6 +71,6 @@ class block_mucertify_my extends block_base {
 
     #[\Override]
     public function can_block_be_added(moodle_page $page): bool {
-        return \tool_mucertify\local\util::is_mucertify_active();
+        return \tool_mulib\local\mulib::is_mucertify_available();
     }
 }
