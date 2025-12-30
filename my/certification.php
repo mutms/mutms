@@ -43,7 +43,7 @@ $usercontext = context_user::instance($USER->id);
 $PAGE->set_context($usercontext);
 $PAGE->set_url(new moodle_url('/admin/tool/mucertify/my/certification.php', ['id' => $id]));
 
-if (!\tool_mucertify\local\util::is_mucertify_active()) {
+if (!\tool_mulib\local\mulib::is_mucertify_active()) {
     redirect(new moodle_url('/'));
 }
 if (isguestuser()) {

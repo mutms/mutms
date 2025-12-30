@@ -354,7 +354,7 @@ final class catalogue {
      * @return ?\moodle_url null of certifications disabled or user cannot access catalogue
      */
     public static function get_catalogue_url(): ?\moodle_url {
-        if (!util::is_mucertify_active()) {
+        if (!mulib::is_mucertify_active()) {
             return null;
         }
         if (!isloggedin()) {

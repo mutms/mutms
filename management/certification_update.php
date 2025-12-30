@@ -66,7 +66,7 @@ $certification->tags = core_tag_tag::get_item_tags_array('tool_mucertify', 'tool
 $certification->image = file_get_submitted_draft_itemid('image');
 file_prepare_draft_area($certification->image, $context->id, 'tool_mucertify', 'image', $certification->id, ['subdirs' => 0]);
 
-$form = new \tool_mucertify\local\form\certification_update(null, ['data' => $certification, 'editoroptions' => $editoroptions]);
+$form = new \tool_mucertify\local\form\certification_update(null, ['data' => $certification, 'editoroptions' => $editoroptions, 'context' => $context]);
 
 $returnurl = new moodle_url('/admin/tool/mucertify/management/certification.php', ['id' => $certification->id]);
 
