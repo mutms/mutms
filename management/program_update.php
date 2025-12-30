@@ -66,7 +66,7 @@ $program->tags = core_tag_tag::get_item_tags_array('tool_muprog', 'tool_muprog_p
 $program->image = file_get_submitted_draft_itemid('image');
 file_prepare_draft_area($program->image, $context->id, 'tool_muprog', 'image', $program->id, ['subdirs' => 0]);
 
-$form = new \tool_muprog\local\form\program_update(null, ['data' => $program, 'editoroptions' => $editoroptions]);
+$form = new \tool_muprog\local\form\program_update(null, ['data' => $program, 'editoroptions' => $editoroptions, 'context' => $context]);
 
 $returnurl = new moodle_url('/admin/tool/muprog/management/program.php', ['id' => $program->id]);
 

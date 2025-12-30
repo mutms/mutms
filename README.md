@@ -9,22 +9,22 @@ provide enhanced flexibility and automation, making it an indispensable tool for
 or training offerings.
 
 Programs enhance Moodle's core functionality by bridging gaps in traditional course management.
-They offer solutions for challenges such as organizing courses across categories, managing multi-tenancy for course roles,
-and scheduling individualized course access. With seamless integration into Moodle™ LMS, Programs provide a scalable and
+They offer solutions for challenges such as organizing courses across categories and scheduling individualized course access.
+With seamless integration into Moodle™ LMS, Programs provide a scalable and
 efficient way to manage both small-scale and large-scale learning initiatives and training.
 
 ## Key features
 
 * program content created as a hierarchy of courses, credit frameworks and course sets with flexible sequencing rules
-* multiple sources for allocation of students to programs
+* multiple sources for allocation of students to programs, including allocation based on external database
 * advanced program scheduling settings
 * efficient course enrolment automation
 * easy-to-use _Program management_ interface
 * _Program catalogue_ where students may browse available programs and related courses
 * dedicated _My programs profile page_
+* _My programs overview page_ similar to "My courses" page; it offers card, list and details view on a dedicated page accessible directly from the main menu
 * _My programs dashboard block_ for quick access to details
-* allocation based on external database data
-* supervisors may receive copy of notifications sent to subordinates
+* configurable notification options, including supervisors receiving copy of notifications sent to subordinates
 
 ## Requirements
 
@@ -32,10 +32,11 @@ This plugin requires following plugins:
 
 * [Additional tools library plugin](https://github.com/mutms/moodle-tool_mulib)
 * [Program enrolment plugin](https://github.com/mutms/moodle-enrol_muprog)
+* [My programs block](https://github.com/mutms/moodle-block_muprog_my)
+* [My programs overview page](https://github.com/mutms/moodle-block_muprogmyoverview)
 
 Other recommended plugins:
 
-* [My programs block](https://github.com/mutms/moodle-block_muprog_my)
 * [Supervisors and teams plugin](https://github.com/mutms/moodle-tool_murelation)
 * [Training credits plugin](https://github.com/mutms/moodle-tool_mutrain)
 * [Training credits custom field](https://github.com/mutms/moodle-customfield_mutrain)

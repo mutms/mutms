@@ -19,6 +19,7 @@
 namespace tool_muprog\local\form;
 
 use tool_muprog\external\form_autocomplete\export_programids;
+use tool_muprog\external\form_autocomplete\export_contextid;
 
 defined('MOODLE_INTERNAL') || die();
 
@@ -60,9 +61,11 @@ final class export extends \moodleform {
             $mform->setType('id', PARAM_INT);
             $mform->setDefault('id', $program->id);
         } else {
-            // Export started from category, let them select other categories or all programs.
-            $mform->addElement('select', 'contextid', get_string('context'), self::get_contextid_options());
+            // Export started from category, let them select other categories or system.
+            export_contextid::add_element($mform, [], 'contextid', get_string('category'), $context);
             $mform->setDefault('contextid', $contextid);
+
+            $mform->addElement('advcheckbox', 'includesubcontexts', get_string('includesubcontexts', 'tool_muprog'));
 
             $mform->addElement('advcheckbox', 'archived', get_string('archived', 'tool_muprog'), '&nbsp;');
             $mform->setDefault('archived', $archived);
@@ -122,25 +125,5 @@ final class export extends \moodleform {
         }
 
         return $errors;
-    }
-
-    /**
-     * Returns contexts of categories that user can export.
-     *
-     * @return array
-     */
-    public function get_contextid_options(): array {
-        $options = [];
-        $syscontext = \context_system::instance();
-        if (has_capability('tool/muprog:export', $syscontext)) {
-            $options[0] = get_string('allprograms', 'tool_muprog');
-            $options[$syscontext->id] = $syscontext->get_context_name();
-        }
-        $categories = \core_course_category::make_categories_list('tool/muprog:export');
-        foreach ($categories as $catid => $categoryname) {
-            $catcontext = \context_coursecat::instance($catid);
-            $options[$catcontext->id] = $categoryname;
-        }
-        return $options;
     }
 }

@@ -23,9 +23,10 @@ namespace tool_muprog\phpunit\local;
 use tool_muprog\local\content\set;
 use tool_muprog\local\content\top;
 use tool_mulib\local\mulib;
+use tool_muprog\local\export;
 
 /**
- * Program helper test.
+ * Program export helper test.
  *
  * @group      MuTMS
  * @package    tool_muprog
@@ -44,14 +45,77 @@ final class export_test extends \advanced_testcase {
 
     public function test_format_date(): void {
         $now = time();
-        $formatted = \tool_muprog\local\export::format_date($now);
+        $formatted = export::format_date($now);
         $this->assertSame($now, strtotime($formatted));
 
-        $formatted = \tool_muprog\local\export::format_date((string)$now);
+        $formatted = export::format_date((string)$now);
         $this->assertSame($now, strtotime($formatted));
 
-        $this->assertNull(\tool_muprog\local\export::format_date(0));
-        $this->assertNull(\tool_muprog\local\export::format_date(null));
+        $this->assertNull(export::format_date(0));
+        $this->assertNull(export::format_date(null));
+    }
+
+    public function test_get_export_sql(): void {
+        global $DB;
+
+        /** @var \tool_muprog_generator $generator */
+        $generator = $this->getDataGenerator()->get_plugin_generator('tool_muprog');
+
+        $syscontext = \context_system::instance();
+        $category1 = $this->getDataGenerator()->create_category([]);
+        $catcontext1 = \context_coursecat::instance($category1->id);
+        $category2 = $this->getDataGenerator()->create_category([]);
+        $catcontext2 = \context_coursecat::instance($category2->id);
+        $category3 = $this->getDataGenerator()->create_category(['parent' => $category2->id]);
+        $catcontext3 = \context_coursecat::instance($category3->id);
+
+        $program0 = $generator->create_program([
+            'contextid' => $syscontext->id,
+        ]);
+        $program1 = $generator->create_program([
+            'contextid' => $catcontext1->id,
+        ]);
+        $program2 = $generator->create_program([
+            'contextid' => $catcontext2->id,
+        ]);
+        $program3 = $generator->create_program([
+            'contextid' => $catcontext3->id,
+        ]);
+        $program4 = $generator->create_program([
+            'contextid' => $catcontext3->id,
+            'archived' => 1,
+        ]);
+
+        $sql = export::get_export_sql((object)['programids' => [$program0->id, $program4->id, $program3->id], 'archived' => 1, 'contextid' => $catcontext2->id]);
+        $records = $DB->get_records_sql($sql->sql, $sql->params);
+        $this->assertEquals([$program0->id, $program3->id, $program4->id], array_keys($records));
+        $this->assertEquals($program0, $records[$program0->id]);
+
+        $sql = export::get_export_sql((object)['programids' => [], 'contextid' => $catcontext3->id]);
+        $records = $DB->get_records_sql($sql->sql, $sql->params);
+        $this->assertEquals([$program3->id], array_keys($records));
+        $this->assertEquals($program3, $records[$program3->id]);
+
+        $sql = export::get_export_sql((object)['programids' => [], 'contextid' => $catcontext3->id, 'archived' => 1]);
+        $records = $DB->get_records_sql($sql->sql, $sql->params);
+        $this->assertEquals([$program4->id], array_keys($records));
+        $this->assertEquals($program4, $records[$program4->id]);
+
+        $sql = export::get_export_sql((object)['programids' => [], 'contextid' => $syscontext->id]);
+        $records = $DB->get_records_sql($sql->sql, $sql->params);
+        $this->assertEquals([$program0->id], array_keys($records));
+
+        $sql = export::get_export_sql((object)['programids' => [], 'contextid' => $syscontext->id, 'includesubcontexts' => 1]);
+        $records = $DB->get_records_sql($sql->sql, $sql->params);
+        $this->assertEquals([$program0->id, $program1->id, $program2->id, $program3->id], array_keys($records));
+
+        $sql = export::get_export_sql((object)['programids' => [], 'contextid' => $syscontext->id, 'includesubcontexts' => 1, 'archived' => 1]);
+        $records = $DB->get_records_sql($sql->sql, $sql->params);
+        $this->assertEquals($program4, $records[$program4->id]);
+
+        $sql = export::get_export_sql((object)['programids' => [], 'contextid' => $catcontext2->id, 'includesubcontexts' => 1]);
+        $records = $DB->get_records_sql($sql->sql, $sql->params);
+        $this->assertEquals([$program2->id, $program3->id], array_keys($records));
     }
 
     public function test_export(): void {
@@ -83,7 +147,8 @@ final class export_test extends \advanced_testcase {
                 'selfallocation' => ['selfallocation_allowsignup' => 1, 'selfallocation_key' => 'abc', 'selfallocation_maxusers' => 10]],
         ]);
 
-        $programs = \tool_muprog\local\export::export_programs('id = ?', [$program0->id]);
+        $sql = export::get_export_sql((object)['programids' => [$program0->id]]);
+        $programs = export::export_programs($sql);
         $this->assertDebuggingNotCalled();
         $this->assertCount(1, $programs);
         $this->assertSame($program0->idnumber, $programs[0]->idnumber);
@@ -104,7 +169,8 @@ final class export_test extends \advanced_testcase {
         );
         $this->assertSame([], $programs[0]->sources);
 
-        $programs = \tool_muprog\local\export::export_programs('id = ?', [$program1->id]);
+        $sql = export::get_export_sql((object)['programids' => [$program1->id]]);
+        $programs = export::export_programs($sql);
         $this->assertDebuggingNotCalled();
         $this->assertCount(1, $programs);
         $this->assertSame('2024-08-15T22:20:01+08:00', $programs[0]->allocationstart);
@@ -115,7 +181,8 @@ final class export_test extends \advanced_testcase {
             (object)['sourcetype' => 'selfallocation', 'data' => (object)['allowsignup' => 1, 'maxusers' => null, 'key' => null]],
         ], $programs[0]->sources);
 
-        $programs = \tool_muprog\local\export::export_programs('id = ?', [$program2->id]);
+        $sql = export::get_export_sql((object)['programids' => [$program2->id]]);
+        $programs = export::export_programs($sql);
         $this->assertDebuggingNotCalled();
         $this->assertCount(1, $programs);
         $this->assertSame(['type' => 'date', 'date' => '2024-01-02T22:20:01+08:00'], (array)$programs[0]->startdate);
@@ -154,7 +221,8 @@ final class export_test extends \advanced_testcase {
         $item1x1 = $top0->append_course($set1, $course1->id);
         $item1x2 = $top0->append_credits($set1, $framework1->id);
 
-        $programs = \tool_muprog\local\export::export_programs('id = ?', [$program0->id]);
+        $sql = export::get_export_sql((object)['programids' => [$program0->id]]);
+        $programs = export::export_programs($sql);
         $this->assertDebuggingNotCalled();
         $this->assertCount(1, $programs);
 
@@ -243,7 +311,7 @@ final class export_test extends \advanced_testcase {
         $data = (object)[
             'programids' => [$program0->id, $program1->id, $program2->id],
         ];
-        $file = \tool_muprog\local\export::export_json($data);
+        $file = export::export_json($data);
         $this->assertTrue(file_exists($file));
         $this->assertStringEndsWith('.zip', $file);
 
@@ -251,7 +319,7 @@ final class export_test extends \advanced_testcase {
             'contextid' => $catcontext1->id,
             'archived' => 0,
         ];
-        $file = \tool_muprog\local\export::export_json($data);
+        $file = export::export_json($data);
         $this->assertTrue(file_exists($file));
         $this->assertStringEndsWith('.zip', $file);
     }
@@ -326,7 +394,7 @@ final class export_test extends \advanced_testcase {
             'delimiter_name' => 'comma',
             'encoding' => 'UTF-8',
         ];
-        $file = \tool_muprog\local\export::export_csv($data);
+        $file = export::export_csv($data);
         $this->assertTrue(file_exists($file));
         $this->assertStringEndsWith('.zip', $file);
 
@@ -336,7 +404,7 @@ final class export_test extends \advanced_testcase {
             'delimiter_name' => 'semicolon',
             'encoding' => 'ISO-8859-1',
         ];
-        $file = \tool_muprog\local\export::export_csv($data);
+        $file = export::export_csv($data);
         $this->assertTrue(file_exists($file));
         $this->assertStringEndsWith('.zip', $file);
     }
