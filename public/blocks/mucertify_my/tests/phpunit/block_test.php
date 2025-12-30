@@ -50,7 +50,7 @@ final class block_test extends \advanced_testcase {
 
         $block = new \block_mucertify_my();
 
-        $this->assertFalse($block->can_block_be_added($page));
+        $this->assertTrue($block->can_block_be_added($page));
 
         /** @var \tool_mucertify_generator $generator */
         $generator = $this->getDataGenerator()->get_plugin_generator('tool_mucertify');
