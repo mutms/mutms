@@ -122,7 +122,7 @@ final class mulib {
      * @return bool
      */
     public static function is_muhome_available(): bool {
-        return class_exists(\tool_muhome\local\util::class);
+        return class_exists(\tool_muhome\local\page::class);
     }
 
     /**
