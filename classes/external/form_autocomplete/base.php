@@ -57,6 +57,16 @@ abstract class base extends external_api {
     }
 
     /**
+     * Is element required?
+     *
+     * @return bool
+     */
+    public static function is_required(): bool {
+        // Override to return true if element values required.
+        return false;
+    }
+
+    /**
      * No selection srtring.
      *
      * @return string
@@ -325,11 +335,12 @@ abstract class base extends external_api {
 
         /** @var \MoodleQuickForm_autocomplete $element */
         $element = $mform->createElement('autocomplete', $name, $label, null, $attributes);
+
         return $element;
     }
 
     /**
-     * Create autocomplete element and add it to a form.
+     * Create autocomplete element, add it to a form and optionally set it as required.
      *
      * @param \MoodleQuickForm $mform
      * @param array $args
@@ -347,6 +358,11 @@ abstract class base extends external_api {
     ): \MoodleQuickForm_autocomplete {
         $element = static::create_element($mform, $args, $name, $label, $context);
         $mform->addElement($element);
+
+        if (static::is_required()) {
+            $mform->addRule($name, get_string('required'), 'required', null, 'client');
+        }
+
         return $element;
     }
 }

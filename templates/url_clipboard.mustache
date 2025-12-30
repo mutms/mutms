@@ -19,27 +19,30 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 }}
 {{!
-    @template tool_mulib/entity_details
+    @template tool_mulib/url_clipboard
 
-    Template used for entity details view.
+    Template to display a link with copy to clipboard button.
 
-    NOTE: All context data must be sanitised!
+    Context variables required for this template:
+    * url - URL
+    * copylabel - copy action label
 
     Example context (json):
     {
-        "details": [
-            {
-                "property" : "Purpose 1",
-                "value": "<strong>Purpose 1 description</strong>"
-            }, {
-                "property" : "Purpose 2",
-                "value": "<strong>Purpose 2 description</strong>"
-            }
-        ]
+        "url": "https://example.com/login/?tenant=TEN1",
+        "copylabel": "Copy tenant login URL to clipboard"
     }
 }}
-<dl class="row">
-{{#details}}
-    <dt class="col-sm-3">{{{property}}}</dt><dd class="col-sm-9">{{{value}}}</dd>
-{{/details}}
-</dl>
+{{#url}}
+    <span>
+        <span id="tool_mulib_ti_{{uniqid}}">{{url}}</span>
+        <a href="#"
+           data-action="copytoclipboard" data-clipboard-target="#tool_mulib_ti_{{uniqid}}"
+           data-clipboard-success-message="{{#str}}textcopiedtoclipboard{{/str}}"
+           title="{{copylabel}}"
+        >{{#pix}}t/copy, core{{/pix}}</a>
+    </span>
+    {{#js}}
+        require(['core/copy_to_clipboard']);
+    {{/js}}
+{{/url}}

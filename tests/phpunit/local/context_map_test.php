@@ -92,7 +92,7 @@ final class context_map_test extends \advanced_testcase {
         );
         $joins = context_map::get_contexts_by_capability_join('moodle/course:view', $user1->id, 'ctx');
         $sql = $sql->replace_comment('capjoin', $joins['join']);
-        $sql = $sql->replace_comment('capwhere', "AND " . $joins['where']);
+        $sql = $sql->replace_comment('capwhere', $joins['where']->wrap("AND ", ""));
         $contextids = $DB->get_fieldset_sql($sql->sql, $sql->params);
         $this->assertEquals([$coursecontext1->id], $contextids);
 
@@ -106,7 +106,7 @@ final class context_map_test extends \advanced_testcase {
         );
         $joins = context_map::get_contexts_by_capability_join('moodle/course:view', $user2->id, 'ctx');
         $sql = $sql->replace_comment('capjoin', $joins['join']);
-        $sql = $sql->replace_comment('capwhere', "AND " . $joins['where']);
+        $sql = $sql->replace_comment('capwhere', $joins['where']->wrap("AND ", ""));
         $contextids = $DB->get_fieldset_sql($sql->sql, $sql->params);
         $this->assertEquals([$coursecontext1->id, $coursecontext2->id], $contextids);
 
@@ -120,7 +120,7 @@ final class context_map_test extends \advanced_testcase {
         );
         $joins = context_map::get_contexts_by_capability_join('moodle/course:view', $user3->id, 'ctx');
         $sql = $sql->replace_comment('capjoin', $joins['join']);
-        $sql = $sql->replace_comment('capwhere', "AND " . $joins['where']);
+        $sql = $sql->replace_comment('capwhere', $joins['where']->wrap("AND ", ""));
         $contextids = $DB->get_fieldset_sql($sql->sql, $sql->params);
         $this->assertEquals([$coursecontext0->id], $contextids);
 
@@ -134,7 +134,7 @@ final class context_map_test extends \advanced_testcase {
         );
         $joins = context_map::get_contexts_by_capability_join('moodle/course:view', $user4->id, 'ctx');
         $sql = $sql->replace_comment('capjoin', $joins['join']);
-        $sql = $sql->replace_comment('capwhere', "AND " . $joins['where']);
+        $sql = $sql->replace_comment('capwhere', $joins['where']->wrap("AND ", ""));
         $contextids = $DB->get_fieldset_sql($sql->sql, $sql->params);
         $this->assertEquals([], $contextids);
 
@@ -148,7 +148,7 @@ final class context_map_test extends \advanced_testcase {
         );
         $joins = context_map::get_contexts_by_capability_join('moodle/blog:view', $user1->id, 'ctx');
         $sql = $sql->replace_comment('capjoin', $joins['join']);
-        $sql = $sql->replace_comment('capwhere', "AND " . $joins['where']);
+        $sql = $sql->replace_comment('capwhere', $joins['where']->wrap("AND ", ""));
         $contextids = $DB->get_fieldset_sql($sql->sql, $sql->params);
         $this->assertEquals([$syscontext->id], $contextids);
 
@@ -163,7 +163,7 @@ final class context_map_test extends \advanced_testcase {
         );
         $joins = context_map::get_contexts_by_capability_join('moodle/blog:view', $user1->id, 'ctx');
         $sql = $sql->replace_comment('capjoin', $joins['join']);
-        $sql = $sql->replace_comment('capwhere', "AND " . $joins['where']);
+        $sql = $sql->replace_comment('capwhere', $joins['where']->wrap("AND ", ""));
         $contextids = $DB->get_fieldset_sql($sql->sql, $sql->params);
         $this->assertEquals([], $contextids);
 
@@ -178,7 +178,7 @@ final class context_map_test extends \advanced_testcase {
         );
         $joins = context_map::get_contexts_by_capability_join('moodle/blog:view', $guest->id, 'ctx');
         $sql = $sql->replace_comment('capjoin', $joins['join']);
-        $sql = $sql->replace_comment('capwhere', "AND " . $joins['where']);
+        $sql = $sql->replace_comment('capwhere', $joins['where']->wrap("AND ", ""));
         $contextids = $DB->get_fieldset_sql($sql->sql, $sql->params);
         $this->assertEquals([$syscontext->id], $contextids);
 
@@ -193,7 +193,7 @@ final class context_map_test extends \advanced_testcase {
         );
         $joins = context_map::get_contexts_by_capability_join('moodle/blog:view', $guest->id, 'ctx');
         $sql = $sql->replace_comment('capjoin', $joins['join']);
-        $sql = $sql->replace_comment('capwhere', "AND " . $joins['where']);
+        $sql = $sql->replace_comment('capwhere', $joins['where']->wrap("AND ", ""));
         $contextids = $DB->get_fieldset_sql($sql->sql, $sql->params);
         $this->assertEquals([], $contextids);
 
@@ -208,7 +208,7 @@ final class context_map_test extends \advanced_testcase {
         );
         $joins = context_map::get_contexts_by_capability_join('moodle/blog:view', $guest->id, 'ctx');
         $sql = $sql->replace_comment('capjoin', $joins['join']);
-        $sql = $sql->replace_comment('capwhere', "AND " . $joins['where']);
+        $sql = $sql->replace_comment('capwhere', $joins['where']->wrap("AND ", ""));
         $contextids = $DB->get_fieldset_sql($sql->sql, $sql->params);
         $this->assertEquals([], $contextids);
 
@@ -223,7 +223,7 @@ final class context_map_test extends \advanced_testcase {
         );
         $joins = context_map::get_contexts_by_capability_join('moodle/blog:view', 0, 'ctx');
         $sql = $sql->replace_comment('capjoin', $joins['join']);
-        $sql = $sql->replace_comment('capwhere', "AND " . $joins['where']);
+        $sql = $sql->replace_comment('capwhere', $joins['where']->wrap("AND ", ""));
         $contextids = $DB->get_fieldset_sql($sql->sql, $sql->params);
         $this->assertEquals([$syscontext->id], $contextids);
 
@@ -238,7 +238,7 @@ final class context_map_test extends \advanced_testcase {
         );
         $joins = context_map::get_contexts_by_capability_join('moodle/blog:view', 0, 'ctx');
         $sql = $sql->replace_comment('capjoin', $joins['join']);
-        $sql = $sql->replace_comment('capwhere', "AND " . $joins['where']);
+        $sql = $sql->replace_comment('capwhere', $joins['where']->wrap("AND ", ""));
         $contextids = $DB->get_fieldset_sql($sql->sql, $sql->params);
         $this->assertEquals([], $contextids);
 
@@ -253,7 +253,7 @@ final class context_map_test extends \advanced_testcase {
         );
         $joins = context_map::get_contexts_by_capability_join('moodle/blog:view', 0, 'ctx');
         $sql = $sql->replace_comment('capjoin', $joins['join']);
-        $sql = $sql->replace_comment('capwhere', "AND " . $joins['where']);
+        $sql = $sql->replace_comment('capwhere', $joins['where']->wrap("AND ", ""));
         $contextids = $DB->get_fieldset_sql($sql->sql, $sql->params);
         $this->assertEquals([], $contextids);
     }
@@ -516,19 +516,19 @@ final class context_map_test extends \advanced_testcase {
 
         $joins = context_map::get_contexts_by_capability_join('moodle/course:view', $user0->id, 'ctx', false);
         $sql = $sql0->replace_comment('capjoin', $joins['join']);
-        $sql = $sql->replace_comment('capwhere', "AND " . $joins['where']);
+        $sql = $sql->replace_comment('capwhere', $joins['where']->wrap("AND ", ""));
         $contextids = $DB->get_fieldset_sql($sql->sql, $sql->params);
         $this->assertEquals([$coursecontext0->id, $coursecontext1->id, $coursecontext2->id], $contextids);
 
         $joins = context_map::get_contexts_by_capability_join('moodle/course:view', $user1->id, 'ctx', false);
         $sql = $sql0->replace_comment('capjoin', $joins['join']);
-        $sql = $sql->replace_comment('capwhere', "AND " . $joins['where']);
+        $sql = $sql->replace_comment('capwhere', $joins['where']->wrap("AND ", ""));
         $contextids = $DB->get_fieldset_sql($sql->sql, $sql->params);
         $this->assertEquals([$coursecontext0->id, $coursecontext1->id], $contextids);
 
         $joins = context_map::get_contexts_by_capability_join('moodle/course:view', $user2->id, 'ctx', false);
         $sql = $sql0->replace_comment('capjoin', $joins['join']);
-        $sql = $sql->replace_comment('capwhere', "AND " . $joins['where']);
+        $sql = $sql->replace_comment('capwhere', $joins['where']->wrap("AND ", ""));
         $contextids = $DB->get_fieldset_sql($sql->sql, $sql->params);
         $this->assertEquals([$coursecontext0->id, $coursecontext2->id], $contextids);
 
@@ -539,25 +539,25 @@ final class context_map_test extends \advanced_testcase {
 
         $joins = context_map::get_contexts_by_capability_join('moodle/course:view', 0, 'ctx', false);
         $sql = $sql0->replace_comment('capjoin', $joins['join']);
-        $sql = $sql->replace_comment('capwhere', "AND " . $joins['where']);
+        $sql = $sql->replace_comment('capwhere', $joins['where']->wrap("AND ", ""));
         $contextids = $DB->get_fieldset_sql($sql->sql, $sql->params);
         $this->assertEquals([$coursecontext0->id], $contextids);
 
         $joins = context_map::get_contexts_by_capability_join('moodle/course:update', 0, 'ctx', false);
         $sql = $sql0->replace_comment('capjoin', $joins['join']);
-        $sql = $sql->replace_comment('capwhere', "AND " . $joins['where']);
+        $sql = $sql->replace_comment('capwhere', $joins['where']->wrap("AND ", ""));
         $contextids = $DB->get_fieldset_sql($sql->sql, $sql->params);
         $this->assertEquals([], $contextids);
 
         $joins = context_map::get_contexts_by_capability_join('moodle/course:view', $guest->id, 'ctx', false);
         $sql = $sql0->replace_comment('capjoin', $joins['join']);
-        $sql = $sql->replace_comment('capwhere', "AND " . $joins['where']);
+        $sql = $sql->replace_comment('capwhere', $joins['where']->wrap("AND ", ""));
         $contextids = $DB->get_fieldset_sql($sql->sql, $sql->params);
         $this->assertEquals([$coursecontext0->id], $contextids);
 
         $joins = context_map::get_contexts_by_capability_join('moodle/course:update', $guest->id, 'ctx', false);
         $sql = $sql0->replace_comment('capjoin', $joins['join']);
-        $sql = $sql->replace_comment('capwhere', "AND " . $joins['where']);
+        $sql = $sql->replace_comment('capwhere', $joins['where']->wrap("AND ", ""));
         $contextids = $DB->get_fieldset_sql($sql->sql, $sql->params);
         $this->assertEquals([], $contextids);
 
@@ -565,43 +565,43 @@ final class context_map_test extends \advanced_testcase {
 
         $joins = context_map::get_contexts_by_capability_join('moodle/course:view', $user0->id, 'ctx', false);
         $sql = $sql0->replace_comment('capjoin', $joins['join']);
-        $sql = $sql->replace_comment('capwhere', "AND " . $joins['where']);
+        $sql = $sql->replace_comment('capwhere', $joins['where']->wrap("AND ", ""));
         $contextids = $DB->get_fieldset_sql($sql->sql, $sql->params);
         $this->assertEquals([$coursecontext0->id, $coursecontext1->id, $coursecontext2->id], $contextids);
 
         $joins = context_map::get_contexts_by_capability_join('moodle/course:view', $user1->id, 'ctx', false);
         $sql = $sql0->replace_comment('capjoin', $joins['join']);
-        $sql = $sql->replace_comment('capwhere', "AND " . $joins['where']);
+        $sql = $sql->replace_comment('capwhere', $joins['where']->wrap("AND ", ""));
         $contextids = $DB->get_fieldset_sql($sql->sql, $sql->params);
         $this->assertEquals([$coursecontext0->id, $coursecontext1->id], $contextids);
 
         $joins = context_map::get_contexts_by_capability_join('moodle/course:view', $user2->id, 'ctx', false);
         $sql = $sql0->replace_comment('capjoin', $joins['join']);
-        $sql = $sql->replace_comment('capwhere', "AND " . $joins['where']);
+        $sql = $sql->replace_comment('capwhere', $joins['where']->wrap("AND ", ""));
         $contextids = $DB->get_fieldset_sql($sql->sql, $sql->params);
         $this->assertEquals([$coursecontext0->id, $coursecontext2->id], $contextids);
 
         $joins = context_map::get_contexts_by_capability_join('moodle/course:view', 0, 'ctx', false);
         $sql = $sql0->replace_comment('capjoin', $joins['join']);
-        $sql = $sql->replace_comment('capwhere', "AND " . $joins['where']);
+        $sql = $sql->replace_comment('capwhere', $joins['where']->wrap("AND ", ""));
         $contextids = $DB->get_fieldset_sql($sql->sql, $sql->params);
         $this->assertEquals([$coursecontext0->id, $coursecontext1->id, $coursecontext2->id], $contextids);
 
         $joins = context_map::get_contexts_by_capability_join('moodle/course:update', 0, 'ctx', false);
         $sql = $sql0->replace_comment('capjoin', $joins['join']);
-        $sql = $sql->replace_comment('capwhere', "AND " . $joins['where']);
+        $sql = $sql->replace_comment('capwhere', $joins['where']->wrap("AND ", ""));
         $contextids = $DB->get_fieldset_sql($sql->sql, $sql->params);
         $this->assertEquals([], $contextids);
 
         $joins = context_map::get_contexts_by_capability_join('moodle/course:view', $guest->id, 'ctx', false);
         $sql = $sql0->replace_comment('capjoin', $joins['join']);
-        $sql = $sql->replace_comment('capwhere', "AND " . $joins['where']);
+        $sql = $sql->replace_comment('capwhere', $joins['where']->wrap("AND ", ""));
         $contextids = $DB->get_fieldset_sql($sql->sql, $sql->params);
         $this->assertEquals([$coursecontext0->id, $coursecontext1->id, $coursecontext2->id], $contextids);
 
         $joins = context_map::get_contexts_by_capability_join('moodle/course:update', $guest->id, 'ctx', false);
         $sql = $sql0->replace_comment('capjoin', $joins['join']);
-        $sql = $sql->replace_comment('capwhere', "AND " . $joins['where']);
+        $sql = $sql->replace_comment('capwhere', $joins['where']->wrap("AND ", ""));
         $contextids = $DB->get_fieldset_sql($sql->sql, $sql->params);
         $this->assertEquals([], $contextids);
     }
@@ -697,7 +697,7 @@ final class context_map_test extends \advanced_testcase {
                 );
                 $joins = context_map::get_contexts_by_capability_join($capability, $userid, 'ctx', $doanything);
                 $sql = $sql->replace_comment('capjoin', $joins['join']);
-                $sql = $sql->replace_comment('capwhere', "AND " . $joins['where']);
+                $sql = $sql->replace_comment('capwhere', $joins['where']->wrap("AND ", ""));
                 $allowcontextids = $DB->get_fieldset_sql($sql->sql, $sql->params);
                 foreach ($allcontextids as $contextid) {
                     $context = context::instance_by_id($contextid);
