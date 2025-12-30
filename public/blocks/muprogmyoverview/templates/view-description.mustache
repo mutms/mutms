@@ -1,0 +1,101 @@
+{{!
+    This file is part of MuTMS suite of plugins for Moodle™ LMS.
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <https://www.gnu.org/licenses/>.
+}}
+{{!
+    @template block_muprogmyoverview/view-description
+
+    This template renders the list view for the muprogmyoverview block.
+
+    Example context (json):
+    {
+        "programs": [
+            {
+                "name": "Assignment due 1",
+                "viewurl": "https://moodlesite/program/view.php?id=2",
+                "programimage": "https://moodlesite/pluginfile/123/program/overviewfiles/123.jpg",
+                "fullname": "program 3",
+                "description": "This program is about assignments",
+                "hasprogress": true,
+                "progress": 10,
+                "programcategory": "Category 1"
+            }
+        ]
+    }
+}}
+<div class="list-group" role="list">
+{{#programs}}
+    <div class="program-descriptionitem list-group-item program-listitem border-start-0 border-end-0 border-top-0 px-2 rounded-0" role="listitem"
+        data-region="program-content"
+        data-program-id="{{{id}}}">
+        <div class="row">
+            <div class="col-md-2 d-flex align-items-center mb-sm-3 mb-md-0">
+                <a href="{{viewurl}}" tabindex="-1" class="mw-100 w-100">
+                    <div class="description-image rounded mw-100" style='background-image: url("{{{programimage}}}");'>
+                        <span class="visually-hidden">{{fullname}}</span>
+                    </div>
+                </a>
+            </div>
+            <div class="col-md-9 d-flex flex-column">
+                <div class="text-muted muted d-flex flex-wrap">
+                    <span class="visually-hidden">
+                        {{#str}}programidnumber, tool_muprog{{/str}}
+                    </span>
+                    <div>{{{idnumber}}}</div>
+                </div>
+                <a href="{{viewurl}}" class="aalink programname">
+                    {{> block_muprogmyoverview/favouriteicon }}
+                    <span class="visually-hidden">
+                        {{#str}}programname, tool_muprog{{/str}}
+                    </span>
+                    {{{fullname}}}
+                </a>
+                {{$programcategory}}
+                    <span class="visually-hidden">
+                        {{#str}}programcategory, tool_muprog{{/str}}
+                    </span>
+                    {{#showprogramcategory}}
+                        <span class="categoryname">
+                            {{#programcategory}}
+                                {{{programcategory}}}
+                            {{/programcategory}}
+                        </span>
+                    {{/showprogramcategory}}
+                {{/programcategory}}
+                <div>
+                    <span class="visually-hidden">
+                        {{#str}}programstatus, tool_muprog{{/str}}
+                    </span>
+                    <span class="badge {{statusclass}}">
+                        {{status}}
+                    </span>
+                </div>
+                <div class="description">
+                    <span class="visually-hidden">{{#str}}aria:programdescription, block_muprogmyoverview{{/str}}</span>
+                    {{{description}}}
+                </div>
+                {{#hasprogress}}
+                    <div class="text-muted muted d-flex flex-wrap mt-auto">
+                        {{> block_muprogmyoverview/progress-bar}}
+                    </div>
+                {{/hasprogress}}
+            </div>
+            <div class="col-md-1 p-0 d-flex menu">
+                {{> block_muprogmyoverview/program-action-menu }}
+            </div>
+        </div>
+    </div>
+{{/programs}}
+</div>
