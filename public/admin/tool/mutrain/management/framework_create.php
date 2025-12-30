@@ -15,9 +15,10 @@
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 // phpcs:disable moodle.Files.BoilerplateComment.CommentEndedTooSoon
+// phpcs:disable moodle.Files.LineLength.TooLong
 
 /**
- * Add a new training framework.
+ * Add a new credit framework.
  *
  * @package    tool_mutrain
  * @copyright  2024 Open LMS (https://www.openlms.net/)
@@ -62,7 +63,7 @@ $framework->publicaccess = 1; // Not visible until fields are added and users ob
 
 $editoroptions = framework::get_description_editor_options();
 
-$form = new \tool_mutrain\local\form\framework_create(null, ['data' => $framework, 'editoroptions' => $editoroptions]);
+$form = new \tool_mutrain\local\form\framework_create(null, ['data' => $framework, 'editoroptions' => $editoroptions, 'context' => $context]);
 if ($form->is_cancelled()) {
     $form->ajax_form_cancelled($returnurl);
 } else if ($data = $form->get_data()) {

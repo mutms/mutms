@@ -40,6 +40,7 @@ final class framework extends base {
             'tool_mutrain_framework',
             'tool_mutrain_credit',
             'context',
+            'tool_mulib_context_map',
         ];
     }
 
@@ -76,6 +77,20 @@ final class framework extends base {
         $contextalias = $this->get_table_alias('context');
 
         return "JOIN {context} {$contextalias} ON {$contextalias}.id = {$frameworkalias}.contextid";
+    }
+
+    /**
+     * Return syntax for joining on the context map table to restrict result to subcontexts.
+     *
+     * @param \context $context
+     * @return string
+     */
+    public function get_context_map_join(\context $context): string {
+        $frameworkalias = $this->get_table_alias('tool_mutrain_framework');
+        $contextmapalias = $this->get_table_alias('tool_mulib_context_map');
+
+        return "JOIN {tool_mulib_context_map} {$contextmapalias} ON
+                     {$contextmapalias}.contextid = {$frameworkalias}.contextid AND {$contextmapalias}.relatedcontextid = {$context->id}";
     }
 
     /**
