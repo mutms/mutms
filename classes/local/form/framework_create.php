@@ -19,8 +19,10 @@
 
 namespace tool_mutrain\local\form;
 
+use tool_mutrain\external\form_autocomplete\framework_contextid;
+
 /**
- * Create a new training framework.
+ * Create a new credit framework.
  *
  * @package    tool_mutrain
  * @copyright  2024 Open LMS (https://www.openlms.net/)
@@ -34,7 +36,7 @@ final class framework_create extends \tool_mulib\local\ajax_form {
         $mform = $this->_form;
         $data = $this->_customdata['data'];
         $editoroptions = $this->_customdata['editoroptions'];
-        $syscontext = \context_system::instance();
+        $context = $this->_customdata['context'];
 
         $mform->addElement('text', 'name', get_string('framework_name', 'tool_mutrain'), 'maxlength="254" size="50"');
         $mform->addRule('name', get_string('required'), 'required', null, 'client');
@@ -43,8 +45,7 @@ final class framework_create extends \tool_mulib\local\ajax_form {
         $mform->addElement('text', 'idnumber', get_string('framework_idnumber', 'tool_mutrain'), 'maxlength="100" size="50"');
         $mform->setType('idnumber', PARAM_RAW); // Idnumbers are plain text.
 
-        $mform->addElement('autocomplete', 'contextid', get_string('category'), $this->get_category_options());
-        $mform->addRule('contextid', get_string('required'), 'required', null, 'client');
+        framework_contextid::add_element($mform, [], 'contextid', get_string('category'), $context);
 
         $mform->addElement('advcheckbox', 'publicaccess', get_string('publicaccess', 'tool_mutrain'), ' ');
 
@@ -67,6 +68,8 @@ final class framework_create extends \tool_mulib\local\ajax_form {
     #[\Override]
     public function validation($data, $files) {
         global $DB;
+        $context = $this->_customdata['context'];
+
         $errors = parent::validation($data, $files);
 
         if (trim($data['idnumber']) !== '') {
@@ -80,35 +83,11 @@ final class framework_create extends \tool_mulib\local\ajax_form {
             $errors['requiredcredits'] = get_string('error');
         }
 
-        $context = \context::instance_by_id($data['contextid'], IGNORE_MISSING);
-        if (!$context) {
-            $errors['contextid'] = get_string('required');
-        } else if ($context->contextlevel != CONTEXT_SYSTEM && $context->contextlevel != CONTEXT_COURSECAT) {
-            $errors['contextid'] = get_string('error');
-        } else if (!has_capability('tool/mutrain:manageframeworks', $context)) {
-            // There is a problem in category caching it seems.
-            $errors['contextid'] = get_string('error');
+        $error = framework_contextid::validate_value($data['contextid'], [], $context);
+        if ($error !== null) {
+            $errors['contextid'] = $error;
         }
 
         return $errors;
-    }
-
-    /**
-     * Returns categories.
-     *
-     * @return array
-     */
-    protected function get_category_options(): array {
-        $syscontext = \context_system::instance();
-        $options = [];
-        if (has_capability('tool/mutrain:manageframeworks', $syscontext)) {
-            $options[$syscontext->id] = $syscontext->get_context_name();
-        }
-        $categories = \core_course_category::make_categories_list('tool/mutrain:manageframeworks');
-        foreach ($categories as $catid => $categoryname) {
-            $catcontext = \context_coursecat::instance($catid);
-            $options[$catcontext->id] = $categoryname;
-        }
-        return $options;
     }
 }
