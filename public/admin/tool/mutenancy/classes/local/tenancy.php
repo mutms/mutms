@@ -32,7 +32,9 @@ final class tenancy {
      * @return void
      */
     public static function activate(): void {
+        $oldactive = get_config('tool_mutenancy', 'active');
         set_config('active', '1', 'tool_mutenancy');
+        add_to_config_log('active', (int)$oldactive, '1', 'tool_mutenancy');
         \core\context_helper::reset_levels();
 
         user::create_role();
@@ -47,7 +49,9 @@ final class tenancy {
     public static function deactivate(): void {
         global $DB;
 
+        $oldactive = get_config('tool_mutenancy', 'active');
         set_config('active', '0', 'tool_mutenancy');
+        add_to_config_log('active', $oldactive, '0', 'tool_mutenancy');
 
         $DB->delete_records('tool_mutenancy_config', []);
         $DB->delete_records('tool_mutenancy_manager', []);

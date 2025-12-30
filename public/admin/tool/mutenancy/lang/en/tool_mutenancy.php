@@ -178,6 +178,7 @@ $string['tenant_delete_movetotenant'] = 'Allocate members to';
 $string['tenant_idnumber'] = 'Tenant ID';
 $string['tenant_loginshow'] = 'Show tenant on login page';
 $string['tenant_loginurl'] = 'Tenant login URL';
+$string['tenant_loginurl_copy'] = 'Copy tenant login URL to clipboard';
 $string['tenant_manager'] = 'Tenant manager';
 $string['tenant_managers'] = 'Tenant managers';
 $string['tenant_member'] = 'Tenant member';

@@ -46,10 +46,10 @@ final class renderer extends \tool_mutenancy\output\tenant_renderer_base {
         $details->add(get_string('tenant_name', 'tool_mutenancy'), format_string($tenant->name));
         $details->add(get_string('tenant_idnumber', 'tool_mutenancy'), s($tenant->idnumber));
 
-        if (!$tenant->archived) {
-            $loginurl = new \tool_mutenancy\output\loginurl($tenant->id);
-            $loginurl = $this->render($loginurl);
-            $details->add(get_string('tenant_loginurl', 'tool_mutenancy'), $loginurl);
+        $loginurl = \tool_mutenancy\local\tenant::get_login_url($tenant->id);
+        if ($loginurl) {
+            $loginurl = new \tool_mulib\output\url_clipboard($loginurl, get_string('tenant_loginurl_copy', 'tool_mutenancy'));
+            $details->add(get_string('tenant_loginurl', 'tool_mutenancy'), $this->render($loginurl));
             $details->add(get_string('tenant_loginshow', 'tool_mutenancy'), $yesno[$tenant->loginshow]);
         }
 
