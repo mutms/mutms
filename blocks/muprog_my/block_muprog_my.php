@@ -71,6 +71,6 @@ class block_muprog_my extends block_base {
 
     #[\Override]
     public function can_block_be_added(moodle_page $page): bool {
-        return \tool_mulib\local\mulib::is_muprog_active();
+        return \tool_mulib\local\mulib::is_muprog_available();
     }
 }
