@@ -22,13 +22,14 @@ remains aligned with critical industry standards and regulations.
 This plugin requires following plugins:
 
 * [Additional tools library plugin](https://github.com/mutms/moodle-tool_mulib)
+* [My certifications block](https://github.com/mutms/moodle-block_mucertify_my)
 * [Programs plugin](https://github.com/mutms/moodle-tool_muprog)
 * [Program enrolment plugin](https://github.com/mutms/moodle-enrol_muprog)
+* [My programs block](https://github.com/mutms/moodle-block_muprog_my)
+* [My programs overview page](https://github.com/mutms/moodle-block_muprogmyoverview)
 
 Other recommended plugins:
 
-* [My certifications block](https://github.com/mutms/moodle-block_mucertify_my)
-* [My programs block](https://github.com/mutms/moodle-block_muprog_my)
 * [Supervisors and teams plugin](https://github.com/mutms/moodle-tool_murelation)
 * [Training plugin](https://github.com/mutms/moodle-tool_mutrain)
 * [Training value custom field](https://github.com/mutms/moodle-customfield_mutrain)

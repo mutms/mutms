@@ -62,31 +62,6 @@ final class util_test extends \advanced_testcase {
         $this->assertSame('0', get_config('tool_mucertify', 'active'));
     }
 
-    public function test_is_mucertify_active(): void {
-        /** @var \tool_mucertify_generator $generator */
-        $generator = $this->getDataGenerator()->get_plugin_generator('tool_mucertify');
-
-        $this->assertFalse(util::is_mucertify_active());
-
-        $certification1 = $generator->create_certification(['archived' => 1]);
-        $this->assertFalse(util::is_mucertify_active());
-
-        $certification2 = $generator->create_certification(['archived' => 0]);
-        $this->assertTrue(util::is_mucertify_active());
-
-        $certification2 = \tool_mucertify\local\certification::archive($certification2->id);
-        $this->assertFalse(util::is_mucertify_active());
-
-        $certification2 = \tool_mucertify\local\certification::restore($certification2->id);
-        $this->assertTrue(util::is_mucertify_active());
-
-        \tool_mucertify\local\certification::delete($certification2->id);
-        $this->assertFalse(util::is_mucertify_active());
-
-        \tool_mucertify\local\certification::delete($certification1->id);
-        $this->assertFalse(util::is_mucertify_active());
-    }
-
     public function test_json_encode(): void {
         $this->assertSame('{"abc":"\\\\šk\"\'"}', util::json_encode(['abc' => '\šk"\'']));
     }

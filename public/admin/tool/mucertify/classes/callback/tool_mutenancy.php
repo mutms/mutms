@@ -31,7 +31,7 @@ final class tool_mutenancy {
      * @param \tool_mutenancy\hook\tenant_management_menu $hook
      */
     public static function tenant_management_menu(\tool_mutenancy\hook\tenant_management_menu $hook): void {
-        if (!\tool_mucertify\local\util::is_mucertify_active()) {
+        if (!\tool_mulib\local\mulib::is_mucertify_active()) {
             return;
         }
 

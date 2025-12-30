@@ -85,7 +85,7 @@ function tool_mucertify_pluginfile($course, $cm, $context, $filearea, $args, $fo
 function tool_mucertify_myprofile_navigation(core_user\output\myprofile\tree $tree, $user, $iscurrentuser, $course) {
     global $USER;
 
-    if (!\tool_mucertify\local\util::is_mucertify_active()) {
+    if (!\tool_mulib\local\mulib::is_mucertify_active()) {
         return;
     }
 

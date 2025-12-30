@@ -46,7 +46,7 @@ $PAGE->set_secondary_navigation(false);
 require_login();
 require_capability('tool/mucertify:viewcatalogue', context_system::instance());
 
-if (!\tool_mucertify\local\util::is_mucertify_active()) {
+if (!\tool_mulib\local\mulib::is_mucertify_active()) {
     redirect(new moodle_url('/'));
 }
 
