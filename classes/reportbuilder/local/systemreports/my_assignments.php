@@ -83,7 +83,7 @@ final class my_assignments extends system_report {
         global $USER;
 
         // Everybody may view own certifications.
-        if (!\tool_mucertify\local\util::is_mucertify_active()) {
+        if (!\tool_mulib\local\mulib::is_mucertify_active()) {
             return false;
         }
         if (isguestuser() || !isloggedin()) {
