@@ -41,21 +41,31 @@ Feature: Program export tests
       | Program 004 | PR4      | Category 2 | 0            |
       | Program 005 | PR5      | Category 2 | 0            |
 
-  Scenario: Site program manager max export programs
+  Scenario: Site program manager may export programs
     Given I log in as "manager1"
     And I am on the "tool_muprog > All programs management" page
 
     When I click on "Export programs" action from "Programs actions" dropdown
     And the following fields match these values:
-      | Context     | All programs |
-      | archived    | 0            |
-      | File format | JSON         |
+      | includesubcontexts | 0            |
+      | archived           | 0            |
+      | File format        | JSON         |
     Then I press "Export programs"
     And I wait "1" seconds
+
     When I set the following fields to these values:
-      | Context     | Category 1   |
-      | archived    | 0            |
-      | File format | CSV          |
+      | Category           | System       |
+      | includesubcontexts | 1            |
+      | archived           | 0            |
+      | File format        | JSON         |
+    Then I press "Export programs"
+    And I wait "1" seconds
+
+    When I set the following fields to these values:
+      | Category           | Category 1   |
+      | includesubcontexts | 0            |
+      | archived           | 2            |
+      | File format        | CSV          |
     Then I press "Export programs"
     And I wait "1" seconds
 
@@ -71,21 +81,23 @@ Feature: Program export tests
     Then I press "Export programs"
     And I wait "1" seconds
 
-  Scenario: Category program manager max export programs
+  Scenario: Category program manager may export programs
     Given I log in as "manager1"
     And I am on the "Category 2" "tool_muprog > Program management" page
 
     When I click on "Export programs" action from "Programs actions" dropdown
     And the following fields match these values:
-      | Context     | Category 2   |
-      | archived    | 0            |
-      | File format | JSON         |
+      | includesubcontexts | 0            |
+      | archived           | 0            |
+      | File format        | JSON         |
     Then I press "Export programs"
     And I wait "1" seconds
+
     When I set the following fields to these values:
-      | Context     | Category 3   |
-      | archived    | 0            |
-      | File format | CSV          |
+      | Category           | Category 3   |
+      | includesubcontexts | 1            |
+      | archived           | 1            |
+      | File format        | CSV          |
     Then I press "Export programs"
     And I wait "1" seconds
 

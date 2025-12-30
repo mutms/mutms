@@ -60,6 +60,7 @@ if ($id) {
         $context = context::instance_by_id($contextid);
     } else {
         $context = context_system::instance();
+        $contextid = $context->id;
     }
     $returnurl = new moodle_url('/admin/tool/muprog/management/index.php',
         ['contextid' => $contextid, 'archived' => $archived]);

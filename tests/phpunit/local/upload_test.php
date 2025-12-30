@@ -23,6 +23,7 @@ namespace tool_muprog\phpunit\local;
 use tool_muprog\local\content\set;
 use tool_muprog\local\content\top;
 use tool_mulib\local\mulib;
+use tool_muprog\local\export;
 
 /**
  * Program helper test.
@@ -110,7 +111,8 @@ final class upload_test extends \advanced_testcase {
             $item1x2 = $top1->append_credits($set1, $framework1->id, ['completiondelay' => 11]);
         }
 
-        $rawprograms = \tool_muprog\local\export::export_programs('1=1', []);
+        $sql = export::get_export_sql((object)['contextid' => $syscontext->id, 'includesubcontexts' => 1]);
+        $rawprograms = export::export_programs($sql);
         $oldprograms = unserialize(serialize($rawprograms));
         $this->assertCount(3, $rawprograms);
 
@@ -126,7 +128,8 @@ final class upload_test extends \advanced_testcase {
         ];
         \tool_muprog\local\upload::process($data, $rawprograms);
 
-        $rawprograms2 = \tool_muprog\local\export::export_programs('1=1', []);
+        $sql = export::get_export_sql((object)['contextid' => $syscontext->id, 'includesubcontexts' => 1]);
+        $rawprograms2 = export::export_programs($sql);
         $this->assertEquals($oldprograms, $rawprograms2);
 
         $program0x = $DB->get_record('tool_muprog_program', ['idnumber' => $program0->idnumber], '*', MUST_EXIST);
@@ -222,13 +225,15 @@ final class upload_test extends \advanced_testcase {
             $item1x2 = $top1->append_credits($set1, $framework1->id, ['completiondelay' => 11]);
         }
 
-        $rawprograms = \tool_muprog\local\export::export_programs('1=1', []);
+        $sql = export::get_export_sql((object)['contextid' => $syscontext->id, 'includesubcontexts' => 1]);
+        $rawprograms = export::export_programs($sql);
 
         $data = (object)[
-            'contextid' => 0,
+            'contextid' => $syscontext->id,
+            'includesubcontexts' => 1,
             'archived' => 0,
         ];
-        $file = \tool_muprog\local\export::export_json($data);
+        $file = export::export_json($data);
 
         $dir = \make_request_directory();
         $packer = get_file_packer('application/zip');
@@ -307,14 +312,16 @@ final class upload_test extends \advanced_testcase {
             $item1x2 = $top1->append_credits($set1, $framework1->id, ['completiondelay' => 11]);
         }
 
-        $rawprograms = \tool_muprog\local\export::export_programs('1=1', []);
+        $sql = export::get_export_sql((object)['contextid' => $syscontext->id, 'includesubcontexts' => 1]);
+        $rawprograms = export::export_programs($sql);
         $data = (object)[
-            'contextid' => 0,
+            'contextid' => $syscontext->id,
+            'includesubcontexts' => 1,
             'archived' => 0,
             'delimiter_name' => 'comma',
             'encoding' => 'UTF-8',
         ];
-        $file = \tool_muprog\local\export::export_csv($data);
+        $file = export::export_csv($data);
 
         $dir = \make_request_directory();
         $packer = get_file_packer('application/zip');

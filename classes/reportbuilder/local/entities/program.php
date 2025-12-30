@@ -39,6 +39,7 @@ final class program extends base {
         return [
             'tool_muprog_program',
             'context',
+            'tool_mulib_context_map',
         ];
     }
 
@@ -75,6 +76,20 @@ final class program extends base {
         $contextalias = $this->get_table_alias('context');
 
         return "JOIN {context} {$contextalias} ON {$contextalias}.id = {$programalias}.contextid";
+    }
+
+    /**
+     * Return syntax for joining on the context map table to restrict result to subcontexts.
+     *
+     * @param \context $context
+     * @return string
+     */
+    public function get_context_map_join(\context $context): string {
+        $programalias = $this->get_table_alias('tool_muprog_program');
+        $contextmapalias = $this->get_table_alias('tool_mulib_context_map');
+
+        return "JOIN {tool_mulib_context_map} {$contextmapalias} ON
+                     {$contextmapalias}.contextid = {$programalias}.contextid AND {$contextmapalias}.relatedcontextid = {$context->id}";
     }
 
     /**
