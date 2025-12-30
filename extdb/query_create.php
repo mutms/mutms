@@ -57,6 +57,7 @@ if (!$type) {
     $currentdata = [
         'component' => $component,
         'type' => $type,
+        'contextid' => $context->id,
     ];
     $form = new \tool_mulib\local\extdb\form\query_create(null, ['currentdata' => $currentdata]);
 
