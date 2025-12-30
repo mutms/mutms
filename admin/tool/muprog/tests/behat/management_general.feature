@@ -55,11 +55,11 @@ Feature: General programs management tests
       | editor1   | peditor       | System       |           |
 
   @javascript
-  Scenario: Manager may create a new program with required settings
+  Scenario: Manager may create new programs
     Given I log in as "manager1"
-    And I am on the "tool_muprog > All programs management" page
 
-    When I click on "Add program" "button"
+    When I am on the "tool_muprog > All programs management" page
+    And I click on "Add program" "button"
     And the following fields in the ".modal-dialog" "css_element" match these values:
       | Program name  |             |
       | Program ID    |             |
@@ -74,10 +74,19 @@ Feature: General programs management tests
     And I should see "System" in the "Category" definition list item
     And I should see "No" in the "Course groups" definition list item
     And I should see "No" in the "Archived" definition list item
-    And I am on the "tool_muprog > All programs management" page
-    And "Program 001" row "Category" column of "reportbuilder-table" table should contain "System"
-    And "Program 001" row "Program ID" column of "reportbuilder-table" table should contain "PR01"
-    And "Program 001" row "Public" column of "reportbuilder-table" table should contain "No"
+
+    When I am on the "tool_muprog > All programs management" page
+    And I click on "Add program" "button"
+    And I set the following fields in the ".modal-dialog" "css_element" to these values:
+      | Program name  | Program 002 |
+      | Program ID    | PR02        |
+      | Category      | Cat 2       |
+    And I click on "Add program" "button" in the ".modal-dialog" "css_element"
+    Then I should see "Program 002" in the "Program name" definition list item
+    And I should see "PR02" in the "Program ID" definition list item
+    And I should see "Cat 2" in the "Category" definition list item
+    And I should see "No" in the "Course groups" definition list item
+    And I should see "No" in the "Archived" definition list item
 
   @javascript @_file_upload
   Scenario: Manager may create a new programs with all settings
@@ -96,7 +105,7 @@ Feature: General programs management tests
       | Course groups | Yes         |
       | Description   | Nice desc   |
     And I upload "admin/tool/muprog/tests/fixtures/badge.png" file to "Program image" filemanager
-    And I set the field "Context" to "Cat 2"
+    And I set the field "Category" to "Cat 2"
     And I set the field "Tags" to "Mathematics, Algebra"
     And I click on "Add program" "button" in the ".modal-dialog" "css_element"
     Then I should see "Program 001" in the "Program name" definition list item
@@ -176,7 +185,7 @@ Feature: General programs management tests
     And I set the following fields in the ".modal-dialog" "css_element" to these values:
       | Program name  | Program 002 |
       | Program ID    | PR02        |
-    And I set the field "Context" to "Cat 1"
+    And I set the field "Category" to "Cat 1"
     And I set the field "Tags" to "Logic"
     And I click on "Add program" "button" in the ".modal-dialog" "css_element"
 
@@ -187,7 +196,7 @@ Feature: General programs management tests
       | Course groups | Yes         |
       | Description   | Nice desc   |
     And I upload "admin/tool/muprog/tests/fixtures/badge.png" file to "Program image" filemanager
-    And I set the field "Context" to "Cat 2"
+    And I set the field "Category" to "Cat 2"
     And I set the field "Tags" to "Mathematics, Algebra"
     And I click on "Update program" "button" in the ".modal-dialog" "css_element"
     Then I should see "Program 001" in the "Program name" definition list item

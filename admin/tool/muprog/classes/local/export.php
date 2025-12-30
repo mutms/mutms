@@ -20,6 +20,7 @@ namespace tool_muprog\local;
 
 use stdClass;
 use tool_mulib\local\mulib;
+use tool_mulib\local\sql;
 
 /**
  * Program export helper.
@@ -52,15 +53,14 @@ final class export {
      *
      * NOTE: debugging is triggered when schema validation fails
      *
-     * @param string $select
-     * @param array $params
+     * @param sql $sql SQL select that returns programs to be exported in requested order
      * @return array of programs objects
      */
-    public static function export_programs(string $select, array $params): array {
+    public static function export_programs(sql $sql): array {
         global $DB;
 
         $result = [];
-        $rs = $DB->get_recordset_select('tool_muprog_program', $select, $params, 'fullname ASC, id ASC');
+        $rs = $DB->get_recordset_sql($sql->sql, $sql->params);
         foreach ($rs as $record) {
             $context = \context::instance_by_id($record->contextid);
             if ($context instanceof \context_system) {
@@ -223,28 +223,65 @@ final class export {
     }
 
     /**
+     * Returns SQL for programs export.
+     *
+     * @param stdClass $data settings from export form
+     * @return sql
+     */
+    public static function get_export_sql(stdClass $data): sql {
+        global $DB;
+
+        if (!empty($data->programids)) {
+            [$in, $params] = $DB->get_in_or_equal($data->programids);
+            return new sql(
+                "SELECT p.*
+                   FROM {tool_muprog_program} p
+                  WHERE p.id $in
+               ORDER BY p.fullname ASC, p.id ASC",
+                $params
+            );
+        }
+
+        if (!$data->contextid) {
+            // This should be prevented by form validation.
+            return new sql(
+                "SELECT p.*
+                   FROM {tool_muprog_program} p
+                  WHERE 1=2"
+            );
+        }
+
+        if (!empty($data->includesubcontexts)) {
+            return new sql(
+                "SELECT p.*
+                   FROM {tool_muprog_program} p
+                   JOIN {tool_mulib_context_map} cmap ON cmap.relatedcontextid = :contextid AND cmap.contextid = p.contextid
+                  WHERE p.archived = :archived
+               ORDER BY p.fullname ASC, p.id ASC
+                ",
+                ['archived' => $data->archived ?? 0, 'contextid' => $data->contextid]
+            );
+        }
+
+        return new sql(
+            "SELECT p.*
+               FROM {tool_muprog_program} p
+              WHERE p.archived = :archived AND p.contextid = :contextid
+           ORDER BY p.fullname ASC, p.id ASC
+            ",
+            ['archived' => $data->archived ?? 0, 'contextid' => $data->contextid]
+        );
+    }
+
+    /**
      * Export data in JSON format.
      *
      * @param stdClass $data settings from export form
      * @return string zip file
      */
     public static function export_json(stdClass $data): string {
-        global $DB;
-
-        if (!empty($data->programids)) {
-            [$in, $params] = $DB->get_in_or_equal($data->programids);
-            $select = "id $in";
-        } else {
-            if ($data->contextid) {
-                $select = "contextid = ? AND archived = ?";
-                $params = [$data->contextid, $data->archived];
-            } else {
-                $select = "archived = ?";
-                $params = [$data->archived];
-            }
-        }
-
-        $exportedprograms = self::export_programs($select, $params);
+        $sql = self::get_export_sql($data);
+        $exportedprograms = self::export_programs($sql);
 
         $dir = make_request_directory();
         $schemafile = 'programs_schema.json';
@@ -333,25 +370,13 @@ final class export {
      * @return string zip file
      */
     public static function export_csv(stdClass $data): string {
-        global $CFG, $DB;
+        global $CFG;
         require_once($CFG->dirroot . '/lib/csvlib.class.php');
 
+        $sql = self::get_export_sql($data);
+        $exportedprograms = self::export_programs($sql);
+
         $delimiter = \csv_import_reader::get_delimiter($data->delimiter_name);
-
-        if (!empty($data->programids)) {
-            [$in, $params] = $DB->get_in_or_equal($data->programids);
-            $select = "id $in";
-        } else {
-            if ($data->contextid) {
-                $select = "contextid = ? AND archived = ?";
-                $params = [$data->contextid, $data->archived];
-            } else {
-                $select = "archived = ?";
-                $params = [$data->archived];
-            }
-        }
-
-        $exportedprograms = self::export_programs($select, $params);
 
         $programs = [];
         $programs[] = [

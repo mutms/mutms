@@ -140,6 +140,7 @@ $string['importprogramdue'] = 'Program due ({$a})';
 $string['importprogramend'] = 'Program end ({$a})';
 $string['importprogramstart'] = 'Program start ({$a})';
 $string['importselectprogram'] = 'Select program';
+$string['includesubcontexts'] = 'Include sub-contexts';
 $string['invalidallocationdates'] = 'Invalid program allocation dates';
 $string['invalidcompletiondate'] = 'Invalid program completion date';
 $string['item'] = 'Item';

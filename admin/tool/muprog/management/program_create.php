@@ -63,7 +63,7 @@ $program->descriptionformat = FORMAT_HTML;
 
 $editoroptions = program::get_description_editor_options($context->id);
 
-$form = new \tool_muprog\local\form\program_create(null, ['data' => $program, 'editoroptions' => $editoroptions]);
+$form = new \tool_muprog\local\form\program_create(null, ['data' => $program, 'editoroptions' => $editoroptions, 'context' => $context]);
 
 if ($form->is_cancelled()) {
     redirect(new moodle_url('/admin/tool/muprog/management/index.php', ['contextid' => $context->id]));

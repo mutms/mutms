@@ -30,6 +30,20 @@ defined('MOODLE_INTERNAL') || die();
 
 $functions = [
     // Form element autocompletion WS.
+    'tool_muprog_form_autocomplete_program_contextid' => [
+        'classname' => tool_muprog\external\form_autocomplete\program_contextid::class,
+        'description' => 'Return list of category contexts for program editing.',
+        'type' => 'read',
+        'ajax' => true,
+        'loginrequired' => true,
+    ],
+    'tool_muprog_form_autocomplete_export_contextid' => [
+        'classname' => tool_muprog\external\form_autocomplete\export_contextid::class,
+        'description' => 'Return list of category contexts for program exporting.',
+        'type' => 'read',
+        'ajax' => true,
+        'loginrequired' => true,
+    ],
     'tool_muprog_form_autocomplete_source_manual_allocate_users' => [
         'classname' => tool_muprog\external\form_autocomplete\source_manual_allocate_users::class,
         'description' => 'Return list of user candidates for program allocation.',
