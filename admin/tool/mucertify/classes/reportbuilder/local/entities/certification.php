@@ -39,6 +39,7 @@ final class certification extends base {
         return [
             'tool_mucertify_certification',
             'context',
+            'tool_mulib_context_map',
         ];
     }
 
@@ -75,6 +76,20 @@ final class certification extends base {
         $contextalias = $this->get_table_alias('context');
 
         return "JOIN {context} {$contextalias} ON {$contextalias}.id = {$certificationalias}.contextid";
+    }
+
+    /**
+     * Return syntax for joining on the context map table to restrict result to subcontexts.
+     *
+     * @param \context $context
+     * @return string
+     */
+    public function get_context_map_join(\context $context): string {
+        $certificationalias = $this->get_table_alias('tool_mucertify_certification');
+        $contextmapalias = $this->get_table_alias('tool_mulib_context_map');
+
+        return "JOIN {tool_mulib_context_map} {$contextmapalias} ON
+                     {$contextmapalias}.contextid = {$certificationalias}.contextid AND {$contextmapalias}.relatedcontextid = {$context->id}";
     }
 
     /**

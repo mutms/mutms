@@ -19,6 +19,8 @@
 
 namespace tool_mucertify\local\form;
 
+use tool_mucertify\external\form_autocomplete\certification_contextid;
+
 /**
  * Add certification.
  *
@@ -39,6 +41,7 @@ final class certification_create extends \tool_mulib\local\ajax_form {
         $mform = $this->_form;
         $editoroptions = $this->_customdata['editoroptions'];
         $data = $this->_customdata['data'];
+        $context = $this->_customdata['context'];
 
         $mform->addElement('text', 'fullname', get_string('certificationname', 'tool_mucertify'), 'maxlength="254" size="50"');
         $mform->addRule('fullname', get_string('required'), 'required', null, 'client');
@@ -48,8 +51,7 @@ final class certification_create extends \tool_mulib\local\ajax_form {
         $mform->addRule('idnumber', get_string('required'), 'required', null, 'client');
         $mform->setType('idnumber', PARAM_RAW); // Idnumbers are plain text.
 
-        $mform->addElement('autocomplete', 'contextid', get_string('context', 'role'), $this->get_category_options());
-        $mform->addRule('contextid', get_string('required'), 'required', null, 'client');
+        certification_contextid::add_element($mform, [], 'contextid', get_string('category'), $context);
 
         if ($CFG->usetags) {
             $mform->addElement('tags', 'tags', get_string('tags'), ['itemtype' => 'tool_mucertify_certification', 'component' => 'tool_mucertify']);
@@ -94,6 +96,7 @@ final class certification_create extends \tool_mulib\local\ajax_form {
     #[\Override]
     public function validation($data, $files) {
         global $DB;
+        $context = $this->_customdata['context'];
 
         $errors = parent::validation($data, $files);
 
@@ -106,43 +109,19 @@ final class certification_create extends \tool_mulib\local\ajax_form {
         } else if (trim($data['idnumber']) !== $data['idnumber']) {
             $errors['idnumber'] = get_string('error');
         } else {
-            if ($DB->record_exists('tool_mucertify_certification', ['idnumber' => $data['idnumber']])) {
+            if ($DB->record_exists_select('tool_mucertify_certification', "LOWER(idnumber) = LOWER(?)", [$data['idnumber']])) {
                 $errors['idnumber'] = get_string('error');
             }
         }
 
-        $context = \context::instance_by_id($data['contextid'], IGNORE_MISSING);
-        if (!$context) {
-            $errors['contextid'] = get_string('required');
-        } else if ($context->contextlevel != CONTEXT_SYSTEM && $context->contextlevel != CONTEXT_COURSECAT) {
-            $errors['contextid'] = get_string('error');
-        } else if (!has_capability('tool/mucertify:edit', $context)) {
-            // There is a problem in category caching it seems.
-            $errors['contextid'] = get_string('error');
+        $error = certification_contextid::validate_value($data['contextid'], [], $context);
+        if ($error !== null) {
+            $errors['contextid'] = $error;
         }
 
         // Add the custom fields validation.
         $errors = array_merge($errors, $this->handler->instance_form_validation($data, $files));
 
         return $errors;
-    }
-
-    /**
-     * Get categories.
-     *
-     * @return array
-     */
-    protected function get_category_options(): array {
-        $syscontext = \context_system::instance();
-        $options = [];
-        if (has_capability('tool/mucertify:edit', $syscontext)) {
-            $options[$syscontext->id] = $syscontext->get_context_name();
-        }
-        $categories = \core_course_category::make_categories_list('tool/mucertify:edit');
-        foreach ($categories as $catid => $categoryname) {
-            $catcontext = \context_coursecat::instance($catid);
-            $options[$catcontext->id] = $categoryname;
-        }
-        return $options;
     }
 }

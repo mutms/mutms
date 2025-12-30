@@ -15,6 +15,8 @@
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 // phpcs:disable moodle.Files.BoilerplateComment.CommentEndedTooSoon
+// phpcs:disable moodle.Files.LineLength.TooLong
+// phpcs:disable Universal.OOStructures.AlphabeticExtendsImplements
 
 namespace tool_mucertify\privacy;
 

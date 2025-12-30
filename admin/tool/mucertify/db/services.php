@@ -29,6 +29,14 @@
 defined('MOODLE_INTERNAL') || die();
 
 $functions = [
+    // Form element autocompletion WS.
+    'tool_mucertify_form_autocomplete_certification_contextid' => [
+        'classname' => tool_mucertify\external\form_autocomplete\certification_contextid::class,
+        'description' => 'Return list of category contexts for certification editing.',
+        'type' => 'read',
+        'ajax' => true,
+        'loginrequired' => true,
+    ],
     'tool_mucertify_form_autocomplete_certification_periods_programid' => [
         'classname' => tool_mucertify\external\form_autocomplete\certification_periods_programid::class,
         'description' => 'Return list of user candidates for program allocation.',

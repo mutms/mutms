@@ -62,7 +62,7 @@ $certification->descriptionformat = FORMAT_HTML;
 
 $editoroptions = certification::get_description_editor_options($context->id);
 
-$form = new \tool_mucertify\local\form\certification_create(null, ['data' => $certification, 'editoroptions' => $editoroptions]);
+$form = new \tool_mucertify\local\form\certification_create(null, ['data' => $certification, 'editoroptions' => $editoroptions, 'context' => $context]);
 
 if ($form->is_cancelled()) {
     redirect(new moodle_url('/admin/tool/mucertify/management/index.php', ['contextid' => $context->id]));

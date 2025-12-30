@@ -42,15 +42,6 @@ final class util {
     }
 
     /**
-     * Are any programs present?
-     *
-     * @return bool
-     */
-    public static function is_mucertify_active(): bool {
-        return (bool)get_config('tool_mucertify', 'active');
-    }
-
-    /**
      * Encode JSON date in a consistent way.
      *
      * @param mixed $data
