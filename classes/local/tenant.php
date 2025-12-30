@@ -481,6 +481,9 @@ final class tenant {
 
         $trans = $DB->start_delegated_transaction();
 
+        $hook = new \tool_mutenancy\hook\pre_tenant_delete($tenant);
+        \core\di::get(\core\hook\manager::class)->dispatch($hook);
+
         $syscontext = \context_system::instance();
         /** @var \context_tenant $tenantcontext */
         $tenantcontext = \context_tenant::instance($tenant->id);
