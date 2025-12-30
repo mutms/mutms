@@ -21,7 +21,6 @@ namespace tool_mutrain\reportbuilder\local\systemreports;
 
 use tool_mutrain\reportbuilder\local\entities\framework;
 use core_reportbuilder\system_report;
-use core_reportbuilder\local\helpers\database;
 use core_reportbuilder\local\report\filter;
 use core_reportbuilder\local\filters\boolean_select;
 use lang_string;
@@ -49,13 +48,13 @@ final class frameworks extends system_report {
 
         $this->add_base_fields("{$this->frameworkalias}.id, {$this->frameworkalias}.archived");
 
-        $contextalias = $this->frameworkentity->get_table_alias('context');
         $this->add_join($this->frameworkentity->get_context_join());
 
         // Make sure only frameworks from context and its subcontexts are shown.
         $context = $this->get_context();
-        $paramlike = database::generate_param_name();
-        $this->add_base_condition_sql("({$contextalias}.id = {$context->id} OR {$contextalias}.path LIKE :$paramlike)", [$paramlike => $context->path . '/%']);
+        if ($context->contextlevel != CONTEXT_SYSTEM) {
+            $this->add_join($this->frameworkentity->get_context_map_join($context));
+        }
 
         $this->add_columns();
         $this->add_filters();
