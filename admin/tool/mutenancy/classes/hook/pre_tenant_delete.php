@@ -16,25 +16,26 @@
 
 // phpcs:disable moodle.Files.BoilerplateComment.CommentEndedTooSoon
 
+namespace tool_mutenancy\hook;
+
 /**
- * Multi-tenancy plugin version.
+ * Triggered right before tenant deletion when database transaction is already active.
  *
  * @package     tool_mutenancy
  * @copyright   2025 Petr Skoda
  * @license     https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
+#[\core\attribute\label('Allows plugins to prepare for tenant deletion.')]
+#[\core\attribute\tags('tool_mutenancy')]
+final class pre_tenant_delete {
+    /** @var \stdClass */
+    public $tenant;
 
-defined('MOODLE_INTERNAL') || die();
-
-/** @var stdClass $plugin */
-$plugin->component = 'tool_mutenancy';
-$plugin->version = '2025123150';
-$plugin->requires = 2025041404;
-$plugin->maturity = MATURITY_BETA;
-$plugin->supported = [500, 500];
-$plugin->incompatible = 501;
-$plugin->release = 'mu-5.0.4-03';
-
-$plugin->dependencies = [
-    'tool_mulib' => '2025123150',
-];
+    /**
+     * Constructor.
+     * @param \stdClass $tenant
+     */
+    public function __construct(\stdClass $tenant) {
+        $this->tenant = $tenant;
+    }
+}
