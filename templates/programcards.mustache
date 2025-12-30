@@ -1,0 +1,44 @@
+{{!
+    This file is part of MuTMS suite of plugins for Moodle™ LMS.
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <https://www.gnu.org/licenses/>.
+}}
+{{!
+    @template block_muprogmyoverview/programcards
+
+    This template renders the cards view for the myoverview block.
+
+    Example context (json):
+    {
+        "programs": [
+            {
+                "name": "Assignment due 1",
+                "viewurl": "https://moodlesite/program/view.php?id=2",
+                "programimage": "https://moodlesite/pluginfile/123/program/overviewfiles/123.jpg",
+                "fullname": "program 3",
+                "hasprogress": true,
+                "progress": 10,
+                "programcategory": "Category 1"
+            }
+        ]
+    }
+}}
+
+<div class="card-grid mx-0 row row-cols-1 row-cols-sm-2 row-cols-lg-3 {{$classes}}{{/classes}}" data-region="card-deck" role="list">
+{{#programs}}
+    <div class="col d-flex px-0 mb-2">
+        {{> block_muprogmyoverview/programcard }}
+    </div>
+{{/programs}}
+</div>
