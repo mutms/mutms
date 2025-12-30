@@ -1,0 +1,56 @@
+{{!
+    This file is part of MuTMS suite of plugins for Moodle™ LMS.
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <https://www.gnu.org/licenses/>.
+}}
+{{!
+    @template block_muprogmyoverview/nav-sort-selector
+
+    This template renders sorting dropdown.
+
+    Example context (json):
+    {
+        "title": false,
+        "duedate": true
+    }
+}}
+
+<div class="mb-1 me-1 d-flex flex-wrap align-items-center">
+    <div class="dropdown">
+        <button id="sortingdropdown" type="button" class="btn btn-outline-secondary dropdown-toggle" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" aria-label="{{#str}} aria:sortingdropdown, block_muprogmyoverview {{/str}}">
+            <span data-active-item-text>
+                {{#title}}{{#str}} sortbytitle, block_muprogmyoverview {{/str}}{{/title}}
+                {{#duedate}}{{#str}} sortbyduedate, block_muprogmyoverview {{/str}}{{/duedate}}
+                {{#idnumber}}{{#str}} sortbyidnumber, block_muprogmyoverview {{/str}}{{/idnumber}}
+            </span>
+        </button>
+        <ul class="dropdown-menu" role="menu" data-show-active-item data-skip-active-class="true" aria-labelledby="sortingdropdown">
+            <li>
+                <a class="dropdown-item" href="#" data-filter="sort" data-pref="title" data-value="title" aria-controls="programs-view-{{uniqid}}" role="menuitem" {{#title}}aria-current="true"{{/title}}>
+                    {{#str}} sortbytitle, block_muprogmyoverview {{/str}}
+                </a>
+            </li>
+            <li>
+                <a class="dropdown-item" href="#" data-filter="sort" data-pref="idnumber" data-value="idnumber" aria-controls="programs-view-{{uniqid}}" role="menuitem" {{#idnumber}}aria-current="true"{{/idnumber}}>
+                    {{#str}} sortbyidnumber, block_muprogmyoverview {{/str}}
+                </a>
+            </li>
+            <li>
+                <a class="dropdown-item" href="#" data-filter="sort" data-pref="duedate" data-value="duedate" aria-controls="programs-view-{{uniqid}}" role="menuitem" {{#duedate}}aria-current="true"{{/duedate}}>
+                    {{#str}} sortbyduedate, block_muprogmyoverview {{/str}}
+                </a>
+            </li>
+        </ul>
+    </div>
+</div>
