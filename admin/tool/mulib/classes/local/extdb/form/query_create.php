@@ -58,7 +58,7 @@ final class query_create extends \tool_mulib\local\ajax_form {
             $mform,
             [],
             'contextid',
-            get_string('context'),
+            get_string('category'),
             $syscontext
         );
 

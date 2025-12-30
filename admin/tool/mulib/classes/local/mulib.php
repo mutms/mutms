@@ -54,6 +54,27 @@ final class mulib {
     }
 
     /**
+     * Is Certifications plugin available?
+     *
+     * @return bool
+     */
+    public static function is_mucertify_available(): bool {
+        return class_exists(\tool_mucertify\local\util::class);
+    }
+
+    /**
+     * Are any certifications present?
+     *
+     * @return bool
+     */
+    public static function is_mucertify_active(): bool {
+        if (!self::is_mucertify_available()) {
+            return false;
+        }
+        return (bool)get_config('tool_mucertify', 'active');
+    }
+
+    /**
      * Is training credits plugin available?
      *
      * @return bool
@@ -93,6 +114,27 @@ final class mulib {
             return false;
         }
         return \tool_murelation\local\util::is_murelation_active();
+    }
+
+    /**
+     * Is cusotm homepages plugin available?
+     *
+     * @return bool
+     */
+    public static function is_muhome_available(): bool {
+        return class_exists(\tool_muhome\local\util::class);
+    }
+
+    /**
+     * Are any home pages present?
+     *
+     * @return bool
+     */
+    public static function is_muhome_active(): bool {
+        if (!self::is_muhome_available()) {
+            return false;
+        }
+        return (bool)get_config('tool_muhome', 'active');
     }
 
     /**

@@ -34,7 +34,7 @@ Feature: Test external database queries management
       | External database server | Test server 2          |
       | Name                     | Test query 2           |
       | SQL query                | SELECT * FROM m_course |
-      | Context                  | Cat 1                  |
+      | Category                 | Cat 1                  |
       | Note                     | Some note              |
     And I click on "Add query" "button" in the ".modal-dialog" "css_element"
     Then the following should exist in the "reportbuilder-table" table:
@@ -53,13 +53,23 @@ Feature: Test external database queries management
       | External database server | Test server 1          |
       | Name                     | Test query 3           |
       | SQL query                | SELECT * FROM m_cours3 |
-      | Context                  | Cat 3                  |
+      | Category                 | Cat 3                  |
       | Note                     | Note 3                 |
     And I click on "Update query" "button" in the ".modal-dialog" "css_element"
     Then the following should exist in the "reportbuilder-table" table:
       | Name         | Category | External database server | SQL query              | Note      |
       | Test query 1 | System   | Test server 1            | SELECT * FROM m_user   |           |
       | Test query 3 | Cat 3    | Test server 1            | SELECT * FROM m_cours3 | Note 3    |
+
+    When I click on "Actions" "link_or_button" in the "Test query 3" "table_row"
+    And I click on "Edit" "link" in the ".dropdown-menu.show" "css_element"
+    And I set the following fields in the ".modal-dialog" "css_element" to these values:
+      | Category                 | System                  |
+    And I click on "Update query" "button" in the ".modal-dialog" "css_element"
+    Then the following should exist in the "reportbuilder-table" table:
+      | Name         | Category | External database server | SQL query              | Note      |
+      | Test query 1 | System   | Test server 1            | SELECT * FROM m_user   |           |
+      | Test query 3 | System   | Test server 1            | SELECT * FROM m_cours3 | Note 3    |
 
     When I click on "Actions" "link_or_button" in the "Test query 3" "table_row"
     And I click on "Delete" "link" in the ".dropdown-menu.show" "css_element"
