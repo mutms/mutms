@@ -17,7 +17,7 @@
 // phpcs:disable moodle.Files.BoilerplateComment.CommentEndedTooSoon
 
 /**
- * External functions for training.
+ * External functions for training credits.
  *
  * @package    tool_mutrain
  * @copyright  2024 Open LMS (https://www.openlms.net/)
@@ -29,6 +29,14 @@
 defined('MOODLE_INTERNAL') || die();
 
 $functions = [
+    // Form element autocompletion WS.
+    'tool_mutrain_form_autocomplete_framework_contextid' => [
+        'classname' => tool_mutrain\external\form_autocomplete\framework_contextid::class,
+        'description' => 'Return list of category contexts for framework editing.',
+        'type' => 'read',
+        'ajax' => true,
+        'loginrequired' => true,
+    ],
     'tool_mutrain_form_autocomplete_field_add_fieldid' => [
         'classname' => \tool_mutrain\external\form_autocomplete\field_add_fieldid::class,
         'description' => 'Return list of field candidates for adding to framework.',
