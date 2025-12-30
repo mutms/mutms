@@ -68,7 +68,7 @@ final class context_map {
 
         $wheres = [];
         $wheres[] = $join['where'];
-        if ($join['where'] !== '1=2' && $where->sql !== '') {
+        if ($join['where']->sql !== '1=2' && $where->sql !== '') {
             $wheres[] = $where;
         }
         if ($wheres) {
@@ -92,7 +92,7 @@ final class context_map {
      * @param string $contextalias for example 'ctx'
      * @param bool $doanything true means admins can do anything
      * @param string $prefix join table alias prefix to prevent conflicts
-     * @return array{ join: sql, where: string }
+     * @return array{ join: sql, where: sql }
      */
     public static function get_contexts_by_capability_join(
         string $capability,
@@ -109,23 +109,23 @@ final class context_map {
         $capinfo = get_capability_info($capability);
         if (!$capinfo) {
             debugging('Capability "' . $capability . '" was not found! This has to be fixed in code.');
-            return ['join' => new sql(""), 'where' => "1=2"];
+            return ['join' => new sql(""), 'where' => new sql("1=2")];
         }
 
         if (!$userid || isguestuser($userid)) {
             if ($capinfo->captype === 'write' || ($capinfo->riskbitmask & (RISK_XSS | RISK_CONFIG | RISK_DATALOSS))) {
-                return ['join' => new sql(""), 'where' => "1=2"];
+                return ['join' => new sql(""), 'where' => new sql("1=2")];
             }
             if (!$userid) {
                 $roleid = $CFG->notloggedinroleid ?? 0;
                 if (!$roleid) {
-                    return ['join' => new sql(""), 'where' => "1=2"];
+                    return ['join' => new sql(""), 'where' => new sql("1=2")];
                 }
                 return self::get_contexts_by_capability_join_guest($capability, $roleid, $contextalias, $p);
             }
             $roleid = $CFG->guestroleid ?? 0;
             if (!$roleid) {
-                return ['join' => new sql(""), 'where' => "1=2"];
+                return ['join' => new sql(""), 'where' => new sql("1=2")];
             }
             return self::get_contexts_by_capability_join_guest($capability, $roleid, $contextalias, $p);
         }
@@ -139,9 +139,9 @@ final class context_map {
 
         if (is_siteadmin($userid) && $doanything) {
             if ($islocking) {
-                return ['join' => "", 'where' => "{$contextalias}.locked = 0 AND {$contextalias}.contextlevel <= 50"];
+                return ['join' => "", 'where' => new sql("{$contextalias}.locked = 0 AND {$contextalias}.contextlevel <= 50")];
             } else {
-                return ['join' => new sql(""), 'where' => "{$contextalias}.contextlevel <= 50"];
+                return ['join' => new sql(""), 'where' => new sql("{$contextalias}.contextlevel <= 50")];
             }
         }
 
@@ -162,7 +162,7 @@ final class context_map {
             );
             if ($DB->record_exists_sql($sql->sql, $sql->params)) {
                 // System level role with prohibited system level capability means all contexts are prohibited.
-                return ['join' => new sql(""), 'where' => "1=2"];
+                return ['join' => new sql(""), 'where' => new sql("1=2")];
             }
             $hasprohibits = true;
         }
@@ -216,7 +216,7 @@ final class context_map {
             $join = $join->replace_comment('prohibitjoin', "");
         }
 
-        return ['join' => $join, 'where' => '(' . implode(" AND ", $wheres) . ')'];
+        return ['join' => $join, 'where' => new sql('(' . implode(" AND ", $wheres) . ')')];
     }
 
     /**
@@ -242,7 +242,7 @@ final class context_map {
                 )
             ) {
                 // System level role with prohibited system level capability means all contexts are prohibited.
-                return ['join' => new sql(""), 'where' => "1=2"];
+                return ['join' => new sql(""), 'where' => new sql("1=2")];
             }
             $hasprohibits = true;
         }
@@ -289,7 +289,7 @@ final class context_map {
             $join = $join->replace_comment('prohibitjoin', "");
         }
 
-        return ['join' => $join, 'where' => '(' . implode(" AND ", $wheres) . ')'];
+        return ['join' => $join, 'where' => new sql('(' . implode(" AND ", $wheres) . ')')];
     }
 
     /**
