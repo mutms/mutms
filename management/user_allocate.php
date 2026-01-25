@@ -61,9 +61,9 @@ $form = new \tool_mutenancy\local\form\user_allocate(null, ['user' => $user, 'co
 
 if ($form->is_cancelled()) {
     if ($user->tenantid) {
-        $returnurl = new moodle_url('/admin/tool/mutenancy/tenant_members', ['id' => $user->tenantid]);
+        $returnurl = new \core\url('/admin/tool/mutenancy/tenant_members', ['id' => $user->tenantid]);
     } else {
-        $returnurl = new moodle_url('/admin/tool/user.php');
+        $returnurl = new \core\url('/admin/tool/user.php');
     }
     $form->ajax_form_cancelled($returnurl);
 }
@@ -72,9 +72,9 @@ if ($data = $form->get_data()) {
     $user = \tool_mutenancy\local\user::allocate($user->id, (int)$data->tenantid);
 
     if ($user->tenantid) {
-        $returnurl = new moodle_url('/admin/tool/mutenancy/tenant_members', ['id' => $user->tenantid]);
+        $returnurl = new \core\url('/admin/tool/mutenancy/tenant_members', ['id' => $user->tenantid]);
     } else {
-        $returnurl = new moodle_url('/admin/tool/user.php');
+        $returnurl = new \core\url('/admin/tool/user.php');
     }
     $form->ajax_form_submitted($returnurl);
 }

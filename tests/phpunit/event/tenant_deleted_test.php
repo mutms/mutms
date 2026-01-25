@@ -66,7 +66,7 @@ final class tenant_deleted_test extends \advanced_testcase {
         $this->assertSame('tool_mutenancy_tenant', $event->objecttable);
         $this->assertSame('Tenant deleted', $event::get_name());
         $description = $event->get_description();
-        $tenanturl = new \moodle_url('/admin/tool/mutenancy/index.php');
+        $tenanturl = new \core\url('/admin/tool/mutenancy/index.php');
         $this->assertSame($tenanturl->out(false), $event->get_url()->out(false));
     }
 }

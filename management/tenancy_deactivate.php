@@ -42,7 +42,7 @@ require_capability('moodle/site:config', $syscontext);
 $PAGE->set_url('/admin/tool/mutenancy/management/tenancy_deactivate.php');
 $PAGE->set_context($syscontext);
 
-$returnurl = new moodle_url('/admin/tool/mutenancy/index.php');
+$returnurl = new \core\url('/admin/tool/mutenancy/index.php');
 
 $tenantcount = $DB->count_records('tool_mutenancy_tenant', []);
 

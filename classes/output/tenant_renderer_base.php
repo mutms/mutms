@@ -35,7 +35,7 @@ abstract class tenant_renderer_base extends \plugin_renderer_base {
     public function setup_page(\stdClass $tenant): void {
         $syscontext = \context_system::instance();
         if (has_capability('tool/mutenancy:view', $syscontext)) {
-            $url = new \moodle_url('/admin/tool/mutenancy/index.php');
+            $url = new \core\url('/admin/tool/mutenancy/index.php');
             $this->page->navbar->add(get_string('tenants', 'tool_mutenancy'), $url);
         }
         $this->page->navbar->add(format_string($tenant->name), $this->page->url);

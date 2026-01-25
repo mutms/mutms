@@ -40,7 +40,7 @@ $tenantid = required_param('id', PARAM_INT);
 require_login();
 
 if (!tenancy::is_active()) {
-    redirect(new moodle_url('/'));
+    redirect(new \core\url('/'));
 }
 
 $tenant = $DB->get_record('tool_mutenancy_tenant', ['id' => $tenantid], '*', MUST_EXIST);
@@ -51,7 +51,7 @@ require_capability('tool/mutenancy:admin', $context);
 $PAGE->set_url('/admin/tool/mutenancy/management/tenant_archive.php', ['id' => $tenant->id]);
 $PAGE->set_context($context);
 
-$returnurl = new moodle_url('/admin/tool/mutenancy/tenant.php', ['id' => $tenant->id]);
+$returnurl = new \core\url('/admin/tool/mutenancy/tenant.php', ['id' => $tenant->id]);
 
 if ($tenant->archived) {
     redirect($returnurl);

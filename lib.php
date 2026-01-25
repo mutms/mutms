@@ -50,7 +50,7 @@ function tool_mutenancy_extend_navigation_category_settings($navigation, $course
     // NOTE: catnav is added to unbreak explicit breadcrums.
     $settingsnode = navigation_node::create(
         get_string('tenant', 'tool_mutenancy'),
-        new moodle_url('/admin/tool/mutenancy/tenant.php', ['id' => $tenantcontext->instanceid, 'catnav' => 1]),
+        new \core\url('/admin/tool/mutenancy/tenant.php', ['id' => $tenantcontext->instanceid, 'catnav' => 1]),
         navigation_node::TYPE_CUSTOM,
         null,
         'tool_mutenancy_tenant'
@@ -96,7 +96,7 @@ function tool_mutenancy_myprofile_navigation(\core_user\output\myprofile\tree $t
             $name = format_string($tenant->name);
             $tenantcontext = context_tenant::instance($tenant->id);
             if (has_capability('tool/mutenancy:view', $tenantcontext)) {
-                $url = new moodle_url('/admin/tool/mutenancy/tenant.php', ['id' => $tenant->id]);
+                $url = new \core\url('/admin/tool/mutenancy/tenant.php', ['id' => $tenant->id]);
                 $name = html_writer::link($url, $name);
             }
         } else {
@@ -110,7 +110,7 @@ function tool_mutenancy_myprofile_navigation(\core_user\output\myprofile\tree $t
     if (!is_siteadmin($user->id) && $USER->id != $user->id) {
         $tcount = $DB->count_records('tool_mutenancy_tenant', []);
         if ($tcount && has_capability('tool/mutenancy:allocate', $syscontext)) {
-            $url = new moodle_url('/admin/tool/mutenancy/management/user_allocate.php', ['id' => $user->id]);
+            $url = new \core\url('/admin/tool/mutenancy/management/user_allocate.php', ['id' => $user->id]);
             $link = new \tool_mulib\output\ajax_form\icon($url, get_string('user_allocate', 'tool_mutenancy'), 'i/switch');
             $allocate = $OUTPUT->render($link);
         }
@@ -132,7 +132,7 @@ function tool_mutenancy_myprofile_navigation(\core_user\output\myprofile\tree $t
                 $name = format_string($tenant->name);
                 $tenantcontext = context_tenant::instance($tenant->id);
                 if (has_capability('tool/mutenancy:view', $tenantcontext)) {
-                    $url = new moodle_url('/admin/tool/mutenancy/tenant.php', ['id' => $tenant->id]);
+                    $url = new \core\url('/admin/tool/mutenancy/tenant.php', ['id' => $tenant->id]);
                     $name = html_writer::link($url, $name);
                 }
                 $list[] = $name;
@@ -160,7 +160,7 @@ function tool_mutenancy_render_navbar_output(renderer_base $renderer): string {
         return '';
     }
 
-    $url = new moodle_url('/admin/tool/mutenancy/tenant_switch.php');
+    $url = new \core\url('/admin/tool/mutenancy/tenant_switch.php');
     $icon = new \tool_mulib\output\ajax_form\icon(
         $url,
         tenancy::get_tenant_string('tenant_switch'),

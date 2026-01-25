@@ -52,7 +52,7 @@ final class navigationlib_test extends \advanced_testcase {
         $syscontext = \context_system::instance();
 
         $PAGE = new \moodle_page();
-        $PAGE->set_url(new \moodle_url('/'));
+        $PAGE->set_url(new \core\url('/'));
         $PAGE->set_context($syscontext);
         $nav = new \settings_navigation($PAGE);
         $nav->initialise();
@@ -65,14 +65,14 @@ final class navigationlib_test extends \advanced_testcase {
         $tenantcontext = \context_tenant::instance($tenant->id);
 
         $PAGE = new \moodle_page();
-        $PAGE->set_url(new \moodle_url('/'));
+        $PAGE->set_url(new \core\url('/'));
         $PAGE->set_context($syscontext);
         $nav = new \settings_navigation($PAGE);
         $nav->initialise();
         $this->assertNotContains('tenantsettings', $nav->get_children_key_list());
 
         $PAGE = new \moodle_page();
-        $PAGE->set_url(new \moodle_url('/'));
+        $PAGE->set_url(new \core\url('/'));
         $PAGE->set_context($tenantcontext);
         $nav = new \settings_navigation($PAGE);
         $nav->initialise();

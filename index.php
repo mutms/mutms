@@ -44,7 +44,7 @@ $PAGE->set_heading(tenancy::get_tenants_string('tenants'));
 
 if (!tenancy::is_active()) {
     echo $OUTPUT->header();
-    $url = new moodle_url('/admin/tool/mutenancy/management/tenancy_activate.php');
+    $url = new \core\url('/admin/tool/mutenancy/management/tenancy_activate.php');
     $button = new \tool_mulib\output\ajax_form\button($url, get_string('tenancy_activate', 'tool_mutenancy'), true);
     $button->set_form_size('sm');
     echo '<div class="buttons">' . $OUTPUT->render($button) . '</div>';
@@ -58,7 +58,7 @@ if (has_capability('tool/mutenancy:admin', $syscontext)) {
     $tenantlimit = get_config('tool_mutenancy', 'tenantlimit');
     $notenantsyet = !$DB->record_exists('tool_mutenancy_tenant', []);
     if (!$tenantlimit || $tenantlimit > $DB->count_records('tool_mutenancy_tenant', [])) {
-        $url = new moodle_url('/admin/tool/mutenancy/management/tenant_create.php');
+        $url = new \core\url('/admin/tool/mutenancy/management/tenant_create.php');
         $button = new \tool_mulib\output\ajax_form\button(
             $url,
             tenancy::get_tenant_string('tenant_create'),
@@ -80,7 +80,7 @@ echo $report->output();
 $buttons = [];
 
 if (!$tenantcount && has_capability('moodle/site:config', $syscontext)) {
-    $url = new moodle_url('/admin/tool/mutenancy/management/tenancy_deactivate.php');
+    $url = new \core\url('/admin/tool/mutenancy/management/tenancy_deactivate.php');
     $button = new \tool_mulib\output\ajax_form\button($url, get_string('tenancy_deactivate', 'tool_mutenancy'));
     $button->set_form_size('sm');
     $buttons[] = $OUTPUT->render($button);
