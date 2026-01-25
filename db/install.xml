@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<XMLDB PATH="admin/tool/muhome/db" VERSION="20251218" COMMENT="XMLDB file for tool_muhome plugin"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:noNamespaceSchemaLocation="../../../../lib/xmldb/xmldb.xsd"
+>
+  <TABLES>
+    <TABLE NAME="tool_muhome_page" COMMENT="Custom home pages">
+      <FIELDS>
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+        <FIELD NAME="contextid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="Context for home page management access control, apart from tenant separation context does not affect visibility of pages - system or category context only"/>
+        <FIELD NAME="name" TYPE="char" LENGTH="1333" NOTNULL="true" SEQUENCE="false" COMMENT="Page name is used in menus, it does not need to be unique when using using cohort visibility and users can see only one page with the same name"/>
+        <FIELD NAME="title" TYPE="char" LENGTH="1333" NOTNULL="false" SEQUENCE="false" COMMENT="Optional page title, site name is used if NULL - recommended to be set when multiple pages present"/>
+        <FIELD NAME="priority" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="Available page with highest priority is picked as default page, pages are ordered from high to low priority"/>
+        <FIELD NAME="status" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="0 means draft, 1 means visible with optional date restriction, 2 means archived"/>
+        <FIELD NAME="guestvisible" TYPE="int" LENGTH="1" NOTNULL="true" SEQUENCE="false" COMMENT="Are guests and not-logged-in users allowed to access the page?"/>
+        <FIELD NAME="uservisible" TYPE="int" LENGTH="1" NOTNULL="true" SEQUENCE="false" COMMENT="Are all users allowed to access the page? if 0 then cohort required"/>
+        <FIELD NAME="hiddenbefore" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false" COMMENT="Date when page becomes visible"/>
+        <FIELD NAME="hiddenafter" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false" COMMENT="Page visibility end date"/>
+        <FIELD NAME="hiddenfromtenants" TYPE="int" LENGTH="1" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="1 means page is not visible when site is switched to any tenant, 0 means site can be visible when switch to tenant depending on other restrictions"/>
+        <FIELD NAME="timecreated" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="timemodified" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+        <KEY NAME="contextid" TYPE="foreign" FIELDS="contextid" REFTABLE="context" REFFIELDS="id"/>
+      </KEYS>
+    </TABLE>
+    <TABLE NAME="tool_muhome_cohortvisible" COMMENT="Members of these cohorts may see page when uservisible is 0">
+      <FIELDS>
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+        <FIELD NAME="pageid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="cohortid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+        <KEY NAME="pageid" TYPE="foreign" FIELDS="pageid" REFTABLE="tool_muhome_page" REFFIELDS="id"/>
+        <KEY NAME="cohortid" TYPE="foreign" FIELDS="cohortid" REFTABLE="cohort" REFFIELDS="id"/>
+      </KEYS>
+      <INDEXES>
+        <INDEX NAME="pageid-cohortid" UNIQUE="true" FIELDS="pageid, cohortid" COMMENT="Prevent duplicates"/>
+      </INDEXES>
+    </TABLE>
+  </TABLES>
+</XMLDB>
