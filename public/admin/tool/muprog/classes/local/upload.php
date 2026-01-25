@@ -15,6 +15,7 @@
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 // phpcs:disable moodle.Files.BoilerplateComment.CommentEndedTooSoon
+// phpcs:disable moodle.Files.LineLength.TooLong
 
 namespace tool_muprog\local;
 
@@ -115,6 +116,13 @@ final class upload {
                             'completiondelay' => $item->completiondelay ?? 0,
                         ];
                         $top->append_course($parent, $item->courseid, $data);
+                    } else if ($item->itemtype === 'attendance') {
+                        $data = [
+                            'fullname' => clean_text($item->reference),
+                            'points' => $item->points ?? 1,
+                            'completiondelay' => $item->completiondelay ?? 0,
+                        ];
+                        $top->append_attendance($parent, $data);
                     } else if ($item->itemtype === 'credits') {
                         $data = [
                             'points' => $item->points ?? 1,
@@ -301,7 +309,9 @@ final class upload {
                     $padding = str_repeat('-', $level);
                     if ($item->itemtype === 'course') {
                         $coursename = $DB->get_field('course', 'fullname', ['id' => $item->courseid]);
-                        return [$padding . format_string($coursename)];
+                        return [$padding . s($coursename)];
+                    } else if ($item->itemtype === 'attendance') {
+                        return [$padding . s($item->reference)];
                     } else if ($item->itemtype === 'credits') {
                         if (mulib::is_mutrain_available()) {
                             $frameworkname = $DB->get_field('tool_mutrain_framework', 'name', ['id' => $item->creditframeworkid]);
@@ -310,7 +320,7 @@ final class upload {
                             return [$padding . get_string('error')];
                         }
                     } else if ($item->itemtype === 'set') {
-                        $result[] = $padding . s($item->fullname ?? get_string('set', 'tool_muprog'));
+                        $result[] = $padding . s($item->setname ?? get_string('set', 'tool_muprog'));
                         foreach ($item->items as $child) {
                             $result = array_merge($result, $itemformatter((object)$child, $level + 1));
                         }
@@ -575,6 +585,13 @@ final class upload {
                         } else {
                             return get_string('error');
                         }
+                        return null;
+                    } else if ($item->itemtype === 'attendance') {
+                        // Reference is a general name and is required.
+                        if (trim($item->reference ?? '') === '') {
+                            return get_string('error');
+                        }
+                        unset($item->items);
                         return null;
                     } else if ($item->itemtype === 'credits' && mulib::is_mutrain_available()) {
                         unset($item->items);
@@ -900,7 +917,7 @@ final class upload {
                     $parent->items[] = $set;
                     $si++;
                     $setmap[$si] = $set;
-                } else if ($rawitem['itemtype'] === 'course' || $rawitem['itemtype'] === 'credits') {
+                } else if ($rawitem['itemtype'] === 'course' || $rawitem['itemtype'] === 'attendance' || $rawitem['itemtype'] === 'credits') {
                     if (isset($rawitem['parentset']) && isset($setmap[$rawitem['parentset']])) {
                         $parent = $setmap[$rawitem['parentset']];
                     }

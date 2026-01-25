@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<XMLDB PATH="admin/tool/muprog/db" VERSION="20251211" COMMENT="XMLDB file for tool_muprog plugin"
+<XMLDB PATH="admin/tool/muprog/db" VERSION="20260106" COMMENT="XMLDB file for tool_muprog plugin"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:noNamespaceSchemaLocation="../../../../lib/xmldb/xmldb.xsd"
 >
@@ -33,13 +33,14 @@
         <INDEX NAME="archived" UNIQUE="false" FIELDS="archived"/>
       </INDEXES>
     </TABLE>
-    <TABLE NAME="tool_muprog_item" COMMENT="Structure of programs - items representing courses and course-sets with their ordering and completion rules.">
+    <TABLE NAME="tool_muprog_item" COMMENT="Structure of programs - items representing sets, courses and other item types with their ordering and completion rules.">
       <FIELDS>
         <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
         <FIELD NAME="programid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
-        <FIELD NAME="topitem" TYPE="int" LENGTH="1" NOTNULL="false" SEQUENCE="false" COMMENT="1 for top most item representing program itself, NULL for all other items"/>
-        <FIELD NAME="courseid" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false" COMMENT="Course reference, NULL if item is course-set (must not be set for top item)"/>
-        <FIELD NAME="creditframeworkid" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false" COMMENT="Credits credits framework reference, NULL for sets (must not be set for top item)"/>
+        <FIELD NAME="type" TYPE="char" LENGTH="50" NOTNULL="true" SEQUENCE="false" COMMENT="Type of item - top, setm course, credits, etc."/>
+        <FIELD NAME="topitem" TYPE="int" LENGTH="1" NOTNULL="false" SEQUENCE="false" COMMENT="1 for top item type representing program itself, NULL for all other items"/>
+        <FIELD NAME="courseid" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false" COMMENT="Course reference, to be set ONLY for course type"/>
+        <FIELD NAME="creditframeworkid" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false" COMMENT="Credits credits framework reference, to be set only for credits type"/>
         <FIELD NAME="previtemid" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false" COMMENT="Previous item needs to be completed in order to allow courseid access, this is ignored for sets"/>
         <FIELD NAME="fullname" TYPE="char" LENGTH="254" NOTNULL="true" SEQUENCE="false" COMMENT="Human readable name of course-set, copy of course.fullname if courseid set, copy of program name for top item"/>
         <FIELD NAME="sequencejson" TYPE="text" NOTNULL="true" SEQUENCE="false" COMMENT="List of children with ordering and completion rules, optional start delay info if courseid set"/>
@@ -191,6 +192,25 @@
       <INDEXES>
         <INDEX NAME="itemid-allocationid" UNIQUE="true" FIELDS="itemid, allocationid" COMMENT="Only one completion per item and user"/>
         <INDEX NAME="timecompleted" UNIQUE="false" FIELDS="timecompleted"/>
+      </INDEXES>
+    </TABLE>
+    <TABLE NAME="tool_muprog_attendance" COMMENT="Tracking of offline attendances">
+      <FIELDS>
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+        <FIELD NAME="itemid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="userid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="userid used instead of allocationid so that we may allow re-allocation without attendance loss in the future"/>
+        <FIELD NAME="status" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false" COMMENT="null means not set yet - needed for custom fields, 3 means no show, 2 means failed, 1 means completed"/>
+        <FIELD NAME="timeeffective" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false" COMMENT="attendance taking date"/>
+        <FIELD NAME="takenby" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false" COMMENT="user who took the attendance, must be set together with timeeffective"/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+        <KEY NAME="itemid" TYPE="foreign" FIELDS="itemid" REFTABLE="tool_muprog_item" REFFIELDS="id"/>
+        <KEY NAME="userid" TYPE="foreign" FIELDS="userid" REFTABLE="user" REFFIELDS="id"/>
+        <KEY NAME="takenby" TYPE="foreign" FIELDS="takenby" REFTABLE="user" REFFIELDS="id"/>
+      </KEYS>
+      <INDEXES>
+        <INDEX NAME="itemid-userid" UNIQUE="true" FIELDS="itemid, userid" COMMENT="Only one attendance per item and user allowed"/>
       </INDEXES>
     </TABLE>
     <TABLE NAME="tool_muprog_evidence" COMMENT="Alternative evidence for completion of a program item">

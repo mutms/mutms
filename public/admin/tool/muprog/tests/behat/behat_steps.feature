@@ -20,17 +20,21 @@ Feature: Programs navigation behat steps test
       | admin1   | Admin     | 1        | admin1@example.com   |
       | viewer1  | Viewer    | 1        | viewer1@example.com  |
       | viewer2  | Viewer    | 2        | viewer2@example.com  |
+      | viewer3  | Viewer    | 3        | viewer3@example.com  |
       | student1 | Student   | 1        | student1@example.com |
     And the following "roles" exist:
       | name           | shortname     |
       | Program viewer | pviewer       |
       | Program admin  | padmin        |
+      | User viewer    | uviewer       |
     And the following "permission overrides" exist:
       | capability                     | permission | role         | contextlevel | reference |
       | tool/muprog:view               | Allow      | pviewer      | System       |           |
       | moodle/site:configview         | Allow      | pviewer      | System       |           |
       | tool/muprog:admin              | Allow      | padmin       | System       |           |
       | moodle/site:configview         | Allow      | padmin       | System       |           |
+      | tool/muprog:viewuserprograms   | Allow      | uviewer      | System       |           |
+      | moodle/user:viewdetails        | Allow      | uviewer      | System       |           |
     And the following "role assigns" exist:
       | user     | role          | contextlevel | reference |
       | manager1 | manager       | System       |           |
@@ -38,6 +42,7 @@ Feature: Programs navigation behat steps test
       | admin1   | padmin        | System       |           |
       | viewer1  | pviewer       | System       |           |
       | viewer2  | pviewer       | Category     | CAT1      |
+      | viewer3  | uviewer       | User         | student1  |
     And the following "tool_muprog > programs" exist:
       | fullname    | idnumber | category | publicaccess | archived |
       | Program 000 | PR0      |          | 0            | 0        |
@@ -207,7 +212,7 @@ Feature: Programs navigation behat steps test
     And I should not see "Program 003"
     And I should not see "Program 003"
 
-    When I follow "System"
+    When I follow "Programs"
     Then I should see "Programs"
     And I should see "Program 000"
     And I should see "Program 001"
@@ -241,6 +246,33 @@ Feature: Programs navigation behat steps test
     When I am on the "tool_muprog > My programs" page
     Then I should see "My programs"
     And I should see "You are not allocated to any programs."
+
+  Scenario: User viewer navigates to User programs via behat step
+    Given I log in as "viewer3"
+    And the following "tool_muprog > program_allocations" exist:
+      | program     | user     |
+      | Program 001 | student1 |
+      | Program 002 | student1 |
+
+    When I am on the "student1" "tool_muprog > User programs" page
+    Then the following should exist in the "reportbuilder-table" table:
+      | Program name   | Program ID | Program status |
+      | Program 001    | PR1        | Open           |
+      | Program 002    | PR2        | Open           |
+
+  Scenario: User viewer navigates to User programs via UI
+    Given I log in as "viewer3"
+    And the following "tool_muprog > program_allocations" exist:
+      | program     | user     |
+      | Program 001 | student1 |
+      | Program 002 | student1 |
+
+    When I am on the "student1" "user > profile" page
+    And I follow "Programs"
+    Then the following should exist in the "reportbuilder-table" table:
+      | Program name   | Program ID | Program status |
+      | Program 001    | PR1        | Open           |
+      | Program 002    | PR2        | Open           |
 
   Scenario: Program admin or site config capabilities are needed to see program settings
     Given the following "permission overrides" exist:

@@ -82,6 +82,13 @@ class behat_tool_muprog extends behat_base {
                     throw new Exception('Invalid program "' . $identifier . '."');
                 }
                 return new moodle_url('/admin/tool/muprog/management/program.php', ['id' => $program->id]);
+            case 'user programs':
+                $userid = $this->get_user_id_by_identifier($identifier);
+                if (!$userid) {
+                    throw new Exception('The specified user with username or email "' .
+                        $identifier . '" does not exist');
+                }
+                return new moodle_url('/admin/tool/muprog/my/index.php', ['userid' => $userid]);
 
             default:
                 throw new Exception('Unrecognised tool_muprog page type "' . $type . '."');

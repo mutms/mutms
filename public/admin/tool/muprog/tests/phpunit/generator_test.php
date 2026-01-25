@@ -19,6 +19,7 @@
 namespace tool_muprog\phpunit;
 
 use tool_muprog\local\content\course;
+use tool_muprog\local\content\attendance;
 use tool_muprog\local\content\set;
 use tool_muprog\local\program;
 use tool_mulib\local\mulib;
@@ -171,15 +172,21 @@ final class generator_test extends \advanced_testcase {
         $this->assertInstanceOf(course::class, $item1);
         $this->assertSame($program->id, (string)$item1->get_programid());
         $this->assertSame($course1->id, (string)$item1->get_courseid());
+        $this->assertSame(1, $item1->get_points());
+        $this->assertSame(0, $item1->get_completiondelay());
 
         $record = [
             'program' => $program->fullname,
             'course' => $course2->fullname,
+            'points' => 3,
+            'completiondelay' => 3600,
         ];
         $item2 = $generator->create_program_item($record);
         $this->assertInstanceOf(course::class, $item2);
         $this->assertSame($program->id, (string)$item2->get_programid());
         $this->assertSame($course2->id, (string)$item2->get_courseid());
+        $this->assertSame(3, $item2->get_points());
+        $this->assertSame(3600, $item2->get_completiondelay());
 
         $record = [
             'program' => $program->fullname,
@@ -192,6 +199,8 @@ final class generator_test extends \advanced_testcase {
         $this->assertSame('First set', $item3->get_fullname());
         $this->assertSame(1, $item3->get_minprerequisites());
         $this->assertSame(set::SEQUENCE_TYPE_ALLINANYORDER, $item3->get_sequencetype());
+        $this->assertSame(1, $item3->get_points());
+        $this->assertSame(0, $item3->get_completiondelay());
         $top = program::load_content($program->id);
         $this->assertSame($item3->get_id(), $top->get_children()[2]->get_id());
 
@@ -201,6 +210,8 @@ final class generator_test extends \advanced_testcase {
             'parent' => 'First set',
             'minprerequisites' => 3,
             'sequencetype' => set::SEQUENCE_TYPE_ATLEAST,
+            'points' => 7,
+            'completiondelay' => 60,
         ];
         /** @var set $item4 */
         $item4 = $generator->create_program_item($record);
@@ -209,6 +220,8 @@ final class generator_test extends \advanced_testcase {
         $this->assertSame('Second set', $item4->get_fullname());
         $this->assertSame(3, $item4->get_minprerequisites());
         $this->assertSame(set::SEQUENCE_TYPE_ATLEAST, $item4->get_sequencetype());
+        $this->assertSame(7, $item4->get_points());
+        $this->assertSame(60, $item4->get_completiondelay());
         $top = program::load_content($program->id);
         $this->assertSame($item4->get_id(), $top->get_children()[2]->get_children()[0]->get_id());
 
@@ -223,6 +236,23 @@ final class generator_test extends \advanced_testcase {
         $this->assertSame($course3->id, (string)$item5->get_courseid());
         $top = program::load_content($program->id);
         $this->assertSame($item5->get_id(), $top->get_children()[2]->get_children()[1]->get_id());
+
+        $record = [
+            'programid' => $program->id,
+            'type' => 'attendance',
+            'fullname' => 'Driving test',
+            'parent' => 'First set',
+            'points' => 5,
+            'completiondelay' => 600,
+        ];
+        $item5 = $generator->create_program_item($record);
+        $this->assertInstanceOf(attendance::class, $item5);
+        $this->assertSame($program->id, (string)$item5->get_programid());
+        $this->assertSame('Driving test', (string)$item5->get_fullname());
+        $this->assertSame(5, $item5->get_points());
+        $this->assertSame(600, $item5->get_completiondelay());
+        $top = program::load_content($program->id);
+        $this->assertSame($item5->get_id(), $top->get_children()[2]->get_children()[2]->get_id());
 
         if (!mulib::is_mutrain_available()) {
             return;
@@ -260,7 +290,7 @@ final class generator_test extends \advanced_testcase {
         $this->assertSame($program->id, (string)$item6->get_programid());
         $this->assertSame($framework1->id, (string)$item6->get_creditframeworkid());
         $top = program::load_content($program->id);
-        $this->assertSame($item6->get_id(), $top->get_children()[2]->get_children()[2]->get_id());
+        $this->assertSame($item6->get_id(), $top->get_children()[2]->get_children()[3]->get_id());
 
         $record = [
             'programid' => $program->id,
@@ -272,7 +302,7 @@ final class generator_test extends \advanced_testcase {
         $this->assertSame($program->id, (string)$item7->get_programid());
         $this->assertSame($framework2->id, (string)$item7->get_creditframeworkid());
         $top = program::load_content($program->id);
-        $this->assertSame($item7->get_id(), $top->get_children()[2]->get_children()[3]->get_id());
+        $this->assertSame($item7->get_id(), $top->get_children()[2]->get_children()[4]->get_id());
     }
 
     public function test_create_program_allocation(): void {

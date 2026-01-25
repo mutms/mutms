@@ -24,12 +24,14 @@ use core_external\external_api;
 use core_external\external_function_parameters;
 use core_external\external_value;
 use core_external\external_multiple_structure;
+use core\exception\invalid_parameter_exception;
 
 /**
  * Deallocates the given users from the program.
  *
  * @package     tool_muprog
  * @copyright   2023 Open LMS (https://www.openlms.net/)
+ * @copyright   2025 Petr Skoda
  * @author      Farhan Karmali
  * @license     https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
@@ -58,17 +60,20 @@ final class delete_program_allocations extends external_api {
      */
     public static function execute(int $programid, array $userids): array {
         global $DB;
-        ['programid' => $programid, 'userids' => $userids] = self::validate_parameters(
-            self::execute_parameters(),
-            ['programid' => $programid, 'userids' => $userids]
-        );
+        [
+            'programid' => $programid,
+            'userids' => $userids,
+        ] = self::validate_parameters(self::execute_parameters(), [
+            'programid' => $programid,
+            'userids' => $userids,
+        ]);
 
         $program = $DB->get_record('tool_muprog_program', ['id' => $programid], '*', MUST_EXIST);
 
         // Validate context.
         $context = \context::instance_by_id($program->contextid);
         self::validate_context($context);
-        require_capability('tool/muprog:allocate', $context);
+        require_capability('tool/muprog:deallocate', $context);
 
         $sourceclasses = allocation::get_source_classes();
         $sources = $DB->get_records('tool_muprog_source', ['programid' => $program->id]);
@@ -89,7 +94,7 @@ final class delete_program_allocations extends external_api {
                 || !isset($sourceclasses[$sources[$allocationrecord->sourceid]->type])
             ) {
                 // This was not included in get_program_allocations results.
-                throw new \invalid_parameter_exception('Invalid user allocation');
+                throw new invalid_parameter_exception('Invalid user allocation');
             }
             $source = $sources[$allocationrecord->sourceid];
             /** @var class-string<\tool_muprog\local\source\base> $sourceclass */
@@ -97,7 +102,7 @@ final class delete_program_allocations extends external_api {
 
             if (!$sourceclass::is_allocation_delete_possible($program, $source, $allocationrecord)) {
                 // They should have checked data returned from get_program_allocations.
-                throw new \invalid_parameter_exception('Cannot deallocate');
+                throw new invalid_parameter_exception('Cannot deallocate');
             }
 
             $deallocate[$userid] = [$sourceclass, $source, $allocationrecord];
@@ -120,7 +125,7 @@ final class delete_program_allocations extends external_api {
     public static function execute_returns(): external_multiple_structure {
         return new external_multiple_structure(
             new external_value(PARAM_INT, 'User id'),
-            'List of users who were de allocated'
+            'List of users who were deallocated'
         );
     }
 }

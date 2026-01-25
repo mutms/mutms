@@ -19,6 +19,7 @@
 namespace tool_muprog\local\form;
 
 use tool_muprog\local\content\course;
+use tool_muprog\local\content\attendance;
 use tool_muprog\local\content\credits;
 
 /**
@@ -36,10 +37,9 @@ final class item_delete extends \tool_mulib\local\ajax_form {
         $mform = $this->_form;
         $item = $this->_customdata['item'];
 
-        $mform->addElement('text', 'fullname', get_string('fullname'), 'maxlength="254" size="50"');
-        $mform->setType('fullname', PARAM_TEXT);
-        $mform->setDefault('fullname', format_string($item->get_fullname()));
-        $mform->freeze('fullname');
+        $mform->addElement('static', 'statictype', get_string('item_type', 'tool_muprog'), $item::get_type_name());
+
+        $mform->addElement('static', 'staticfullname', get_string('fullname'), format_string($item->get_fullname()));
 
         $mform->addElement('hidden', 'id');
         $mform->setType('id', PARAM_INT);
@@ -47,6 +47,8 @@ final class item_delete extends \tool_mulib\local\ajax_form {
 
         if ($item instanceof course) {
             $deletestr = get_string('deletecourse', 'tool_muprog');
+        } else if ($item instanceof attendance) {
+            $deletestr = get_string('deleteattendance', 'tool_muprog');
         } else if ($item instanceof credits) {
             $deletestr = get_string('deletecredits', 'tool_muprog');
         } else {

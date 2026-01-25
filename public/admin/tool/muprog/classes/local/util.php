@@ -39,15 +39,6 @@ final class util {
     }
 
     /**
-     * Are any programs present?
-     *
-     * @return bool
-     */
-    public static function is_muprog_active(): bool {
-        return (bool)get_config('tool_muprog', 'active');
-    }
-
-    /**
      * Encode JSON date in a consistent way.
      *
      * @param mixed $data

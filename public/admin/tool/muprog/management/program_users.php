@@ -45,7 +45,7 @@ $program = $DB->get_record('tool_muprog_program', ['id' => $id], '*', MUST_EXIST
 $context = context::instance_by_id($program->contextid);
 require_capability('tool/muprog:view', $context);
 
-$currenturl = new moodle_url('/admin/tool/muprog/management/program_users.php', ['id' => $program->id]);
+$currenturl = new core\url('/admin/tool/muprog/management/program_users.php', ['id' => $program->id]);
 
 management::setup_program_page($currenturl, $context, $program, 'program_users');
 $PAGE->set_docs_path('https://github.com/mutms/moodle-tool_muprog/wiki/Program-users');
@@ -69,8 +69,8 @@ foreach ($sourceclasses as $sourceclass) {
 $canmanageevidence = has_capability('tool/muprog:manageevidence', $context);
 $totalcount = $DB->count_records('tool_muprog_allocation', ['programid' => $program->id]);
 if ($totalcount && !$program->archived && $canmanageevidence) {
-    $url = new \moodle_url('/admin/tool/muprog/management/program_evidence_upload.php', ['programid' => $id]);
-    $link = new \tool_mulib\output\ajax_form\link($url, get_string('evidenceupload', 'tool_muprog'));
+    $url = new \core\url('/admin/tool/muprog/management/program_evidence_upload.php', ['programid' => $id]);
+    $link = new \tool_mulib\output\ajax_form\link($url, get_string('evidenceupload', 'tool_muprog'), 'i/upload');
     $actions->get_dropdown()->add_ajax_form($link);
 }
 if ($actions->has_items()) {

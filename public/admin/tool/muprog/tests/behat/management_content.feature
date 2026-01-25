@@ -58,6 +58,9 @@ Feature: Program content management tests
 
     # Add courses and sets
     When I click on "Append item" "link" in the "Program 000" "table_row"
+    And I set the following fields in the ".modal-dialog" "css_element" to these values:
+      | Course | 1 |
+    And I click on "Continue" "button" in the ".modal-dialog" "css_element"
     And the following fields in the ".modal-dialog" "css_element" match these values:
       | Points                    | 1            |
       | completiondelay[enabled]  | 0            |
@@ -67,55 +70,82 @@ Feature: Program content management tests
       | completiondelay[enabled]  | 1            |
       | completiondelay[number]   | 3            |
       | completiondelay[timeunit] | days         |
-    Then I click on "Append item" "button" in the ".modal-dialog" "css_element"
+    Then I click on "Add courses" "button" in the ".modal-dialog" "css_element"
     And I should see "123" in the "Course 1" "table_row"
     And I should see "Completion delay: 3 days" in the "Course 1" "table_row"
 
     When I click on "Append item" "link" in the "Program 000" "table_row"
     And I set the following fields in the ".modal-dialog" "css_element" to these values:
-      | Add new set               | 1            |
+      | Set | 1 |
+    And I click on "Continue" "button" in the ".modal-dialog" "css_element"
+    And I set the following fields in the ".modal-dialog" "css_element" to these values:
       | Full name                 | First set    |
       | Completion type           | All in order |
       | Points                    | 321          |
       | completiondelay[enabled]  | 1            |
       | completiondelay[number]   | 7            |
       | completiondelay[timeunit] | days         |
-    And I click on "Append item" "button" in the ".modal-dialog" "css_element"
+    And I click on "Add set" "button" in the ".modal-dialog" "css_element"
     Then I should see "All in order" in the "First set" "table_row"
     And I should see "321" in the "First set" "table_row"
     And I should see "Completion delay: 7 days" in the "First set" "table_row"
 
     When I click on "Append item" "link" in the "First set" "table_row"
     And I set the following fields in the ".modal-dialog" "css_element" to these values:
-      | Courses                   | Course 2, Course 3, Course 4 |
-      | Add new set               | 1            |
+      | Set | 1 |
+    And I click on "Continue" "button" in the ".modal-dialog" "css_element"
+    And I set the following fields in the ".modal-dialog" "css_element" to these values:
       | Full name                 | Second set   |
       | Completion type           | At least X   |
       | At least X                | 2            |
       | completiondelay[enabled]  | 1            |
       | completiondelay[number]   | 5            |
       | completiondelay[timeunit] | days         |
-    And I click on "Append item" "button" in the ".modal-dialog" "css_element"
+    And I click on "Add set" "button" in the ".modal-dialog" "css_element"
     Then I should see "At least 2" in the "Second set" "table_row"
     And I should see "Completion delay: 5 days" in the "Second set" "table_row"
 
-    When I click on "Append item" "link" in the "Program 000" "table_row"
+    When I click on "Append item" "link" in the "Second set" "table_row"
     And I set the following fields in the ".modal-dialog" "css_element" to these values:
-      | Courses         | Course 5         |
-      | Add new set     | 1                |
-      | Full name       | Third set        |
-      | Completion type | All in any order |
-    And I click on "Append item" "button" in the ".modal-dialog" "css_element"
-    Then I should see "All in any order" in the "Third set" "table_row"
+      | Course | 1 |
+    And I click on "Continue" "button" in the ".modal-dialog" "css_element"
+    And I set the following fields in the ".modal-dialog" "css_element" to these values:
+      | Courses                   | Course 2, Course 3, Course 4 |
+      | completiondelay[enabled]  | 1            |
+      | completiondelay[number]   | 5            |
+      | completiondelay[timeunit] | days         |
+    And I click on "Add courses" "button" in the ".modal-dialog" "css_element"
+    Then I should see "Completion delay: 5 days" in the "Course 2" "table_row"
 
     When I click on "Append item" "link" in the "Program 000" "table_row"
     And I set the following fields in the ".modal-dialog" "css_element" to these values:
-      | Add new set      | 1                |
+      | Set | 1 |
+    And I click on "Continue" "button" in the ".modal-dialog" "css_element"
+    And I set the following fields in the ".modal-dialog" "css_element" to these values:
+      | Full name       | Third set        |
+      | Completion type | All in any order |
+    And I click on "Add set" "button" in the ".modal-dialog" "css_element"
+    Then I should see "All in any order" in the "Third set" "table_row"
+
+    When I click on "Append item" "link" in the "Third set" "table_row"
+    And I set the following fields in the ".modal-dialog" "css_element" to these values:
+      | Course | 1 |
+    And I click on "Continue" "button" in the ".modal-dialog" "css_element"
+    And I set the following fields in the ".modal-dialog" "css_element" to these values:
+      | Courses         | Course 5         |
+    And I click on "Add courses" "button" in the ".modal-dialog" "css_element"
+    Then I should see "Course completion" in the "Course 5" "table_row"
+
+    When I click on "Append item" "link" in the "Program 000" "table_row"
+    And I set the following fields in the ".modal-dialog" "css_element" to these values:
+      | Set | 1 |
+    And I click on "Continue" "button" in the ".modal-dialog" "css_element"
+    And I set the following fields in the ".modal-dialog" "css_element" to these values:
       | Full name        | Fourth set       |
       | Completion type  | Minimum X points |
       | Minimum X points | 7                |
       | Points           | 456              |
-    And I click on "Append item" "button" in the ".modal-dialog" "css_element"
+    And I click on "Add set" "button" in the ".modal-dialog" "css_element"
     Then I should see "Minimum 7 points" in the "Fourth set" "table_row"
     And I should see "456" in the "Fourth set" "table_row"
 
@@ -344,9 +374,12 @@ Feature: Program content management tests
     And I click on "Content" "link" in the ".nav-tabs" "css_element"
 
     When I click on "Append item" "link" in the "Program 000" "table_row"
+    And I set the following fields in the ".modal-dialog" "css_element" to these values:
+      | Credits | 1 |
+    And I click on "Continue" "button" in the ".modal-dialog" "css_element"
     And I set the following fields to these values:
       | Credits                  | TFR 001   |
-    And I click on "Append item" "button" in the ".modal-dialog" "css_element"
+    And I click on "Add credits" "button" in the ".modal-dialog" "css_element"
     Then I should see "Required credits: 10" in the "TFR 001" "table_row"
 
     When I click on "Update credits" "link" in the "TFR 001" "table_row"
@@ -381,13 +414,19 @@ Feature: Program content management tests
     And I follow "Program 000"
     And I click on "Content" "link" in the ".secondary-navigation" "css_element"
     And I click on "Append item" "link" in the "Program 000" "table_row"
+    And I set the following fields in the ".modal-dialog" "css_element" to these values:
+      | Course | 1 |
+    And I click on "Continue" "button" in the ".modal-dialog" "css_element"
     And I set the following fields to these values:
       | Courses | Course 1 |
-    And I click on "Append item" "button" in the ".modal-dialog" "css_element"
+    And I click on "Add courses" "button" in the ".modal-dialog" "css_element"
     Then I should see "Course 1" in the "#program_content" "css_element"
 
     When I click on "Append item" "link" in the "Program 000" "table_row"
+    And I set the following fields in the ".modal-dialog" "css_element" to these values:
+      | Course | 1 |
+    And I click on "Continue" "button" in the ".modal-dialog" "css_element"
     And I set the following fields to these values:
       | Courses | Course 4 |
-    And I click on "Append item" "button" in the ".modal-dialog" "css_element"
+    And I click on "Add courses" "button" in the ".modal-dialog" "css_element"
     Then I should see "Course 4" in the "#program_content" "css_element"

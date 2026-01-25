@@ -227,7 +227,9 @@ final class program_test extends \advanced_testcase {
         $this->complete_allocation($allocationx1);
         $this->complete_allocation($allocationx2);
 
-        $this->assertTrue(\tool_muprog\local\source\program::is_allocation_archive_possible($program1, $source1p, $allocationx2));
+        $allocation1p = $DB->get_record('tool_muprog_allocation', ['programid' => $program1->id, 'userid' => $user1->id]);
+
+        $this->assertTrue(\tool_muprog\local\source\program::is_allocation_archive_possible($program1, $source1p, $allocation1p));
     }
 
     public function test_is_allocation_restore_possible(): void {
@@ -251,7 +253,11 @@ final class program_test extends \advanced_testcase {
         $this->complete_allocation($allocationx1);
         $this->complete_allocation($allocationx2);
 
-        $this->assertTrue(\tool_muprog\local\source\program::is_allocation_restore_possible($program1, $source1p, $allocationx2));
+        $allocation1p = $DB->get_record('tool_muprog_allocation', ['programid' => $program1->id, 'userid' => $user1->id]);
+        $this->assertFalse(\tool_muprog\local\source\program::is_allocation_restore_possible($program1, $source1p, $allocation1p));
+
+        $allocation1p = \tool_muprog\local\source\base::allocation_archive($allocation1p->id);
+        $this->assertTrue(\tool_muprog\local\source\program::is_allocation_restore_possible($program1, $source1p, $allocation1p));
     }
 
     public function test_is_allocation_delete_possible(): void {

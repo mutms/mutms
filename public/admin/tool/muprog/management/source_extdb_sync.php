@@ -42,11 +42,11 @@ $query = $DB->get_record('tool_mulib_extdb_query', ['id' => $source->auxint1]);
 $context = context::instance_by_id($program->contextid);
 require_capability('tool/muprog:allocate', $context);
 
-$currenturl = new moodle_url('/admin/tool/muprog/management/source_extdb_sync.php', ['sourceid' => $source->id]);
+$currenturl = new core\url('/admin/tool/muprog/management/source_extdb_sync.php', ['sourceid' => $source->id]);
 $PAGE->set_context($context);
 $PAGE->set_url($currenturl);
 
-$returnurl = new moodle_url('/admin/tool/muprog/management/program_allocation.php', ['id' => $program->id]);
+$returnurl = new core\url('/admin/tool/muprog/management/program_allocation.php', ['id' => $program->id]);
 
 $form = new \tool_muprog\local\form\source_extdb_sync(null, ['program' => $program, 'source' => $source, 'query' => $query]);
 

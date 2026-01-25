@@ -38,6 +38,16 @@ $capabilities = [
         ],
     ],
 
+    /* View programs in profile of other users */
+    'tool/muprog:viewuserprograms' => [
+        'captype' => 'read',
+        'riskbitmask' => RISK_PERSONAL,
+        'contextlevel' => CONTEXT_USER,
+        'archetypes' => [
+            'manager' => CAP_ALLOW,
+        ],
+    ],
+
     /*
      * Access the programs management UI - needed for programs management capabilities
      * this allows sidestepping of regular program visibility rules.
@@ -116,6 +126,16 @@ $capabilities = [
     /* Alter program dates if source allows it. */
     'tool/muprog:manageallocation' => [
         'riskbitmask' => RISK_DATALOSS,
+        'captype' => 'write',
+        'contextlevel' => CONTEXT_COURSECAT,
+        'archetypes' => [
+            'editingteacher' => CAP_ALLOW,
+            'manager' => CAP_ALLOW,
+        ],
+    ],
+
+    /* Take offline attendance. */
+    'tool/muprog:takeattendance' => [
         'captype' => 'write',
         'contextlevel' => CONTEXT_COURSECAT,
         'archetypes' => [

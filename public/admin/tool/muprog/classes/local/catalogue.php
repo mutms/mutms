@@ -69,9 +69,9 @@ final class catalogue {
     /**
      * Current catalogue URL.
      *
-     * @return \moodle_url
+     * @return \core\url
      */
-    public function get_current_url(): \moodle_url {
+    public function get_current_url(): \core\url {
         $pageparams = [];
         if ($this->page != 0) {
             $pageparams['page'] = $this->page;
@@ -82,7 +82,7 @@ final class catalogue {
         if ($this->searchtext !== null) {
             $pageparams['searchtext'] = $this->searchtext;
         }
-        return new \moodle_url('/admin/tool/muprog/catalogue/index.php', $pageparams);
+        return new \core\url('/admin/tool/muprog/catalogue/index.php', $pageparams);
     }
 
     /**
@@ -160,7 +160,7 @@ final class catalogue {
         $result = '';
 
         $data = [
-            'action' => new \moodle_url('/admin/tool/muprog/catalogue/index.php'),
+            'action' => new \core\url('/admin/tool/muprog/catalogue/index.php'),
             'inputname' => 'searchtext',
             'searchstring' => get_string('search', 'cohort'),
             'query' => $this->searchtext,
@@ -181,9 +181,9 @@ final class catalogue {
             $context = \context::instance_by_id($program->contextid);
             $fullname = format_string($program->fullname);
             if ($allocation) {
-                $url = new \moodle_url('/admin/tool/muprog/my/program.php', ['id' => $program->id]);
+                $url = new \core\url('/admin/tool/muprog/my/program.php', ['id' => $program->id]);
             } else {
-                $url = new \moodle_url('/admin/tool/muprog/catalogue/program.php', ['id' => $program->id]);
+                $url = new \core\url('/admin/tool/muprog/catalogue/program.php', ['id' => $program->id]);
             }
 
             $description = file_rewrite_pluginfile_urls($program->description, 'pluginfile.php', $context->id, 'tool_muprog', 'description', $program->id);
@@ -205,7 +205,7 @@ final class catalogue {
             $programimage = '';
             $presentation = (array)json_decode($program->presentationjson);
             if (!empty($presentation['image'])) {
-                $imageurl = \moodle_url::make_file_url(
+                $imageurl = \core\url::make_file_url(
                     "$CFG->wwwroot/pluginfile.php",
                     '/' . $context->id . '/tool_muprog/image/' . $program->id . '/' . $presentation['image'],
                     false
@@ -349,9 +349,9 @@ final class catalogue {
     /**
      * Returns link to Program catalogue.
      *
-     * @return ?\moodle_url null of programs disabled or user cannot access catalogue
+     * @return ?\core\url null of programs disabled or user cannot access catalogue
      */
-    public static function get_catalogue_url(): ?\moodle_url {
+    public static function get_catalogue_url(): ?\core\url {
         if (!\tool_mulib\local\mulib::is_muprog_active()) {
             return null;
         }
@@ -361,7 +361,7 @@ final class catalogue {
         if (!has_capability('tool/muprog:viewcatalogue', \context_system::instance())) {
             return null;
         }
-        return new \moodle_url('/admin/tool/muprog/catalogue/index.php');
+        return new \core\url('/admin/tool/muprog/catalogue/index.php');
     }
 
     /**
@@ -438,7 +438,7 @@ final class catalogue {
         $result = [];
         foreach ($programs as $program) {
             $fullname = format_string($program->fullname);
-            $url = new \moodle_url('/admin/tool/muprog/catalogue/program.php', ['id' => $program->id]);
+            $url = new \core\url('/admin/tool/muprog/catalogue/program.php', ['id' => $program->id]);
             $icon = $OUTPUT->pix_icon('program', '', 'tool_muprog');
             $result[] = '<div class="program-link">' . $icon . \html_writer::link($url, $fullname) . '</div>';
         }

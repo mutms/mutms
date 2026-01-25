@@ -47,11 +47,11 @@ $source = $DB->get_record('tool_muprog_source', ['programid' => $program->id, 't
 $context = context::instance_by_id($program->contextid);
 require_capability('tool/muprog:edit', $context);
 
-$currenturl = new moodle_url('/admin/tool/muprog/management/program_source_edit.php', ['id' => $program->id]);
+$currenturl = new core\url('/admin/tool/muprog/management/program_source_edit.php', ['id' => $program->id]);
 $PAGE->set_context($context);
 $PAGE->set_url($currenturl);
 
-$returnurl = new moodle_url('/admin/tool/muprog/management/program_allocation.php', ['id' => $program->id]);
+$returnurl = new core\url('/admin/tool/muprog/management/program_allocation.php', ['id' => $program->id]);
 
 /** @var \tool_muprog\local\source\base[] $sourceclasses */
 $sourceclasses = \tool_muprog\local\allocation::get_source_classes();

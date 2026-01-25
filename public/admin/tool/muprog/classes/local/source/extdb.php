@@ -68,7 +68,7 @@ final class extdb extends base {
             $context = \context::instance_by_id($program->contextid);
             if (!$program->archived && has_capability('tool/muprog:allocate', $context)) {
                 $label = get_string('source_extdb_sync', 'tool_muprog');
-                $editurl = new \moodle_url('/admin/tool/muprog/management/source_extdb_sync.php', ['sourceid' => $source->id]);
+                $editurl = new \core\url('/admin/tool/muprog/management/source_extdb_sync.php', ['sourceid' => $source->id]);
                 $editbutton = new \tool_mulib\output\ajax_form\icon($editurl, $label, 'i/reload');
                 $editbutton->set_modal_title(static::get_name());
                 $result .= $OUTPUT->render($editbutton);

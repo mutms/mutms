@@ -62,7 +62,7 @@ final class program_restored_test extends \advanced_testcase {
         $this->assertSame('tool_muprog_program', $event->objecttable);
         $this->assertSame('Program restored', $event::get_name());
         $description = $event->get_description();
-        $programurl = new \moodle_url('/admin/tool/muprog/management/program.php', ['id' => $program->id]);
+        $programurl = new \core\url('/admin/tool/muprog/management/program.php', ['id' => $program->id]);
         $this->assertSame($programurl->out(false), $event->get_url()->out(false));
     }
 }

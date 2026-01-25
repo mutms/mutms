@@ -83,7 +83,7 @@ final class tool_mutenancy_test extends \advanced_testcase {
         $node = $tenantnode->children->last();
         $this->assertInstanceOf(\navigation_node::class, $node);
         $this->assertSame('Program management', $node->text);
-        $programurl = new \moodle_url('/admin/tool/muprog/management/index.php', ['contextid' => $catcontext->id]);
+        $programurl = new \core\url('/admin/tool/muprog/management/index.php', ['contextid' => $catcontext->id]);
         $this->assertSame($programurl->out(false), $node->action()->out(false));
     }
 }

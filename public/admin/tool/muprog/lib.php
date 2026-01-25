@@ -112,7 +112,7 @@ function tool_muprog_core_calendar_provide_event_action(
 
     return $factory->create_instance(
         get_string('view'),
-        new \moodle_url('/admin/tool/muprog/my/program.php', ['id' => $allocation->programid]),
+        new core\url('/admin/tool/muprog/my/program.php', ['id' => $allocation->programid]),
         1,
         true
     );
@@ -133,9 +133,16 @@ function tool_muprog_myprofile_navigation(core_user\output\myprofile\tree $tree,
         return;
     }
 
-    if ($USER->id == $user->id) {
-        $link = get_string('myprograms', 'tool_muprog');
-        $url = new moodle_url('/admin/tool/muprog/my/index.php');
+    $usercontext = context_user::instance($user->id);
+
+    if ($USER->id == $user->id || has_capability('tool/muprog:viewuserprograms', $usercontext)) {
+        $url = new core\url('/admin/tool/muprog/my/index.php');
+        if ($USER->id == $user->id) {
+            $link = get_string('myprograms', 'tool_muprog');
+        } else {
+            $link = get_string('programs', 'tool_muprog');
+            $url->param('userid', $user->id);
+        }
         $node = new core_user\output\myprofile\node('miscellaneous', 'muprog_programs', $link, null, $url);
         $tree->add_node($node);
     }
@@ -154,6 +161,7 @@ function tool_muprog_get_fontawesome_icon_map() {
         'tool_muprog:itemset' => 'fa-list',
         'tool_muprog:itemtop' => 'fa-cubes',
         'tool_muprog:itemcredits' => 'fa-solid fa-grip',
+        'tool_muprog:itemattendance' => 'fa-solid fa-user-check',
         'tool_muprog:move' => 'fa-arrows',
         'tool_muprog:program' => 'fa-cubes',
         'tool_muprog:myprograms' => 'fa-cubes',
@@ -214,7 +222,7 @@ function tool_muprog_extend_navigation_category_settings($navigation, $coursecat
     // NOTE: catnav is added to unbreak breadcrums on management pages.
     $settingsnode = navigation_node::create(
         get_string('programs', 'tool_muprog'),
-        new moodle_url('/admin/tool/muprog/management/index.php', ['contextid' => $coursecategorycontext->id, 'catnav' => 1]),
+        new core\url('/admin/tool/muprog/management/index.php', ['contextid' => $coursecategorycontext->id, 'catnav' => 1]),
         navigation_node::TYPE_CUSTOM,
         null,
         'tool_muprog_programs'

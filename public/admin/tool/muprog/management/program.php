@@ -47,7 +47,7 @@ $program = $DB->get_record('tool_muprog_program', ['id' => $id], '*', MUST_EXIST
 $context = context::instance_by_id($program->contextid);
 require_capability('tool/muprog:view', $context);
 
-$currenturl = new moodle_url('/admin/tool/muprog/management/program.php', ['id' => $id]);
+$currenturl = new core\url('/admin/tool/muprog/management/program.php', ['id' => $id]);
 
 management::setup_program_page($currenturl, $context, $program, 'program_general');
 $PAGE->set_docs_path('https://github.com/mutms/moodle-tool_muprog/wiki/Program-settings');
@@ -56,16 +56,17 @@ $PAGE->set_docs_path('https://github.com/mutms/moodle-tool_muprog/wiki/Program-s
 $managementoutput = $PAGE->get_renderer('tool_muprog', 'management');
 
 $actions = new header_actions(get_string('management_program_general_actions', 'tool_muprog'));
+if (has_capability('tool/muprog:export', $context)) {
+    $url = new core\url('/admin/tool/muprog/management/export.php', ['id' => $program->id]);
+    $actions->get_dropdown()->add_item(get_string('export', 'tool_muprog'), $url, new \core\output\pix_icon('i/export', ''));
+}
 if ($program->archived && has_capability('tool/muprog:delete', $context)) {
-    $url = new moodle_url('/admin/tool/muprog/management/program_delete.php', ['id' => $program->id]);
-    $link = new tool_mulib\output\ajax_form\link($url, get_string('program_delete', 'tool_muprog'));
+    $url = new core\url('/admin/tool/muprog/management/program_delete.php', ['id' => $program->id]);
+    $link = new tool_mulib\output\ajax_form\link($url, get_string('program_delete', 'tool_muprog'), 'i/delete');
+    $link->add_class('text-danger');
     $link->set_form_size('sm');
     $link->set_submitted_action($link::SUBMITTED_ACTION_REDIRECT);
     $actions->get_dropdown()->add_ajax_form($link);
-}
-if (has_capability('tool/muprog:export', $context)) {
-    $url = new moodle_url('/admin/tool/muprog/management/export.php', ['id' => $program->id]);
-    $actions->get_dropdown()->add_item(get_string('export', 'tool_muprog'), $url);
 }
 if ($actions->has_items()) {
     $PAGE->add_header_action($OUTPUT->render($actions));
@@ -75,7 +76,7 @@ echo $OUTPUT->header();
 
 $buttons = [];
 if (has_capability('tool/muprog:edit', $context)) {
-    $url = new moodle_url('/admin/tool/muprog/management/program_update.php', ['id' => $program->id]);
+    $url = new core\url('/admin/tool/muprog/management/program_update.php', ['id' => $program->id]);
     $editbutton = new tool_mulib\output\ajax_form\button($url, get_string('edit'));
     $buttons[] = $OUTPUT->render($editbutton);
 }

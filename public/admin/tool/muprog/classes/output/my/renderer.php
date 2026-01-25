@@ -26,8 +26,9 @@ use tool_muprog\local\content\item,
     tool_muprog\local\content\top,
     tool_muprog\local\content\set,
     tool_muprog\local\content\course,
+    tool_muprog\local\content\attendance,
     tool_muprog\local\content\credits;
-use stdClass, moodle_url;
+use stdClass, core\url;
 
 /**
  * Program catalogue renderer.
@@ -165,6 +166,14 @@ class renderer extends \plugin_renderer_base {
 
             if ($item instanceof set) {
                 $completiontype = $item->get_sequencetype_info();
+            } else if ($item instanceof course) {
+                $completiontype = get_string('coursecompletion');
+            } else if ($item instanceof attendance) {
+                $completiontype = get_string('attendance', 'tool_muprog');
+                $attendance = $DB->get_record('tool_muprog_attendance', ['itemid' => $item->get_id(), 'userid' => $allocation->userid]);
+                if ($attendance && $attendance->status) {
+                    $completiontype .= ': ' . attendance::get_statuses()[$attendance->status];
+                }
             } else if ($item instanceof credits) {
                 $completiontype = $item->get_current_credits($allocation);
             } else {
@@ -191,7 +200,7 @@ class renderer extends \plugin_renderer_base {
                         }
                     }
                     if ($canaccesscourse) {
-                        $detailurl = new \moodle_url('/course/view.php', ['id' => $courseid]);
+                        $detailurl = new \core\url('/course/view.php', ['id' => $courseid]);
                         $fullname = \html_writer::link($detailurl, $fullname);
                     }
                 } else {
@@ -203,6 +212,8 @@ class renderer extends \plugin_renderer_base {
                 $itemname = $this->output->pix_icon('itemtop', get_string('program', 'tool_muprog'), 'tool_muprog') . '&nbsp;' . $fullname;
             } else if ($item instanceof course) {
                 $itemname = $padding . $this->output->pix_icon('itemcourse', get_string('course'), 'tool_muprog') . $fullname;
+            } else if ($item instanceof attendance) {
+                $itemname = $padding . $this->output->pix_icon('itemattendance', get_string('attendance', 'tool_muprog'), 'tool_muprog') . $fullname;
             } else if ($item instanceof credits) {
                 $itemname = $padding . $this->output->pix_icon('itemcredits', get_string('credits', 'tool_muprog'), 'tool_muprog') . $fullname;
             } else {
@@ -270,7 +281,7 @@ class renderer extends \plugin_renderer_base {
 
             $program = $DB->get_record('tool_muprog_program', ['id' => $allocation->programid]);
             $fullname = $programicon . format_string($program->fullname);
-            $detailurl = new moodle_url('/admin/tool/muprog/catalogue/program.php', ['id' => $program->id]);
+            $detailurl = new url('/admin/tool/muprog/catalogue/program.php', ['id' => $program->id]);
             $fullname = \html_writer::link($detailurl, $fullname);
             $row[] = $fullname;
 
