@@ -46,7 +46,7 @@ final class TableOfContentsGenerator implements TableOfContentsGeneratorInterfac
     private string $normalizationStrategy;
 
     /** @psalm-readonly */
-    private int $firstheadingLevel;
+    private int $minHeadingLevel;
 
     /** @psalm-readonly */
     private int $maxHeadingLevel;
@@ -54,11 +54,11 @@ final class TableOfContentsGenerator implements TableOfContentsGeneratorInterfac
     /** @psalm-readonly */
     private string $fragmentPrefix;
 
-    public function __construct(string $style, string $normalizationStrategy, int $firstheadingLevel, int $maxHeadingLevel, string $fragmentPrefix)
+    public function __construct(string $style, string $normalizationStrategy, int $minHeadingLevel, int $maxHeadingLevel, string $fragmentPrefix)
     {
         $this->style                 = $style;
         $this->normalizationStrategy = $normalizationStrategy;
-        $this->firstheadingLevel       = $firstheadingLevel;
+        $this->minHeadingLevel       = $minHeadingLevel;
         $this->maxHeadingLevel       = $maxHeadingLevel;
         $this->fragmentPrefix        = $fragmentPrefix;
 
@@ -83,7 +83,7 @@ final class TableOfContentsGenerator implements TableOfContentsGeneratorInterfac
             }
 
             // Skip any headings outside the configured min/max levels
-            if ($heading->getLevel() < $this->firstheadingLevel || $heading->getLevel() > $this->maxHeadingLevel) {
+            if ($heading->getLevel() < $this->minHeadingLevel || $heading->getLevel() > $this->maxHeadingLevel) {
                 continue;
             }
 
