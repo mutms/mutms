@@ -50,7 +50,7 @@ $tenantid = required_param('tenantid', PARAM_INT);
 require_login();
 
 if (!tenancy::is_active()) {
-    redirect(new moodle_url('/'));
+    redirect(new \core\url('/'));
 }
 
 $tenantcontext = context_tenant::instance($tenantid);
@@ -72,7 +72,7 @@ $user = (object)[
     'timezone' => 99,
 ];
 
-$returnurl = new moodle_url('/admin/tool/mutenancy/tenant_users.php', ['id' => $user->tenantid]);
+$returnurl = new \core\url('/admin/tool/mutenancy/tenant_users.php', ['id' => $user->tenantid]);
 
 if ($tenant->memberlimit) {
     $mcount = $DB->count_records('user', ['deleted' => 0, 'tenantid' => $tenant->id]);

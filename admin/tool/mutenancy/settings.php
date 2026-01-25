@@ -39,7 +39,7 @@ if (tenancy::is_active()) {
         new admin_externalpage(
             'tool_mutenancy_tenants',
             new lang_string('tenants', 'tool_mutenancy'),
-            new moodle_url('/admin/tool/mutenancy/index.php'),
+            new \core\url('/admin/tool/mutenancy/index.php'),
             'tool/mutenancy:view'
         )
     );
@@ -49,7 +49,7 @@ if (tenancy::is_active()) {
         new admin_externalpage(
             'tool_mutenancy_tenants',
             new lang_string('tenants', 'tool_mutenancy'),
-            new moodle_url('/admin/tool/mutenancy/index.php'),
+            new \core\url('/admin/tool/mutenancy/index.php'),
             'moodle/site:config'
         )
     );

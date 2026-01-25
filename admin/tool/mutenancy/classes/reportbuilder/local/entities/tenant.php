@@ -87,7 +87,7 @@ final class tenant extends base {
                 $context = \context_tenant::instance($row->id);
                 $name = format_string($row->name);
                 if (has_capability('tool/mutenancy:view', $context)) {
-                    $url = new \moodle_url('/admin/tool/mutenancy/tenant.php', ['id' => $row->id]);
+                    $url = new \core\url('/admin/tool/mutenancy/tenant.php', ['id' => $row->id]);
                     $name = \html_writer::link($url, $name);
                 }
                 return $name;
@@ -185,7 +185,7 @@ final class tenant extends base {
                 $count = $row->usercount;
                 $context = \context_tenant::instance($row->id);
                 if (has_capability('tool/mutenancy:view', $context)) {
-                    $url = new \moodle_url('/admin/tool/mutenancy/tenant_users.php', ['id' => $row->id]);
+                    $url = new \core\url('/admin/tool/mutenancy/tenant_users.php', ['id' => $row->id]);
                     $count = \html_writer::link($url, $count);
                 }
                 return $count;

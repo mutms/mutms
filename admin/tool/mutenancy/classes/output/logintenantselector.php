@@ -57,7 +57,7 @@ final class logintenantselector implements \core\output\named_templatable, \rend
             $site = $DB->get_record('course', ['category' => 0], 'id, fullname');
             $this->menu->add(
                 new \action_menu_link_secondary(
-                    new \moodle_url('/login/', ['tenant' => 0]),
+                    new \core\url('/login/', ['tenant' => 0]),
                     null,
                     format_string($site->fullname)
                 )
@@ -67,7 +67,7 @@ final class logintenantselector implements \core\output\named_templatable, \rend
         foreach ($tenants as $tenant) {
             $this->menu->add(
                 new \action_menu_link_secondary(
-                    new \moodle_url('/login/', ['tenant' => $tenant->idnumber]),
+                    new \core\url('/login/', ['tenant' => $tenant->idnumber]),
                     null,
                     format_string($tenant->sitefullname ?? $tenant->name)
                 )

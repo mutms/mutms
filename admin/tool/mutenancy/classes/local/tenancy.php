@@ -564,14 +564,14 @@ final class tenancy {
                 if ($tenant && !$tenant->archived) {
                     if ($tenant->id != self::get_current_tenantid()) {
                         self::switch($tenant->id);
-                        redirect(new \moodle_url('/login/', ['tenant' => $tenant->idnumber]));
+                        redirect(new \core\url('/login/', ['tenant' => $tenant->idnumber]));
                     }
                     return;
                 }
             }
             if (self::get_current_tenantid()) {
                 self::switch(0);
-                redirect(new \moodle_url('/login/', ['tenant' => '0']));
+                redirect(new \core\url('/login/', ['tenant' => '0']));
             }
         }
     }

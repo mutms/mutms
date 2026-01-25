@@ -65,7 +65,7 @@ final class appearance_updated_test extends \advanced_testcase {
         $this->assertSame('tool_mutenancy_tenant', $event->objecttable);
         $this->assertSame('Tenant appearance updated', $event::get_name());
         $description = $event->get_description();
-        $tenanturl = new \moodle_url('/admin/tool/mutenancy/tenant_appearance.php', ['id' => $tenant->id]);
+        $tenanturl = new \core\url('/admin/tool/mutenancy/tenant_appearance.php', ['id' => $tenant->id]);
         $this->assertSame($tenanturl->out(false), $event->get_url()->out(false));
     }
 }

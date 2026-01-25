@@ -56,7 +56,7 @@ final class core_oputput_core_renderer_test extends \advanced_testcase {
         $renderer = $PAGE->get_renderer('core');
 
         $result = $renderer->favicon();
-        $this->assertInstanceOf(\moodle_url::class, $result);
+        $this->assertInstanceOf(\core\url::class, $result);
         $this->assertSame(
             "https://www.example.com/moodle/theme/image.php/boost/theme/$themerev/favicon",
             $result->out(false)
@@ -65,7 +65,7 @@ final class core_oputput_core_renderer_test extends \advanced_testcase {
         set_config('favicon', '/default.jpg', 'core_admin');
 
         $result = $renderer->favicon();
-        $this->assertInstanceOf(\moodle_url::class, $result);
+        $this->assertInstanceOf(\core\url::class, $result);
         $this->assertSame(
             "https://www.example.com/moodle/pluginfile.php/$syscontext->id/core_admin/favicon/64x64/$themerev/default.jpg",
             $result->out(false)
@@ -82,7 +82,7 @@ final class core_oputput_core_renderer_test extends \advanced_testcase {
         config::override($tenant2->id, 'favicon', '/myfavicon.gif', 'core_admin');
 
         $result = $renderer->favicon();
-        $this->assertInstanceOf(\moodle_url::class, $result);
+        $this->assertInstanceOf(\core\url::class, $result);
         $this->assertSame(
             "https://www.example.com/moodle/pluginfile.php/$syscontext->id/core_admin/favicon/64x64/$themerev/default.jpg",
             $result->out(false)
@@ -91,7 +91,7 @@ final class core_oputput_core_renderer_test extends \advanced_testcase {
         tenancy::switch($tenant2->id);
 
         $result = $renderer->favicon();
-        $this->assertInstanceOf(\moodle_url::class, $result);
+        $this->assertInstanceOf(\core\url::class, $result);
         $this->assertSame(
             "https://www.example.com/moodle/pluginfile.php/$tenantcontext2->id/core_admin/favicon/64x64/$themerev/myfavicon.gif",
             $result->out(false)
@@ -99,7 +99,7 @@ final class core_oputput_core_renderer_test extends \advanced_testcase {
 
         config::override($tenant2->id, 'favicon', '', 'core_admin');
         $result = $renderer->favicon();
-        $this->assertInstanceOf(\moodle_url::class, $result);
+        $this->assertInstanceOf(\core\url::class, $result);
         $this->assertSame(
             "https://www.example.com/moodle/theme/image.php/boost/theme/$themerev/favicon",
             $result->out(false)

@@ -42,7 +42,7 @@ $tenantid = required_param('id', PARAM_INT);
 require_login();
 
 if (!tenancy::is_active()) {
-    redirect(new moodle_url('/'));
+    redirect(new \core\url('/'));
 }
 
 $tenant = $DB->get_record('tool_mutenancy_tenant', ['id' => $tenantid], '*', MUST_EXIST);
@@ -53,7 +53,7 @@ require_capability('tool/mutenancy:configappearance', $context);
 $PAGE->set_url('/admin/tool/mutenancy/management/logos_edit.php', ['id' => $tenant->id]);
 $PAGE->set_context($context);
 
-$returnurl = new moodle_url('/admin/tool/tenant_appearance.php', ['id' => $tenant->id]);
+$returnurl = new \core\url('/admin/tool/tenant_appearance.php', ['id' => $tenant->id]);
 
 $currentdata = (object)[
     'id' => $tenant->id,

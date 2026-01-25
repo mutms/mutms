@@ -65,7 +65,7 @@ final class tenant_created_test extends \advanced_testcase {
         $this->assertSame('tool_mutenancy_tenant', $event->objecttable);
         $this->assertSame('Tenant created', $event::get_name());
         $description = $event->get_description();
-        $tenanturl = new \moodle_url('/admin/tool/mutenancy/management/tenant.php', ['id' => $tenant->id]);
+        $tenanturl = new \core\url('/admin/tool/mutenancy/management/tenant.php', ['id' => $tenant->id]);
         $this->assertSame($tenanturl->out(false), $event->get_url()->out(false));
     }
 }

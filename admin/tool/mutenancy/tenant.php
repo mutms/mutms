@@ -58,19 +58,19 @@ $actions = new header_actions(get_string('tenant_actions', 'tool_mutenancy'));
 if (get_assignable_roles($context, ROLENAME_ORIGINAL, false)) {
     $actions->get_dropdown()->add_item(
         get_string('assignroles', 'role'),
-        new moodle_url('/admin/roles/assign.php', ['contextid' => $context->id])
+        new \core\url('/admin/roles/assign.php', ['contextid' => $context->id])
     );
 }
 if (has_capability('moodle/role:review', $context) || get_overridable_roles($context)) {
     $actions->get_dropdown()->add_item(
         get_string('permissions', 'role'),
-        new moodle_url('/admin/roles/permissions.php', ['contextid' => $context->id])
+        new \core\url('/admin/roles/permissions.php', ['contextid' => $context->id])
     );
 }
 if (has_any_capability(['moodle/role:assign', 'moodle/role:safeoverride', 'moodle/role:override'], $context)) {
     $actions->get_dropdown()->add_item(
         get_string('checkpermissions', 'role'),
-        new moodle_url('/admin/roles/check.php', ['contextid' => $context->id])
+        new \core\url('/admin/roles/check.php', ['contextid' => $context->id])
     );
 }
 if ($actions->has_items()) {
@@ -92,13 +92,13 @@ if (has_capability('tool/mutenancy:admin', $context)) {
         $tenant->archived && $USER->tenantid != $tenant->id
         && (!$membercount || has_capability('tool/mutenancy:allocate', context_system::instance()))
     ) {
-        $url = new moodle_url('/admin/tool/mutenancy/management/tenant_delete.php', ['id' => $tenant->id]);
+        $url = new \core\url('/admin/tool/mutenancy/management/tenant_delete.php', ['id' => $tenant->id]);
         $button = new tool_mulib\output\ajax_form\button($url, tenancy::get_tenant_string('tenant_delete'));
         $button->set_submitted_action($button::SUBMITTED_ACTION_REDIRECT);
         $buttons[] = $output->render($button);
     }
 
-    $url = new moodle_url('/admin/tool/mutenancy/management/tenant_update.php', ['id' => $tenant->id]);
+    $url = new \core\url('/admin/tool/mutenancy/management/tenant_update.php', ['id' => $tenant->id]);
     $button = new tool_mulib\output\ajax_form\button($url, tenancy::get_tenant_string('tenant_update'));
     $buttons[] = $output->render($button);
 }

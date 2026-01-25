@@ -21,7 +21,6 @@ namespace tool_mutenancy\reportbuilder\local\systemreports;
 use tool_mutenancy\reportbuilder\local\entities\tenant;
 use core_course\reportbuilder\local\entities\course_category;
 use core_reportbuilder\system_report;
-use moodle_url;
 use lang_string;
 use tool_mutenancy\local\tenancy;
 
@@ -93,9 +92,9 @@ final class tenants extends system_report {
                 $context = \context_coursecat::instance($category->id);
                 $url = null;
                 if (has_capability('moodle/category:manage', $context)) {
-                    $url = new \moodle_url('/course/management.php', ['categoryid' => $category->id]);
+                    $url = new \core\url('/course/management.php', ['categoryid' => $category->id]);
                 } else if (has_capability('moodle/category:viewcourselist', $context)) {
-                    $url = new \moodle_url('/course/index.php', ['categoryid' => $category->id]);
+                    $url = new \core\url('/course/index.php', ['categoryid' => $category->id]);
                 }
                 $name = format_string($category->name, true, ['context' => $context]);
                 if ($url) {
@@ -142,7 +141,7 @@ final class tenants extends system_report {
             return;
         }
 
-        $url = new moodle_url('/admin/tool/mutenancy/management/tenant_update.php', ['id' => ':id']);
+        $url = new \core\url('/admin/tool/mutenancy/management/tenant_update.php', ['id' => ':id']);
         $link = new \tool_mulib\output\ajax_form\link($url, new lang_string('edit', 'moodle'), 't/edit');
         $link->set_modal_title(tenancy::get_tenant_string('tenant_update'));
         $link->set_form_size('lg');

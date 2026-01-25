@@ -507,12 +507,12 @@ final class user {
         }
 
         $hook->add_action('tool_mutenancy_allocate', new \action_link(
-            new \moodle_url('/admin/tool/mutenancy/management/bulk_allocate.php'),
+            new \core\url('/admin/tool/mutenancy/management/bulk_allocate.php'),
             get_string('bulk_allocate', 'tool_mutenancy')
         ));
 
         $hook->add_action('tool_mutenancy_deallocate', new \action_link(
-            new \moodle_url('/admin/tool/mutenancy/management/bulk_deallocate.php'),
+            new \core\url('/admin/tool/mutenancy/management/bulk_deallocate.php'),
             get_string('bulk_deallocate', 'tool_mutenancy')
         ));
     }

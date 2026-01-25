@@ -35,9 +35,9 @@ require(__DIR__ . '/../../../../config.php');
 
 $returnurl = optional_param('returnurl', '', PARAM_LOCALURL);
 if ($returnurl) {
-    $returnurl = new moodle_url($returnurl);
+    $returnurl = new \core\url($returnurl);
 } else {
-    $returnurl = new moodle_url('/admin/user/user_bulk.php');
+    $returnurl = new \core\url('/admin/user/user_bulk.php');
 }
 
 if (!tenancy::is_active()) {
