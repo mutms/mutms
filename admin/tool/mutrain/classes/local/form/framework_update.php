@@ -19,8 +19,6 @@
 
 namespace tool_mutrain\local\form;
 
-use tool_mutrain\external\form_autocomplete\framework_contextid;
-
 /**
  * Update credit framework.
  *
@@ -36,6 +34,7 @@ final class framework_update extends \tool_mulib\local\ajax_form {
         $mform = $this->_form;
         $data = $this->_customdata['data'];
         $editoroptions = $this->_customdata['editoroptions'];
+        /** @var \context $context */
         $context = $this->_customdata['context'];
 
         $mform->addElement('hidden', 'id');
@@ -48,8 +47,6 @@ final class framework_update extends \tool_mulib\local\ajax_form {
         $mform->addElement('text', 'idnumber', get_string('framework_idnumber', 'tool_mutrain'), 'maxlength="100" size="50"');
         $mform->setType('idnumber', PARAM_RAW); // Idnumbers are plain text.
 
-        framework_contextid::add_element($mform, [], 'contextid', get_string('category'), $context);
-
         $mform->addElement('advcheckbox', 'publicaccess', get_string('publicaccess', 'tool_mutrain'), ' ');
 
         $mform->addElement('editor', 'description_editor', get_string('description'), ['rows' => 3], $editoroptions);
@@ -60,12 +57,9 @@ final class framework_update extends \tool_mulib\local\ajax_form {
         $mform->addRule('requiredcredits', get_string('required'), 'required', null, 'client');
         $data->requiredcredits = format_float($data->requiredcredits, 2, true, true);
 
-        $mform->addElement('advcheckbox', 'restrictcontext', get_string('restrictcontext', 'tool_mutrain'), ' ');
+        $mform->addElement('advcheckbox', 'restrictcontext', get_string('restrictcontext', 'tool_mutrain'), $context->get_context_name(false));
 
         $mform->addElement('date_time_selector', 'restrictafter', get_string('restrictafter', 'tool_mutrain'), ['optional' => true]);
-
-        $mform->addElement('advcheckbox', 'archived', get_string('archived', 'tool_mutrain'), ' ');
-        $mform->hardFreeze('archived');
 
         $this->add_action_buttons(true, get_string('framework_update', 'tool_mutrain'));
 
@@ -75,8 +69,6 @@ final class framework_update extends \tool_mulib\local\ajax_form {
     #[\Override]
     public function validation($data, $files) {
         global $DB;
-        $context = $this->_customdata['context'];
-
         $errors = parent::validation($data, $files);
 
         if (trim($data['idnumber']) !== '') {
@@ -88,11 +80,6 @@ final class framework_update extends \tool_mulib\local\ajax_form {
         $requiredcredits = str_replace(',', '.', $data['requiredcredits']);
         if (!is_numeric($requiredcredits) || $requiredcredits <= 0) {
             $errors['requiredcredits'] = get_string('error');
-        }
-
-        $error = framework_contextid::validate_value($data['contextid'], [], $context);
-        if ($error !== null) {
-            $errors['contextid'] = $error;
         }
 
         return $errors;

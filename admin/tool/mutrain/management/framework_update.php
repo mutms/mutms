@@ -31,8 +31,6 @@ use tool_mutrain\local\framework;
 
 /** @var moodle_database $DB */
 /** @var moodle_page $PAGE */
-/** @var core_renderer $OUTPUT */
-/** @var stdClass $CFG */
 
 define('AJAX_SCRIPT', true);
 
@@ -46,15 +44,15 @@ $framework = $DB->get_record('tool_mutrain_framework', ['id' => $id], '*', MUST_
 $context = context::instance_by_id($framework->contextid);
 require_capability('tool/mutrain:manageframeworks', $context);
 
-$currenturl = new moodle_url('/admin/tool/mutrain/management/framework_update.php', ['id' => $framework->id]);
+$currenturl = new core\url('/admin/tool/mutrain/management/framework_update.php', ['id' => $framework->id]);
 $PAGE->set_context($context);
 $PAGE->set_url($currenturl);
 
-$returnurl = new moodle_url('/admin/tool/mutrain/management/index.php', ['contextid' => $context->id]);
+$returnurl = new core\url('/admin/tool/mutrain/management/index.php', ['contextid' => $context->id]);
 
 $data = clone($framework);
 
-$editoroptions = \tool_mutrain\local\framework::get_description_editor_options();
+$editoroptions = framework::get_description_editor_options();
 $data = file_prepare_standard_editor($data, 'description', $editoroptions);
 
 $form = new \tool_mutrain\local\form\framework_update(null, ['data' => $data, 'editoroptions' => $editoroptions, 'context' => $context]);

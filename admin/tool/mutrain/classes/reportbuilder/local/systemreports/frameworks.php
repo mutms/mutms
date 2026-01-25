@@ -59,6 +59,7 @@ final class frameworks extends system_report {
         $this->add_columns();
         $this->add_filters();
 
+        $this->set_initial_sort_column('framework:namewithlink', SORT_ASC);
         $this->set_downloadable(true);
         $this->set_default_no_results_notice(new lang_string('error_noframeworks', 'tool_mutrain'));
     }
@@ -76,7 +77,7 @@ final class frameworks extends system_report {
      */
     public function add_columns(): void {
         $columns = [
-            'framework:name',
+            'framework:namewithlink',
             'framework:idnumber',
             'framework:context',
             'framework:publicaccess',
@@ -87,8 +88,6 @@ final class frameworks extends system_report {
             'framework:archived',
         ];
         $this->add_columns_from_entities($columns);
-
-        $this->set_initial_sort_column('framework:name', SORT_ASC);
     }
 
     /**

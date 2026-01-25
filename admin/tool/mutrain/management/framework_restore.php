@@ -17,7 +17,7 @@
 // phpcs:disable moodle.Files.BoilerplateComment.CommentEndedTooSoon
 
 /**
- * Restore training framework.
+ * Restore credit framework.
  *
  * @package    tool_mutrain
  * @copyright  2025 Petr Skoda
@@ -28,8 +28,6 @@ use tool_mutrain\local\framework;
 
 /** @var moodle_database $DB */
 /** @var moodle_page $PAGE */
-/** @var core_renderer $OUTPUT */
-/** @var stdClass $CFG */
 
 define('AJAX_SCRIPT', true);
 
@@ -43,11 +41,11 @@ $framework = $DB->get_record('tool_mutrain_framework', ['id' => $id], '*', MUST_
 $context = context::instance_by_id($framework->contextid);
 require_capability('tool/mutrain:manageframeworks', $context);
 
-$currenturl = new moodle_url('/admin/tool/mutrain/management/framework_restore.php', ['id' => $framework->id]);
+$currenturl = new core\url('/admin/tool/mutrain/management/framework_restore.php', ['id' => $framework->id]);
 $PAGE->set_context($context);
 $PAGE->set_url($currenturl);
 
-$returnurl = new moodle_url('/admin/tool/mutrain/management/framework.php', ['id' => $framework->id]);
+$returnurl = new core\url('/admin/tool/mutrain/management/framework.php', ['id' => $framework->id]);
 
 if (!$framework->archived) {
     redirect($returnurl);

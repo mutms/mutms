@@ -67,7 +67,7 @@ final class management_test extends \advanced_testcase {
         $this->assertNull(management::get_management_url());
 
         $this->setUser($admin);
-        $expected = new \moodle_url('/admin/tool/mutrain/management/index.php');
+        $expected = new \core\url('/admin/tool/mutrain/management/index.php');
         $this->assertSame((string)$expected, (string)management::get_management_url());
 
         $this->setUser($manager);
@@ -100,11 +100,11 @@ final class management_test extends \advanced_testcase {
         role_assign($viewerroleid, $viewer1->id, $tenantcatcontext->id);
 
         $this->setUser($viewer0);
-        $expected = new \moodle_url('/admin/tool/mutrain/management/index.php');
+        $expected = new \core\url('/admin/tool/mutrain/management/index.php');
         $this->assertSame((string)$expected, (string)management::get_management_url());
 
         $this->setUser($viewer1);
-        $expected = new \moodle_url('/admin/tool/mutrain/management/index.php', ['contextid' => $tenantcatcontext->id]);
+        $expected = new \core\url('/admin/tool/mutrain/management/index.php', ['contextid' => $tenantcatcontext->id]);
         $this->assertSame((string)$expected, (string)management::get_management_url());
     }
 
@@ -171,14 +171,14 @@ final class management_test extends \advanced_testcase {
 
         $PAGE = new \moodle_page();
         management::setup_index_page(
-            new \moodle_url('/admin/tool/mutrain/management/index.php'),
+            new \core\url('/admin/tool/mutrain/management/index.php'),
             $syscontext
         );
 
         $this->setUser($user);
         $PAGE = new \moodle_page();
         management::setup_index_page(
-            new \moodle_url('/admin/tool/mutrain/management/index.php'),
+            new \core\url('/admin/tool/mutrain/management/index.php'),
             $syscontext
         );
     }
@@ -196,7 +196,7 @@ final class management_test extends \advanced_testcase {
 
         $PAGE = new \moodle_page();
         management::setup_framework_page(
-            new \moodle_url('/admin/tool/mutrain/management/new.php'),
+            new \core\url('/admin/tool/mutrain/management/new.php'),
             $syscontext,
             $framework1
         );
@@ -204,7 +204,7 @@ final class management_test extends \advanced_testcase {
         $this->setUser($user);
         $PAGE = new \moodle_page();
         management::setup_framework_page(
-            new \moodle_url('/admin/tool/mutrain/management/new.php'),
+            new \core\url('/admin/tool/mutrain/management/new.php'),
             $syscontext,
             $framework1
         );

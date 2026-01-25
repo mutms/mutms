@@ -54,14 +54,14 @@ if ($context->contextlevel == CONTEXT_SYSTEM) {
     throw new moodle_exception('invalidcontext');
 }
 
-$currenturl = new moodle_url('/admin/tool/mutrain/management/index.php', ['contextid' => $context->id]);
+$currenturl = new core\url('/admin/tool/mutrain/management/index.php', ['contextid' => $context->id]);
 
 management::setup_index_page($currenturl, $context);
 
 $buttons = [];
 
 if (has_capability('tool/mutrain:manageframeworks', $context)) {
-    $url = new moodle_url('/admin/tool/mutrain/management/framework_create.php', ['contextid' => $context->id]);
+    $url = new core\url('/admin/tool/mutrain/management/framework_create.php', ['contextid' => $context->id]);
     $button = new tool_mulib\output\ajax_form\button($url, get_string('framework_create', 'tool_mutrain'));
     $button->set_submitted_action($button::SUBMITTED_ACTION_REDIRECT);
     $buttons[] = $OUTPUT->render($button);

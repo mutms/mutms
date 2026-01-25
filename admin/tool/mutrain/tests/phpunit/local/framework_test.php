@@ -20,6 +20,8 @@
 namespace tool_mutrain\phpunit\local;
 
 use tool_mutrain\local\framework;
+use core\exception\moodle_exception;
+use core\exception\invalid_parameter_exception;
 
 /**
  * Credit framework helper test.
@@ -134,15 +136,16 @@ final class framework_test extends \advanced_testcase {
 
     public function test_update(): void {
         $syscontext = \context_system::instance();
+        $category = $this->getDataGenerator()->create_category();
+        $categorycontext = \context_coursecat::instance($category->id);
+
         $data = [
             'name' => 'Some framework',
-            'contextid' => (string)$syscontext->id,
+            'contextid' => (string)$categorycontext->id,
             'requiredcredits' => '101',
         ];
         $framework = framework::create($data);
 
-        $category = $this->getDataGenerator()->create_category();
-        $categorycontext = \context_coursecat::instance($category->id);
         $data = [
             'id' => $framework->id,
             'contextid' => (string)$categorycontext->id,
@@ -181,7 +184,6 @@ final class framework_test extends \advanced_testcase {
 
         $data = [
             'id' => $framework->id,
-            'contextid' => (string)$categorycontext->id,
             'name' => 'Some framework 2',
             'idnumber' => 'f2',
             'requiredcredits' => '10',
@@ -192,7 +194,7 @@ final class framework_test extends \advanced_testcase {
         ];
         $framework = framework::update($data);
         $this->assertInstanceOf('stdClass', $framework);
-        $this->assertSame($data['contextid'], $framework->contextid);
+        $this->assertSame((string)$categorycontext->id, $framework->contextid);
         $this->assertSame($data['name'], $framework->name);
         $this->assertSame($data['idnumber'], $framework->idnumber);
         $this->assertSame($data['description'], $framework->description);
@@ -204,7 +206,7 @@ final class framework_test extends \advanced_testcase {
         $this->assertSame('0', $framework->archived);
 
         $framework = framework::update(['id' => $framework->id]);
-        $this->assertSame($data['contextid'], $framework->contextid);
+        $this->assertSame((string)$categorycontext->id, $framework->contextid);
         $this->assertSame($data['name'], $framework->name);
         $this->assertSame($data['idnumber'], $framework->idnumber);
         $this->assertSame($data['description'], $framework->description);
@@ -265,6 +267,46 @@ final class framework_test extends \advanced_testcase {
         } catch (\moodle_exception $e) {
             $this->assertInstanceOf(\invalid_parameter_exception::class, $e);
             $this->assertSame('Invalid parameter value detected (framework requiredcredits must be positive number)', $e->getMessage());
+        }
+    }
+
+    public function test_move(): void {
+        $syscontext = \context_system::instance();
+        $category = $this->getDataGenerator()->create_category([]);
+        $catcontext = \context_coursecat::instance($category->id);
+        $course = $this->getDataGenerator()->create_course();
+        $coursecontext = \context_course::instance($course->id);
+
+        $data = [
+            'name' => 'Some framework',
+            'requiredcredits' => '101',
+            'contextid' => $syscontext->id,
+        ];
+        $framework = framework::create($data);
+        $this->assertSame((string)$syscontext->id, $framework->contextid);
+
+        $framework = framework::move($framework->id, $catcontext->id, null);
+        $this->assertSame((string)$catcontext->id, $framework->contextid);
+        $this->assertSame('0', $framework->restrictcontext);
+
+        $framework = framework::move($framework->id, $catcontext->id, 1);
+        $this->assertSame((string)$catcontext->id, $framework->contextid);
+        $this->assertSame('1', $framework->restrictcontext);
+
+        $framework = framework::move($framework->id, $syscontext->id, null);
+        $this->assertSame((string)$syscontext->id, $framework->contextid);
+        $this->assertSame('0', $framework->restrictcontext);
+
+        $framework = framework::move($framework->id, $syscontext->id, 1);
+        $this->assertSame((string)$syscontext->id, $framework->contextid);
+        $this->assertSame('0', $framework->restrictcontext);
+
+        try {
+            framework::move($framework->id, $coursecontext->id, null);
+            $this->fail('Exception expected');
+        } catch (moodle_exception $ex) {
+            $this->assertInstanceOf(invalid_parameter_exception::class, $ex);
+            $this->assertSame('Invalid parameter value detected (System or category context expected)', $ex->getMessage());
         }
     }
 
@@ -640,9 +682,8 @@ final class framework_test extends \advanced_testcase {
         $this->assertSame('17.00000', $credit->credits);
         $this->assertNull($credit->timereached);
 
-        $framework1 = framework::update(
-            ['id' => $framework1->id, 'requiredcredits' => 20, 'contextid' => $categorycontext1->id, 'restrictcontext' => 1]
-        );
+        $framework1 = framework::move($framework1->id, $categorycontext1->id, 1);
+        $framework1 = framework::update(['id' => $framework1->id, 'requiredcredits' => 20]);
         $this->assertCount(2, $DB->get_records('tool_mutrain_credit', []));
         $credit = $DB->get_record('tool_mutrain_credit', ['frameworkid' => $framework1->id, 'userid' => $user1->id]);
         $this->assertSame('20.00000', $credit->credits);
