@@ -15,33 +15,31 @@
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 // phpcs:disable moodle.Files.BoilerplateComment.CommentEndedTooSoon
-// phpcs:disable moodle.Files.LineLength.TooLong
 
 namespace tool_muprog\local\form;
 
-use tool_muprog\local\content\course;
+use tool_muprog\local\content\attendance;
 
 /**
- * Edit program course item.
+ * Edit program offline attendance item.
  *
  * @package    tool_muprog
- * @copyright  2022 Open LMS (https://www.openlms.net/)
- * @copyright  2025 Petr Skoda
- * @author     Petr Skoda
+ * @copyright  2026 Petr Skoda
  * @license    https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-final class item_course_edit extends \tool_mulib\local\ajax_form {
+final class item_update_attendance extends \tool_mulib\local\ajax_form {
     #[\Override]
     protected function definition() {
         $mform = $this->_form;
-        /** @var course $course */
-        $course = $this->_customdata['course'];
+        /** @var attendance $attendance */
+        $attendance = $this->_customdata['attendance'];
 
-        $mform->addElement('static', 'staticfullname', get_string('fullname'), format_string($course->get_fullname()));
+        $mform->addElement('static', 'statictype', get_string('item_type', 'tool_muprog'), $attendance::get_type_name());
 
-        $mform->addElement('text', 'points', get_string('itempoints', 'tool_muprog'));
-        $mform->setType('points', PARAM_INT);
-        $mform->setDefault('points', $course->get_points());
+        $mform->addElement('text', 'fullname', get_string('fullname'), 'maxlength="254" size="50"');
+        $mform->setType('fullname', PARAM_TEXT);
+        $mform->setDefault('fullname', $attendance->get_fullname());
+        $mform->addRule('fullname', get_string('required'), 'required', null, 'client');
 
         $mform->addElement(
             'duration',
@@ -49,18 +47,26 @@ final class item_course_edit extends \tool_mulib\local\ajax_form {
             get_string('completiondelay', 'tool_muprog'),
             ['optional' => true, 'defaultunit' => DAYSECS]
         );
-        $mform->setDefault('completiondelay', $course->get_completiondelay());
+        $mform->setDefault('completiondelay', $attendance->get_completiondelay());
+
+        $mform->addElement('text', 'points', get_string('itempoints', 'tool_muprog'));
+        $mform->setType('points', PARAM_INT);
+        $mform->setDefault('points', $attendance->get_points());
 
         $mform->addElement('hidden', 'id');
         $mform->setType('id', PARAM_INT);
-        $mform->setDefault('id', $course->get_id());
+        $mform->setDefault('id', $attendance->get_id());
 
-        $this->add_action_buttons(true, get_string('updatecourse', 'tool_muprog'));
+        $this->add_action_buttons(true, get_string('item_update_attendance', 'tool_muprog'));
     }
 
     #[\Override]
     public function validation($data, $files) {
         $errors = parent::validation($data, $files);
+
+        if (trim($data['fullname']) === '') {
+            $errors['fullname'] = get_string('required');
+        }
 
         if ($data['points'] < 0) {
             $errors['points'] = get_string('error');

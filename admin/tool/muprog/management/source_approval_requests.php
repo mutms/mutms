@@ -45,7 +45,7 @@ $program = $DB->get_record('tool_muprog_program', ['id' => $id], '*', MUST_EXIST
 $context = context::instance_by_id($program->contextid);
 require_capability('tool/muprog:view', $context);
 
-$currenturl = new moodle_url('/admin/tool/muprog/management/source_approval_requests.php', ['id' => $program->id]);
+$currenturl = new core\url('/admin/tool/muprog/management/source_approval_requests.php', ['id' => $program->id]);
 
 management::setup_program_page($currenturl, $context, $program, 'program_approval_requests');
 

@@ -317,21 +317,15 @@ Feature: Manual program allocation tests
     And I follow "Program 000"
     And I follow "Users"
     And I follow "Student 1"
-    And I click on "Allocation actions" "button"
     And I should see "Update allocation"
-    And I should not see "Delete program allocation"
 
     When I click on "Archive allocation" "link"
     And I click on "Archive allocation" "button" in the ".modal-dialog" "css_element"
-    And I click on "Allocation actions" "button"
     Then I should not see "Update allocation"
-    And I should see "Delete program allocation"
 
     When I click on "Restore allocation" "link"
     And I click on "Restore allocation" "button" in the ".modal-dialog" "css_element"
-    And I click on "Allocation actions" "button"
     Then I should see "Update allocation"
-    And I should not see "Delete program allocation"
 
   @javascript
   Scenario: Set up, add and update custom fields for program allocations
@@ -375,7 +369,7 @@ Feature: Manual program allocation tests
     Then I should see "Prvni" in the "Test field 1" definition list item
     And I should see "ASF2" in the "Test field 2" definition list item
 
-    When I click on "Update allocation" action from "Allocation actions" dropdown
+    When I press "Update allocation"
     And I set the following fields to these values:
       | Test field 1 | Druhy     |
     And I click on "Update allocation" "button" in the ".modal-dialog" "css_element"

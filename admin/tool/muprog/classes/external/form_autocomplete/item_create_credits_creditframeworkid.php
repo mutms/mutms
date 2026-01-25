@@ -34,7 +34,7 @@ use tool_mulib\local\mulib;
  * @author      Petr Skoda
  * @license     https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-final class item_append_creditframeworkid extends \tool_mulib\external\form_autocomplete\base {
+final class item_create_credits_creditframeworkid extends \tool_mulib\external\form_autocomplete\base {
     /** @var string|null credits framework table */
     protected const ITEM_TABLE = 'tool_mutrain_framework';
     /** @var string|null field used for item name */
@@ -57,7 +57,7 @@ final class item_append_creditframeworkid extends \tool_mulib\external\form_auto
      * Finds candidates for adding credits frameworks to program.
      *
      * @param string $query The search request.
-     * @param int $programid The framework.
+     * @param int $programid The program.
      * @return array
      */
     public static function execute(string $query, int $programid): array {
@@ -88,8 +88,11 @@ final class item_append_creditframeworkid extends \tool_mulib\external\form_auto
                    FROM {tool_mutrain_framework} f
                    /* capsubquery */
                    /* tenantjoin */
+              LEFT JOIN {tool_muprog_item} pi ON pi.creditframeworkid = f.id AND pi.type = 'credits' AND pi.programid = :programid
                   WHERE f.archived = 0 /* capwhere */ /* searchsql */
-               ORDER BY f.name ASC"
+                        AND pi.id IS NULL
+               ORDER BY f.name ASC",
+                ['programid' => $program->id]
             )
         )
             ->replace_comment(
@@ -118,7 +121,7 @@ final class item_append_creditframeworkid extends \tool_mulib\external\form_auto
             }
         }
 
-        $frameworks = $DB->get_records_sql($sql->sql, $sql->params, 0, self::MAX_RESULTS);
+        $frameworks = $DB->get_records_sql($sql->sql, $sql->params, 0, self::MAX_RESULTS + 1);
         return self::prepare_result($frameworks, $context);
     }
 

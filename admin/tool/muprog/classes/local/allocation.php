@@ -922,7 +922,7 @@ final class allocation {
                               FROM {tool_muprog_allocation} a
                               JOIN {tool_muprog_item} i ON i.programid = a.programid
                          LEFT JOIN {tool_muprog_completion} c ON c.allocationid = a.id AND c.itemid = i.id AND c.timecompleted IS NOT NULL
-                             WHERE (i.courseid IS NOT NULL OR i.creditframeworkid IS NOT NULL)
+                             WHERE i.type <> 'set' AND i.type <> 'top'
                                    /* programselect1 */ /* userselect1 */
                           GROUP BY a.id
 
@@ -966,7 +966,7 @@ final class allocation {
                               FROM {tool_muprog_allocation} a
                               JOIN {tool_muprog_item} i ON i.programid = a.programid
                          LEFT JOIN {tool_muprog_completion} c ON c.allocationid = a.id AND c.itemid = i.id AND c.timecompleted IS NOT NULL
-                             WHERE (i.courseid IS NOT NULL OR i.creditframeworkid IS NOT NULL)
+                             WHERE i.type <> 'set' AND i.type <> 'top'
                                    /* programselect1 */ /* userselect1 */
                           GROUP BY a.id
 
@@ -1070,6 +1070,7 @@ final class allocation {
 
         $select = "userid = :userid AND itemid IN (SELECT id FROM {tool_muprog_item} WHERE programid = :programid)";
         $params = ['programid' => $program->id, 'userid' => $user->id];
+        $DB->delete_records_select('tool_muprog_attendance', $select, $params);
         $DB->delete_records_select('tool_muprog_evidence', $select, $params);
         $DB->delete_records('tool_muprog_completion', ['allocationid' => $record->id]);
 
@@ -1199,6 +1200,15 @@ final class allocation {
         }
 
         $trans->allow_commit();
+
+        if ($item->type === 'attendance' && !empty($data->itemrecalculate) && !$evidence) {
+            // Attendance is special case, completion is synced only after taking attendance.
+            $attendance = $DB->get_record('tool_muprog_attendance', ['itemid' => $item->id, 'userid' => $allocation->userid]);
+            if ($attendance && $attendance->status == \tool_muprog\local\content\attendance::STATUS_COMPLETED) {
+                $timecompleted = $attendance->timeeffective + $item->completiondelay;
+                self::update_item_completion((object)['allocationid' => $allocation->id, 'itemid' => $item->id, 'timecompleted' => $timecompleted]);
+            }
+        }
 
         self::fix_user_enrolments($allocation->programid, $allocation->userid);
         calendar::fix_allocation_events($allocation, $program);

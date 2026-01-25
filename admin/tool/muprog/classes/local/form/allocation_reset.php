@@ -33,7 +33,7 @@ use tool_muprog\local\course_reset;
  */
 final class allocation_reset extends \tool_mulib\local\ajax_form {
     /** @var bool editing supported*/
-    private $editsupported;
+    private $editpossible;
 
     #[\Override]
     protected function definition() {
@@ -47,14 +47,16 @@ final class allocation_reset extends \tool_mulib\local\ajax_form {
         $mform->addElement('static', 'userfullname', get_string('user'), fullname($user));
 
         $options = [
+            '' => get_string('choosedots'),
             course_reset::RESETTYPE_STANDARD => new \lang_string('resettype_standard', 'tool_muprog'),
             course_reset::RESETTYPE_FULL => new \lang_string('resettype_full', 'tool_muprog'),
         ];
         $mform->addElement('select', 'resettype', get_string('resettype', 'tool_muprog'), $options);
+        $mform->addRule('resettype', null, 'required', null, 'client');
 
         $sourceclass = allocation::get_source_classname($source->type);
         if ($sourceclass && $sourceclass::is_allocation_update_possible($program, $source, $allocation)) {
-            $this->editsupported = true;
+            $this->editpossible = true;
             $mform->addElement('advcheckbox', 'updateallocation', get_string('allocation_reset_updateallocation', 'tool_muprog'));
             $mform->addElement('date_time_selector', 'timestart', get_string('programstart_date', 'tool_muprog'), ['optional' => false]);
             $mform->disabledIf('timestart', 'updateallocation', 'eq', 0);
@@ -63,7 +65,7 @@ final class allocation_reset extends \tool_mulib\local\ajax_form {
             $mform->addElement('date_time_selector', 'timeend', get_string('programend_date', 'tool_muprog'), ['optional' => true]);
             $mform->disabledIf('timeend', 'updateallocation', 'eq', 0);
         } else {
-            $this->editsupported = false;
+            $this->editpossible = false;
         }
 
         $mform->addElement('hidden', 'id');
@@ -79,7 +81,7 @@ final class allocation_reset extends \tool_mulib\local\ajax_form {
     public function validation($data, $files) {
         $errors = parent::validation($data, $files);
 
-        if ($this->editsupported && $data['updateallocation']) {
+        if ($this->editpossible && $data['updateallocation']) {
             $errors = array_merge($errors, \tool_muprog\local\allocation::validate_allocation_dates(
                 $data['timestart'],
                 $data['timedue'],

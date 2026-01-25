@@ -20,6 +20,7 @@
 namespace tool_muprog\phpunit\external;
 
 use tool_mulib\local\mulib;
+use tool_muprog\external\source_manual_allocate_users;
 
 /**
  * Tests for external source manual allocate users.
@@ -27,6 +28,7 @@ use tool_mulib\local\mulib;
  * @group      MuTMS
  * @package    tool_muprog
  * @copyright  2023 Open LMS (https://www.openlms.net/)
+ * @copyright  2025 Petr Skoda
  * @author     Farhan Karmali
  * @license    https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  *
@@ -75,35 +77,35 @@ final class source_manual_allocate_users_test extends \advanced_testcase {
         \cohort_add_member($cohort2->id, $user7->id);
 
         $this->setUser($user1);
-        $results = \tool_muprog\external\source_manual_allocate_users::clean_returnvalue(
-            \tool_muprog\external\source_manual_allocate_users::execute_returns(),
-            \tool_muprog\external\source_manual_allocate_users::execute($program1->id, [$user1->id, $user2->id])
+        $results = source_manual_allocate_users::clean_returnvalue(
+            source_manual_allocate_users::execute_returns(),
+            source_manual_allocate_users::execute($program1->id, [$user1->id, $user2->id])
         );
         $this->assertCount(2, $results);
-        $results = \tool_muprog\external\source_manual_allocate_users::clean_returnvalue(
-            \tool_muprog\external\source_manual_allocate_users::execute_returns(),
-            \tool_muprog\external\source_manual_allocate_users::execute($program1->id, [$user1->id, $user2->id, $user3->id])
+        $results = source_manual_allocate_users::clean_returnvalue(
+            source_manual_allocate_users::execute_returns(),
+            source_manual_allocate_users::execute($program1->id, [$user1->id, $user2->id, $user3->id])
         );
         $this->assertCount(1, $results);
-        $results = \tool_muprog\external\source_manual_allocate_users::clean_returnvalue(
-            \tool_muprog\external\source_manual_allocate_users::execute_returns(),
-            \tool_muprog\external\source_manual_allocate_users::execute($program1->id, [], [$cohort1->id])
+        $results = source_manual_allocate_users::clean_returnvalue(
+            source_manual_allocate_users::execute_returns(),
+            source_manual_allocate_users::execute($program1->id, [], [$cohort1->id])
         );
         $this->assertCount(3, $results);
 
         $timestart = time() + YEARSECS;
-        $results = \tool_muprog\external\source_manual_allocate_users::clean_returnvalue(
-            \tool_muprog\external\source_manual_allocate_users::execute_returns(),
-            \tool_muprog\external\source_manual_allocate_users::execute($program1->id, [$user7->id], [], ['timestart' => $timestart])
+        $results = source_manual_allocate_users::clean_returnvalue(
+            source_manual_allocate_users::execute_returns(),
+            source_manual_allocate_users::execute($program1->id, [$user7->id], [], ['timestart' => $timestart])
         );
         $this->assertCount(1, $results);
         $record = $DB->get_record('tool_muprog_allocation', ['userid' => $user7->id, 'programid' => $program1->id]);
         $this->assertSame($timestart, (int)$record->timestart);
 
         $timeend = time() + (2 * YEARSECS);
-        $results = \tool_muprog\external\source_manual_allocate_users::clean_returnvalue(
-            \tool_muprog\external\source_manual_allocate_users::execute_returns(),
-            \tool_muprog\external\source_manual_allocate_users::execute($program1->id, [$user8->id], [], ['timeend' => $timeend])
+        $results = source_manual_allocate_users::clean_returnvalue(
+            source_manual_allocate_users::execute_returns(),
+            source_manual_allocate_users::execute($program1->id, [$user8->id], [], ['timeend' => $timeend])
         );
         $this->assertCount(1, $results);
         $record = $DB->get_record('tool_muprog_allocation', ['userid' => $user8->id, 'programid' => $program1->id]);
@@ -112,7 +114,7 @@ final class source_manual_allocate_users_test extends \advanced_testcase {
         $timedue = time() + (30 * DAYSECS);
         $timestart = time() + YEARSECS;
         try {
-            \tool_muprog\external\source_manual_allocate_users::execute($program1->id, [$user9->id], [], ['timedue' => $timedue, 'timestart' => $timestart]);
+            source_manual_allocate_users::execute($program1->id, [$user9->id], [], ['timedue' => $timedue, 'timestart' => $timestart]);
             $this->fail('Exception expected');
         } catch (\moodle_exception $ex) {
             $this->assertInstanceOf(\invalid_parameter_exception::class, $ex);
@@ -123,7 +125,7 @@ final class source_manual_allocate_users_test extends \advanced_testcase {
 
         $this->setUser($user3);
         try {
-            \tool_muprog\external\source_manual_allocate_users::execute($program1->id, [], [$cohort1->id]);
+            source_manual_allocate_users::execute($program1->id, [], [$cohort1->id]);
             $this->fail('Exception expected');
         } catch (\moodle_exception $ex) {
             $this->assertInstanceOf(\required_capability_exception::class, $ex);
@@ -134,13 +136,13 @@ final class source_manual_allocate_users_test extends \advanced_testcase {
         }
 
         $this->setUser($user2);
-        $results = \tool_muprog\external\source_manual_allocate_users::execute($program2->id, [], [$cohort2->id]);
+        $results = source_manual_allocate_users::execute($program2->id, [], [$cohort2->id]);
         $this->assertCount(1, $results);
 
         $this->setAdminUser();
         \tool_muprog\local\program::archive($program1->id);
         try {
-            \tool_muprog\external\source_manual_allocate_users::execute($program1->id, [], [$cohort1->id]);
+            source_manual_allocate_users::execute($program1->id, [], [$cohort1->id]);
             $this->fail('Exception expected');
         } catch (\moodle_exception $ex) {
             $this->assertInstanceOf(\invalid_parameter_exception::class, $ex);
@@ -186,7 +188,7 @@ final class source_manual_allocate_users_test extends \advanced_testcase {
 
         $this->setAdminUser();
 
-        $results = \tool_muprog\external\source_manual_allocate_users::execute($program0->id, [$user0->id, $user1->id, $user2->id]);
+        $results = source_manual_allocate_users::execute($program0->id, [$user0->id, $user1->id, $user2->id]);
         $this->assertCount(3, $results);
         $this->assertContainsEquals($user0->id, $results);
         $this->assertContainsEquals($user1->id, $results);
@@ -194,13 +196,13 @@ final class source_manual_allocate_users_test extends \advanced_testcase {
 
         $DB->delete_records('tool_muprog_allocation', []);
 
-        $results = \tool_muprog\external\source_manual_allocate_users::execute($program1->id, [$user0->id, $user1->id]);
+        $results = source_manual_allocate_users::execute($program1->id, [$user0->id, $user1->id]);
         $this->assertCount(2, $results);
         $this->assertContainsEquals($user0->id, $results);
         $this->assertContainsEquals($user1->id, $results);
 
         try {
-            \tool_muprog\external\source_manual_allocate_users::execute($program1->id, [$user2->id]);
+            source_manual_allocate_users::execute($program1->id, [$user2->id]);
             $this->fail('Exception expected');
         } catch (\moodle_exception $ex) {
             $this->assertInstanceOf(\invalid_parameter_exception::class, $ex);

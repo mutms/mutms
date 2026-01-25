@@ -145,11 +145,11 @@ Feature: Program upload full tests
       | Program 00 |        | All in order            |
       | Course 01  | 1      | Completion delay: 1 day |
       | First set  | 1      | At least 2              |
-      | Course 02  | 1      |                         |
-      | Course 03  | 1      |                         |
-      | Course 04  | 1      |                         |
+      | Course 02  | 1      | Course completion       |
+      | Course 03  | 1      | Course completion       |
+      | Course 04  | 1      | Course completion       |
       | Second set | 2      | Minimum 3 points        |
-      | Course 05  | 4      |                         |
+      | Course 05  | 4      | Course completion       |
     And I follow "Allocation settings"
     And I should see "Tuesday, 31 October 2023, 1:57 AM" in the "Allocation start" definition list item
     And I should see "Wednesday, 31 October 2029, 1:57 AM" in the "Allocation end" definition list item
@@ -167,9 +167,10 @@ Feature: Program upload full tests
     And the following should exist in the "program_content" table:
       | Item       | Points | Completion type         |
       | Program 01 |        | All in any order        |
-      | Course 01  | 1      |                         |
-      | Course 02  | 1      |                         |
-      | Course 05  | 1      |                         |
+      | Course 01  | 1      | Course completion       |
+      | Course 02  | 1      | Course completion       |
+      | Course 05  | 1      | Course completion       |
+      | Driving    | 7      | Offline attendance      |
     And I follow "Allocation settings"
     And I should see "Not set" in the "Allocation start" definition list item
     And I should see "Not set" in the "Allocation end" definition list item
@@ -615,9 +616,10 @@ Feature: Program upload full tests
     And the following should exist in the "program_content" table:
       | Item       | Points | Completion type         |
       | Program 01 |        | All in any order        |
-      | Course 01  | 1      |                         |
-      | Course 02  | 1      |                         |
-      | Course 05  | 1      |                         |
+      | Course 01  | 1      | Course completion       |
+      | Course 02  | 1      | Course completion       |
+      | Course 05  | 1      | Course completion       |
+      | Driving    | 7      | Offline attendance      |
     And I follow "Allocation settings"
     And I should see "Not set" in the "Allocation start" definition list item
     And I should see "Not set" in the "Allocation end" definition list item

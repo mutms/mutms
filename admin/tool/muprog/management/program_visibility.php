@@ -45,7 +45,7 @@ $program = $DB->get_record('tool_muprog_program', ['id' => $id], '*', MUST_EXIST
 $context = context::instance_by_id($program->contextid);
 require_capability('tool/muprog:view', $context);
 
-$currenturl = new moodle_url('/admin/tool/muprog/management/program_visibility.php', ['id' => $id]);
+$currenturl = new core\url('/admin/tool/muprog/management/program_visibility.php', ['id' => $id]);
 
 management::setup_program_page($currenturl, $context, $program, 'program_visibility');
 $PAGE->set_docs_path('https://github.com/mutms/moodle-tool_muprog/wiki/Program-visibility');
@@ -57,7 +57,7 @@ echo $OUTPUT->header();
 
 $buttons = [];
 if (has_capability('tool/muprog:edit', $context)) {
-    $editurl = new moodle_url('/admin/tool/muprog/management/program_visibility_edit.php', ['id' => $program->id]);
+    $editurl = new core\url('/admin/tool/muprog/management/program_visibility_edit.php', ['id' => $program->id]);
     $editbutton = new tool_mulib\output\ajax_form\button($editurl, get_string('edit'));
     $editbutton->set_modal_title(get_string('program_update', 'tool_muprog'));
     $buttons[] = $OUTPUT->render($editbutton);

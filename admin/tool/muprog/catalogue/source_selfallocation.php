@@ -40,13 +40,13 @@ require('../../../../config.php');
 $sourceid = required_param('sourceid', PARAM_INT);
 
 $PAGE->set_context(context_system::instance());
-$PAGE->set_url(new moodle_url('/admin/tool/muprog/catalogue/source_selfallocation.php', ['sourceid' => $sourceid]));
+$PAGE->set_url(new core\url('/admin/tool/muprog/catalogue/source_selfallocation.php', ['sourceid' => $sourceid]));
 
 require_login();
 require_capability('tool/muprog:viewcatalogue', context_system::instance());
 
 if (!\tool_mulib\local\mulib::is_muprog_active()) {
-    redirect(new moodle_url('/'));
+    redirect(new core\url('/'));
 }
 
 $source = $DB->get_record('tool_muprog_source', ['id' => $sourceid, 'type' => 'selfallocation'], '*', MUST_EXIST);
@@ -54,10 +54,10 @@ $program = $DB->get_record('tool_muprog_program', ['id' => $source->programid], 
 $programcontext = context::instance_by_id($program->contextid);
 
 if (!\tool_muprog\local\source\selfallocation::can_user_request($program, $source, $USER->id)) {
-    redirect(new moodle_url('/admin/tool/muprog/catalogue/index.php'));
+    redirect(new core\url('/admin/tool/muprog/catalogue/index.php'));
 }
 
-$returnurl = new moodle_url('/admin/tool/muprog/catalogue/program.php', ['id' => $program->id]);
+$returnurl = new core\url('/admin/tool/muprog/catalogue/program.php', ['id' => $program->id]);
 
 $form = new tool_muprog\local\form\source_selfallocation(null, ['source' => $source, 'program' => $program]);
 

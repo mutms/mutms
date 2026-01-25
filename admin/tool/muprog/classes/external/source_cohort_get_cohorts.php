@@ -15,6 +15,7 @@
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 // phpcs:disable moodle.Files.BoilerplateComment.CommentEndedTooSoon
+// phpcs:disable moodle.Files.LineLength.TooLong
 
 namespace tool_muprog\external;
 
@@ -29,6 +30,7 @@ use core_external\external_single_structure;
  *
  * @package     tool_muprog
  * @copyright   2023 Open LMS (https://www.openlms.net/)
+ * @copyright   2025 Petr Skoda
  * @author      Farhan Karmali
  * @license     https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
@@ -52,7 +54,11 @@ final class source_cohort_get_cohorts extends external_api {
      */
     public static function execute(int $programid): array {
         global $DB;
-        ['programid' => $programid] = self::validate_parameters(self::execute_parameters(), ['programid' => $programid]);
+        [
+            'programid' => $programid,
+        ] = self::validate_parameters(self::execute_parameters(), [
+            'programid' => $programid,
+        ]);
 
         $program = $DB->get_record('tool_muprog_program', ['id' => $programid], '*', MUST_EXIST);
 

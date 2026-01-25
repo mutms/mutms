@@ -46,10 +46,10 @@ $context = context::instance_by_id($program->contextid);
 require_capability('tool/muprog:edit', $context);
 
 if (!\tool_muprog\local\certificate::is_available()) {
-    redirect(new moodle_url('/admin/tool/muprog/program.php', ['id' => $program->id]));
+    redirect(new core\url('/admin/tool/muprog/program.php', ['id' => $program->id]));
 }
 
-$currenturl = new moodle_url('/admin/tool/muprog/management/program_certificate_edit.php', ['id' => $id]);
+$currenturl = new core\url('/admin/tool/muprog/management/program_certificate_edit.php', ['id' => $id]);
 $PAGE->set_context($context);
 $PAGE->set_url($currenturl);
 
@@ -83,7 +83,7 @@ if ($cert) {
 
 $form = new \tool_muprog\local\form\program_certificate_edit(null, ['data' => $current, 'context' => $context]);
 
-$returnurl = new moodle_url('/admin/tool/muprog/management/program_certificate.php', ['id' => $program->id]);
+$returnurl = new core\url('/admin/tool/muprog/management/program_certificate.php', ['id' => $program->id]);
 
 if ($form->is_cancelled()) {
     $form->ajax_form_cancelled($returnurl);

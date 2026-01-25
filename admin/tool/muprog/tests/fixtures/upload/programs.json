@@ -141,6 +141,12 @@
                         "reference": "C05",
                         "points": 1,
                         "completiondelay": 0
+                    },
+                    {
+                        "itemtype": "attendance",
+                        "reference": "Driving",
+                        "points": 7,
+                        "completiondelay": 0
                     }
                 ]
             },

@@ -23,7 +23,7 @@ use tool_muprog\local\content\course;
 use tool_muprog\local\content\item;
 use tool_muprog\local\content\set;
 use tool_muprog\local\content\top;
-use moodle_url, stdClass;
+use core\url, stdClass;
 use tool_mulib\local\sql;
 use tool_mulib\local\mulib;
 
@@ -40,9 +40,9 @@ final class management {
     /**
      * Guess if user can access programs management UI.
      *
-     * @return moodle_url|null
+     * @return url|null
      */
-    public static function get_management_url(): ?moodle_url {
+    public static function get_management_url(): ?url {
         if (isguestuser() || !isloggedin()) {
             return null;
         }
@@ -50,7 +50,7 @@ final class management {
         // NOTE: this has to be very fast, do NOT loop all categories here!
 
         if (has_capability('tool/muprog:view', \context_system::instance())) {
-            return new moodle_url('/admin/tool/muprog/management/index.php');
+            return new url('/admin/tool/muprog/management/index.php');
         } else if (mulib::is_mutenancy_active()) {
             $tenantid = \tool_mutenancy\local\tenancy::get_current_tenantid();
             if ($tenantid) {
@@ -58,7 +58,7 @@ final class management {
                 if ($tenant) {
                     $catcontext = \context_coursecat::instance($tenant->categoryid);
                     if (has_capability('tool/muprog:view', $catcontext)) {
-                        return new moodle_url('/admin/tool/muprog/management/index.php', ['contextid' => $catcontext->id]);
+                        return new url('/admin/tool/muprog/management/index.php', ['contextid' => $catcontext->id]);
                     }
                 }
             }
@@ -127,85 +127,80 @@ final class management {
     /**
      * Set up $PAGE for programs management UI.
      *
-     * @param moodle_url $pageurl
+     * @param url $pageurl
      * @param \context $context
      * @return void
      */
-    public static function setup_index_page(\moodle_url $pageurl, \context $context): void {
+    public static function setup_index_page(url $pageurl, \context $context): void {
         global $PAGE;
 
         $PAGE->set_pagelayout('admin');
         $PAGE->set_context($context);
         $PAGE->set_url($pageurl);
-        $PAGE->set_title(get_string('programs', 'tool_muprog'));
+        $PAGE->set_title(get_string('management', 'tool_muprog'));
         $PAGE->set_heading(get_string('programs', 'tool_muprog'));
         $PAGE->set_secondary_navigation(false);
 
-        $contexts = [];
-        while (true) {
-            $contexts[] = $context;
-            $parent = $context->get_parent_context();
-            if (!$parent) {
-                break;
+        $parentcontextids = $context->get_parent_context_ids(true);
+        $parentcontextids = array_reverse($parentcontextids);
+        foreach ($parentcontextids as $parentcontextid) {
+            $parentcontext = \context::instance_by_id($parentcontextid);
+            if ($parentcontext instanceof \context_system) {
+                $name = get_string('programs', 'tool_muprog');
+            } else {
+                $name = $parentcontext->get_context_name(false);
             }
-            $context = $parent;
-        }
-
-        $contexts = array_reverse($contexts);
-
-        /** @var \context $context */
-        foreach ($contexts as $context) {
             $url = null;
-            if (has_capability('tool/muprog:view', $context)) {
-                $url = new moodle_url('/admin/tool/muprog/management/index.php', ['contextid' => $context->id]);
+            if (has_capability('tool/muprog:view', $parentcontext)) {
+                $url = new url('/admin/tool/muprog/management/index.php', ['contextid' => $parentcontext->id]);
             }
-            $PAGE->navbar->add($context->get_context_name(false), $url);
+            $PAGE->navbar->add($name, $url);
         }
     }
 
     /**
      * Set up $PAGE for programs management UI.
      *
-     * @param moodle_url $pageurl
+     * @param url $pageurl
      * @param \context $context
      * @param stdClass $program
      * @param string $secondarytab
      * @return void
      */
-    public static function setup_program_page(moodle_url $pageurl, \context $context, stdClass $program, string $secondarytab): void {
+    public static function setup_program_page(url $pageurl, \context $context, stdClass $program, string $secondarytab): void {
         global $PAGE;
 
         $PAGE->set_pagelayout('admin');
         $PAGE->set_context($context);
         $PAGE->set_url($pageurl);
-        $PAGE->set_title(get_string('programs', 'tool_muprog'));
-        $PAGE->set_heading(format_string($program->fullname));
+
+        $programname = format_string($program->fullname);
+
+        $PAGE->set_title($programname . \moodle_page::TITLE_SEPARATOR . get_string('management', 'tool_muprog'));
+        $PAGE->set_heading($programname);
 
         $secondarynav = new \tool_muprog\navigation\views\program_secondary($PAGE, $program);
         $PAGE->set_secondarynav($secondarynav);
         $PAGE->set_secondary_active_tab($secondarytab);
         $secondarynav->initialise();
 
-        $contexts = [];
-        while (true) {
-            $contexts[] = $context;
-            $parent = $context->get_parent_context();
-            if (!$parent) {
-                break;
+        $parentcontextids = $context->get_parent_context_ids(true);
+        $parentcontextids = array_reverse($parentcontextids);
+        foreach ($parentcontextids as $parentcontextid) {
+            $parentcontext = \context::instance_by_id($parentcontextid);
+            if ($parentcontext instanceof \context_system) {
+                $name = get_string('programs', 'tool_muprog');
+            } else {
+                $name = $parentcontext->get_context_name(false);
             }
-            $context = $parent;
-        }
-
-        $contexts = array_reverse($contexts);
-
-        /** @var \context $context */
-        foreach ($contexts as $context) {
             $url = null;
-            if (has_capability('tool/muprog:view', $context)) {
-                $url = new moodle_url('/admin/tool/muprog/management/index.php', ['contextid' => $context->id]);
+            if (has_capability('tool/muprog:view', $parentcontext)) {
+                $url = new url('/admin/tool/muprog/management/index.php', ['contextid' => $parentcontext->id]);
             }
-            $PAGE->navbar->add($context->get_context_name(false), $url);
+            $PAGE->navbar->add($name, $url);
         }
-        $PAGE->navbar->add(format_string($program->fullname));
+
+        $url = new url('/admin/tool/muprog/management/program.php', ['id' => $program->id]);
+        $PAGE->navbar->add($programname, $url);
     }
 }

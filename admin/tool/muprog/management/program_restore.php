@@ -45,12 +45,12 @@ $program = $DB->get_record('tool_muprog_program', ['id' => $id], '*', MUST_EXIST
 $context = context::instance_by_id($program->contextid);
 require_capability('tool/muprog:edit', $context);
 
-$currenturl = new moodle_url('/admin/tool/muprog/management/program_restore.php', ['id' => $program->id]);
+$currenturl = new core\url('/admin/tool/muprog/management/program_restore.php', ['id' => $program->id]);
 $PAGE->set_context($context);
 $PAGE->set_url($currenturl);
 
 $form = new \tool_muprog\local\form\program_restore(null, ['program' => $program]);
-$returnurl = new moodle_url('/admin/tool/muprog/management/program.php', ['id' => $program->id]);
+$returnurl = new core\url('/admin/tool/muprog/management/program.php', ['id' => $program->id]);
 
 if (!$program->archived) {
     redirect($returnurl);

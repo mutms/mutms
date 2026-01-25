@@ -52,6 +52,16 @@ class set extends item {
     /** @var ?int how many points from children are required to complete this item */
     protected $minpoints;
 
+    #[\Override]
+    public static function get_type(): string {
+        return 'set';
+    }
+
+    #[\Override]
+    public static function get_type_name(): string {
+        return get_string('set', 'tool_muprog');
+    }
+
     /**
      * Returns all known set sequence types.
      * @return array
@@ -115,26 +125,25 @@ class set extends item {
         return get_string('sequencetype_' . $this->sequencetype, 'tool_muprog', $a);
     }
 
-    /**
-     * Factory method.
-     *
-     * @param \stdClass $record
-     * @param item|null $previous
-     * @param array $unusedrecords
-     * @param array $prerequisites
-     * @return set
-     */
+    #[\Override]
     protected static function init_from_record(\stdClass $record, ?item $previous, array &$unusedrecords, array &$prerequisites): item {
         if ($record->courseid !== null || $record->creditframeworkid !== null) {
             throw new \coding_exception('Invalid set item');
         }
         if ($record->topitem) {
+            if ($record->type !== 'top') {
+                throw new \coding_exception('Invalid top item');
+            }
             $item = new top();
         } else {
+            if ($record->type !== 'set') {
+                throw new \coding_exception('Invalid set item');
+            }
             $item = new set();
         }
         $item->id = $record->id;
         $item->programid = $record->programid;
+        $item->type = $record->type;
         $item->fullname = $record->fullname;
         $item->points = $record->points;
 
@@ -155,12 +164,16 @@ class set extends item {
                     throw new \coding_exception('Invalid records contains invalid programid');
                 }
                 unset($unusedrecords[$childitemid]);
-                if ($childrecord->courseid !== null) {
+                if ($childrecord->type === 'course') {
                     $child = course::init_from_record($childrecord, $previous, $unusedrecords, $prerequisites);
-                } else if ($childrecord->creditframeworkid !== null) {
+                } else if ($childrecord->type === 'attendance') {
+                    $child = attendance::init_from_record($childrecord, $previous, $unusedrecords, $prerequisites);
+                } else if ($childrecord->type === 'credits') {
                     $child = credits::init_from_record($childrecord, $previous, $unusedrecords, $prerequisites);
-                } else {
+                } else if ($childrecord->type === 'set') {
                     $child = self::init_from_record($childrecord, $previous, $unusedrecords, $prerequisites);
+                } else {
+                    debugging("Unknown child type $childrecord->type");
                 }
                 if ($inorder) {
                     $previous = $child;
@@ -229,12 +242,7 @@ class set extends item {
         return $item;
     }
 
-    /**
-     * Set previous item to new value.
-     *
-     * @param item|null $previous new previous item
-     * @return void
-     */
+    #[\Override]
     protected function fix_previous(?item $previous): void {
         foreach ($this->children as $child) {
             $inorder = ($this->sequencetype === self::SEQUENCE_TYPE_ALLINORDER);
@@ -245,12 +253,7 @@ class set extends item {
         }
     }
 
-    /**
-     * Fix item prerequisites if necessary.
-     *
-     * @param array $prerequisites
-     * @return bool true if fix applied
-     */
+    #[\Override]
     protected function fix_prerequisites(array &$prerequisites): bool {
         global $DB;
 
@@ -280,11 +283,7 @@ class set extends item {
         return $updated;
     }
 
-    /**
-     * Returns set children.
-     *
-     * @return item[]
-     */
+    #[\Override]
     public function get_children(): array {
         return $this->children;
     }
@@ -306,10 +305,7 @@ class set extends item {
         return false;
     }
 
-    /**
-     * Get expected item record data.
-     * @return array
-     */
+    #[\Override]
     protected function get_record(): array {
         $sequence = [
             'children' => [],
@@ -322,6 +318,7 @@ class set extends item {
         return [
             'id' => (empty($this->id) ? null : (string)$this->id),
             'programid' => (string)$this->programid,
+            'type' => 'set',
             'topitem' => null,
             'courseid' => null,
             'creditframeworkid' => null,

@@ -4,6 +4,50 @@ Plugin versioning is derived from Moodle releases, it does not comply with the s
 
 The format of this change log follows the advice given at [Keep a CHANGELOG](https://keepachangelog.com).
 
+## [mu-5.0.4-04] - 2026-01-25
+
+### Added
+
+- Added link to detailed report with completion credits
+- New "Offline attendance" program item type
+- Added "Course completion" into "Completion type" column in program progress tables
+- Added web service for archiving and restoring of program allocations
+- Icons added to dropdown actions
+- Allocations can be archived/restore directly from the list of all program users
+- Added "Program allocation viewed" event, replacing incorrect use of "Program viewed" event in user profiles
+- Added new capability "View other users programs" to allow viewing of other users programs via profile pages
+
+### Changed
+
+- Added separate "Move program" action for moving of programs into different contexts to match other MuTMS plugins
+- "Course set" is now called "Set" because programs may contain other item types
+- Reworked adding of program items to allow addition of new item types
+- New column "type" was added to "tool_muprog_item" database table
+- Changed web services results to use "deletepossible" and "editpossible" property names
+- Other backwards compatible web services API and implementation tidy-up
+- Used red colour for "Delete program" action
+- Archived status is shown in allocation details
+- Icon for program completion overriding is shown in allocation details
+- Icon for program reset is shown in allocation details
+- Button for updating of allocation is shown in allocation details
+- Improved navigation on allocated users management page
+
+### Fixed
+
+- Fixed filtering by program name in reports
+- Added missing indication of delayed completions
+- Fixed result overflow detection in ajax autocomplete form fields
+- Fixed program item behat generators
+- Internal allocation source data was removed from web services
+- Web service delete_program_allocations was fixed to use tool/muprog:deallocate capability
+- Fixed incorrect is_allocation_archive_possible() and is_allocation_restore_possible() methods in allocation sources
+- Fixed usage of legacy moodle_url class
+- Improved navigation to start with "Programs" instead of "System"
+- Programs from deleted categories will be automatically marked as archived when moved to parent context
+- Fixed missing program image when moving program to a different context
+- To prevent data loss users have to explicitly select "Reset type" option in "Reset program progress" dialog
+- Prevented duplicate credit frameworks in programs
+
 ## [mu-5.0.4-03] - 2025-12-31
 
 ### Added

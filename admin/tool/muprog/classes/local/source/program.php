@@ -72,7 +72,7 @@ final class program extends base {
                 $name = format_string($program->fullname);
                 $context = \context::instance_by_id($program->contextid);
                 if (has_capability('tool/muprog:view', $context)) {
-                    $url = new \moodle_url('/admin/tool/muprog/management/program.php', ['id' => $program->id]);
+                    $url = new \core\url('/admin/tool/muprog/management/program.php', ['id' => $program->id]);
                     $name = \html_writer::link($url, $name);
                 }
             } else {
@@ -82,16 +82,6 @@ final class program extends base {
         }
 
         return $result;
-    }
-
-    #[\Override]
-    public static function is_allocation_archive_possible(stdClass $program, stdClass $source, stdClass $allocation): bool {
-        return true;
-    }
-
-    #[\Override]
-    public static function is_allocation_restore_possible(stdClass $program, stdClass $source, stdClass $allocation): bool {
-        return true;
     }
 
     /**

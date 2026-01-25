@@ -41,7 +41,7 @@ $settings = new admin_settingpage(
 $ADMIN->add('tool_muprog', $settings);
 if ($ADMIN->fulltree) {
     if (!enrol_is_enabled('muprog')) {
-        $url = new moodle_url('/admin/enrol.php', ['sesskey' => sesskey(), 'action' => 'enable', 'enrol' => 'muprog']);
+        $url = new core\url('/admin/enrol.php', ['sesskey' => sesskey(), 'action' => 'enable', 'enrol' => 'muprog']);
         $a = new stdClass();
         $a->url = $url->out(false);
         $notify = get_string('plugindisabled', 'tool_muprog', $a);
@@ -106,21 +106,21 @@ if ($ADMIN->fulltree) {
 $ADMIN->add('tool_muprog', new admin_externalpage(
     'tool_muprog_customfield_program',
     new lang_string('customfields', 'tool_muprog'),
-    new moodle_url("/admin/tool/muprog/management/customfield_program.php"),
+    new core\url("/admin/tool/muprog/management/customfield_program.php"),
     'tool/muprog:configurecustomfields'
 ));
 
 $ADMIN->add('tool_muprog', new admin_externalpage(
     'tool_muprog_customfield_allocation',
     new lang_string('customfields_allocation', 'tool_muprog'),
-    new moodle_url("/admin/tool/muprog/management/customfield_allocation.php"),
+    new core\url("/admin/tool/muprog/management/customfield_allocation.php"),
     'tool/muprog:configurecustomfields'
 ));
 
 $ADMIN->add('tool_muprog', new admin_externalpage(
     'tool_muprog_management',
     new lang_string('management', 'tool_muprog'),
-    new moodle_url("/admin/tool/muprog/management/index.php"),
+    new core\url("/admin/tool/muprog/management/index.php"),
     'tool/muprog:view'
 ));
 

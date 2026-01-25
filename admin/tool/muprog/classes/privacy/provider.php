@@ -89,6 +89,18 @@ class provider implements
         );
 
         $collection->add_database_table(
+            'tool_muprog_attendance',
+            [
+                'itemid' => 'privacy:metadata:field:itemid',
+                'userid' => 'privacy:metadata:field:userid',
+                'status' => 'privacy:metadata:field:status',
+                'timeeffective' => 'privacy:metadata:field:timeeffective',
+                'teakenby' => 'privacy:metadata:field:teakenby',
+            ],
+            'privacy:metadata:table:tool_muprog_attendance'
+        );
+
+        $collection->add_database_table(
             'tool_muprog_evidence',
             [
                 'itemid' => 'privacy:metadata:field:itemid',
@@ -174,12 +186,12 @@ class provider implements
         [$contextsql, $contextparams] = $DB->get_in_or_equal($contextlist->get_contextids(), SQL_PARAMS_NAMED);
 
         $sql = "SELECT p.contextid, p.fullname, pa.id, pa.programid, pa.userid,
-                    pa.sourceid, pa.archived, pa.sourcedatajson, pa.timeallocated, pa.timestart, pa.timedue, pa.timeend,
-                    pa.timecompleted, pa.timecreated,
-                    pci.timecompleted AS certificateissuetimecompleted, pci.issueid AS certificateissueid, pci.timecreated AS certificateissuetimecreated
+                       pa.sourceid, pa.archived, pa.sourcedatajson, pa.timeallocated, pa.timestart, pa.timedue, pa.timeend,
+                       pa.timecompleted, pa.timecreated,
+                       pci.timecompleted AS certificateissuetimecompleted, pci.issueid AS certificateissueid, pci.timecreated AS certificateissuetimecreated
                   FROM {tool_muprog_program} p
                   JOIN {tool_muprog_allocation} pa ON pa.programid = p.id
-                  LEFT JOIN {tool_muprog_cert_issue} pci ON pa.id = pci.allocationid
+             LEFT JOIN {tool_muprog_cert_issue} pci ON pa.id = pci.allocationid
                   JOIN {context} ctx ON p.contextid = ctx.id
                   JOIN {user} u ON u.id = pa.userid AND u.deleted = 0
                  WHERE ctx.id {$contextsql} AND u.id = :userid
@@ -204,9 +216,9 @@ class provider implements
 
             // Add user completion data.
             $sql = "SELECT itemid, timecompleted
-                    FROM {tool_muprog_completion}
-                    WHERE allocationid = :allocationid
-                    ORDER BY timecompleted ASC";
+                      FROM {tool_muprog_completion}
+                     WHERE allocationid = :allocationid
+                  ORDER BY timecompleted ASC";
             $params = ['allocationid' => $allocation->id];
 
             $completions = $DB->get_recordset_sql($sql, $params);
@@ -219,13 +231,34 @@ class provider implements
             }
             $completions->close();
 
+            // Add user attendance data.
+            $sql = "SELECT pta.itemid, pta.status, pta.timeeffective
+                      FROM {tool_muprog_attendance} pta
+                      JOIN {tool_muprog_item} pri ON pta.itemid = pri.id AND pri.type = 'attendance'
+                      JOIN {tool_muprog_allocation} pa ON pa.programid = pri.programid
+                     WHERE pa.id = :allocationid
+                  ORDER BY pta.timeeffective ASC";
+            $params = ['allocationid' => $allocation->id];
+
+            $statuses = \tool_muprog\local\content\attendance::get_statuses();
+            $attendances = $DB->get_recordset_sql($sql, $params);
+            foreach ($attendances as $attendance) {
+                if (!property_exists($allocation, 'attendances')) {
+                    $allocation->attendances = [];
+                }
+                $attendance->status = $statuses[(int)$attendance->status];
+                $attendance->timeeffective = \core_privacy\local\request\transform::datetime($attendance->timeeffective);
+                $allocation->attendances[] = $attendance;
+            }
+            $attendances->close();
+
             // Add user evidence data.
             $sql = "SELECT pe.itemid, pe.evidencejson, pe.timecompleted, pe.timecreated, pe.createdby
-                    FROM {tool_muprog_evidence} pe
-                    JOIN {tool_muprog_item} pri ON pe.itemid = pri.id
-                    JOIN {tool_muprog_allocation} pa ON pa.programid = pri.programid
-                    WHERE pa.id = :allocationid
-                    ORDER BY pe.timecreated ASC";
+                      FROM {tool_muprog_evidence} pe
+                      JOIN {tool_muprog_item} pri ON pe.itemid = pri.id
+                      JOIN {tool_muprog_allocation} pa ON pa.programid = pri.programid
+                     WHERE pa.id = :allocationid
+                  ORDER BY pe.timecreated ASC";
             $params = ['allocationid' => $allocation->id];
 
             $evidences = $DB->get_recordset_sql($sql, $params);
@@ -250,12 +283,12 @@ class provider implements
 
         // Add user request data.
         $sql = "SELECT p.contextid, p.fullname, pr.sourceid, pr.datajson, pr.timerequested, pr.timerejected, pr.rejectedby
-                FROM {tool_muprog_request} pr
-                JOIN {user} u ON u.id = pr.userid AND u.deleted = 0
-                JOIN {tool_muprog_source} ps ON pr.sourceid = ps.id
-                JOIN {tool_muprog_program} p ON ps.programid = p.id
-                WHERE u.id = :userid
-                ORDER BY pr.id ASC";
+                  FROM {tool_muprog_request} pr
+                  JOIN {user} u ON u.id = pr.userid AND u.deleted = 0
+                  JOIN {tool_muprog_source} ps ON pr.sourceid = ps.id
+                  JOIN {tool_muprog_program} p ON ps.programid = p.id
+                 WHERE u.id = :userid
+              ORDER BY pr.id ASC";
         $params = ['userid' => $user->id];
 
         $requests = $DB->get_recordset_sql($sql, $params);

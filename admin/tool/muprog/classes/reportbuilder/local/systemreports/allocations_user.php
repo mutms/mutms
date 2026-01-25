@@ -27,16 +27,15 @@ use core_reportbuilder\system_report;
 use core_reportbuilder\local\helpers\database;
 use core_reportbuilder\local\helpers\user_profile_fields;
 use lang_string;
-use moodle_url;
 
 /**
- * Embedded My programs report.
+ * Embedded users programs report.
  *
  * @package     tool_muprog
  * @copyright   2025 Petr Skoda
  * @license     https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-final class my_allocations extends system_report {
+final class allocations_user extends system_report {
     /** @var user */
     protected $userentity;
     /** @var allocation */
@@ -48,8 +47,6 @@ final class my_allocations extends system_report {
 
     #[\Override]
     protected function initialise(): void {
-        global $USER;
-
         $this->allocationentity = new allocation();
         $allocationalias = $this->allocationentity->get_table_alias('tool_muprog_allocation');
         $this->set_main_table('tool_muprog_allocation', $allocationalias);
@@ -65,10 +62,12 @@ final class my_allocations extends system_report {
         $this->add_entity($this->programentity);
         $this->add_join("JOIN {tool_muprog_program} {$programalias} ON {$programalias}.id = {$allocationalias}.programid");
 
+        $usercontext = $this->get_context();
+
         $param = database::generate_param_name();
         $this->add_base_condition_sql(
             "{$allocationalias}.userid = :$param AND {$allocationalias}.archived = 0 AND {$programalias}.archived = 0",
-            [$param => $USER->id]
+            [$param => $usercontext->instanceid]
         );
 
         $this->add_columns();
@@ -81,19 +80,24 @@ final class my_allocations extends system_report {
     #[\Override]
     protected function can_view(): bool {
         global $USER;
-
-        // Everybody may view own programs.
-        if (!\tool_mulib\local\mulib::is_muprog_active()) {
-            return false;
-        }
         if (isguestuser() || !isloggedin()) {
             return false;
         }
-        $usercontext = $this->get_context();
-        if ($usercontext->contextlevel != CONTEXT_USER || $usercontext->instanceid != $USER->id) {
+        if (!\tool_mulib\local\mulib::is_muprog_available()) {
             return false;
         }
-        return true;
+
+        $usercontext = $this->get_context();
+        if (!$usercontext instanceof \context_user) {
+            return false;
+        }
+
+        if ($usercontext->instanceid == $USER->id) {
+            // Everybody may see own programs.
+            return true;
+        }
+
+        return has_capability('tool/muprog:viewuserprograms', $usercontext);
     }
 
     /**
@@ -105,13 +109,13 @@ final class my_allocations extends system_report {
         $sourcealias = $this->sourceentity->get_table_alias('tool_muprog_source');
 
         $column = $this->programentity->get_column('fullname')
-            ->add_field("{$programalias}.id")
+            ->add_fields("{$programalias}.id, {$allocationalias}.userid")
             ->add_callback(static function ($value, \stdClass $row): string {
                 if (!$value) {
                     return '';
                 }
                 $value = format_string($value);
-                $url = new \moodle_url('/admin/tool/muprog/my/program.php', ['id' => $row->id]);
+                $url = new \core\url('/admin/tool/muprog/my/program.php', ['id' => $row->id, 'userid' => $row->userid]);
                 return \html_writer::link($url, $value);
             });
         $this->add_column($column);

@@ -20,6 +20,7 @@
 namespace tool_muprog\phpunit\external;
 
 use tool_mulib\local\mulib;
+use tool_muprog\external\source_cohort_add_cohort;
 
 /**
  * External API for adding cohort to the list or cohorts that are synced with the program.
@@ -27,6 +28,7 @@ use tool_mulib\local\mulib;
  * @group      MuTMS
  * @package    tool_muprog
  * @copyright  2023 Open LMS (https://www.openlms.net/)
+ * @copyright  2025 Petr Skoda
  * @author     Farhan Karmali
  * @license    https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  *
@@ -75,31 +77,31 @@ final class source_cohort_add_cohort_test extends \advanced_testcase {
 
         $this->setUser($user1);
 
-        $result = \tool_muprog\external\source_cohort_add_cohort::clean_returnvalue(
-            \tool_muprog\external\source_cohort_add_cohort::execute_returns(),
-            \tool_muprog\external\source_cohort_add_cohort::execute($program1->id, $cohort1->id)
+        $result = source_cohort_add_cohort::clean_returnvalue(
+            source_cohort_add_cohort::execute_returns(),
+            source_cohort_add_cohort::execute($program1->id, $cohort1->id)
         );
         $this->assertCount(1, $result);
         $this->assertEquals($cohort1->id, $result[0]['id']);
 
-        $result = \tool_muprog\external\source_cohort_add_cohort::clean_returnvalue(
-            \tool_muprog\external\source_cohort_add_cohort::execute_returns(),
-            \tool_muprog\external\source_cohort_add_cohort::execute($program1->id, $cohort2->id)
+        $result = source_cohort_add_cohort::clean_returnvalue(
+            source_cohort_add_cohort::execute_returns(),
+            source_cohort_add_cohort::execute($program1->id, $cohort2->id)
         );
         $this->assertCount(2, $result);
         $this->assertEquals($cohort1->id, $result[0]['id']);
         $this->assertEquals($cohort2->id, $result[1]['id']);
 
-        $result = \tool_muprog\external\source_cohort_add_cohort::clean_returnvalue(
-            \tool_muprog\external\source_cohort_add_cohort::execute_returns(),
-            \tool_muprog\external\source_cohort_add_cohort::execute($program1->id, $cohort2->id)
+        $result = source_cohort_add_cohort::clean_returnvalue(
+            source_cohort_add_cohort::execute_returns(),
+            source_cohort_add_cohort::execute($program1->id, $cohort2->id)
         );
         $this->assertCount(2, $result);
         $this->assertEquals($cohort1->id, $result[0]['id']);
         $this->assertEquals($cohort2->id, $result[1]['id']);
 
         try {
-            \tool_muprog\external\source_cohort_add_cohort::execute($program1->id, $cohort3->id);
+            source_cohort_add_cohort::execute($program1->id, $cohort3->id);
             $this->fail('Exception excepted');
         } catch (\moodle_exception $ex) {
             $this->assertInstanceOf(\required_capability_exception::class, $ex);
@@ -110,7 +112,7 @@ final class source_cohort_add_cohort_test extends \advanced_testcase {
         }
 
         try {
-            \tool_muprog\external\source_cohort_add_cohort::execute($program2->id, $cohort1->id);
+            source_cohort_add_cohort::execute($program2->id, $cohort1->id);
             $this->fail('Exception excepted');
         } catch (\moodle_exception $ex) {
             $this->assertInstanceOf(\required_capability_exception::class, $ex);
@@ -123,7 +125,7 @@ final class source_cohort_add_cohort_test extends \advanced_testcase {
         $this->setUser($user2);
 
         try {
-            \tool_muprog\external\source_cohort_add_cohort::execute($program1->id, $cohort3->id);
+            source_cohort_add_cohort::execute($program1->id, $cohort3->id);
             $this->fail('Exception excepted');
         } catch (\moodle_exception $ex) {
             $this->assertInstanceOf(\required_capability_exception::class, $ex);
@@ -172,47 +174,47 @@ final class source_cohort_add_cohort_test extends \advanced_testcase {
 
         $this->setAdminUser();
 
-        $result = \tool_muprog\external\source_cohort_add_cohort::clean_returnvalue(
-            \tool_muprog\external\source_cohort_add_cohort::execute_returns(),
-            \tool_muprog\external\source_cohort_add_cohort::execute($program0->id, $cohort0->id)
+        $result = source_cohort_add_cohort::clean_returnvalue(
+            source_cohort_add_cohort::execute_returns(),
+            source_cohort_add_cohort::execute($program0->id, $cohort0->id)
         );
         $this->assertCount(1, $result);
         $this->assertEquals($cohort0->id, $result[0]['id']);
 
-        $result = \tool_muprog\external\source_cohort_add_cohort::clean_returnvalue(
-            \tool_muprog\external\source_cohort_add_cohort::execute_returns(),
-            \tool_muprog\external\source_cohort_add_cohort::execute($program0->id, $cohort1->id)
+        $result = source_cohort_add_cohort::clean_returnvalue(
+            source_cohort_add_cohort::execute_returns(),
+            source_cohort_add_cohort::execute($program0->id, $cohort1->id)
         );
         $this->assertCount(2, $result);
         $this->assertEquals($cohort0->id, $result[0]['id']);
         $this->assertEquals($cohort1->id, $result[1]['id']);
 
-        $result = \tool_muprog\external\source_cohort_add_cohort::clean_returnvalue(
-            \tool_muprog\external\source_cohort_add_cohort::execute_returns(),
-            \tool_muprog\external\source_cohort_add_cohort::execute($program0->id, $cohort2->id)
+        $result = source_cohort_add_cohort::clean_returnvalue(
+            source_cohort_add_cohort::execute_returns(),
+            source_cohort_add_cohort::execute($program0->id, $cohort2->id)
         );
         $this->assertCount(3, $result);
         $this->assertEquals($cohort0->id, $result[0]['id']);
         $this->assertEquals($cohort1->id, $result[1]['id']);
         $this->assertEquals($cohort2->id, $result[2]['id']);
 
-        $result = \tool_muprog\external\source_cohort_add_cohort::clean_returnvalue(
-            \tool_muprog\external\source_cohort_add_cohort::execute_returns(),
-            \tool_muprog\external\source_cohort_add_cohort::execute($program1->id, $cohort0->id)
+        $result = source_cohort_add_cohort::clean_returnvalue(
+            source_cohort_add_cohort::execute_returns(),
+            source_cohort_add_cohort::execute($program1->id, $cohort0->id)
         );
         $this->assertCount(1, $result);
         $this->assertEquals($cohort0->id, $result[0]['id']);
 
-        $result = \tool_muprog\external\source_cohort_add_cohort::clean_returnvalue(
-            \tool_muprog\external\source_cohort_add_cohort::execute_returns(),
-            \tool_muprog\external\source_cohort_add_cohort::execute($program1->id, $cohort1->id)
+        $result = source_cohort_add_cohort::clean_returnvalue(
+            source_cohort_add_cohort::execute_returns(),
+            source_cohort_add_cohort::execute($program1->id, $cohort1->id)
         );
         $this->assertCount(2, $result);
         $this->assertEquals($cohort0->id, $result[0]['id']);
         $this->assertEquals($cohort1->id, $result[1]['id']);
 
         try {
-            \tool_muprog\external\source_cohort_add_cohort::execute($program1->id, $cohort2->id);
+            source_cohort_add_cohort::execute($program1->id, $cohort2->id);
             $this->fail('Exception excepted');
         } catch (\moodle_exception $ex) {
             $this->assertInstanceOf(\invalid_parameter_exception::class, $ex);

@@ -19,8 +19,10 @@
 
 namespace tool_muprog\local\content;
 
+use tool_muprog\local\util;
+
 /**
- * Program item abstraction.
+ * Program item base class.
  *
  * @package    tool_muprog
  * @copyright  2022 Open LMS (https://www.openlms.net/)
@@ -34,11 +36,19 @@ abstract class item {
     /** @var int */
     protected $programid;
     /** @var string */
+    protected $type;
+    /** @var int */
+    protected $courseid;
+    /** @var int */
+    protected $creditframeworkid;
+    /** @var string */
     protected $fullname;
     /** @var int */
     protected $points;
     /** @var int */
     protected $completiondelay;
+    /** @var ?item Previous item needs to be completed in order to allow item access - not used in sets */
+    protected $previous;
     /** @var bool */
     protected $problemdetected = false;
 
@@ -50,6 +60,39 @@ abstract class item {
     }
 
     /**
+     * Returns item type.
+     *
+     * @return string
+     */
+    public static function get_type(): string {
+        throw new \core\exception\coding_exception('get_type() must be overridden');
+    }
+
+    /**
+     * Returns item type.
+     *
+     * @return string
+     */
+    public static function get_type_name(): string {
+        throw new \core\exception\coding_exception('get_type_name() must be overridden');
+    }
+
+    /**
+     * Returns list of available item types.
+     *
+     * @return array
+     */
+    final public static function get_types(): array {
+        return [
+            top::get_type() => top::get_type_name(),
+            set::get_type() => set::get_type_name(),
+            course::get_type() => course::get_type_name(),
+            attendance::get_type() => attendance::get_type_name(),
+            credits::get_type() => credits::get_type_name(),
+        ];
+    }
+
+    /**
      * Factory method.
      *
      * @param \stdClass $record
@@ -58,7 +101,47 @@ abstract class item {
      * @param array $prerequisites
      * @return item
      */
-    abstract protected static function init_from_record(\stdClass $record, ?item $previous, array &$unusedrecords, array &$prerequisites): item;
+    protected static function init_from_record(\stdClass $record, ?item $previous, array &$unusedrecords, array &$prerequisites): item {
+        if ($record->topitem) {
+            throw new \core\exception\coding_exception('Invalid item');
+        }
+
+        $item = new static();
+        $item->id = $record->id;
+        $item->programid = $record->programid;
+        $item->type = $record->type;
+        if (isset($record->courseid)) {
+            $item->courseid = $record->courseid;
+        }
+        if (isset($record->creditframeworkid)) {
+            $item->creditframeworkid = $record->creditframeworkid;
+        }
+        $item->previous = $previous;
+        if ($previous) {
+            if ($previous->id == $record->id) {
+                $item->previous = null;
+                $item->problemdetected = true;
+            } else if ($record->previtemid != $previous->id) {
+                $item->problemdetected = true;
+            }
+        } else {
+            if ($record->previtemid) {
+                $item->problemdetected = true;
+            }
+        }
+        $item->fullname = $record->fullname;
+        $item->points = $record->points;
+        $item->completiondelay = $record->completiondelay;
+
+        if ($record->minprerequisites !== null) {
+            $item->problemdetected = true;
+        }
+        if ($record->minpoints !== null) {
+            $item->problemdetected = true;
+        }
+
+        return $item;
+    }
 
     /**
      * Fix item prerequisites if necessary.
@@ -66,7 +149,21 @@ abstract class item {
      * @param array $prerequisites
      * @return bool true if fix applied
      */
-    abstract protected function fix_prerequisites(array &$prerequisites): bool;
+    protected function fix_prerequisites(array &$prerequisites): bool {
+        // Nothing to do for individual items, parent set is defining the prerequisites.
+        return false;
+    }
+
+    /**
+     * Return item that must be completed before allowing access to this item.
+     *
+     * NOTE: always null for sets
+     *
+     * @return item|null
+     */
+    public function get_previous(): ?item {
+        return $this->previous;
+    }
 
     /**
      * Set previous item to new value.
@@ -74,7 +171,9 @@ abstract class item {
      * @param item|null $previous new previous item
      * @return void
      */
-    abstract protected function fix_previous(?item $previous): void;
+    protected function fix_previous(?item $previous): void {
+        $this->previous = $previous;
+    }
 
     /**
      * Returns item full name.
@@ -144,8 +243,17 @@ abstract class item {
      *
      * @return bool
      */
+    final public function is_attendance(): bool {
+        return ($this instanceof attendance);
+    }
+
+    /**
+     * Is this a credits item?
+     *
+     * @return bool
+     */
     final public function is_set(): bool {
-        return ($this instanceof set || $this instanceof top);
+        return ($this instanceof set);
     }
 
     /**
@@ -232,5 +340,21 @@ abstract class item {
      *
      * @return array
      */
-    abstract protected function get_record(): array;
+    protected function get_record(): array {
+        return [
+            'id' => ($this->id ? (string)$this->id : null),
+            'programid' => (string)$this->programid,
+            'type' => $this->type,
+            'topitem' => null,
+            'courseid' => ($this->courseid ? (string)$this->courseid : null),
+            'creditframeworkid' => ($this->creditframeworkid ? (string)$this->creditframeworkid : null),
+            'previtemid' => ($this->previous ? (string)$this->previous->id : null),
+            'fullname' => $this->fullname,
+            'sequencejson' => util::json_encode([]),
+            'minprerequisites' => null,
+            'points' => (string)$this->points,
+            'minpoints' => null,
+            'completiondelay' => (string)$this->completiondelay,
+        ];
+    }
 }

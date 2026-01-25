@@ -110,7 +110,7 @@ final class program_allocation_import_fromprogram extends \tool_mulib\external\f
             }
         }
 
-        $programs = $DB->get_records_sql($sql->sql, $sql->params, 0, self::MAX_RESULTS);
+        $programs = $DB->get_records_sql($sql->sql, $sql->params, 0, self::MAX_RESULTS + 1);
         return self::prepare_result($programs, $context);
     }
 

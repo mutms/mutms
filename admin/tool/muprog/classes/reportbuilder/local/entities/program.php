@@ -116,7 +116,7 @@ final class program extends base {
                 $context = \context::instance_by_id($row->contextid);
                 $name = format_string($row->fullname);
                 if (has_capability('tool/muprog:view', $context)) {
-                    $url = new \moodle_url('/admin/tool/muprog/management/program.php', ['id' => $row->id]);
+                    $url = new \core\url('/admin/tool/muprog/management/program.php', ['id' => $row->id]);
                     $name = \html_writer::link($url, $name);
                 }
                 return $name;
@@ -150,7 +150,7 @@ final class program extends base {
                 if (!has_capability('tool/muprog:view', $context)) {
                     return $value;
                 }
-                $url = new \moodle_url('/admin/tool/muprog/management/program_visibility.php', ['id' => $row->id]);
+                $url = new \core\url('/admin/tool/muprog/management/program_visibility.php', ['id' => $row->id]);
                 $value = \html_writer::link($url, $value);
                 return $value;
             });
@@ -188,6 +188,7 @@ final class program extends base {
             ->add_fields("{$programalias}.contextid")
             ->set_is_sortable(false)
             ->set_callback(static function (?int $value, \stdClass $row): string {
+                global $PAGE;
                 if (!$row->contextid) {
                     return '';
                 }
@@ -197,7 +198,10 @@ final class program extends base {
                 if (!has_capability('tool/muprog:view', $context)) {
                     return $name;
                 }
-                $url = new \moodle_url('/admin/tool/muprog/management/index.php', ['contextid' => $context->id]);
+                $url = new \core\url('/admin/tool/muprog/management/index.php', ['contextid' => $context->id]);
+                if ($url->compare($PAGE->url)) {
+                    return $name;
+                }
                 $name = \html_writer::link($url, $name);
                 return $name;
             });
@@ -220,7 +224,7 @@ final class program extends base {
                 $count = $row->allocationcount;
                 $context = \context::instance_by_id($row->contextid);
                 if (has_capability('tool/muprog:view', $context)) {
-                    $url = new \moodle_url('/admin/tool/muprog/management/program_allocation.php', ['id' => $row->id]);
+                    $url = new \core\url('/admin/tool/muprog/management/program_allocation.php', ['id' => $row->id]);
                     $count = \html_writer::link($url, $count);
                 }
                 return $count;
@@ -235,7 +239,7 @@ final class program extends base {
             ->set_type(column::TYPE_INTEGER)
             ->add_field('(' . "SELECT COUNT('x')
                                  FROM {tool_muprog_item} i
-                                WHERE i.courseid IS NOT NULL AND i.programid = {$programalias}.id" . ')', 'coursecount')
+                                WHERE i.type = 'course' AND i.programid = {$programalias}.id" . ')', 'coursecount')
             ->add_field("{$programalias}.id")
             ->add_field("{$programalias}.contextid")
             ->set_is_sortable(true)
@@ -245,14 +249,14 @@ final class program extends base {
                 $count = $row->coursecount;
                 $context = \context::instance_by_id($row->contextid);
                 if (has_capability('tool/muprog:view', $context)) {
-                    $url = new \moodle_url('/admin/tool/muprog/management/program_content.php', ['id' => $row->id]);
+                    $url = new \core\url('/admin/tool/muprog/management/program_content.php', ['id' => $row->id]);
                     $count = \html_writer::link($url, $count);
                 }
                 if ($row->coursecount) {
                     $sql = "SELECT COUNT(DISTINCT pi.courseid)
                               FROM {tool_muprog_item} pi
                          LEFT JOIN {course} c ON c.id = pi.courseid
-                             WHERE pi.courseid IS NOT NULL AND c.id IS NULL AND pi.programid = :programid";
+                             WHERE pi.type = 'course' AND c.id IS NULL AND pi.programid = :programid";
                     $params = ['programid' => $row->id];
                     $missingcount = $DB->count_records_sql($sql, $params);
                     if ($missingcount) {
@@ -278,7 +282,7 @@ final class program extends base {
             'fullname',
             new lang_string('programname', 'tool_muprog'),
             $this->get_entity_name(),
-            "{$programalias}.name"
+            "{$programalias}.fullname"
         ))
             ->add_joins($this->get_joins());
 

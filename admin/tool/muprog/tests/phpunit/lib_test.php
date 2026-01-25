@@ -58,11 +58,17 @@ final class lib_test extends \advanced_testcase {
         $program2 = $generator->create_program(['contextid' => $catcontext2->id]);
 
         $this->assertSame((string)$catcontext1->id, $program1->contextid);
+        $this->assertSame('0', $program1->archived);
         $this->assertSame((string)$catcontext2->id, $program2->contextid);
+        $this->assertSame('0', $program2->archived);
 
         $category2->delete_full(false);
         $program2 = $DB->get_record('tool_muprog_program', ['id' => $program2->id], '*', MUST_EXIST);
         $this->assertSame((string)$catcontext1->id, $program2->contextid);
+        $this->assertSame('1', $program2->archived);
+        $program1 = $DB->get_record('tool_muprog_program', ['id' => $program1->id], '*', MUST_EXIST);
+        $this->assertSame((string)$catcontext1->id, $program1->contextid);
+        $this->assertSame('0', $program1->archived);
     }
 
     /**

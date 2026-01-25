@@ -27,7 +27,7 @@
 namespace tool_muprog\customfield;
 
 use core_customfield\field_controller;
-use moodle_url, context;
+use core\url, context;
 use MoodleQuickForm;
 
 /**
@@ -51,10 +51,10 @@ final class program_handler extends \core_customfield\handler {
     /**
      * URL for configuration of the fields on this handler.
      *
-     * @return moodle_url The URL to configure custom fields for this component
+     * @return url The URL to configure custom fields for this component
      */
-    public function get_configuration_url(): moodle_url {
-        return new moodle_url('/admin/tool/muprog/management/customfield_program.php', []);
+    public function get_configuration_url(): url {
+        return new url('/admin/tool/muprog/management/customfield_program.php', []);
     }
 
     /**

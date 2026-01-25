@@ -19,12 +19,15 @@
 
 namespace tool_muprog\phpunit\external;
 
+use tool_muprog\external\source_cohort_get_cohorts;
+
 /**
  * External API for getting cohorts that are synced with the program.
  *
  * @group      MuTMS
  * @package    tool_muprog
  * @copyright  2023 Open LMS (https://www.openlms.net/)
+ * @copyright  2025 Petr Skoda
  * @author     Farhan Karmali
  * @license    https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  *
@@ -63,9 +66,9 @@ final class source_cohort_get_cohorts_test extends \advanced_testcase {
 
         $this->setUser($user1);
 
-        $result = \tool_muprog\external\source_cohort_get_cohorts::clean_returnvalue(
-            \tool_muprog\external\source_cohort_get_cohorts::execute_returns(),
-            \tool_muprog\external\source_cohort_get_cohorts::execute($program1->id)
+        $result = source_cohort_get_cohorts::clean_returnvalue(
+            source_cohort_get_cohorts::execute_returns(),
+            source_cohort_get_cohorts::execute($program1->id)
         );
         $this->assertCount(2, $result);
         $firstcohort = (object)$result[0];
@@ -80,7 +83,7 @@ final class source_cohort_get_cohorts_test extends \advanced_testcase {
         $this->assertSame($cohort2->idnumber, $secondcohort->idnumber);
 
         try {
-            \tool_muprog\external\source_cohort_get_cohorts::execute($program2->id);
+            source_cohort_get_cohorts::execute($program2->id);
             $this->fail('Exception expected');
         } catch (\moodle_exception $ex) {
             $this->assertInstanceOf(\required_capability_exception::class, $ex);
@@ -91,7 +94,7 @@ final class source_cohort_get_cohorts_test extends \advanced_testcase {
         }
 
         try {
-            \tool_muprog\external\source_cohort_get_cohorts::execute(-10);
+            source_cohort_get_cohorts::execute(-10);
             $this->fail('Exception expected');
         } catch (\moodle_exception $ex) {
             $this->assertInstanceOf(\dml_missing_record_exception::class, $ex);
@@ -100,7 +103,7 @@ final class source_cohort_get_cohorts_test extends \advanced_testcase {
         $this->setUser($user2);
 
         try {
-            \tool_muprog\external\source_cohort_get_cohorts::execute($program2->id);
+            source_cohort_get_cohorts::execute($program2->id);
             $this->fail('Exception expected');
         } catch (\moodle_exception $ex) {
             $this->assertInstanceOf(\required_capability_exception::class, $ex);
@@ -111,9 +114,9 @@ final class source_cohort_get_cohorts_test extends \advanced_testcase {
         }
 
         $this->setAdminUser();
-        $result = \tool_muprog\external\source_cohort_get_cohorts::clean_returnvalue(
-            \tool_muprog\external\source_cohort_get_cohorts::execute_returns(),
-            \tool_muprog\external\source_cohort_get_cohorts::execute($program2->id)
+        $result = source_cohort_get_cohorts::clean_returnvalue(
+            source_cohort_get_cohorts::execute_returns(),
+            source_cohort_get_cohorts::execute($program2->id)
         );
         $this->assertCount(1, $result);
         $firstcohort = (object)$result[0];
