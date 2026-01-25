@@ -4,6 +4,13 @@ Plugin versioning is derived from Moodle releases, it does not comply with the s
 
 The format of this change log follows the advice given at [Keep a CHANGELOG](https://keepachangelog.com).
 
+## [mu-5.1.1-04] - 2026-01-25
+
+### Fixed
+
+- Added internal key to Tenant management primary menu
+- Fixed usage of legacy moodle_url class
+
 ## [mu-5.1.1-03] - 2025-12-31
 
 ### Fixed

@@ -639,12 +639,12 @@ final class tenant {
      *
      * @param int $tenantid
      */
-    public static function get_login_url(int $tenantid): ?\moodle_url {
+    public static function get_login_url(int $tenantid): ?\core\url {
         $tenant = self::fetch($tenantid);
         if (!$tenant || $tenant->archived) {
             return null;
         }
-        return new \moodle_url('/login/', ['tenant' => $tenant->idnumber]);
+        return new \core\url('/login/', ['tenant' => $tenant->idnumber]);
     }
 
     /**

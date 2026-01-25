@@ -107,7 +107,7 @@ final class tenant_test extends \advanced_testcase {
         $context = \core\context\tenant::instance($tenant1->id);
 
         $url = $context->get_url();
-        $this->assertInstanceOf(\moodle_url::class, $url);
+        $this->assertInstanceOf(\core\url::class, $url);
         $this->assertSame('https://www.example.com/moodle/admin/tool/mutenancy/tenant.php?id=' . $tenant1->id, $url->out(false));
     }
 

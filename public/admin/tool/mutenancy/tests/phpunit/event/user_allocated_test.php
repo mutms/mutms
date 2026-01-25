@@ -73,7 +73,7 @@ final class user_allocated_test extends \advanced_testcase {
         $this->assertSame('user', $event->objecttable);
         $this->assertSame('User tenant allocation changed', $event::get_name());
         $description = $event->get_description();
-        $tenanturl = new \moodle_url('/user/profile.php', ['id' => $user->id]);
+        $tenanturl = new \core\url('/user/profile.php', ['id' => $user->id]);
         $this->assertSame($tenanturl->out(false), $event->get_url()->out(false));
 
         $user = \tool_mutenancy\local\user::allocate($user->id, $tenant2->id);
@@ -90,7 +90,7 @@ final class user_allocated_test extends \advanced_testcase {
         $this->assertSame('user', $event->objecttable);
         $this->assertSame('User tenant allocation changed', $event::get_name());
         $description = $event->get_description();
-        $tenanturl = new \moodle_url('/user/profile.php', ['id' => $user->id]);
+        $tenanturl = new \core\url('/user/profile.php', ['id' => $user->id]);
         $this->assertSame($tenanturl->out(false), $event->get_url()->out(false));
 
         $user = \tool_mutenancy\local\user::allocate($user->id, null);
@@ -107,7 +107,7 @@ final class user_allocated_test extends \advanced_testcase {
         $this->assertSame('user', $event->objecttable);
         $this->assertSame('User tenant allocation changed', $event::get_name());
         $description = $event->get_description();
-        $tenanturl = new \moodle_url('/user/profile.php', ['id' => $user->id]);
+        $tenanturl = new \core\url('/user/profile.php', ['id' => $user->id]);
         $this->assertSame($tenanturl->out(false), $event->get_url()->out(false));
 
         $sink->close();

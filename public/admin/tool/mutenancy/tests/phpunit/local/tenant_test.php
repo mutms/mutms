@@ -653,7 +653,7 @@ final class tenant_test extends \advanced_testcase {
         $tenant2 = $generator->create_tenant(['archived' => 1]);
 
         $result = tenant::get_login_url($tenant1->id);
-        $this->assertInstanceOf(\moodle_url::class, $result);
+        $this->assertInstanceOf(\core\url::class, $result);
         $this->assertSame('/login/?tenant=ten1', $result->out_as_local_url(false));
 
         $result = tenant::get_login_url($tenant2->id);

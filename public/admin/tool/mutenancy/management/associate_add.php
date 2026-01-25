@@ -41,7 +41,7 @@ $tenantid = required_param('tenantid', PARAM_INT);
 require_login();
 
 if (!tenancy::is_active()) {
-    redirect(new moodle_url('/'));
+    redirect(new \core\url('/'));
 }
 
 $tenant = $DB->get_record('tool_mutenancy_tenant', ['id' => $tenantid], '*', MUST_EXIST);
@@ -62,7 +62,7 @@ require_capability('moodle/cohort:assign', $cohortcontext);
 $PAGE->set_url('/admin/tool/mutenancy/management/associate_add.php', ['tenantid' => $tenant->id]);
 $PAGE->set_context($context);
 
-$returnurl = new moodle_url('/admin/tool/mutenancy/tenant_users.php', ['id' => $tenant->id]);
+$returnurl = new \core\url('/admin/tool/mutenancy/tenant_users.php', ['id' => $tenant->id]);
 
 $form = new \tool_mutenancy\local\form\associate_add(null, ['tenant' => $tenant, 'cohort' => $cohort, 'context' => $context]);
 

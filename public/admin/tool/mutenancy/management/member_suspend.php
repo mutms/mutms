@@ -43,7 +43,7 @@ $userid = required_param('id', PARAM_INT);
 require_login();
 
 if (!tenancy::is_active()) {
-    redirect(new moodle_url('/'));
+    redirect(new \core\url('/'));
 }
 
 $personalcontext = context_user::instance($userid);
@@ -61,7 +61,7 @@ if (
     throw new moodle_exception('invaliduserid');
 }
 
-$returnurl = new moodle_url('/admin/tool/mutenancy/tenant_users.php', ['id' => $user->tenantid]);
+$returnurl = new \core\url('/admin/tool/mutenancy/tenant_users.php', ['id' => $user->tenantid]);
 
 if ($user->suspended) {
     redirect($returnurl);

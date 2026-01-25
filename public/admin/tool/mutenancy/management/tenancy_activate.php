@@ -37,7 +37,7 @@ require_login();
 $syscontext = context_system::instance();
 require_capability('moodle/site:config', $syscontext);
 
-$returnurl = new moodle_url('/admin/tool/mutenancy/index.php');
+$returnurl = new \core\url('/admin/tool/mutenancy/index.php');
 
 if (tenancy::is_active()) {
     throw new \core\exception\invalid_parameter_exception('Multi-tenancy is already active');

@@ -67,7 +67,7 @@ final class core_oputput_renderer_base_test extends \advanced_testcase {
 
         tenancy::switch($tenant2->id);
         $result = $OUTPUT->get_logo_url(100, 50);
-        $this->assertInstanceOf(\moodle_url::class, $result);
+        $this->assertInstanceOf(\core\url::class, $result);
         $this->assertSame(
             "https://www.example.com/moodle/pluginfile.php/$tenantcontext2->id/core_admin/logo/100x50/$themerev/mylogo.gif",
             $result->out(false)
@@ -77,7 +77,7 @@ final class core_oputput_renderer_base_test extends \advanced_testcase {
 
         tenancy::switch(null);
         $result = $OUTPUT->get_logo_url(100, 50);
-        $this->assertInstanceOf(\moodle_url::class, $result);
+        $this->assertInstanceOf(\core\url::class, $result);
         $this->assertSame(
             "https://www.example.com/moodle/pluginfile.php/$syscontext->id/core_admin/logo/100x50/$themerev/default.jpg",
             $result->out(false)
@@ -85,7 +85,7 @@ final class core_oputput_renderer_base_test extends \advanced_testcase {
 
         tenancy::switch($tenant1->id);
         $result = $OUTPUT->get_logo_url(100, 50);
-        $this->assertInstanceOf(\moodle_url::class, $result);
+        $this->assertInstanceOf(\core\url::class, $result);
         $this->assertSame(
             "https://www.example.com/moodle/pluginfile.php/$syscontext->id/core_admin/logo/100x50/$themerev/default.jpg",
             $result->out(false)
@@ -93,7 +93,7 @@ final class core_oputput_renderer_base_test extends \advanced_testcase {
 
         tenancy::switch($tenant2->id);
         $result = $OUTPUT->get_logo_url(100, 50);
-        $this->assertInstanceOf(\moodle_url::class, $result);
+        $this->assertInstanceOf(\core\url::class, $result);
         $this->assertSame(
             "https://www.example.com/moodle/pluginfile.php/$tenantcontext2->id/core_admin/logo/100x50/$themerev/mylogo.gif",
             $result->out(false)
@@ -132,7 +132,7 @@ final class core_oputput_renderer_base_test extends \advanced_testcase {
 
         tenancy::switch($tenant2->id);
         $result = $OUTPUT->get_compact_logo_url(100, 50);
-        $this->assertInstanceOf(\moodle_url::class, $result);
+        $this->assertInstanceOf(\core\url::class, $result);
         $this->assertSame(
             "https://www.example.com/moodle/pluginfile.php/$tenantcontext2->id/core_admin/logocompact/100x50/$themerev/mylogocompact.gif",
             $result->out(false)
@@ -142,7 +142,7 @@ final class core_oputput_renderer_base_test extends \advanced_testcase {
 
         tenancy::switch(null);
         $result = $OUTPUT->get_compact_logo_url(100, 50);
-        $this->assertInstanceOf(\moodle_url::class, $result);
+        $this->assertInstanceOf(\core\url::class, $result);
         $this->assertSame(
             "https://www.example.com/moodle/pluginfile.php/$syscontext->id/core_admin/logocompact/100x50/$themerev/default.jpg",
             $result->out(false)
@@ -150,7 +150,7 @@ final class core_oputput_renderer_base_test extends \advanced_testcase {
 
         tenancy::switch($tenant1->id);
         $result = $OUTPUT->get_compact_logo_url(100, 50);
-        $this->assertInstanceOf(\moodle_url::class, $result);
+        $this->assertInstanceOf(\core\url::class, $result);
         $this->assertSame(
             "https://www.example.com/moodle/pluginfile.php/$syscontext->id/core_admin/logocompact/100x50/$themerev/default.jpg",
             $result->out(false)
@@ -158,7 +158,7 @@ final class core_oputput_renderer_base_test extends \advanced_testcase {
 
         tenancy::switch($tenant2->id);
         $result = $OUTPUT->get_compact_logo_url(100, 50);
-        $this->assertInstanceOf(\moodle_url::class, $result);
+        $this->assertInstanceOf(\core\url::class, $result);
         $this->assertSame(
             "https://www.example.com/moodle/pluginfile.php/$tenantcontext2->id/core_admin/logocompact/100x50/$themerev/mylogocompact.gif",
             $result->out(false)

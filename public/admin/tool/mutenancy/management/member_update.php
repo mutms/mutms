@@ -50,7 +50,7 @@ $userid = required_param('id', PARAM_INT);
 require_login();
 
 if (!tenancy::is_active()) {
-    redirect(new moodle_url('/'));
+    redirect(new \core\url('/'));
 }
 
 $personalcontext = context_user::instance($userid);
@@ -110,7 +110,7 @@ $userform = new \tool_mutenancy\local\form\member_edit(null, [
     'user' => $user,
 ]);
 
-$returnurl = new moodle_url('/admin/tool/mutenancy/tenant_users.php', ['id' => $user->tenantid]);
+$returnurl = new \core\url('/admin/tool/mutenancy/tenant_users.php', ['id' => $user->tenantid]);
 
 if ($userform->is_cancelled()) {
     $userform->ajax_form_cancelled($returnurl);

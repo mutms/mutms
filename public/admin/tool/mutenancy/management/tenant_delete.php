@@ -41,7 +41,7 @@ $tenantid = required_param('id', PARAM_INT);
 require_login();
 
 if (!tenancy::is_active()) {
-    redirect(new moodle_url('/'));
+    redirect(new \core\url('/'));
 }
 
 $tenant = $DB->get_record('tool_mutenancy_tenant', ['id' => $tenantid], '*', MUST_EXIST);
@@ -56,7 +56,7 @@ if ($DB->record_exists('user', ['tenantid' => $tenant->id, 'deleted' => 0])) {
 $PAGE->set_url('/admin/tool/mutenancy/management/tenant_delete.php', ['id' => $tenant->id]);
 $PAGE->set_context($context);
 
-$returnurl = new moodle_url('/admin/tool/mutenancy/tenant.php', ['id' => $tenant->id]);
+$returnurl = new \core\url('/admin/tool/mutenancy/tenant.php', ['id' => $tenant->id]);
 
 if ($USER->tenantid == $tenant->id || !$tenant->archived) {
     redirect($returnurl);
@@ -72,9 +72,9 @@ if ($data = $form->get_data()) {
     tenant::delete($tenant->id);
     $syscontext = context_system::instance();
     if (has_capability('tool/mutenancy:view', $syscontext)) {
-        $returnurl = new moodle_url('/admin/tool/mutenancy/index.php', ['id' => $tenant->id]);
+        $returnurl = new \core\url('/admin/tool/mutenancy/index.php', ['id' => $tenant->id]);
     } else {
-        $returnurl = new moodle_url('/');
+        $returnurl = new \core\url('/');
     }
     $form->ajax_form_submitted($returnurl);
 }
