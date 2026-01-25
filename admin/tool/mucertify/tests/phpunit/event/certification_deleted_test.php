@@ -65,7 +65,7 @@ final class certification_deleted_test extends \advanced_testcase {
         $this->assertSame('tool_mucertify_certification', $event->objecttable);
         $this->assertSame('Certification deleted', $event::get_name());
         $description = $event->get_description();
-        $certificationurl = new \moodle_url('/admin/tool/mucertify/management/index.php', ['contextid' => \SYSCONTEXTID]);
+        $certificationurl = new \core\url('/admin/tool/mucertify/management/index.php', ['contextid' => \SYSCONTEXTID]);
         $this->assertSame($certificationurl->out(false), $event->get_url()->out(false));
     }
 }

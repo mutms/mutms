@@ -39,7 +39,7 @@ $id = required_param('id', PARAM_INT);
 
 $syscontext = context_system::instance();
 
-$PAGE->set_url(new moodle_url('/admin/tool/mucertify/catalogue/certification.php', ['id' => $id]));
+$PAGE->set_url(new \core\url('/admin/tool/mucertify/catalogue/certification.php', ['id' => $id]));
 $PAGE->set_context(context_system::instance());
 $PAGE->set_secondary_navigation(false);
 
@@ -47,7 +47,7 @@ require_login();
 require_capability('tool/mucertify:viewcatalogue', context_system::instance());
 
 if (!\tool_mulib\local\mulib::is_mucertify_active()) {
-    redirect(new moodle_url('/'));
+    redirect(new \core\url('/'));
 }
 
 $certification = $DB->get_record('tool_mucertify_certification', ['id' => $id]);
@@ -59,26 +59,26 @@ if (!$certification || $certification->archived) {
     }
     if (has_capability('tool/mucertify:view', $context)) {
         if ($certification) {
-            redirect(new moodle_url('/admin/tool/mucertify/management/certification.php', ['id' => $certification->id]));
+            redirect(new \core\url('/admin/tool/mucertify/management/certification.php', ['id' => $certification->id]));
         } else {
-            redirect(new moodle_url('/admin/tool/mucertify/management/index.php'));
+            redirect(new \core\url('/admin/tool/mucertify/management/index.php'));
         }
     } else {
-        redirect(new moodle_url('/admin/tool/mucertify/catalogue/index.php'));
+        redirect(new \core\url('/admin/tool/mucertify/catalogue/index.php'));
     }
 }
 $certificationcontext = context::instance_by_id($certification->contextid);
 
 $assignment = $DB->get_record('tool_mucertify_assignment', ['certificationid' => $certification->id, 'userid' => $USER->id]);
 if ($assignment && !$assignment->archived) {
-    redirect(new moodle_url('/admin/tool/mucertify/my/certification.php', ['id' => $id]));
+    redirect(new \core\url('/admin/tool/mucertify/my/certification.php', ['id' => $id]));
 }
 
 if (!\tool_mucertify\local\catalogue::is_certification_visible($certification)) {
     if (has_capability('tool/mucertify:view', $certificationcontext)) {
-        redirect(new moodle_url('/admin/tool/mucertify/management/certification.php', ['id' => $certification->id]));
+        redirect(new \core\url('/admin/tool/mucertify/management/certification.php', ['id' => $certification->id]));
     } else {
-        redirect(new moodle_url('/admin/tool/mucertify/catalogue/index.php'));
+        redirect(new \core\url('/admin/tool/mucertify/catalogue/index.php'));
     }
 }
 
@@ -97,7 +97,7 @@ if ($actions->has_items()) {
 $catalogueoutput = $PAGE->get_renderer('tool_mucertify', 'catalogue');
 
 $PAGE->set_title(get_string('catalogue', 'tool_mucertify'));
-$PAGE->navbar->add(get_string('catalogue', 'tool_mucertify'), new moodle_url('/admin/tool/mucertify/catalogue/'));
+$PAGE->navbar->add(get_string('catalogue', 'tool_mucertify'), new \core\url('/admin/tool/mucertify/catalogue/'));
 $PAGE->navbar->add(format_string($certification->fullname));
 
 echo $OUTPUT->header();

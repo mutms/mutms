@@ -27,7 +27,6 @@ use core_reportbuilder\system_report;
 use core_reportbuilder\local\helpers\database;
 use core_reportbuilder\local\helpers\user_profile_fields;
 use lang_string;
-use moodle_url;
 
 /**
  * Embedded certification requests report.
@@ -165,7 +164,7 @@ final class requests extends system_report {
 
         $certification = $this->certification;
 
-        $url = new moodle_url('/admin/tool/mucertify/management/source_approval_approve.php', ['id' => ':id']);
+        $url = new \core\url('/admin/tool/mucertify/management/source_approval_approve.php', ['id' => ':id']);
         $link = new \tool_mulib\output\ajax_form\link($url, get_string('source_approval_requestapprove', 'tool_mucertify'), 'requestapprove', 'tool_mucertify');
         $this->add_action($link->create_report_action()
             ->add_callback(static function (\stdclass $row) use ($certification): bool {
@@ -185,7 +184,7 @@ final class requests extends system_report {
                 return true;
             }));
 
-        $url = new moodle_url('/admin/tool/mucertify/management/source_approval_reject.php', ['id' => ':id']);
+        $url = new \core\url('/admin/tool/mucertify/management/source_approval_reject.php', ['id' => ':id']);
         $link = new \tool_mulib\output\ajax_form\link($url, get_string('source_approval_requestreject', 'tool_mucertify'), 'requestreject', 'tool_mucertify');
         $this->add_action($link->create_report_action()
             ->add_callback(static function (\stdclass $row) use ($certification): bool {
@@ -201,7 +200,7 @@ final class requests extends system_report {
                 return true;
             }));
 
-        $url = new moodle_url('/admin/tool/mucertify/management/source_approval_delete.php', ['id' => ':id']);
+        $url = new \core\url('/admin/tool/mucertify/management/source_approval_delete.php', ['id' => ':id']);
         $link = new \tool_mulib\output\ajax_form\link($url, get_string('source_approval_requestdelete', 'tool_mucertify'), 'i/delete');
         $this->add_action($link->create_report_action(['class' => 'text-danger'])
             ->add_callback(static function (\stdclass $row) use ($certification): bool {

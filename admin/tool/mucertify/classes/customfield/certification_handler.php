@@ -28,7 +28,7 @@
 namespace tool_mucertify\customfield;
 
 use core_customfield\field_controller;
-use moodle_url, context;
+use context;
 use MoodleQuickForm;
 
 /**
@@ -52,10 +52,10 @@ final class certification_handler extends \core_customfield\handler {
     /**
      * URL for configuration of the fields on this handler.
      *
-     * @return moodle_url The URL to configure custom fields for this component
+     * @return \core\url The URL to configure custom fields for this component
      */
-    public function get_configuration_url(): moodle_url {
-        return new moodle_url('/admin/tool/mucertify/management/customfield_certification.php', []);
+    public function get_configuration_url(): \core\url {
+        return new \core\url('/admin/tool/mucertify/management/customfield_certification.php', []);
     }
 
     /**

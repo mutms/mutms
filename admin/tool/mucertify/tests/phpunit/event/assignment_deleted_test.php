@@ -83,7 +83,7 @@ final class assignment_deleted_test extends \advanced_testcase {
         $this->assertSame('tool_mucertify_assignment', $event->objecttable);
         $this->assertSame('User was un-assigned from certification', $event::get_name());
         $description = $event->get_description();
-        $certificationurl = new \moodle_url('/admin/tool/mucertify/management/certification.php', ['id' => $certification->id]);
+        $certificationurl = new \core\url('/admin/tool/mucertify/management/certification.php', ['id' => $certification->id]);
         $this->assertSame($certificationurl->out(false), $event->get_url()->out(false));
     }
 }

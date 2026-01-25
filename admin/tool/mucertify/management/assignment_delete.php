@@ -50,11 +50,11 @@ $source = $DB->get_record('tool_mucertify_source', ['id' => $assignment->sourcei
 $context = context::instance_by_id($certification->contextid);
 require_capability('tool/mucertify:unassign', $context);
 
-$currenturl = new moodle_url('/admin/tool/mucertify/management/assignment_delete.php', ['id' => $assignment->id]);
+$currenturl = new \core\url('/admin/tool/mucertify/management/assignment_delete.php', ['id' => $assignment->id]);
 $PAGE->set_context($context);
 $PAGE->set_url($currenturl);
 
-$returnurl = new moodle_url('/admin/tool/mucertify/management/certification_users.php', ['id' => $certification->id]);
+$returnurl = new \core\url('/admin/tool/mucertify/management/certification_users.php', ['id' => $certification->id]);
 
 $user = $DB->get_record('user', ['id' => $assignment->userid], '*', MUST_EXIST);
 

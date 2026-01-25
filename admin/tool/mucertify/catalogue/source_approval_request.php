@@ -40,13 +40,13 @@ require('../../../../config.php');
 $sourceid = required_param('sourceid', PARAM_INT);
 
 $PAGE->set_context(context_system::instance());
-$PAGE->set_url(new moodle_url('/admin/tool/mucertify/catalogue/source_approval_requests.php', ['sourceid' => $sourceid]));
+$PAGE->set_url(new \core\url('/admin/tool/mucertify/catalogue/source_approval_requests.php', ['sourceid' => $sourceid]));
 
 require_login();
 require_capability('tool/mucertify:viewcatalogue', context_system::instance());
 
 if (!\tool_mulib\local\mulib::is_mucertify_active()) {
-    redirect(new moodle_url('/'));
+    redirect(new \core\url('/'));
 }
 
 $source = $DB->get_record('tool_mucertify_source', ['id' => $sourceid, 'type' => 'approval'], '*', MUST_EXIST);
@@ -54,15 +54,15 @@ $certification = $DB->get_record('tool_mucertify_certification', ['id' => $sourc
 $certificationcontext = context::instance_by_id($certification->contextid);
 
 $PAGE->set_heading(get_string('catalogue', 'tool_mucertify'));
-$PAGE->navigation->override_active_url(new moodle_url('/admin/tool/mucertify/catalogue/index.php'));
+$PAGE->navigation->override_active_url(new \core\url('/admin/tool/mucertify/catalogue/index.php'));
 $PAGE->set_title(get_string('catalogue', 'tool_mucertify'));
 $PAGE->navbar->add(format_string($certification->fullname));
 
 if (!\tool_mucertify\local\source\approval::can_user_request($certification, $source, $USER->id)) {
-    redirect(new moodle_url('/admin/tool/mucertify/catalogue/index.php'));
+    redirect(new \core\url('/admin/tool/mucertify/catalogue/index.php'));
 }
 
-$returnurl = new moodle_url('/admin/tool/mucertify/catalogue/certification.php', ['id' => $certification->id]);
+$returnurl = new \core\url('/admin/tool/mucertify/catalogue/certification.php', ['id' => $certification->id]);
 
 $form = new tool_mucertify\local\form\source_approval_request(null, ['source' => $source, 'certification' => $certification]);
 

@@ -235,7 +235,7 @@ class tool_mucertify_generator extends component_generator_base {
             $source = \tool_mucertify\local\source\manual::update_source($data);
         }
 
-        $overridable = ['timecreated', 'timecertifiedtemp', 'noperiod'];
+        $overridable = ['timecreated', 'timecertifiedtemp', 'noperiod', 'timewindowstart', 'timewindowdue', 'timewindowend', 'timefrom', 'timeuntil'];
         $dateoverrides = [];
         foreach ($overridable as $override) {
             if (!empty($record->{$override}) && is_number($record->{$override})) {

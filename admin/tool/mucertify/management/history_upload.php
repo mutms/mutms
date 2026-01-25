@@ -46,11 +46,11 @@ $source = $DB->get_record('tool_mucertify_source', ['certificationid' => $certif
 $context = context::instance_by_id($certification->contextid);
 require_capability('tool/mucertify:admin', $context);
 
-$currenturl = new moodle_url('/admin/tool/mucertify/management/history_upload.php', ['certification' => $certificationid]);
+$currenturl = new \core\url('/admin/tool/mucertify/management/history_upload.php', ['certification' => $certificationid]);
 $PAGE->set_context($context);
 $PAGE->set_url($currenturl);
 
-$returnurl = new moodle_url('/admin/tool/mucertify/management/certification_users.php', ['id' => $certification->id]);
+$returnurl = new \core\url('/admin/tool/mucertify/management/certification_users.php', ['id' => $certification->id]);
 
 $filedata = null;
 if ($draftitemid && confirm_sesskey()) {

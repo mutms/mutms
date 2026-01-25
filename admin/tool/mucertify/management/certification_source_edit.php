@@ -47,11 +47,11 @@ $source = $DB->get_record('tool_mucertify_source', ['certificationid' => $certif
 $context = context::instance_by_id($certification->contextid);
 require_capability('tool/mucertify:edit', $context);
 
-$currenturl = new moodle_url('/admin/tool/mucertify/management/source_edit.php', ['id' => $certification->id]);
+$currenturl = new \core\url('/admin/tool/mucertify/management/source_edit.php', ['id' => $certification->id]);
 $PAGE->set_context($context);
 $PAGE->set_url($currenturl);
 
-$returnurl = new moodle_url('/admin/tool/mucertify/management/certification_assignment.php', ['id' => $certification->id]);
+$returnurl = new \core\url('/admin/tool/mucertify/management/certification_assignment.php', ['id' => $certification->id]);
 
 /** @var \tool_mucertify\local\source\base[] $sourceclasses */
 $sourceclasses = \tool_mucertify\local\assignment::get_source_classes();

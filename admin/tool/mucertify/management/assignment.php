@@ -50,20 +50,27 @@ require_capability('tool/mucertify:view', $context);
 
 $user = $DB->get_record('user', ['id' => $assignment->userid], '*', MUST_EXIST);
 
-$currenturl = new moodle_url('/admin/tool/mucertify/management/assignment.php', ['id' => $assignment->id]);
+$currenturl = new \core\url('/admin/tool/mucertify/management/assignment.php', ['id' => $assignment->id]);
 
 management::setup_certification_page($currenturl, $context, $certification, 'certification_users');
+
+$url = new core\url('/admin/tool/mucertify/management/certification_users.php', ['id' => $certification->id]);
+$PAGE->navbar->add(get_string('tabusers', 'tool_mucertify'), $url);
+$PAGE->navbar->add(fullname($user));
+
 $PAGE->set_docs_path('https://github.com/mutms/moodle-tool_mucertify/wiki/Certification-users');
 
 /** @var \tool_mucertify\output\management\renderer $managementoutput */
 $managementoutput = $PAGE->get_renderer('tool_mucertify', 'management');
 
-echo $OUTPUT->header();
-
 // Refresh user certification data just in case.
 \tool_mucertify\local\period::process_recertifications($assignment->certificationid, $assignment->userid);
 \tool_muprog\local\source\mucertify::sync_certifications($assignment->certificationid, $assignment->userid);
 $assignment = $DB->get_record('tool_mucertify_assignment', ['id' => $assignment->id], '*', MUST_EXIST);
+
+\tool_mucertify\event\assignment_viewed::create_from_assignment($certification, $assignment)->trigger();
+
+echo $OUTPUT->header();
 
 echo $OUTPUT->heading($OUTPUT->user_picture($user) . fullname($user), 2, ['h3']);
 
