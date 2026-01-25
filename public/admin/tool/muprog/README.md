@@ -15,7 +15,7 @@ efficient way to manage both small-scale and large-scale learning initiatives an
 
 ## Key features
 
-* program content created as a hierarchy of courses, credit frameworks and course sets with flexible sequencing rules
+* program content created as a hierarchy of courses, credit frameworks, offline activities and nested sets with flexible sequencing rules
 * multiple sources for allocation of students to programs, including allocation based on external database
 * advanced program scheduling settings
 * efficient course enrolment automation
