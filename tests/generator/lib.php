@@ -17,6 +17,8 @@
 // phpcs:disable moodle.Files.BoilerplateComment.CommentEndedTooSoon
 // phpcs:disable moodle.Files.LineLength.TooLong
 
+use core\exception\coding_exception;
+
 /**
  * Program generator.
  *
@@ -196,38 +198,74 @@ class tool_muprog_generator extends component_generator_base {
             $parent = $top;
         }
 
+        $data = [];
+        if (isset($record->points) && $record->points !== '') {
+            $data['points'] = $record->points;
+        }
+        if (isset($record->completiondelay) && $record->completiondelay !== '') {
+            $data['completiondelay'] = $record->completiondelay;
+        }
+
         if (!empty($record->courseid) || !empty($record->course)) {
+            if (!isset($record->type) || $record->type === '') {
+                $record->type = 'course';
+            } else if ($record->type !== 'course') {
+                throw new coding_exception("Invalid item type $record->type");
+            }
             if (!empty($record->courseid)) {
                 $course = $DB->get_record('course', ['id' => $record->courseid], '*', MUST_EXIST);
             } else {
                 $course = $DB->get_record('course', ['fullname' => $record->course], '*', MUST_EXIST);
             }
-            return $top->append_course($parent, $course->id);
+            return $top->append_course($parent, $course->id, $data);
         } else if (!empty($record->creditframeworkid) || !empty($record->credits)) {
+            if (!isset($record->type) || $record->type === '') {
+                $record->type = 'credits';
+            } else if ($record->type !== 'credits') {
+                throw new coding_exception("Invalid item type $record->type");
+            }
             if (!empty($record->creditframeworkid)) {
                 $framework = $DB->get_record('tool_mutrain_framework', ['id' => $record->creditframeworkid], '*', MUST_EXIST);
             } else {
                 $framework = $DB->get_record('tool_mutrain_framework', ['name' => $record->credits], '*', MUST_EXIST);
             }
-            return $top->append_credits($parent, $framework->id);
+            return $top->append_credits($parent, $framework->id, $data);
+        } else if (isset($record->type) && $record->type === 'attendance') {
+            if (trim($record->fullname ?? '') === '') {
+                $data['fullname'] = 'Offline attendance';
+            } else {
+                $data['fullname'] = $record->fullname;
+            }
+            return $top->append_attendance($parent, $data);
         } else {
+            if (!isset($record->type) || $record->type === '') {
+                $record->type = 'set';
+            } else if ($record->type !== 'set') {
+                throw new coding_exception("Invalid item type $record->type");
+            }
             if (!empty($record->sequencetype)) {
                 $types = \tool_muprog\local\content\set::get_sequencetype_types();
                 if (isset($types[$record->sequencetype])) {
-                    $sequencetype = $record->sequencetype;
+                    $data['sequencetype'] = $record->sequencetype;
                 } else {
                     $types = array_flip($types);
-                    $sequencetype = $types[$record->sequencetype];
+                    $data['sequencetype'] = $types[$record->sequencetype];
                 }
             } else {
-                $sequencetype = \tool_muprog\local\content\set::SEQUENCE_TYPE_ALLINANYORDER;
+                $data['sequencetype'] = \tool_muprog\local\content\set::SEQUENCE_TYPE_ALLINANYORDER;
             }
-            if (!empty($record->minprerequisites)) {
-                $minprerequisites = $record->minprerequisites;
+            if (isset($record->minprerequisites) && $record->minprerequisites !== '') {
+                $data['minprerequisites'] = $record->minprerequisites;
             } else {
-                $minprerequisites = 1;
+                $data['minprerequisites'] = 1;
             }
-            return $top->append_set($parent, ['fullname' => $record->fullname, 'sequencetype' => $sequencetype, 'minprerequisites' => $minprerequisites]);
+            if (isset($record->minpoints) && $record->minpoints !== '') {
+                $data['minpoints'] = $record->minpoints;
+            } else {
+                $data['minpoints'] = 1;
+            }
+            $data['fullname'] = $record->fullname;
+            return $top->append_set($parent, $data);
         }
     }
 

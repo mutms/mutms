@@ -43,7 +43,7 @@ class certificate extends \core\task\scheduled_task {
     public function execute() {
         global $DB;
 
-        // Do no use util::is_muprog_active() here, certificates may need to be archived.
+        // Do no use mulib::is_muprog_active() here, certificates may need to be archived.
         if (!$DB->record_exists('tool_muprog_program', [])) {
             return;
         }

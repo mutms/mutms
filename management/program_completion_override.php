@@ -48,11 +48,11 @@ $source = $DB->get_record('tool_muprog_source', ['id' => $allocation->sourceid],
 $context = context::instance_by_id($program->contextid);
 require_capability('tool/muprog:admin', $context);
 
-$returnurl = new moodle_url('/admin/tool/muprog/management/program_completion_override.php', ['id' => $allocation->id]);
+$returnurl = new core\url('/admin/tool/muprog/management/program_completion_override.php', ['id' => $allocation->id]);
 
 $user = $DB->get_record('user', ['id' => $allocation->userid], '*', MUST_EXIST);
 
-$currenturl = new moodle_url('/admin/tool/muprog/management/program_completion_override.php', ['id' => $allocation->id]);
+$currenturl = new core\url('/admin/tool/muprog/management/program_completion_override.php', ['id' => $allocation->id]);
 $PAGE->set_context($context);
 $PAGE->set_url($currenturl);
 

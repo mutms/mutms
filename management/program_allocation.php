@@ -46,7 +46,7 @@ $program = $DB->get_record('tool_muprog_program', ['id' => $id], '*', MUST_EXIST
 $context = context::instance_by_id($program->contextid);
 require_capability('tool/muprog:view', $context);
 
-$currenturl = new moodle_url('/admin/tool/muprog/management/program_allocation.php', ['id' => $id]);
+$currenturl = new core\url('/admin/tool/muprog/management/program_allocation.php', ['id' => $id]);
 
 management::setup_program_page($currenturl, $context, $program, 'program_allocation');
 $PAGE->set_docs_path('https://github.com/mutms/moodle-tool_muprog/wiki/Program-allocation-settings');
@@ -57,8 +57,8 @@ $managementoutput = $PAGE->get_renderer('tool_muprog', 'management');
 $actions = new header_actions(get_string('management_program_allocation_actions', 'tool_muprog'));
 
 if (has_capability('tool/muprog:edit', $context) && !$program->archived) {
-    $url = new moodle_url('/admin/tool/muprog/management/program_allocation_import.php', ['id' => $program->id]);
-    $link = new \tool_mulib\output\ajax_form\link($url, get_string('importprogramallocation', 'tool_muprog'));
+    $url = new core\url('/admin/tool/muprog/management/program_allocation_import.php', ['id' => $program->id]);
+    $link = new \tool_mulib\output\ajax_form\link($url, get_string('importprogramallocation', 'tool_muprog'), 'i/import');
     $actions->get_dropdown()->add_ajax_form($link);
 }
 
@@ -69,7 +69,7 @@ if ($actions->has_items()) {
 echo $OUTPUT->header();
 
 if (has_capability('tool/muprog:edit', $context)) {
-    $editurl = new moodle_url('/admin/tool/muprog/management/program_allocations_edit.php', ['id' => $program->id]);
+    $editurl = new core\url('/admin/tool/muprog/management/program_allocations_edit.php', ['id' => $program->id]);
     $updateicon = new tool_mulib\output\ajax_form\icon($editurl, get_string('program_allocations_edit', 'tool_muprog'), 'i/settings');
     $updateicon->set_modal_title(get_string('allocations', 'tool_muprog'));
     $updateicon = ' <span style="font-size: .9375rem !important">' . $OUTPUT->render($updateicon) . '</span>';
@@ -80,7 +80,7 @@ echo $OUTPUT->heading(get_string('allocations', 'tool_muprog') . $updateicon, 2,
 echo $managementoutput->render_program_allocation($program);
 
 if (has_capability('tool/muprog:edit', $context)) {
-    $editurl = new moodle_url('/admin/tool/muprog/management/program_scheduling_edit.php', ['id' => $program->id]);
+    $editurl = new core\url('/admin/tool/muprog/management/program_scheduling_edit.php', ['id' => $program->id]);
     $updateicon = new tool_mulib\output\ajax_form\icon($editurl, get_string('updatescheduling', 'tool_muprog'), 'i/settings');
     $updateicon->set_modal_title(get_string('scheduling', 'tool_muprog'));
     $updateicon = ' <span style="font-size: .9375rem !important">' . $OUTPUT->render($updateicon) . '</span>';

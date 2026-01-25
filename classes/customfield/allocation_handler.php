@@ -20,7 +20,7 @@
 namespace tool_muprog\customfield;
 
 use core_customfield\field_controller;
-use moodle_url, context;
+use core\url, context;
 use MoodleQuickForm;
 
 /**
@@ -47,10 +47,10 @@ final class allocation_handler extends \core_customfield\handler {
     /**
      * URL for configuration of the fields on this handler.
      *
-     * @return moodle_url
+     * @return url
      */
-    public function get_configuration_url(): moodle_url {
-        return new moodle_url('/admin/tool/muprog/management/customfield_allocation.php', []);
+    public function get_configuration_url(): url {
+        return new url('/admin/tool/muprog/management/customfield_allocation.php', []);
     }
 
     /**

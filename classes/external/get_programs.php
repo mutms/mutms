@@ -25,16 +25,21 @@ use core_external\external_api;
 use core_external\external_multiple_structure;
 use core_external\external_single_structure;
 use tool_mulib\local\mulib;
+use core\exception\invalid_parameter_exception;
 
 /**
  * Provides list of programs based on search parameters.
  *
  * @package     tool_muprog
  * @copyright   2023 Open LMS (https://www.openlms.net/)
+ * @copyright   2025 Petr Skoda
  * @author      Farhan Karmali
  * @license     https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 final class get_programs extends external_api {
+    /** @var string[] */
+    public const SEARCH_FIELDS = ['id', 'contextid', 'fullname', 'idnumber', 'publicaccess', 'archived', 'tenantid'];
+
     /**
      * Describes the external function arguments.
      *
@@ -63,12 +68,12 @@ final class get_programs extends external_api {
      */
     public static function execute(array $fieldvalues): array {
         global $DB;
-        ['fieldvalues' => $fieldvalues] = self::validate_parameters(
-            self::execute_parameters(),
-            ['fieldvalues' => $fieldvalues]
-        );
+        [
+            'fieldvalues' => $fieldvalues,
+        ] = self::validate_parameters(self::execute_parameters(), [
+            'fieldvalues' => $fieldvalues,
+        ]);
 
-        $allowedfieldlist = ['id', 'contextid', 'fullname', 'idnumber', 'publicaccess', 'archived', 'tenantid'];
         $params = [];
         $where = [];
         $tenantjoin = '';
@@ -77,24 +82,24 @@ final class get_programs extends external_api {
             if ($field === 'public') {
                 $field = 'publicaccess';
             }
-            if (!in_array($field, $allowedfieldlist, true)) {
-                throw new \invalid_parameter_exception('Invalid field name: ' . $field);
+            if (!in_array($field, self::SEARCH_FIELDS, true)) {
+                throw new invalid_parameter_exception('Invalid field name: ' . $field);
             }
             if (array_key_exists($field, $params)) {
-                throw new \invalid_parameter_exception('Invalid duplicate field name: ' . $field);
+                throw new invalid_parameter_exception('Invalid duplicate field name: ' . $field);
             }
             if ($field === 'tenantid') {
                 if (!mulib::is_mutenancy_active()) {
-                    throw new \invalid_parameter_exception('Invalid field name: ' . $field);
+                    throw new invalid_parameter_exception('Invalid field name: ' . $field);
                 }
-                if ($value === null) {
+                if (!$value) {
                     $tenantjoin = "JOIN {context} c ON c.id = p.contextid AND c.tenantid IS NULL";
                 } else {
                     $tenantjoin = "JOIN {context} c ON c.id = p.contextid AND c.tenantid = :tenantid";
                 }
             } else {
                 if ($value === null) {
-                    throw new \invalid_parameter_exception('Field value cannot be NULL: ' . $field);
+                    throw new invalid_parameter_exception('Field value cannot be NULL: ' . $field);
                 }
                 $where[] = "p.$field = :$field";
             }
@@ -112,31 +117,37 @@ final class get_programs extends external_api {
               ORDER BY p.id ASC";
         $programs = $DB->get_records_sql($sql, $params);
 
+        $validated = [];
+
         $results = [];
         foreach ($programs as $program) {
-            $context = \context::instance_by_id($program->contextid);
-            if (has_capability('tool/muprog:view', $context)) {
-                self::validate_context($context);
-                $sources = $DB->get_records_menu(
-                    'tool_muprog_source',
-                    ['programid' => $program->id],
-                    'type ASC',
-                    'type'
-                );
-                $program->sources = array_keys($sources);
-                if ($program->publicaccess) {
-                    $program->cohortids = [];
-                } else {
-                    $cohorts = $DB->get_records_menu(
-                        'tool_muprog_cohort',
-                        ['programid' => $program->id],
-                        'cohortid ASC',
-                        'cohortid'
-                    );
-                    $program->cohortids = array_keys($cohorts);
+            if (!isset($validated[$program->contextid])) {
+                $context = \context::instance_by_id($program->contextid);
+                if (!has_capability('tool/muprog:view', $context)) {
+                    continue;
                 }
-                $results[] = $program;
+                self::validate_context($context);
+                $validated[$program->contextid] = true;
             }
+            $sources = $DB->get_records_menu(
+                'tool_muprog_source',
+                ['programid' => $program->id],
+                'type ASC',
+                'type'
+            );
+            $program->sources = array_keys($sources);
+            if ($program->publicaccess) {
+                $program->cohortids = [];
+            } else {
+                $cohorts = $DB->get_records_menu(
+                    'tool_muprog_cohort',
+                    ['programid' => $program->id],
+                    'cohortid ASC',
+                    'cohortid'
+                );
+                $program->cohortids = array_keys($cohorts);
+            }
+            $results[] = $program;
         }
 
         return $results;
@@ -158,7 +169,7 @@ final class get_programs extends external_api {
                 'descriptionformat' => new external_value(PARAM_INT, 'Program description text format'),
                 'presentationjson' => new external_value(PARAM_RAW, 'Presentation json (not stable internal API data)'),
                 'publicaccess' => new external_value(PARAM_BOOL, 'Public flag'),
-                'archived' => new external_value(PARAM_BOOL, 'Archived flag (archived problems do not change)'),
+                'archived' => new external_value(PARAM_BOOL, 'Archived flag (archived programs should not change)'),
                 'creategroups' => new external_value(PARAM_BOOL, 'Create course groups flag'),
                 'timeallocationstart' => new external_value(PARAM_INT, 'Allocation start date'),
                 'timeallocationend' => new external_value(PARAM_INT, 'Allocation end date'),

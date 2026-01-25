@@ -51,7 +51,7 @@ $archived = optional_param('archived', 0, PARAM_BOOL);
 if ($id) {
     $program = $DB->get_record('tool_muprog_program', ['id' => $id], '*', MUST_EXIST);
     $context = context::instance_by_id($program->contextid);
-    $returnurl = new moodle_url('/admin/tool/muprog/management/program.php', ['id' => $program->id]);
+    $returnurl = new core\url('/admin/tool/muprog/management/program.php', ['id' => $program->id]);
     $contextid = $context->id;
     $archived = $program->archived;
 } else {
@@ -62,10 +62,10 @@ if ($id) {
         $context = context_system::instance();
         $contextid = $context->id;
     }
-    $returnurl = new moodle_url('/admin/tool/muprog/management/index.php',
+    $returnurl = new core\url('/admin/tool/muprog/management/index.php',
         ['contextid' => $contextid, 'archived' => $archived]);
 }
-$currenturl = new moodle_url('/admin/tool/muprog/management/export.php',
+$currenturl = new core\url('/admin/tool/muprog/management/export.php',
     ['id' => $id, 'contextid' => $contextid, 'archived' => $archived]);
 
 require_capability('tool/muprog:export', $context);

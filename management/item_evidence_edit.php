@@ -55,11 +55,11 @@ $program = $DB->get_record('tool_muprog_program', ['id' => $allocation->programi
 $context = context::instance_by_id($program->contextid);
 require_capability('tool/muprog:manageevidence', $context);
 
-$currenturl = new moodle_url('/admin/tool/muprog/management/item_evidence_edit.php', ['allocationid' => $allocation->id, 'itemid' => $item->id]);
+$currenturl = new core\url('/admin/tool/muprog/management/item_evidence_edit.php', ['allocationid' => $allocation->id, 'itemid' => $item->id]);
 $PAGE->set_context($context);
 $PAGE->set_url($currenturl);
 
-$returnurl = new moodle_url('/admin/tool/muprog/management/allocation.php', ['id' => $allocation->id]);
+$returnurl = new core\url('/admin/tool/muprog/management/allocation.php', ['id' => $allocation->id]);
 
 if ($program->archived || $allocation->archived) {
     redirect($returnurl);

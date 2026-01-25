@@ -19,7 +19,6 @@
 
 namespace tool_muprog\local\content;
 
-use tool_muprog\local\util;
 use stdClass;
 
 /**
@@ -32,11 +31,15 @@ use stdClass;
  * @license    https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 final class credits extends item {
-    /** @var int */
-    protected $creditframeworkid;
+    #[\Override]
+    public static function get_type(): string {
+        return 'credits';
+    }
 
-    /** @var ?item Previous item is not actually used because there is no concept of start of credits */
-    protected $previous;
+    #[\Override]
+    public static function get_type_name(): string {
+        return get_string('credits', 'tool_muprog');
+    }
 
     /**
      * ReturnGet credit credit framework id.
@@ -84,7 +87,7 @@ final class credits extends item {
      * @return string
      */
     public function get_current_credits(stdClass $allocation): string {
-        global $DB;
+        global $DB, $USER;
 
         $now = time();
 
@@ -92,6 +95,9 @@ final class credits extends item {
         if (!$framework) {
             return get_string('error');
         }
+
+        $frameworkcontext = \context::instance_by_id($framework->contextid);
+        $usercontext = \context_user::instance($allocation->userid);
 
         $requiredcredits = format_float($framework->requiredcredits, 2, true, true);
 
@@ -102,128 +108,45 @@ final class credits extends item {
             return get_string('credits_requiredcredits', 'tool_muprog', $requiredcredits);
         }
 
+        $currentcredits = self::get_completed_credits($allocation);
         $data = [
-            'current' => self::get_completed_credits($allocation),
+            'current' => $currentcredits,
             'total' => $requiredcredits,
         ];
 
-        return get_string('credits_progress', 'tool_muprog', $data);
-    }
+        $result = get_string('credits_progress', 'tool_muprog', $data);
 
-    /**
-     * Is this item deletable?
-     *
-     * @return bool
-     */
-    public function is_deletable(): bool {
-        if (!$this->id) {
-            return false;
+        if ($currentcredits) {
+            if ($USER->id == $allocation->userid || has_capability('tool/mutrain:viewusercredits', $usercontext)) {
+                if ($framework->publicaccess || has_capability('tool/mutrain:viewframeworks', $frameworkcontext)) {
+                    $url = new \core\url('/admin/tool/mutrain/my/completions.php', ['frameworkid' => $framework->id, 'userid' => $allocation->userid]);
+                    $result = \html_writer::link($url, $result);
+                }
+            }
         }
-        return true;
+
+        return $result;
     }
 
-    /**
-     * Return item that must be completed before allowing access to this credits item.
-     *
-     * @return item|null
-     */
-    public function get_previous(): ?item {
-        return $this->previous;
-    }
-
-    /**
-     * Set previous item to new value.
-     *
-     * @param item|null $previous new previous item
-     * @return void
-     */
-    protected function fix_previous(?item $previous): void {
-        $this->previous = $previous;
-    }
-
-    /**
-     * Factory method.
-     *
-     * @param \stdClass $record
-     * @param item|null $previous
-     * @param array $unusedrecords
-     * @param array $prerequisites
-     * @return credits
-     */
+    #[\Override]
     protected static function init_from_record(\stdClass $record, ?item $previous, array &$unusedrecords, array &$prerequisites): item {
-        if ($record->topitem || $record->courseid !== null || $record->creditframeworkid === null) {
-            throw new \coding_exception('Invalid credits item');
+        if ($record->type !== 'credits' || $record->topitem || $record->courseid !== null || !$record->creditframeworkid) {
+            throw new \core\exception\coding_exception('Invalid credits item');
         }
-        $item = new credits();
-        $item->id = $record->id;
-        $item->programid = $record->programid;
-        $item->creditframeworkid = $record->creditframeworkid;
-        $item->previous = $previous;
-        if ($previous) {
-            if ($previous->id == $record->id) {
-                $item->previous = null;
-                $item->problemdetected = true;
-            } else if ($record->previtemid != $previous->id) {
-                $item->problemdetected = true;
-            }
-        } else {
-            if ($record->previtemid) {
-                $item->problemdetected = true;
-            }
-        }
-        $item->fullname = $record->fullname;
-        $item->points = $record->points;
-        $item->completiondelay = $record->completiondelay;
-
-        if ($record->minprerequisites !== null) {
-            $item->problemdetected = true;
-        }
-        if ($record->minpoints !== null) {
-            $item->problemdetected = true;
-        }
-
-        // NOTE: Prerequisites are verified in set that contains this credits item.
-
-        return $item;
+        return parent::init_from_record($record, $previous, $unusedrecords, $prerequisites);
     }
 
-    /**
-     * Fix item prerequisites if necessary.
-     *
-     * @param array $prerequisites
-     * @return bool true if fix applied
-     */
-    protected function fix_prerequisites(array &$prerequisites): bool {
-        // Nothing to do, parent is defining the prerequisites.
-        return false;
-    }
-
-    /**
-     * Returns expected item record data.
-     *
-     * @return array
-     */
+    #[\Override]
     protected function get_record(): array {
         global $DB;
 
+        $record = parent::get_record();
+
         $fullname = $DB->get_field('tool_mutrain_framework', 'name', ['id' => $this->creditframeworkid]);
-        if ($fullname === false) {
-            $fullname = $this->fullname;
+        if ($fullname !== false) {
+            $record['fullname'] = $fullname;
         }
 
-        return [
-            'id' => (empty($this->id) ? null : (string)$this->id),
-            'programid' => (string)$this->programid,
-            'topitem' => null,
-            'courseid' => null,
-            'creditframeworkid' => (string)$this->creditframeworkid,
-            'previtemid' => (isset($this->previous) ? (string)$this->previous->id : null),
-            'fullname' => $fullname,
-            'sequencejson' => util::json_encode([]),
-            'minprerequisites' => null,
-            'points' => (string)$this->points,
-            'minpoints' => null,
-            'completiondelay' => (string)$this->completiondelay,
-        ];
+        return $record;
     }
 }

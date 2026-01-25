@@ -46,7 +46,7 @@ require_login();
 require_capability('tool/muprog:viewcatalogue', $syscontext);
 
 if (!\tool_mulib\local\mulib::is_muprog_active()) {
-    redirect(new moodle_url('/'));
+    redirect(new core\url('/'));
 }
 
 $actions = new \tool_mulib\output\header_actions(get_string('catalogue_actions', 'tool_muprog'));
@@ -56,7 +56,7 @@ if ($manageurl) {
     $actions->get_dropdown()->add_item(get_string('management', 'tool_muprog'), $manageurl);
 }
 if (!isguestuser() && isloggedin()) {
-    $myprogramsurl = new moodle_url('/admin/tool/muprog/my/index.php');
+    $myprogramsurl = new core\url('/admin/tool/muprog/my/index.php');
     $button = html_writer::link($myprogramsurl, get_string('myprograms', 'tool_muprog'), ['class' => 'btn btn-secondary']);
     $actions->add_button($button);
 }

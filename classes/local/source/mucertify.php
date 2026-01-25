@@ -111,7 +111,7 @@ final class mucertify extends base {
                     $name = format_string($certification->fullname);
                     $certcontext = \context::instance_by_id($certification->contextid, IGNORE_MISSING);
                     if ($certcontext && has_capability('tool/mucertify:view', $certcontext)) {
-                        $viewurl = new \moodle_url('/admin/tool/mucertify/management/certification.php', ['id' => $certification->id]);
+                        $viewurl = new \core\url('/admin/tool/mucertify/management/certification.php', ['id' => $certification->id]);
                         $name = \html_writer::link($viewurl, $name);
                     }
                     $certifications[$k] = $name;
@@ -462,12 +462,12 @@ final class mucertify extends base {
             $certification = $DB->get_record('tool_mucertify_certification', ['id' => $period->certificationid]);
             $cname = format_string($certification->fullname);
             if ($period->userid == $USER->id) {
-                $curl = new \moodle_url('/admin/tool/mucertify/my/certification.php', ['id' => $certification->id]);
+                $curl = new \core\url('/admin/tool/mucertify/my/certification.php', ['id' => $certification->id]);
                 return \html_writer::link($curl, $cname);
             }
             $context = \context::instance_by_id($certification->contextid, IGNORE_MISSING);
             if ($context && has_capability('tool/mucertify:view', $context)) {
-                $curl = new \moodle_url('/admin/tool/mucertify/management/certification.php', ['id' => $certification->id]);
+                $curl = new \core\url('/admin/tool/mucertify/management/certification.php', ['id' => $certification->id]);
                 return \html_writer::link($curl, $cname);
             }
         }

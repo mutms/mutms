@@ -45,11 +45,11 @@ $program = $DB->get_record('tool_muprog_program', ['id' => $programid], '*', MUS
 $context = context::instance_by_id($program->contextid);
 require_capability('tool/muprog:manageevidence', $context);
 
-$currenturl = new moodle_url('/admin/tool/muprog/management/program_evidence_upload.php', ['programid' => $programid]);
+$currenturl = new core\url('/admin/tool/muprog/management/program_evidence_upload.php', ['programid' => $programid]);
 $PAGE->set_context($context);
 $PAGE->set_url($currenturl);
 
-$returnurl = new moodle_url('/admin/tool/muprog/management/program_users.php', ['id' => $programid]);
+$returnurl = new core\url('/admin/tool/muprog/management/program_users.php', ['id' => $programid]);
 
 if ($program->archived) {
     redirect($returnurl);

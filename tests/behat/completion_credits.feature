@@ -70,12 +70,13 @@ Feature: Credits program completion by students tests
       | Program viewer  | pviewer   |
       | Program manager | pmanager  |
     And the following "permission overrides" exist:
-      | capability                  | permission | role     | contextlevel | reference |
-      | tool/muprog:view            | Allow      | pviewer  | System       |           |
-      | tool/muprog:view            | Allow      | pmanager | System       |           |
-      | tool/muprog:edit            | Allow      | pmanager | System       |           |
-      | tool/muprog:delete          | Allow      | pmanager | System       |           |
-      | tool/muprog:allocate        | Allow      | pmanager | System       |           |
+      | capability                   | permission | role     | contextlevel | reference |
+      | tool/muprog:view             | Allow      | pviewer  | System       |           |
+      | tool/muprog:view             | Allow      | pmanager | System       |           |
+      | tool/muprog:edit             | Allow      | pmanager | System       |           |
+      | tool/muprog:delete           | Allow      | pmanager | System       |           |
+      | tool/muprog:allocate         | Allow      | pmanager | System       |           |
+      | tool/mutrain:viewusercredits | Allow      | pviewer  | System       |           |
     And the following "role assigns" exist:
       | user      | role          | contextlevel | reference |
       | manager1  | pmanager      | System       |           |
@@ -144,6 +145,11 @@ Feature: Credits program completion by students tests
     Then I should see "Open" in the "Program status" definition list item
     And I should see "Current credits: 4/5"
 
+    When I click on "Current credits: 4/5" "link" in the "Framework 1" "table_row"
+    Then the following should exist in the "reportbuilder-table" table:
+      | Type              | Name     | Credits |
+      | Course completion | Course 1 | 4       |
+
     And I am on the "tool_muprog > My programs" page
     And I am on "Course 2" course homepage
     And I follow "Sample page"
@@ -151,6 +157,17 @@ Feature: Credits program completion by students tests
     And I follow "Program 000"
     Then I should see "Completed" in the "Program status" definition list item
     And I should see "Current credits: 12/5"
+
+    And I log out
+    And I log in as "viewer1"
+    When I am on the "Program 000" "tool_muprog > Program" page
+    And I follow "Users"
+    And I follow "Student 1"
+    And I click on "Current credits: 12/5" "link" in the "Framework 1" "table_row"
+    Then the following should exist in the "reportbuilder-table" table:
+      | Type              | Name     | Credits |
+      | Course completion | Course 1 | 4       |
+      | Course completion | Course 2 | 8       |
 
   @javascript
   Scenario: Student may complete a credits program with category restricted completion

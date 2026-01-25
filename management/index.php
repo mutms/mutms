@@ -57,7 +57,7 @@ if ($context->contextlevel == CONTEXT_SYSTEM) {
     throw new moodle_exception('invalidcontext');
 }
 
-$currenturl = new moodle_url('/admin/tool/muprog/management/index.php', ['contextid' => $context->id]);
+$currenturl = new core\url('/admin/tool/muprog/management/index.php', ['contextid' => $context->id]);
 
 management::setup_index_page($currenturl, $context);
 $PAGE->set_docs_path('https://github.com/mutms/moodle-tool_muprog/wiki/Program-management');
@@ -65,18 +65,18 @@ $PAGE->set_docs_path('https://github.com/mutms/moodle-tool_muprog/wiki/Program-m
 $actions = new header_actions(get_string('management_index_actions', 'tool_muprog'));
 
 if (has_capability('tool/muprog:edit', $context)) {
-    $url = new moodle_url('/admin/tool/muprog/management/program_create.php', ['contextid' => $context->id]);
+    $url = new core\url('/admin/tool/muprog/management/program_create.php', ['contextid' => $context->id]);
     $button = new tool_mulib\output\ajax_form\button($url, get_string('program_create', 'tool_muprog'));
     $button->set_submitted_action($button::SUBMITTED_ACTION_REDIRECT);
     $actions->add_button($button);
 }
 if (has_capability('tool/muprog:export', $context)) {
-    $url = new moodle_url('/admin/tool/muprog/management/export.php', ['contextid' => $contextid]);
-    $actions->get_dropdown()->add_item(get_string('export', 'tool_muprog'), $url);
+    $url = new core\url('/admin/tool/muprog/management/export.php', ['contextid' => $contextid]);
+    $actions->get_dropdown()->add_item(get_string('export', 'tool_muprog'), $url, new \core\output\pix_icon('i/export', ''));
 }
 if (has_capability('tool/muprog:upload', $context)) {
-    $url = new moodle_url('/admin/tool/muprog/management/upload.php', ['contextid' => $contextid]);
-    $actions->get_dropdown()->add_item(get_string('upload', 'tool_muprog'), $url);
+    $url = new core\url('/admin/tool/muprog/management/upload.php', ['contextid' => $contextid]);
+    $actions->get_dropdown()->add_item(get_string('upload', 'tool_muprog'), $url, new \core\output\pix_icon('i/upload', ''));
 }
 
 if ($actions->has_items()) {

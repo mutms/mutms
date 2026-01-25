@@ -15,6 +15,7 @@
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 // phpcs:disable moodle.Files.BoilerplateComment.CommentEndedTooSoon
+// phpcs:disable moodle.Files.LineLength.TooLong
 
 namespace tool_muprog\external;
 
@@ -24,12 +25,14 @@ use core_external\external_api;
 use tool_muprog\local\source\cohort;
 use core_external\external_multiple_structure;
 use tool_mulib\local\mulib;
+use core\exception\invalid_parameter_exception;
 
 /**
  * Adds a cohort to the list of synchronised cohorts in a program.
  *
  * @package     tool_muprog
  * @copyright   2023 Open LMS (https://www.openlms.net/)
+ * @copyright   2025 Petr Skoda
  * @author      Farhan Karmali
  * @license     https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
@@ -55,10 +58,13 @@ final class source_cohort_add_cohort extends external_api {
      */
     public static function execute(int $programid, int $cohortid): array {
         global $DB;
-        ['programid' => $programid, 'cohortid' => $cohortid] = self::validate_parameters(
-            self::execute_parameters(),
-            ['programid' => $programid, 'cohortid' => $cohortid]
-        );
+        [
+            'programid' => $programid,
+            'cohortid' => $cohortid,
+        ] = self::validate_parameters(self::execute_parameters(), [
+            'programid' => $programid,
+            'cohortid' => $cohortid,
+        ]);
 
         $program = $DB->get_record('tool_muprog_program', ['id' => $programid], '*', MUST_EXIST);
         $source = $DB->get_record('tool_muprog_source', ['programid' => $program->id, 'type' => 'cohort'], '*', MUST_EXIST);
@@ -77,7 +83,7 @@ final class source_cohort_add_cohort extends external_api {
             if ($programtenantid) {
                 $cohorttenantid = $DB->get_field('context', 'tenantid', ['id' => $cohort->contextid]);
                 if ($cohorttenantid && $cohorttenantid != $programtenantid) {
-                    throw new \invalid_parameter_exception('Tenant mismatch');
+                    throw new invalid_parameter_exception('Tenant mismatch');
                 }
             }
         }

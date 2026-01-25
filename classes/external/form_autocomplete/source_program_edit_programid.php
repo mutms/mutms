@@ -113,7 +113,7 @@ final class source_program_edit_programid extends \tool_mulib\external\form_auto
             }
         }
 
-        $programs = $DB->get_records_sql($sql->sql, $sql->params, 0, self::MAX_RESULTS);
+        $programs = $DB->get_records_sql($sql->sql, $sql->params, 0, self::MAX_RESULTS + 1);
         return self::prepare_result($programs, $context);
     }
 

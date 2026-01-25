@@ -19,16 +19,19 @@
 
 namespace tool_muprog\phpunit\external;
 
+use tool_muprog\external\source_cohort_delete_cohort;
+
 /**
  * External API for removing cohort from the list or cohorts that are synced with the program.
  *
  * @group      MuTMS
  * @package    tool_muprog
  * @copyright  2023 Open LMS (https://www.openlms.net/)
+ * @copyright  2025 Petr Skoda
  * @author     Farhan Karmali
  * @license    https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  *
- * @covers \tool_muprog\external\source_cohort_delete_cohort_test
+ * @covers \tool_muprog\external\source_cohort_delete_cohort
  */
 final class source_cohort_delete_cohort_test extends \advanced_testcase {
     public function setUp(): void {
@@ -67,28 +70,28 @@ final class source_cohort_delete_cohort_test extends \advanced_testcase {
 
         $this->setUser($user1);
 
-        $result = \tool_muprog\external\source_cohort_delete_cohort::clean_returnvalue(
-            \tool_muprog\external\source_cohort_delete_cohort::execute_returns(),
-            \tool_muprog\external\source_cohort_delete_cohort::execute($program1->id, $cohort2->id)
+        $result = source_cohort_delete_cohort::clean_returnvalue(
+            source_cohort_delete_cohort::execute_returns(),
+            source_cohort_delete_cohort::execute($program1->id, $cohort2->id)
         );
         $this->assertCount(2, $result);
         $this->assertEquals($cohort1->id, $result[0]['id']);
         $this->assertEquals($cohort3->id, $result[1]['id']);
 
-        $result = \tool_muprog\external\source_cohort_delete_cohort::clean_returnvalue(
-            \tool_muprog\external\source_cohort_delete_cohort::execute_returns(),
-            \tool_muprog\external\source_cohort_delete_cohort::execute($program1->id, $cohort2->id)
+        $result = source_cohort_delete_cohort::clean_returnvalue(
+            source_cohort_delete_cohort::execute_returns(),
+            source_cohort_delete_cohort::execute($program1->id, $cohort2->id)
         );
         $this->assertCount(2, $result);
 
-        $result = \tool_muprog\external\source_cohort_delete_cohort::clean_returnvalue(
-            \tool_muprog\external\source_cohort_delete_cohort::execute_returns(),
-            \tool_muprog\external\source_cohort_delete_cohort::execute($program1->id, -10)
+        $result = source_cohort_delete_cohort::clean_returnvalue(
+            source_cohort_delete_cohort::execute_returns(),
+            source_cohort_delete_cohort::execute($program1->id, -10)
         );
         $this->assertCount(2, $result);
 
         try {
-            \tool_muprog\external\source_cohort_delete_cohort::execute($program2->id, $cohort1->id);
+            source_cohort_delete_cohort::execute($program2->id, $cohort1->id);
             $this->fail('Exception excepted');
         } catch (\moodle_exception $ex) {
             $this->assertInstanceOf(\required_capability_exception::class, $ex);
@@ -101,7 +104,7 @@ final class source_cohort_delete_cohort_test extends \advanced_testcase {
         $this->setUser($user2);
 
         try {
-            \tool_muprog\external\source_cohort_delete_cohort::execute($program1->id, $cohort1->id);
+            source_cohort_delete_cohort::execute($program1->id, $cohort1->id);
             $this->fail('Exception excepted');
         } catch (\moodle_exception $ex) {
             $this->assertInstanceOf(\required_capability_exception::class, $ex);
@@ -113,9 +116,9 @@ final class source_cohort_delete_cohort_test extends \advanced_testcase {
 
         $this->setAdminUser();
 
-        $result = \tool_muprog\external\source_cohort_delete_cohort::clean_returnvalue(
-            \tool_muprog\external\source_cohort_delete_cohort::execute_returns(),
-            \tool_muprog\external\source_cohort_delete_cohort::execute($program2->id, $cohort2->id)
+        $result = source_cohort_delete_cohort::clean_returnvalue(
+            source_cohort_delete_cohort::execute_returns(),
+            source_cohort_delete_cohort::execute($program2->id, $cohort2->id)
         );
         $this->assertCount(1, $result);
         $this->assertEquals($cohort3->id, $result[0]['id']);

@@ -33,10 +33,13 @@ final class item_completion_override extends \tool_mulib\local\ajax_form {
     protected function definition() {
         $mform = $this->_form;
         $context = $this->_customdata['context'];
+        $user = $this->_customdata['user'];
         $allocation = $this->_customdata['allocation'];
         $item = $this->_customdata['item'];
         $completion = $this->_customdata['completion'];
         $evidence = $this->_customdata['evidence'];
+
+        $mform->addElement('static', 'userfullname', get_string('user'), fullname($user));
 
         $mform->addElement(
             'static',
@@ -44,15 +47,6 @@ final class item_completion_override extends \tool_mulib\local\ajax_form {
             get_string('item', 'tool_muprog'),
             format_string($item->fullname)
         );
-
-        if ($allocation->timecompleted) {
-            $mform->addElement(
-                'static',
-                'staticprogramcompletion',
-                get_string('programcompletion', 'tool_muprog'),
-                userdate($allocation->timecompleted)
-            );
-        }
 
         if ($evidence) {
             $mform->addElement(

@@ -91,7 +91,7 @@ final class export_programids extends \tool_mulib\external\form_autocomplete\bas
                 )->wrap("JOIN (", ")capctx ON capctx.id = p.contextid")
             );
 
-        $programs = $DB->get_records_sql($sql->sql, $sql->params, 0, self::MAX_RESULTS);
+        $programs = $DB->get_records_sql($sql->sql, $sql->params, 0, self::MAX_RESULTS + 1);
         return self::prepare_result($programs, $syscontext);
     }
 

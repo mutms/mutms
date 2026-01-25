@@ -47,7 +47,7 @@ $program = $DB->get_record('tool_muprog_program', ['id' => $id], '*', MUST_EXIST
 $context = context::instance_by_id($program->contextid);
 require_capability('tool/muprog:edit', $context);
 
-$currenturl = new moodle_url('/admin/tool/muprog/management/program_visibility_edit.php', ['id' => $id]);
+$currenturl = new core\url('/admin/tool/muprog/management/program_visibility_edit.php', ['id' => $id]);
 $PAGE->set_context($context);
 $PAGE->set_url($currenturl);
 
@@ -57,7 +57,7 @@ $current->publicaccess = $program->publicaccess;
 
 $form = new \tool_muprog\local\form\program_visibility_edit(null, ['data' => $current, 'context' => $context]);
 
-$returnurl = new moodle_url('/admin/tool/muprog/management/program_visibility.php', ['id' => $program->id]);
+$returnurl = new core\url('/admin/tool/muprog/management/program_visibility.php', ['id' => $program->id]);
 
 if ($form->is_cancelled()) {
     $form->ajax_form_cancelled($returnurl);

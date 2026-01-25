@@ -42,8 +42,8 @@ require_login();
 $contextid = optional_param('contextid', 0, PARAM_INT);
 $draftid = optional_param('files', 0, PARAM_INT);
 
-$returnurl = new moodle_url('/admin/tool/muprog/management/index.php', ['contextid' => $contextid]);
-$currenturl = new moodle_url('/admin/tool/muprog/management/upload.php', ['contextid' => $contextid]);
+$returnurl = new core\url('/admin/tool/muprog/management/index.php', ['contextid' => $contextid]);
+$currenturl = new core\url('/admin/tool/muprog/management/upload.php', ['contextid' => $contextid]);
 
 if ($contextid) {
     $context = context::instance_by_id($contextid);

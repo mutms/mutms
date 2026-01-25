@@ -22,7 +22,7 @@ use tool_muprog\local\content\set;
 use tool_muprog\local\content\top;
 
 /**
- * Edit program content item.
+ * Edit program set item.
  *
  * @package    tool_muprog
  * @copyright  2022 Open LMS (https://www.openlms.net/)
@@ -30,26 +30,22 @@ use tool_muprog\local\content\top;
  * @author     Petr Skoda
  * @license    https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-final class item_set_edit extends \tool_mulib\local\ajax_form {
+final class item_update_set extends \tool_mulib\local\ajax_form {
     #[\Override]
     protected function definition() {
         $mform = $this->_form;
         /** @var set $set */
         $set = $this->_customdata['set'];
 
+        $mform->addElement('static', 'statictype', get_string('item_type', 'tool_muprog'), $set::get_type_name());
+
         if ($set instanceof top) {
             $mform->addElement('static', 'fullname', get_string('fullname'), format_string($set->get_fullname()));
         } else {
             $mform->addElement('text', 'fullname', get_string('fullname'), 'maxlength="254" size="50"');
             $mform->setType('fullname', PARAM_TEXT);
-            $mform->setDefault('fullname', format_string($set->get_fullname()));
+            $mform->setDefault('fullname', $set->get_fullname());
             $mform->addRule('fullname', get_string('required'), 'required', null, 'client');
-        }
-
-        if (!$set instanceof top) {
-            $mform->addElement('text', 'points', get_string('itempoints', 'tool_muprog'));
-            $mform->setType('points', PARAM_INT);
-            $mform->setDefault('points', $set->get_points());
         }
 
         $stypes = set::get_sequencetype_types();
@@ -87,6 +83,12 @@ final class item_set_edit extends \tool_mulib\local\ajax_form {
         );
         $mform->setDefault('completiondelay', $set->get_completiondelay());
 
+        if (!$set instanceof top) {
+            $mform->addElement('text', 'points', get_string('itempoints', 'tool_muprog'));
+            $mform->setType('points', PARAM_INT);
+            $mform->setDefault('points', $set->get_points());
+        }
+
         $mform->addElement('hidden', 'id');
         $mform->setType('id', PARAM_INT);
         $mform->setDefault('id', $set->get_id());
@@ -111,12 +113,16 @@ final class item_set_edit extends \tool_mulib\local\ajax_form {
         }
 
         if ($data['sequencetype'] === set::SEQUENCE_TYPE_ATLEAST) {
-            if ($data['minprerequisites'] <= 0) {
+            if (!$data['minprerequisites']) {
                 $errors['minprerequisites'] = get_string('required');
+            } else if (!$data['minprerequisites'] < 0) {
+                $errors['minprerequisites'] = get_string('error');
             }
         } else if ($data['sequencetype'] === set::SEQUENCE_TYPE_MINPOINTS) {
-            if ($data['minpoints'] <= 0) {
+            if (!$data['minpoints']) {
                 $errors['minpoints'] = get_string('required');
+            } else if (!$data['minpoints'] < 0) {
+                $errors['minpoints'] = get_string('error');
             }
         }
 

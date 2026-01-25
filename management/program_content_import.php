@@ -47,11 +47,11 @@ $targetprogram = $DB->get_record('tool_muprog_program', ['id' => $id], '*', MUST
 $context = context::instance_by_id($targetprogram->contextid);
 require_capability('tool/muprog:edit', $context);
 
-$currenturl = new moodle_url('/admin/tool/muprog/management/program_content_import.php', ['id' => $targetprogram->id, 'fromprogram' => $fromprogram]);
+$currenturl = new core\url('/admin/tool/muprog/management/program_content_import.php', ['id' => $targetprogram->id, 'fromprogram' => $fromprogram]);
 $PAGE->set_context($context);
 $PAGE->set_url($currenturl);
 
-$returnurl = new moodle_url('/admin/tool/muprog/management/program_content.php', ['id' => $targetprogram->id]);
+$returnurl = new core\url('/admin/tool/muprog/management/program_content.php', ['id' => $targetprogram->id]);
 
 if ($targetprogram->archived) {
     redirect($returnurl);

@@ -63,7 +63,7 @@ final class program_deleted_test extends \advanced_testcase {
         $this->assertSame('tool_muprog_program', $event->objecttable);
         $this->assertSame('Program deleted', $event::get_name());
         $description = $event->get_description();
-        $programurl = new \moodle_url('/admin/tool/muprog/management/index.php', ['contextid' => $program->contextid]);
+        $programurl = new \core\url('/admin/tool/muprog/management/index.php', ['contextid' => $program->contextid]);
         $this->assertSame($programurl->out(false), $event->get_url()->out(false));
     }
 }

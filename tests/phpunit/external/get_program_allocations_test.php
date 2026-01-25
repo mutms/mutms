@@ -20,6 +20,7 @@
 namespace tool_muprog\phpunit\external;
 
 use tool_muprog\local\source\selfallocation;
+use tool_muprog\external\get_program_allocations;
 
 /**
  * External API for get program allocations
@@ -27,6 +28,7 @@ use tool_muprog\local\source\selfallocation;
  * @group      MuTMS
  * @package    tool_muprog
  * @copyright  2023 Open LMS (https://www.openlms.net/)
+ * @copyright  2025 Petr Skoda
  * @author     Farhan Karmali
  * @license    https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  *
@@ -78,9 +80,9 @@ final class get_program_allocations_test extends \advanced_testcase {
 
         $this->setUser($user1->id);
 
-        $results = \tool_muprog\external\get_program_allocations::clean_returnvalue(
-            \tool_muprog\external\get_program_allocations::execute_returns(),
-            \tool_muprog\external\get_program_allocations::execute($program1->id)
+        $results = get_program_allocations::clean_returnvalue(
+            get_program_allocations::execute_returns(),
+            get_program_allocations::execute($program1->id)
         );
         $this->assertCount(3, $results);
         $result = (object)$results[0];
@@ -89,8 +91,6 @@ final class get_program_allocations_test extends \advanced_testcase {
         $this->assertSame((int)$allocation1->sourceid, $result->sourceid);
         $this->assertSame((int)$allocation1->userid, $result->userid);
         $this->assertSame((bool)$allocation1->archived, $result->archived);
-        $this->assertSame($allocation1->sourcedatajson, $result->sourcedatajson);
-        $this->assertSame(null, $result->sourceinstanceid);
         $this->assertSame((int)$allocation1->timeallocated, $result->timeallocated);
         $this->assertSame((int)$allocation1->timestart, $result->timestart);
         $this->assertSame(null, $result->timedue);
@@ -98,8 +98,8 @@ final class get_program_allocations_test extends \advanced_testcase {
         $this->assertSame(null, $result->timecompleted);
         $this->assertSame((int)$allocation1->timecreated, $result->timecreated);
         $this->assertSame('manual', $result->sourcetype);
-        $this->assertSame(true, $result->deletesupported);
-        $this->assertSame(true, $result->editsupported);
+        $this->assertSame(true, $result->deletepossible);
+        $this->assertSame(true, $result->editpossible);
         $result = (object)$results[1];
         $this->assertSame((int)$allocation2->id, $result->id);
         $this->assertSame((int)$allocation2->programid, $result->programid);
@@ -107,8 +107,8 @@ final class get_program_allocations_test extends \advanced_testcase {
         $this->assertSame((int)$allocation2->userid, $result->userid);
         $this->assertSame((int)$allocation2->timecompleted, $result->timecompleted);
         $this->assertSame('manual', $result->sourcetype);
-        $this->assertSame(true, $result->deletesupported);
-        $this->assertSame(true, $result->editsupported);
+        $this->assertSame(true, $result->deletepossible);
+        $this->assertSame(true, $result->editpossible);
         $result = (object)$results[2];
         $this->assertSame((int)$allocation3->id, $result->id);
         $this->assertSame((int)$allocation3->programid, $result->programid);
@@ -116,18 +116,24 @@ final class get_program_allocations_test extends \advanced_testcase {
         $this->assertSame((int)$allocation3->userid, $result->userid);
         $this->assertSame(null, $result->timecompleted);
         $this->assertSame('selfallocation', $result->sourcetype);
-        $this->assertSame(true, $result->deletesupported);
-        $this->assertSame(true, $result->editsupported);
+        $this->assertSame(true, $result->deletepossible);
+        $this->assertSame(true, $result->editpossible);
 
-        $results = \tool_muprog\external\get_program_allocations::clean_returnvalue(
-            \tool_muprog\external\get_program_allocations::execute_returns(),
-            \tool_muprog\external\get_program_allocations::execute($program1->id, [])
+        $results = get_program_allocations::clean_returnvalue(
+            get_program_allocations::execute_returns(),
+            get_program_allocations::execute($program1->id, [])
         );
         $this->assertCount(3, $results);
 
-        $results = \tool_muprog\external\get_program_allocations::clean_returnvalue(
-            \tool_muprog\external\get_program_allocations::execute_returns(),
-            \tool_muprog\external\get_program_allocations::execute($program1->id, [$user1->id, $user3->id])
+        $results = get_program_allocations::clean_returnvalue(
+            get_program_allocations::execute_returns(),
+            get_program_allocations::execute($program1->id, null)
+        );
+        $this->assertCount(3, $results);
+
+        $results = get_program_allocations::clean_returnvalue(
+            get_program_allocations::execute_returns(),
+            get_program_allocations::execute($program1->id, [$user1->id, $user3->id])
         );
         $this->assertCount(1, $results);
         $result = (object)$results[0];
@@ -136,14 +142,14 @@ final class get_program_allocations_test extends \advanced_testcase {
         $this->assertSame((int)$allocation1->sourceid, $result->sourceid);
         $this->assertSame((int)$allocation1->userid, $result->userid);
 
-        $results = \tool_muprog\external\get_program_allocations::clean_returnvalue(
-            \tool_muprog\external\get_program_allocations::execute_returns(),
-            \tool_muprog\external\get_program_allocations::execute($program1->id, [$user3->id])
+        $results = get_program_allocations::clean_returnvalue(
+            get_program_allocations::execute_returns(),
+            get_program_allocations::execute($program1->id, [$user3->id])
         );
         $this->assertCount(0, $results);
 
         try {
-            \tool_muprog\external\get_program_allocations::execute($program2->id);
+            get_program_allocations::execute($program2->id);
             $this->fail('Exception expected');
         } catch (\moodle_exception $ex) {
             $this->assertInstanceOf(\required_capability_exception::class, $ex);
@@ -151,9 +157,9 @@ final class get_program_allocations_test extends \advanced_testcase {
         }
 
         $this->setAdminUser();
-        $results = \tool_muprog\external\get_program_allocations::clean_returnvalue(
-            \tool_muprog\external\get_program_allocations::execute_returns(),
-            \tool_muprog\external\get_program_allocations::execute($program3->id)
+        $results = get_program_allocations::clean_returnvalue(
+            get_program_allocations::execute_returns(),
+            get_program_allocations::execute($program3->id)
         );
         $this->assertCount(0, $results);
     }

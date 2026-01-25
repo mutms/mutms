@@ -19,8 +19,6 @@
 
 namespace tool_muprog\local\form;
 
-use tool_muprog\external\form_autocomplete\program_contextid;
-
 /**
  * Update program.
  *
@@ -41,7 +39,6 @@ final class program_update extends \tool_mulib\local\ajax_form {
         $mform = $this->_form;
         $editoroptions = $this->_customdata['editoroptions'];
         $data = $this->_customdata['data'];
-        $context = $this->_customdata['context'];
 
         $mform->addElement('text', 'fullname', get_string('programname', 'tool_muprog'), 'maxlength="254" size="50"');
         $mform->addRule('fullname', get_string('required'), 'required', null, 'client');
@@ -50,8 +47,6 @@ final class program_update extends \tool_mulib\local\ajax_form {
         $mform->addElement('text', 'idnumber', get_string('programidnumber', 'tool_muprog'), 'maxlength="254" size="50"');
         $mform->addRule('idnumber', get_string('required'), 'required', null, 'client');
         $mform->setType('idnumber', PARAM_RAW); // Idnumbers are plain text.
-
-        program_contextid::add_element($mform, [], 'contextid', get_string('category'), $context);
 
         $mform->addElement('select', 'creategroups', get_string('creategroups', 'tool_muprog'), [0 => get_string('no'), 1 => get_string('yes')]);
         $mform->addHelpButton('creategroups', 'creategroups', 'tool_muprog');
@@ -95,8 +90,6 @@ final class program_update extends \tool_mulib\local\ajax_form {
     #[\Override]
     public function validation($data, $files) {
         global $DB;
-        $context = $this->_customdata['context'];
-
         $errors = parent::validation($data, $files);
 
         if (trim($data['fullname']) === '') {
@@ -111,11 +104,6 @@ final class program_update extends \tool_mulib\local\ajax_form {
             if ($DB->record_exists_select('tool_muprog_program', "LOWER(idnumber) = LOWER(?) AND id <> ?", [$data['idnumber'], $data['id']])) {
                 $errors['idnumber'] = get_string('error');
             }
-        }
-
-        $error = program_contextid::validate_value($data['contextid'], [], $context);
-        if ($error !== null) {
-            $errors['contextid'] = $error;
         }
 
         // Add the custom fields validation.

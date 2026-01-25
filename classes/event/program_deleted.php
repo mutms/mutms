@@ -68,10 +68,10 @@ final class program_deleted extends \core\event\base {
     /**
      * Get URL related to the action.
      *
-     * @return \moodle_url
+     * @return \core\url
      */
     public function get_url() {
-        return new \moodle_url('/admin/tool/muprog/management/index.php', ['contextid' => $this->contextid]);
+        return new \core\url('/admin/tool/muprog/management/index.php', ['contextid' => $this->contextid]);
     }
 
     /**
