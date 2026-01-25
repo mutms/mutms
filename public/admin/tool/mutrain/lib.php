@@ -38,13 +38,22 @@ function tool_mutrain_extend_navigation_category_settings($navigation, $courseca
     // NOTE: catnav is added to unbreak breadcrums on management pages.
     $settingsnode = navigation_node::create(
         get_string('frameworks', 'tool_mutrain'),
-        new moodle_url('/admin/tool/mutrain/management/index.php', ['contextid' => $coursecategorycontext->id, 'catnav' => 1]),
+        new core\url('/admin/tool/mutrain/management/index.php', ['contextid' => $coursecategorycontext->id, 'catnav' => 1]),
         navigation_node::TYPE_CUSTOM,
         null,
         'tool_mutrain_frameworks'
     );
     $settingsnode->set_force_into_more_menu(true);
     $navigation->add_node($settingsnode);
+}
+
+/**
+ * Hook called before a course category is deleted.
+ *
+ * @param \stdClass $category The category record.
+ */
+function tool_mutrain_pre_course_category_delete(\stdClass $category) {
+    \tool_mutrain\local\framework::pre_course_category_delete($category);
 }
 
 /**
@@ -64,7 +73,7 @@ function tool_mutrain_myprofile_navigation(core_user\output\myprofile\tree $tree
 
     if ($USER->id == $user->id) {
         $link = get_string('credits_my', 'tool_mutrain');
-        $url = new moodle_url('/admin/tool/mutrain/my/index.php');
+        $url = new core\url('/admin/tool/mutrain/my/index.php');
         $node = new core_user\output\myprofile\node('miscellaneous', 'mutrain_credits', $link, null, $url);
         $tree->add_node($node);
         return;
@@ -76,7 +85,7 @@ function tool_mutrain_myprofile_navigation(core_user\output\myprofile\tree $tree
     }
 
     $link = get_string('credits', 'tool_mutrain');
-    $url = new moodle_url('/admin/tool/mutrain/my/index.php', ['userid' => $user->id]);
+    $url = new core\url('/admin/tool/mutrain/my/index.php', ['userid' => $user->id]);
     $node = new core_user\output\myprofile\node('miscellaneous', 'mutrain_credits', $link, null, $url);
     $tree->add_node($node);
 }

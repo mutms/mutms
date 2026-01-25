@@ -35,6 +35,6 @@ $ADMIN->add('root', new admin_category('tool_mutrain', new lang_string('pluginna
 $ADMIN->add('tool_mutrain', new admin_externalpage(
     'tool_mutrain_frameworks',
     get_string('management_frameworks', 'tool_mutrain'),
-    new moodle_url('/admin/tool/mutrain/management/index.php'),
+    new core\url('/admin/tool/mutrain/management/index.php'),
     'tool/mutrain:viewframeworks'
 ));

@@ -17,7 +17,7 @@
 // phpcs:disable moodle.Files.BoilerplateComment.CommentEndedTooSoon
 
 /**
- * Training capabilities.
+ * Training credits capabilities.
  *
  * @package    tool_mutrain
  * @copyright  2024 Open LMS (https://www.openlms.net/)

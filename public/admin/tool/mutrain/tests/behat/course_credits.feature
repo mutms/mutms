@@ -79,6 +79,12 @@ Feature: Course completion awards credits
     Then the following should exist in the "reportbuilder-table" table:
       | Framework name | Restricted to category | Only obtained after | Required credits | Current credits |
       | Framework 1    | No                     | Not set             | 5                | 4               |
+
+    When I click on "4" "link" in the "Framework 1" "table_row"
+    Then the following should exist in the "reportbuilder-table" table:
+      | Type              | Name     | Credits |
+      | Course completion | Course 1 | 4       |
+
     And I log out
 
     When I am on the "student1" "user > profile" page logged in as "viewer1"
@@ -86,3 +92,8 @@ Feature: Course completion awards credits
     Then the following should exist in the "reportbuilder-table" table:
       | Framework name | Restricted to category | Only obtained after | Required credits | Current credits |
       | Framework 1    | No                     | Not set             | 5                | 4               |
+
+    When I click on "4" "link" in the "Framework 1" "table_row"
+    Then the following should exist in the "reportbuilder-table" table:
+      | Type              | Name     | Credits |
+      | Course completion | Course 1 | 4       |

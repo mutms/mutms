@@ -27,7 +27,7 @@ use core_reportbuilder\local\helpers\format;
 use core_reportbuilder\local\filters\boolean_select;
 
 /**
- * Training framework entity.
+ * Credit framework entity.
  *
  * @package    tool_mutrain
  * @copyright  2025 Petr Skoda
@@ -101,6 +101,8 @@ final class framework extends base {
     protected function get_all_columns(): array {
         $frameworkalias = $this->get_table_alias('tool_mutrain_framework');
 
+        $columns = [];
+
         $columns[] = (new column(
             'name',
             new lang_string('framework_name', 'tool_mutrain'),
@@ -108,7 +110,23 @@ final class framework extends base {
         ))
             ->add_joins($this->get_joins())
             ->set_type(column::TYPE_TEXT)
-            ->add_fields("{$frameworkalias}.name, {$frameworkalias}.id, {$frameworkalias}.contextid")
+            ->add_fields("{$frameworkalias}.name")
+            ->set_is_sortable(true)
+            ->set_callback(static function (?string $value, \stdClass $row): string {
+                if (!isset($value)) {
+                    return '';
+                }
+                return format_string($value);
+            });
+
+        $columns[] = (new column(
+            'namewithlink',
+            new lang_string('framework_name', 'tool_mutrain'),
+            $this->get_entity_name()
+        ))
+            ->add_joins($this->get_joins())
+            ->set_type(column::TYPE_TEXT)
+            ->add_fields("{$frameworkalias}.name, {$frameworkalias}.id, {$frameworkalias}.contextid, {$frameworkalias}.publicaccess")
             ->set_is_sortable(true)
             ->set_callback(static function (?string $value, \stdClass $row): string {
                 if (!$row->id) {
@@ -117,7 +135,7 @@ final class framework extends base {
                 $context = \context::instance_by_id($row->contextid);
                 $name = format_string($row->name);
                 if (has_capability('tool/mutrain:viewframeworks', $context)) {
-                    $url = new \moodle_url('/admin/tool/mutrain/management/framework.php', ['id' => $row->id]);
+                    $url = new \core\url('/admin/tool/mutrain/management/framework.php', ['id' => $row->id]);
                     $name = \html_writer::link($url, $name);
                 }
                 return $name;
@@ -158,6 +176,7 @@ final class framework extends base {
             ->add_fields("{$frameworkalias}.contextid")
             ->set_is_sortable(false)
             ->set_callback(static function (?int $value, \stdClass $row): string {
+                global $PAGE;
                 if (!$row->contextid) {
                     return '';
                 }
@@ -167,7 +186,10 @@ final class framework extends base {
                 if (!has_capability('tool/mutrain:viewframeworks', $context)) {
                     return $name;
                 }
-                $url = new \moodle_url('/admin/tool/mutrain/management/index.php', ['contextid' => $context->id]);
+                $url = new \core\url('/admin/tool/mutrain/management/index.php', ['contextid' => $context->id]);
+                if ($url->compare($PAGE->url)) {
+                    return $name;
+                }
                 $name = \html_writer::link($url, $name);
                 return $name;
             });
@@ -180,7 +202,10 @@ final class framework extends base {
             ->add_joins($this->get_joins())
             ->set_type(column::TYPE_FLOAT)
             ->add_field("{$frameworkalias}.requiredcredits")
-            ->set_is_sortable(true);
+            ->set_is_sortable(true)
+            ->set_callback(static function (mixed $value, \stdClass $row): string {
+                return format_float($row->requiredcredits, 2, true, true);
+            });
 
         $columns[] = (new column(
             'restrictafter',

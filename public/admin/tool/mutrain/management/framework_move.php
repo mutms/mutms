@@ -17,10 +17,10 @@
 // phpcs:disable moodle.Files.BoilerplateComment.CommentEndedTooSoon
 
 /**
- * Archive credit framework.
+ * Move credit framework to different context.
  *
  * @package    tool_mutrain
- * @copyright  2025 Petr Skoda
+ * @copyright  2026 Petr Skoda
  * @license    https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -41,24 +41,20 @@ $framework = $DB->get_record('tool_mutrain_framework', ['id' => $id], '*', MUST_
 $context = context::instance_by_id($framework->contextid);
 require_capability('tool/mutrain:manageframeworks', $context);
 
-$currenturl = new core\url('/admin/tool/mutrain/management/framework_archive.php', ['id' => $framework->id]);
+$currenturl = new core\url('/admin/tool/mutrain/management/framework_move.php', ['id' => $framework->id]);
 $PAGE->set_context($context);
 $PAGE->set_url($currenturl);
 
 $returnurl = new core\url('/admin/tool/mutrain/management/framework.php', ['id' => $framework->id]);
 
-if ($framework->archived) {
-    redirect($returnurl);
-}
-
 $data = clone($framework);
 
-$form = new \tool_mutrain\local\form\framework_archive(null, ['data' => $data]);
+$form = new \tool_mutrain\local\form\framework_move(null, ['data' => $data, 'context' => $context]);
 
 if ($form->is_cancelled()) {
     $form->ajax_form_cancelled($returnurl);
 } else if ($data = $form->get_data()) {
-    framework::archive($data->id);
+    framework::move($data->id, $data->contextid, $data->restrictcontext);
     $form->ajax_form_submitted($returnurl);
 }
 
