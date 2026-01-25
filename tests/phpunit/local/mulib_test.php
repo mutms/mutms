@@ -37,6 +37,25 @@ final class mulib_test extends \advanced_testcase {
         $this->resetAfterTest();
     }
 
+    public function test_is_mucatalog_available(): void {
+        $this->assertSame(
+            file_exists(__DIR__ . '/../../../../../tool/mucatalog/version.php'),
+            mulib::is_mucatalog_available()
+        );
+    }
+
+    public function test_is_mucatalog_active(): void {
+        $this->assertFalse(mulib::is_mucatalog_active());
+
+        set_config('active', '1', 'tool_mucatalog');
+
+        if (mulib::is_mucatalog_available()) {
+            $this->assertTrue(mulib::is_mucatalog_active());
+        } else {
+            $this->assertFalse(mulib::is_mucatalog_active());
+        }
+    }
+
     public function test_is_muprog_available(): void {
         $this->assertSame(
             file_exists(__DIR__ . '/../../../../../tool/muprog/version.php'),
