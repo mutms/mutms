@@ -4,7 +4,7 @@
 
 namespace Composer\Autoload;
 
-class ComposerStaticInite88754dcdc0b34005bb9d86914a2e175
+class ComposerStaticInit908c17531ac6f0e916f104e096922710
 {
     public static $files = array (
         '6e3fae29631ef280660b3cdad06f25a8' => __DIR__ . '/..' . '/symfony/deprecation-contracts/function.php',
@@ -12,64 +12,65 @@ class ComposerStaticInite88754dcdc0b34005bb9d86914a2e175
     );
 
     public static $prefixLengthsPsr4 = array (
-        'S' => 
+        'S' =>
         array (
             'Symfony\\Polyfill\\Php80\\' => 23,
         ),
-        'P' => 
+        'P' =>
         array (
             'Psr\\EventDispatcher\\' => 20,
             'PomoDocs\\CommonMark\\Alert\\' => 26,
         ),
-        'N' => 
+        'N' =>
         array (
             'Nette\\' => 6,
         ),
-        'M' => 
+        'M' =>
         array (
             'MuTMS\\CommonMark\\Extra\\' => 23,
         ),
-        'L' => 
+        'L' =>
         array (
             'League\\Config\\' => 14,
             'League\\CommonMark\\' => 18,
         ),
-        'D' => 
+        'D' =>
         array (
             'Dflydev\\DotAccessData\\' => 22,
         ),
     );
 
     public static $prefixDirsPsr4 = array (
-        'Symfony\\Polyfill\\Php80\\' => 
+        'Symfony\\Polyfill\\Php80\\' =>
         array (
             0 => __DIR__ . '/..' . '/symfony/polyfill-php80',
         ),
-        'Psr\\EventDispatcher\\' => 
+        'Psr\\EventDispatcher\\' =>
         array (
             0 => __DIR__ . '/..' . '/psr/event-dispatcher/src',
         ),
-        'PomoDocs\\CommonMark\\Alert\\' => 
+        'PomoDocs\\CommonMark\\Alert\\' =>
         array (
             0 => __DIR__ . '/..' . '/pomodocs/commonmark-alert/src',
         ),
-        'Nette\\' => 
+        'Nette\\' =>
         array (
-            0 => __DIR__ . '/..' . '/nette/utils/src',
+            0 => __DIR__ . '/..' . '/nette/schema/src',
+            1 => __DIR__ . '/..' . '/nette/utils/src',
         ),
-        'MuTMS\\CommonMark\\Extra\\' => 
+        'MuTMS\\CommonMark\\Extra\\' =>
         array (
             0 => __DIR__ . '/..' . '/mutms/commonmark-extra/src',
         ),
-        'League\\Config\\' => 
+        'League\\Config\\' =>
         array (
             0 => __DIR__ . '/..' . '/league/config/src',
         ),
-        'League\\CommonMark\\' => 
+        'League\\CommonMark\\' =>
         array (
             0 => __DIR__ . '/..' . '/league/commonmark/src',
         ),
-        'Dflydev\\DotAccessData\\' => 
+        'Dflydev\\DotAccessData\\' =>
         array (
             0 => __DIR__ . '/..' . '/dflydev/dot-access-data/src',
         ),
@@ -243,6 +244,10 @@ class ComposerStaticInite88754dcdc0b34005bb9d86914a2e175
         'League\\CommonMark\\Extension\\HeadingPermalink\\HeadingPermalinkExtension' => __DIR__ . '/..' . '/league/commonmark/src/Extension/HeadingPermalink/HeadingPermalinkExtension.php',
         'League\\CommonMark\\Extension\\HeadingPermalink\\HeadingPermalinkProcessor' => __DIR__ . '/..' . '/league/commonmark/src/Extension/HeadingPermalink/HeadingPermalinkProcessor.php',
         'League\\CommonMark\\Extension\\HeadingPermalink\\HeadingPermalinkRenderer' => __DIR__ . '/..' . '/league/commonmark/src/Extension/HeadingPermalink/HeadingPermalinkRenderer.php',
+        'League\\CommonMark\\Extension\\Highlight\\HighlightExtension' => __DIR__ . '/..' . '/league/commonmark/src/Extension/Highlight/HighlightExtension.php',
+        'League\\CommonMark\\Extension\\Highlight\\Mark' => __DIR__ . '/..' . '/league/commonmark/src/Extension/Highlight/Mark.php',
+        'League\\CommonMark\\Extension\\Highlight\\MarkDelimiterProcessor' => __DIR__ . '/..' . '/league/commonmark/src/Extension/Highlight/MarkDelimiterProcessor.php',
+        'League\\CommonMark\\Extension\\Highlight\\MarkRenderer' => __DIR__ . '/..' . '/league/commonmark/src/Extension/Highlight/MarkRenderer.php',
         'League\\CommonMark\\Extension\\InlinesOnly\\ChildRenderer' => __DIR__ . '/..' . '/league/commonmark/src/Extension/InlinesOnly/ChildRenderer.php',
         'League\\CommonMark\\Extension\\InlinesOnly\\InlinesOnlyExtension' => __DIR__ . '/..' . '/league/commonmark/src/Extension/InlinesOnly/InlinesOnlyExtension.php',
         'League\\CommonMark\\Extension\\Mention\\Generator\\CallbackGenerator' => __DIR__ . '/..' . '/league/commonmark/src/Extension/Mention/Generator/CallbackGenerator.php',
@@ -478,9 +483,9 @@ class ComposerStaticInite88754dcdc0b34005bb9d86914a2e175
     public static function getInitializer(ClassLoader $loader)
     {
         return \Closure::bind(function () use ($loader) {
-            $loader->prefixLengthsPsr4 = ComposerStaticInite88754dcdc0b34005bb9d86914a2e175::$prefixLengthsPsr4;
-            $loader->prefixDirsPsr4 = ComposerStaticInite88754dcdc0b34005bb9d86914a2e175::$prefixDirsPsr4;
-            $loader->classMap = ComposerStaticInite88754dcdc0b34005bb9d86914a2e175::$classMap;
+            $loader->prefixLengthsPsr4 = ComposerStaticInit908c17531ac6f0e916f104e096922710::$prefixLengthsPsr4;
+            $loader->prefixDirsPsr4 = ComposerStaticInit908c17531ac6f0e916f104e096922710::$prefixDirsPsr4;
+            $loader->classMap = ComposerStaticInit908c17531ac6f0e916f104e096922710::$classMap;
 
         }, null, ClassLoader::class);
     }
