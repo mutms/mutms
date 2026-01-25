@@ -48,11 +48,11 @@ $certification = $DB->get_record('tool_mucertify_certification', ['id' => $sourc
 $context = context::instance_by_id($certification->contextid);
 require_capability('tool/mucertify:assign', $context);
 
-$currenturl = new moodle_url('/admin/tool/mucertify/management/source_approval_approve.php', ['id' => $id]);
+$currenturl = new \core\url('/admin/tool/mucertify/management/source_approval_approve.php', ['id' => $id]);
 $PAGE->set_context($context);
 $PAGE->set_url($currenturl);
 
-$returnurl = new moodle_url('/admin/tool/mucertify/management/source_approval_requests.php', ['id' => $certification->id]);
+$returnurl = new \core\url('/admin/tool/mucertify/management/source_approval_requests.php', ['id' => $certification->id]);
 
 $form = new \tool_mucertify\local\form\source_approval_approve(null, ['request' => $request, 'user' => $user, 'certification' => $certification, 'context' => $context]);
 

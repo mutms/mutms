@@ -39,11 +39,11 @@ class behat_tool_mucertify extends behat_base {
     protected function resolve_page_url(string $page): moodle_url {
         switch (strtolower($page)) {
             case 'all certifications management':
-                return new moodle_url('/admin/tool/mucertify/management/index.php');
+                return new \core\url('/admin/tool/mucertify/management/index.php');
             case 'certification catalogue':
-                return new moodle_url('/admin/tool/mucertify/catalogue/index.php');
+                return new \core\url('/admin/tool/mucertify/catalogue/index.php');
             case 'my certifications':
-                return new moodle_url('/admin/tool/mucertify/my/index.php');
+                return new \core\url('/admin/tool/mucertify/my/index.php');
 
             default:
                 throw new Exception('Unrecognised tool_mucertify page "' . $page . '."');
@@ -63,7 +63,7 @@ class behat_tool_mucertify extends behat_base {
             case 'certification management':
                 if (strtolower($identifier) === 'system') {
                     $syscontext = context_system::instance();
-                    return new moodle_url('/admin/tool/mucertify/management/index.php', ['contextid' => $syscontext->id]);
+                    return new \core\url('/admin/tool/mucertify/management/index.php', ['contextid' => $syscontext->id]);
                 } else {
                     $category = $DB->get_record('course_categories', ['name' => $identifier]);
                     if (!$category) {
@@ -74,7 +74,7 @@ class behat_tool_mucertify extends behat_base {
                     }
                 }
                 $context = context_coursecat::instance($category->id);
-                return new moodle_url('/admin/tool/mucertify/management/index.php', ['contextid' => $context->id]);
+                return new \core\url('/admin/tool/mucertify/management/index.php', ['contextid' => $context->id]);
             case 'certification':
                 $certification = $DB->get_record('tool_mucertify_certification', ['fullname' => $identifier]);
                 if (!$certification) {
@@ -83,7 +83,14 @@ class behat_tool_mucertify extends behat_base {
                 if (!$certification) {
                     throw new Exception('Invalid certification "' . $identifier . '."');
                 }
-                return new moodle_url('/admin/tool/mucertify/management/certification.php', ['id' => $certification->id]);
+                return new \core\url('/admin/tool/mucertify/management/certification.php', ['id' => $certification->id]);
+            case 'user certifications':
+                $userid = $this->get_user_id_by_identifier($identifier);
+                if (!$userid) {
+                    throw new Exception('The specified user with username or email "' .
+                        $identifier . '" does not exist');
+                }
+                return new moodle_url('/admin/tool/mucertify/my/index.php', ['userid' => $userid]);
 
             default:
                 throw new Exception('Unrecognised tool_mucertify page type "' . $type . '."');

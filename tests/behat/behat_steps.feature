@@ -19,17 +19,21 @@ Feature: Certifications navigation behat steps test
       | manager2 | Manager   | 2        | manager2@example.com |
       | viewer1  | Viewer    | 1        | viewer1@example.com  |
       | viewer2  | Viewer    | 2        | viewer2@example.com  |
+      | viewer3  | Viewer    | 3        | viewer3@example.com  |
       | student1 | Student   | 1        | student1@example.com |
       | admin1   | Admin     | 1        | admin1@example.com   |
     And the following "roles" exist:
       | name                 | shortname |
       | Certification viewer | pviewer   |
       | Program admin        | cadmin    |
+      | User viewer          | uviewer   |
     And the following "permission overrides" exist:
-      | capability                   | permission | role    | contextlevel | reference |
-      | tool/mucertify:view          | Allow      | pviewer | System       |           |
-      | tool/mucertify:admin         | Allow      | cadmin  | System       |           |
-      | moodle/site:configview       | Allow      | cadmin  | System       |           |
+      | capability                            | permission | role    | contextlevel | reference |
+      | tool/mucertify:view                   | Allow      | pviewer | System       |           |
+      | tool/mucertify:admin                  | Allow      | cadmin  | System       |           |
+      | moodle/site:configview                | Allow      | cadmin  | System       |           |
+      | tool/mucertify:viewusercertifications | Allow      | uviewer | System       |           |
+      | moodle/user:viewdetails               | Allow      | uviewer | System       |           |
     And the following "role assigns" exist:
       | user     | role          | contextlevel | reference |
       | manager1 | manager       | System       |           |
@@ -37,6 +41,7 @@ Feature: Certifications navigation behat steps test
       | viewer1  | pviewer       | System       |           |
       | viewer2  | pviewer       | Category     | CAT1      |
       | admin1   | cadmin        | System       |           |
+      | viewer3  | uviewer       | User         | student1  |
     And the following "tool_mucertify > certifications" exist:
       | fullname          | idnumber | category | publicaccess | archived |
       | Certification 000 | CR0      |          | 0            | 0        |
@@ -189,6 +194,33 @@ Feature: Certifications navigation behat steps test
     When I am on the "tool_mucertify > My certifications" page
     Then I should see "My certifications"
     And I should see "No assigned certifications found."
+
+  Scenario: User viewer navigates to User certifications via behat step
+    Given I log in as "viewer3"
+    And the following "tool_mucertify > certification_assignments" exist:
+      | certification     | user     |
+      | Certification 001 | student1 |
+      | Certification 002 | student1 |
+
+    When I am on the "student1" "tool_mucertify > User certifications" page
+    Then the following should exist in the "reportbuilder-table" table:
+      | Certification name   | Certification ID | Certification status |
+      | Certification 001    | CR1              | Not certified        |
+      | Certification 002    | CR2              | Not certified        |
+
+  Scenario: User viewer navigates to User certifications via UI
+    Given I log in as "viewer3"
+    And the following "tool_mucertify > certification_assignments" exist:
+      | certification     | user     |
+      | Certification 001 | student1 |
+      | Certification 002 | student1 |
+
+    When I am on the "student1" "user > profile" page
+    And I follow "Certifications"
+    Then the following should exist in the "reportbuilder-table" table:
+      | Certification name   | Certification ID | Certification status |
+      | Certification 001    | CR1              | Not certified        |
+      | Certification 002    | CR2              | Not certified        |
 
   @javascript
   Scenario: Certification admin or site config capabilities are needed to see certification settings

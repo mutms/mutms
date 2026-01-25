@@ -64,21 +64,21 @@ if ($ADMIN->fulltree) {
 $ADMIN->add('tool_mucertify', new admin_externalpage(
     'tool_mucertify_customfield_certification',
     new lang_string('customfields', 'tool_mucertify'),
-    new moodle_url("/admin/tool/mucertify/management/customfield_certification.php"),
+    new \core\url("/admin/tool/mucertify/management/customfield_certification.php"),
     'tool/mucertify:configurecustomfields'
 ));
 
 $ADMIN->add('tool_mucertify', new admin_externalpage(
     'tool_mucertify_customfield_assignment',
     new lang_string('customfields_assignment', 'tool_mucertify'),
-    new moodle_url("/admin/tool/mucertify/management/customfield_assignment.php"),
+    new \core\url("/admin/tool/mucertify/management/customfield_assignment.php"),
     'tool/mucertify:configurecustomfields'
 ));
 
 $ADMIN->add('tool_mucertify', new admin_externalpage(
     'tool_mucertify_management',
     new lang_string('management', 'tool_mucertify'),
-    new moodle_url("/admin/tool/mucertify/management/index.php"),
+    new \core\url("/admin/tool/mucertify/management/index.php"),
     'tool/mucertify:view'
 ));
 

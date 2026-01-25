@@ -115,7 +115,7 @@ final class approval extends base {
             }
         }
 
-        $url = new \moodle_url('/admin/tool/mucertify/catalogue/source_approval_request.php', ['sourceid' => $source->id]);
+        $url = new \core\url('/admin/tool/mucertify/catalogue/source_approval_request.php', ['sourceid' => $source->id]);
         $button = new \tool_mulib\output\ajax_form\button($url, get_string('source_approval_makerequest', 'tool_mucertify'));
 
         $button = $OUTPUT->render($button);
@@ -133,7 +133,7 @@ final class approval extends base {
         global $DB;
 
         if ($DB->record_exists('tool_mucertify_source', ['certificationid' => $certification->id, 'type' => 'approval'])) {
-            $url = new \moodle_url('/admin/tool/mucertify/management/source_approval_requests.php', ['id' => $certification->id]);
+            $url = new \core\url('/admin/tool/mucertify/management/source_approval_requests.php', ['id' => $certification->id]);
             $secondary->add(get_string('source_approval_requests', 'tool_mucertify'), $url, \navigation_node::TYPE_SETTING, null, 'certification_approval_requests');
         }
     }
@@ -223,8 +223,8 @@ final class approval extends base {
             $a->user_lastname = s($user->lastname);
             $a->certification_fullname = format_string($certification->fullname);
             $a->certification_idnumber = s($certification->idnumber);
-            $a->certification_url = (new \moodle_url('/admin/tool/mucertify/catalogue/certification.php', ['id' => $certification->id]))->out(false);
-            $a->requests_url = (new \moodle_url('/admin/tool/mucertify/management/source_approval_requests.php', ['id' => $certification->id]))->out(false);
+            $a->certification_url = (new \core\url('/admin/tool/mucertify/catalogue/certification.php', ['id' => $certification->id]))->out(false);
+            $a->requests_url = (new \core\url('/admin/tool/mucertify/management/source_approval_requests.php', ['id' => $certification->id]))->out(false);
 
             $subject = get_string('source_approval_notification_approval_request_subject', 'tool_mucertify', $a);
             $body = get_string('source_approval_notification_approval_request_body', 'tool_mucertify', $a);
@@ -330,7 +330,7 @@ final class approval extends base {
         $a->user_lastname = s($user->lastname);
         $a->certification_fullname = format_string($certification->fullname);
         $a->certification_idnumber = s($certification->idnumber);
-        $a->certification_url = (new \moodle_url('/admin/tool/mucertify/catalogue/certification.php', ['id' => $certification->id]))->out(false);
+        $a->certification_url = (new \core\url('/admin/tool/mucertify/catalogue/certification.php', ['id' => $certification->id]))->out(false);
         $a->reason = $reason;
 
         $subject = get_string('source_approval_notification_approval_reject_subject', 'tool_mucertify', $a);

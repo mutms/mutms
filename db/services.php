@@ -65,4 +65,23 @@ $functions = [
         'ajax' => true,
         'loginrequired' => true,
     ],
+    // Real web services follow.
+    'tool_mucertify_get_certifications' => [
+        'classname' => tool_mucertify\external\get_certifications::class,
+        'description' => 'Return list of certifications that match the search parameters.',
+        'type' => 'read',
+        'capabilities' => 'tool/mucertify:view',
+    ],
+    'tool_mucertify_get_certification_assignments' => [
+        'classname' => tool_mucertify\external\get_certification_assignments::class,
+        'description' => 'Return list of certification assignments for given certification id and optional user ids.',
+        'type' => 'read',
+        'capabilities' => 'tool/mucertify:view',
+    ],
+    'tool_mucertify_get_certification_periods' => [
+        'classname' => tool_mucertify\external\get_certification_periods::class,
+        'description' => 'Return list of certification periods for given certification id and user id.',
+        'type' => 'read',
+        'capabilities' => 'tool/mucertify:view',
+    ],
 ];

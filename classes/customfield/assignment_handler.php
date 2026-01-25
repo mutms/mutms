@@ -20,7 +20,7 @@
 namespace tool_mucertify\customfield;
 
 use core_customfield\field_controller;
-use moodle_url, context;
+use context;
 use MoodleQuickForm;
 
 /**
@@ -47,10 +47,10 @@ final class assignment_handler extends \core_customfield\handler {
     /**
      * Configuration of custom fields for assignments.
      *
-     * @return moodle_url
+     * @return \core\url
      */
-    public function get_configuration_url(): moodle_url {
-        return new moodle_url('/admin/tool/mucertify/management/customfield_assignment.php');
+    public function get_configuration_url(): \core\url {
+        return new \core\url('/admin/tool/mucertify/management/customfield_assignment.php');
     }
 
     /**

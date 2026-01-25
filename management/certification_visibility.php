@@ -45,7 +45,7 @@ $certification = $DB->get_record('tool_mucertify_certification', ['id' => $id], 
 $context = context::instance_by_id($certification->contextid);
 require_capability('tool/mucertify:view', $context);
 
-$currenturl = new moodle_url('/admin/tool/mucertify/management/certification_visibility.php', ['id' => $id]);
+$currenturl = new \core\url('/admin/tool/mucertify/management/certification_visibility.php', ['id' => $id]);
 
 management::setup_certification_page($currenturl, $context, $certification, 'certification_visibility');
 $PAGE->set_docs_path('https://github.com/mutms/moodle-tool_mucertify/wiki/Certification-visibility');
@@ -57,7 +57,7 @@ echo $OUTPUT->header();
 
 $buttons = [];
 if (has_capability('tool/mucertify:edit', $context)) {
-    $editurl = new moodle_url('/admin/tool/mucertify/management/certification_visibility_edit.php', ['id' => $certification->id]);
+    $editurl = new \core\url('/admin/tool/mucertify/management/certification_visibility_edit.php', ['id' => $certification->id]);
     $editbutton = new tool_mulib\output\ajax_form\button($editurl, get_string('edit'));
     $buttons[] = $OUTPUT->render($editbutton);
 }

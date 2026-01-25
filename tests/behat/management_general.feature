@@ -129,6 +129,7 @@ Feature: General Certification management tests
     And I set the field "Tags" to "Logic"
     And I click on "Add certification" "button" in the ".modal-dialog" "css_element"
     And I click on "General" "link" in the ".secondary-navigation" "css_element"
+    And I should see "Cat 1" in the "Category" definition list item
 
     When I press "Edit"
     And I set the following fields in the ".modal-dialog" "css_element" to these values:
@@ -136,15 +137,37 @@ Feature: General Certification management tests
       | Certification ID   | CT01              |
       | Description        | Nice desc         |
     And I upload "admin/tool/mucertify/tests/fixtures/badge.png" file to "Certification image" filemanager
-    And I set the field "Category" to "Cat 2"
     And I set the field "Tags" to "Mathematics, Algebra"
     And I click on "Update certification" "button" in the ".modal-dialog" "css_element"
     Then I should see "Certification 001" in the "Certification name" definition list item
     And I should see "CT01" in the "Certification ID" definition list item
-    And I should see "Cat 2" in the "Category" definition list item
+    And I should see "Cat 1" in the "Category" definition list item
     And I should see "No" in the "Archived" definition list item
     And I should see "Mathematics" in the "Tags" definition list item
     And I should see "Algebra" in the "Tags" definition list item
+
+  @javascript
+  Scenario: Manager may move certification into a different context
+    Given I log in as "manager1"
+    And I am on the "tool_mucertify > All certifications management" page
+    And I press "Add certification"
+    And I set the following fields in the ".modal-dialog" "css_element" to these values:
+      | Certification name | Certification 002 |
+      | Certification ID   | CT02              |
+    And I set the field "Tags" to "Logic"
+    And I click on "Add certification" "button" in the ".modal-dialog" "css_element"
+    And I click on "General" "link" in the ".secondary-navigation" "css_element"
+    And I should see "System" in the "Category" definition list item
+
+    When I click on "Move certification" "link"
+    And I set the field "Category" to "Cat 2"
+    And I click on "Move certification" "button" in the ".modal-dialog" "css_element"
+    Then I should see "Cat 2" in the "Category" definition list item
+
+    When I click on "Move certification" "link"
+    And I set the field "Category" to "System"
+    And I click on "Move certification" "button" in the ".modal-dialog" "css_element"
+    Then I should see "System" in the "Category" definition list item
 
   @javascript
   Scenario: Set up and edit custom fields of certifications

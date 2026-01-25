@@ -592,7 +592,7 @@ abstract class base {
         $context = \context::instance_by_id($certification->contextid);
         if (has_capability('tool/mucertify:edit', $context) && static::is_update_allowed($certification)) {
             $label = get_string('updatesource', 'tool_mucertify', static::get_name());
-            $editurl = new \moodle_url('/admin/tool/mucertify/management/certification_source_edit.php', ['certificationid' => $certification->id, 'type' => $type]);
+            $editurl = new \core\url('/admin/tool/mucertify/management/certification_source_edit.php', ['certificationid' => $certification->id, 'type' => $type]);
             $editbutton = new \tool_mulib\output\ajax_form\icon($editurl, $label, 'i/settings');
             $editbutton->set_modal_title(static::get_name());
             $result .= ' ' . $OUTPUT->render($editbutton);

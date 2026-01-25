@@ -116,7 +116,7 @@ final class certification extends base {
                 $context = \context::instance_by_id($row->contextid);
                 $name = format_string($row->fullname);
                 if (has_capability('tool/mucertify:view', $context)) {
-                    $url = new \moodle_url('/admin/tool/mucertify/management/certification.php', ['id' => $row->id]);
+                    $url = new \core\url('/admin/tool/mucertify/management/certification.php', ['id' => $row->id]);
                     $name = \html_writer::link($url, $name);
                 }
                 return $name;
@@ -150,7 +150,7 @@ final class certification extends base {
                 if (!has_capability('tool/mucertify:view', $context)) {
                     return $value;
                 }
-                $url = new \moodle_url('/admin/tool/mucertify/management/certification_visibility.php', ['id' => $row->id]);
+                $url = new \core\url('/admin/tool/mucertify/management/certification_visibility.php', ['id' => $row->id]);
                 $value = \html_writer::link($url, $value);
                 return $value;
             });
@@ -177,6 +177,7 @@ final class certification extends base {
             ->add_fields("{$certificationalias}.contextid")
             ->set_is_sortable(false)
             ->set_callback(static function (?int $value, \stdClass $row): string {
+                global $PAGE;
                 if (!$row->contextid) {
                     return '';
                 }
@@ -186,7 +187,10 @@ final class certification extends base {
                 if (!has_capability('tool/mucertify:view', $context)) {
                     return $name;
                 }
-                $url = new \moodle_url('/admin/tool/mucertify/management/index.php', ['contextid' => $context->id]);
+                $url = new \core\url('/admin/tool/mucertify/management/index.php', ['contextid' => $context->id]);
+                if ($url->compare($PAGE->url)) {
+                    return $name;
+                }
                 $name = \html_writer::link($url, $name);
                 return $name;
             });
@@ -209,7 +213,7 @@ final class certification extends base {
                 $count = $row->assignmentcount;
                 $context = \context::instance_by_id($row->contextid);
                 if (has_capability('tool/mucertify:view', $context)) {
-                    $url = new \moodle_url('/admin/tool/mucertify/management/certification_users.php', ['id' => $row->id]);
+                    $url = new \core\url('/admin/tool/mucertify/management/certification_users.php', ['id' => $row->id]);
                     $count = \html_writer::link($url, $count);
                 }
                 return $count;

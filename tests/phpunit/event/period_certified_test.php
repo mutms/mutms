@@ -100,7 +100,7 @@ final class period_certified_test extends \advanced_testcase {
         $this->assertSame('tool_mucertify_period', $event->objecttable);
         $this->assertSame('User was certified', $event::get_name());
         $description = $event->get_description();
-        $certificationurl = new \moodle_url('/admin/tool/mucertify/management/period.php', ['id' => $period->id]);
+        $certificationurl = new \core\url('/admin/tool/mucertify/management/period.php', ['id' => $period->id]);
         $this->assertSame($certificationurl->out(false), $event->get_url()->out(false));
     }
 }
