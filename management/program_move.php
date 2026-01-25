@@ -18,24 +18,17 @@
 // phpcs:disable moodle.Files.LineLength.TooLong
 
 /**
- * Program management interface.
+ * Move program to a different context.
  *
  * @package    tool_muprog
- * @copyright  2022 Open LMS (https://www.openlms.net/)
- * @copyright  2025 Petr Skoda
- * @author     Petr Skoda
+ * @copyright  2026 Petr Skoda
  * @license    https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 use tool_muprog\local\program;
-use tool_muprog\local\content\set;
-use tool_muprog\local\content\top;
 
 /** @var moodle_database $DB */
 /** @var moodle_page $PAGE */
-/** @var core_renderer $OUTPUT */
-/** @var stdClass $CFG */
-/** @var stdClass $COURSE */
 
 define('AJAX_SCRIPT', true);
 
@@ -45,35 +38,23 @@ $id = required_param('id', PARAM_INT);
 
 require_login();
 
-$item = $DB->get_record('tool_muprog_item', ['id' => $id], '*', MUST_EXIST);
-$program = $DB->get_record('tool_muprog_program', ['id' => $item->programid], '*', MUST_EXIST);
+$program = $DB->get_record('tool_muprog_program', ['id' => $id], '*', MUST_EXIST);
 $context = context::instance_by_id($program->contextid);
 require_capability('tool/muprog:edit', $context);
 
-$currenturl = new moodle_url('/admin/tool/muprog/management/item_set_edit.php', ['id' => $item->id]);
+$currenturl = new core\url('/admin/tool/muprog/management/program_move.php', ['id' => $program->id]);
 $PAGE->set_context($context);
 $PAGE->set_url($currenturl);
 
-$returnurl = new moodle_url('/admin/tool/muprog/management/program_content.php', ['id' => $program->id]);
-
-if ($program->archived) {
-    redirect($returnurl);
-}
-
-$top = program::load_content($program->id);
-$set = $top->find_item($item->id);
-if (!$set || !($set instanceof set)) {
-    redirect($returnurl);
-}
-
-$form = new \tool_muprog\local\form\item_set_edit(null, ['set' => $set, 'context' => $context]);
+$form = new \tool_muprog\local\form\program_move(null, ['program' => $program, 'context' => $context]);
+$returnurl = new core\url('/admin/tool/muprog/management/program.php', ['id' => $program->id]);
 
 if ($form->is_cancelled()) {
     $form->ajax_form_cancelled($returnurl);
 }
 
 if ($data = $form->get_data()) {
-    $top->update_set($set, (array)$data);
+    program::move($data->id, $data->contextid);
     $form->ajax_form_submitted($returnurl);
 }
 

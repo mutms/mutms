@@ -79,11 +79,10 @@ class event_observer {
         $syscontext = \context_system::instance();
         $programs = $DB->get_records('tool_muprog_program', ['contextid' => $event->contextid]);
         foreach ($programs as $program) {
-            $data = (object)[
-                'id' => $program->id,
-                'contextid' => $syscontext->id,
-            ];
-            program::update_general($data);
+            if (!$program->archived) {
+                program::archive($program->id);
+            }
+            program::move($program->id, $syscontext->id);
         }
     }
 

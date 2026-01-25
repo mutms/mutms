@@ -36,6 +36,7 @@ function xmldb_tool_muprog_uninstall(): bool {
 
     $trans = $DB->start_delegated_transaction();
 
+    $DB->delete_records('tool_muprog_attendance', []);
     $DB->delete_records('tool_muprog_evidence', []);
     $DB->delete_records('tool_muprog_completion', []);
     $DB->delete_records('tool_muprog_allocation', []);

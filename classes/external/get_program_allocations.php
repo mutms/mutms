@@ -15,6 +15,7 @@
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 // phpcs:disable moodle.Files.BoilerplateComment.CommentEndedTooSoon
+// phpcs:disable moodle.Files.LineLength.TooLong
 
 namespace tool_muprog\external;
 
@@ -39,17 +40,16 @@ final class get_program_allocations extends external_api {
      * Describes the external function arguments.
      *
      * @return external_function_parameters
-     * NOTE For now Moodle does not allow multiple_structure to be null , so have left it as value default and empty array.
-     * see MDL-78192 for details, when possible convert empty array to null.
      */
     public static function execute_parameters(): external_function_parameters {
         return new external_function_parameters([
             'programid' => new external_value(PARAM_INT, 'Program id'),
             'userids' => new external_multiple_structure(
                 new external_value(PARAM_INT, 'User id'),
-                'List of user ids for whom the program allocation must be fetched',
+                'List of user ids for whom the program allocation must be fetched, NULL or empty array means all',
                 VALUE_DEFAULT,
-                []
+                null,
+                NULL_ALLOWED
             ),
         ]);
     }
@@ -58,16 +58,19 @@ final class get_program_allocations extends external_api {
      * Returns list of programs allocations for given programid and optional users.
      *
      * @param int $programid Program id
-     * @param array $userids Users for whom this info has to be returned (optional).
+     * @param array|null $userids Users for whom this info has to be returned, NULL and empty array means all
      * @return array
      */
-    public static function execute(int $programid, array $userids = []): array {
+    public static function execute(int $programid, ?array $userids = null): array {
         global $DB;
 
-        ['programid' => $programid, 'userids' => $userids] = self::validate_parameters(
-            self::execute_parameters(),
-            ['programid' => $programid, 'userids' => $userids]
-        );
+        [
+            'programid' => $programid,
+            'userids' => $userids,
+        ] = self::validate_parameters(self::execute_parameters(), [
+            'programid' => $programid,
+            'userids' => $userids,
+        ]);
 
         $program = $DB->get_record('tool_muprog_program', ['id' => $programid], '*', MUST_EXIST);
 
@@ -77,15 +80,16 @@ final class get_program_allocations extends external_api {
         require_capability('tool/muprog:view', $context);
 
         $results = [];
-        if (empty($userids)) {
+        if (!$userids) {
             $allocations = $DB->get_records('tool_muprog_allocation', ['programid' => $programid], 'id');
         } else {
             $allocations = [];
             foreach ($userids as $userid) {
                 $allocationrecord = $DB->get_record('tool_muprog_allocation', ['programid' => $programid, 'userid' => $userid]);
-                if ($allocationrecord) {
-                    $allocations[$allocationrecord->id] = $allocationrecord;
+                if (!$allocationrecord) {
+                    continue;
                 }
+                $allocations[$allocationrecord->id] = $allocationrecord;
             }
             ksort($allocations, SORT_NUMERIC);
         }
@@ -101,8 +105,14 @@ final class get_program_allocations extends external_api {
             /** @var class-string<\tool_muprog\local\source\base> $sourceclass */
             $sourceclass = $sourceclasses[$source->type];
             $allocation->sourcetype = $source->type;
-            $allocation->deletesupported = $sourceclass::is_allocation_delete_possible($program, $source, $allocation);
-            $allocation->editsupported = $sourceclass::is_allocation_update_possible($program, $source, $allocation);
+            $allocation->deletepossible = $sourceclass::is_allocation_delete_possible($program, $source, $allocation);
+            $allocation->archivepossible = $sourceclass::is_allocation_archive_possible($program, $source, $allocation);
+            $allocation->restorepossible = $sourceclass::is_allocation_restore_possible($program, $source, $allocation);
+            $allocation->editpossible = $sourceclass::is_allocation_update_possible($program, $source, $allocation);
+
+            unset($allocation->sourcedatajson);
+            unset($allocation->sourceinstanceid);
+
             $results[] = $allocation;
         }
 
@@ -116,24 +126,7 @@ final class get_program_allocations extends external_api {
      */
     public static function execute_returns(): external_multiple_structure {
         return new external_multiple_structure(
-            new external_single_structure([
-                'id' => new external_value(PARAM_INT, 'Program allocation id'),
-                'programid' => new external_value(PARAM_INT, 'Program id'),
-                'userid' => new external_value(PARAM_INT, 'User id'),
-                'sourceid' => new external_value(PARAM_INT, 'Allocation source id'),
-                'archived' => new external_value(PARAM_BOOL, 'Archived flag (Archived allocations do not change)'),
-                'sourcedatajson' => new external_value(PARAM_RAW, 'Source data json (internal)'),
-                'sourceinstanceid' => new external_value(PARAM_INT, 'Allocation source instance id (internal)'),
-                'timeallocated' => new external_value(PARAM_INT, 'Allocation date'),
-                'timestart' => new external_value(PARAM_INT, 'Allocation start date'),
-                'timedue' => new external_value(PARAM_INT, 'Allocation due date'),
-                'timeend' => new external_value(PARAM_INT, 'Allocation end date'),
-                'timecompleted' => new external_value(PARAM_INT, 'Allocation completed date'),
-                'timecreated' => new external_value(PARAM_INT, 'Allocation created date'),
-                'sourcetype' => new external_value(PARAM_ALPHANUMEXT, 'Internal source name'),
-                'deletesupported' => new external_value(PARAM_BOOL, 'Flag to indicate if delete is supported'),
-                'editsupported' => new external_value(PARAM_BOOL, 'Flag to indicate if edit is supported'),
-            ], 'List of program allocations')
+            update_program_allocation::execute_returns()
         );
     }
 }

@@ -43,7 +43,7 @@ class cron extends \core\task\scheduled_task {
     public function execute() {
         global $DB;
 
-        // Do no use util::is_muprog_active() here, this is used as final cleanup code.
+        // Do no use mulib::is_muprog_active() here, this is used as final cleanup code.
         if (!$DB->record_exists('tool_muprog_program', [])) {
             return;
         }

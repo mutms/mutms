@@ -21,6 +21,8 @@
 namespace tool_muprog\phpunit\local;
 
 use tool_muprog\local\program;
+use core\exception\invalid_parameter_exception;
+use core\exception\moodle_exception;
 
 /**
  * Program helper test.
@@ -150,19 +152,19 @@ final class program_test extends \advanced_testcase {
         global $DB;
 
         $syscontext = \context_system::instance();
-        $data = (object)[
-            'fullname' => 'Some program',
-            'idnumber' => 'SP1',
-            'contextid' => $syscontext->id,
-        ];
-
-        $this->setCurrentTimeStart();
-        $oldprogram = program::create($data);
-
         $category = $this->getDataGenerator()->create_category([]);
         $cohort1 = $this->getDataGenerator()->create_cohort();
         $cohort2 = $this->getDataGenerator()->create_cohort();
         $catcontext = \context_coursecat::instance($category->id);
+
+        $data = (object)[
+            'fullname' => 'Some program',
+            'idnumber' => 'SP1',
+            'contextid' => $catcontext->id,
+        ];
+
+        $oldprogram = program::create($data);
+
         $data = (object)[
             'id' => $oldprogram->id,
             'fullname' => 'Some other program',
@@ -207,6 +209,110 @@ final class program_test extends \advanced_testcase {
         $program = program::update_general($data);
         $this->assertDebuggingCalled('Use program::archive() and program::restore() to change archived flag');
         $this->assertSame('0', $program->archived);
+        $this->assertSame((string)$catcontext->id, $program->contextid);
+    }
+
+    public function test_move(): void {
+        $syscontext = \context_system::instance();
+        $category = $this->getDataGenerator()->create_category([]);
+        $catcontext = \context_coursecat::instance($category->id);
+        $course = $this->getDataGenerator()->create_course();
+        $coursecontext = \context_course::instance($course->id);
+
+        $data = (object)[
+            'fullname' => 'Some program',
+            'idnumber' => 'SP1',
+            'contextid' => $syscontext->id,
+        ];
+        $program = program::create($data);
+        $this->assertSame((string)$syscontext->id, $program->contextid);
+
+        $program = program::move($program->id, $catcontext->id);
+        $this->assertSame((string)$catcontext->id, $program->contextid);
+
+        $program = program::move($program->id, $syscontext->id);
+        $this->assertSame((string)$syscontext->id, $program->contextid);
+
+        try {
+            program::move($program->id, $coursecontext->id);
+            $this->fail('Exception expected');
+        } catch (moodle_exception $ex) {
+            $this->assertInstanceOf(invalid_parameter_exception::class, $ex);
+            $this->assertSame('Invalid parameter value detected (System or category context expected)', $ex->getMessage());
+        }
+
+        // Test tags are moved.
+
+        $data = [
+            'fullname' => 'Program 2',
+            'idnumber' => 'c2',
+            'contextid' => $catcontext->id,
+            'tags' => ['hokus', 'pokus'],
+        ];
+        $program2 = program::create((object)$data);
+        $this->assertEqualsCanonicalizing(
+            ['hokus', 'pokus'],
+            \core_tag_tag::get_item_tags_array('tool_muprog', 'tool_muprog_program', $program2->id)
+        );
+        $tags = \core_tag_tag::get_item_tags('tool_muprog', 'tool_muprog_program', $program2->id);
+        foreach ($tags as $tag) {
+            $this->assertEquals($catcontext->id, $tag->taginstancecontextid);
+        }
+
+        $program2 = program::move($program2->id, $syscontext->id);
+        $this->assertEqualsCanonicalizing(
+            ['hokus', 'pokus'],
+            \core_tag_tag::get_item_tags_array('tool_muprog', 'tool_muprog_program', $program2->id)
+        );
+        $tags = \core_tag_tag::get_item_tags('tool_muprog', 'tool_muprog_program', $program2->id);
+        foreach ($tags as $tag) {
+            $this->assertEquals($syscontext->id, $tag->taginstancecontextid);
+        }
+
+        // Test images are moved.
+
+        $admin = get_admin();
+        $this->setUser($admin);
+        $fs = get_file_storage();
+        $context = \context_user::instance($admin->id);
+
+        $draftid1 = \file_get_unused_draft_itemid();
+        $record = [
+            'contextid' => $context->id,
+            'component' => 'user',
+            'filearea' => 'draft',
+            'itemid' => $draftid1,
+            'filepath' => '/',
+            'filename' => 'someimage.jpg',
+        ];
+        $fs->create_file_from_string($record, 'content is irrelevant');
+        $draftid2 = \file_get_unused_draft_itemid();
+        $record = [
+            'contextid' => $context->id,
+            'component' => 'user',
+            'filearea' => 'draft',
+            'itemid' => $draftid2,
+            'filepath' => '/',
+            'filename' => 'otherimage.jpg',
+        ];
+        $fs->create_file_from_string($record, 'content is irrelevant');
+
+        $data = [
+            'fullname' => 'Program 3',
+            'idnumber' => 'c3',
+            'contextid' => $catcontext->id,
+            'description_editor' => ['text' => 'xx', 'format' => FORMAT_HTML, 'itemid' => $draftid1],
+            'image' => $draftid2,
+        ];
+        $program3 = program::create((object)$data);
+        $this->assertTrue($fs->file_exists($catcontext->id, 'tool_muprog', 'description', $program3->id, '/', 'someimage.jpg'));
+        $this->assertTrue($fs->file_exists($catcontext->id, 'tool_muprog', 'image', $program3->id, '/', 'otherimage.jpg'));
+
+        $program3 = program::move($program3->id, $syscontext->id);
+        $this->assertFalse($fs->file_exists($catcontext->id, 'tool_muprog', 'description', $program3->id, '/', 'someimage.jpg'));
+        $this->assertFalse($fs->file_exists($catcontext->id, 'tool_muprog', 'image', $program3->id, '/', 'otherimage.jpg'));
+        $this->assertTrue($fs->file_exists($syscontext->id, 'tool_muprog', 'description', $program3->id, '/', 'someimage.jpg'));
+        $this->assertTrue($fs->file_exists($syscontext->id, 'tool_muprog', 'image', $program3->id, '/', 'otherimage.jpg'));
     }
 
     public function test_update_image(): void {

@@ -48,11 +48,11 @@ $program = $DB->get_record('tool_muprog_program', ['id' => $source->programid], 
 $context = context::instance_by_id($program->contextid);
 require_capability('tool/muprog:allocate', $context);
 
-$currenturl = new moodle_url('/admin/tool/muprog/management/source_approval_delete.php', ['id' => $id]);
+$currenturl = new core\url('/admin/tool/muprog/management/source_approval_delete.php', ['id' => $id]);
 $PAGE->set_context($context);
 $PAGE->set_url($currenturl);
 
-$returnurl = new moodle_url('/admin/tool/muprog/management/source_approval_requests.php', ['id' => $program->id]);
+$returnurl = new core\url('/admin/tool/muprog/management/source_approval_requests.php', ['id' => $program->id]);
 
 $form = new \tool_muprog\local\form\source_approval_delete(null, ['request' => $request, 'user' => $user, 'program' => $program, 'context' => $context]);
 

@@ -29,8 +29,6 @@
 /** @var moodle_database $DB */
 /** @var moodle_page $PAGE */
 /** @var core_renderer $OUTPUT */
-/** @var stdClass $CFG */
-/** @var stdClass $COURSE */
 /** @var stdClass $USER */
 
 use tool_muprog\local\allocation;
@@ -39,18 +37,32 @@ use tool_muprog\local\notification_manager;
 require('../../../../config.php');
 
 $id = required_param('id', PARAM_INT);
+$userid = optional_param('userid', 0, PARAM_INT);
 
 require_login();
+if (isguestuser()) {
+    redirect(new core\url('/'));
+}
 
-$usercontext = context_user::instance($USER->id);
+$currenturl = new core\url('/admin/tool/muprog/my/program.php', ['id' => $id]);
+
+if ($userid) {
+    $currenturl->param('userid', $userid);
+} else {
+    $userid = $USER->id;
+}
+$PAGE->set_url($currenturl);
+
+$usercontext = context_user::instance($userid);
 $PAGE->set_context($usercontext);
-$PAGE->set_url(new moodle_url('/admin/tool/muprog/my/program.php', ['id' => $id]));
 
 if (!\tool_mulib\local\mulib::is_muprog_active()) {
-    redirect(new moodle_url('/'));
+    redirect(new core\url('/'));
 }
-if (isguestuser()) {
-    redirect(new moodle_url('/admin/tool/muprog/catalogue/program.php', ['id' => $id]));
+
+$user = $DB->get_record('user', ['id' => $userid, 'deleted' => 0], '*', MUST_EXIST);
+if (isguestuser($user)) {
+    redirect(new core\url('/'));
 }
 
 $program = $DB->get_record('tool_muprog_program', ['id' => $id]);
@@ -62,63 +74,71 @@ if (!$program || $program->archived) {
     }
     if (has_capability('tool/muprog:view', $context)) {
         if ($program) {
-            redirect(new moodle_url('/admin/tool/muprog/management/program.php', ['id' => $program->id]));
+            redirect(new core\url('/admin/tool/muprog/management/program.php', ['id' => $program->id]));
         } else {
-            redirect(new moodle_url('/admin/tool/muprog/management/index.php'));
+            redirect(new core\url('/admin/tool/muprog/management/index.php'));
         }
     } else {
-        redirect(new moodle_url('/admin/tool/muprog/catalogue/index.php'));
+        redirect(new core\url('/admin/tool/muprog/catalogue/index.php'));
     }
 }
 $programcontext = context::instance_by_id($program->contextid);
 
-$allocation = $DB->get_record('tool_muprog_allocation', ['programid' => $program->id, 'userid' => $USER->id]);
+$allocation = $DB->get_record('tool_muprog_allocation', ['programid' => $program->id, 'userid' => $user->id]);
 if ($allocation && !$allocation->archived) {
-    // Make sure the enrolments are 100% up-to-date for the current user,
+    // Make sure the enrolments are 100% up-to-date for the user,
     // this is where are they going to look first in case of any problems.
-    allocation::fix_user_enrolments($program->id, $USER->id);
-    notification_manager::trigger_notifications($program->id, $USER->id);
-    $allocation = $DB->get_record('tool_muprog_allocation', ['programid' => $program->id, 'userid' => $USER->id]);
+    allocation::fix_user_enrolments($program->id, $user->id);
+    notification_manager::trigger_notifications($program->id, $user->id);
+    $allocation = $DB->get_record('tool_muprog_allocation', ['programid' => $program->id, 'userid' => $user->id]);
 }
 if (!$allocation || $allocation->archived) {
     if (\tool_muprog\local\catalogue::is_program_visible($program)) {
-        redirect(new moodle_url('/admin/tool/muprog/catalogue/program.php', ['id' => $id]));
+        redirect(new core\url('/admin/tool/muprog/catalogue/program.php', ['id' => $id]));
     } else {
         if (has_capability('tool/muprog:view', $programcontext)) {
-            redirect(new moodle_url('/admin/tool/muprog/management/program.php', ['id' => $program->id]));
+            redirect(new core\url('/admin/tool/muprog/management/program.php', ['id' => $program->id]));
         } else {
-            redirect(new moodle_url('/admin/tool/muprog/catalogue/index.php'));
+            redirect(new core\url('/admin/tool/muprog/catalogue/index.php'));
         }
     }
 }
 $source = $DB->get_record('tool_muprog_source', ['id' => $allocation->sourceid], '*', MUST_EXIST);
 
-$title = get_string('myprograms', 'tool_muprog');
-$PAGE->navigation->extend_for_user($USER);
+if ($userid != $USER->id) {
+    require_capability('tool/muprog:viewuserprograms', $usercontext);
+    $title = get_string('programs', 'tool_muprog');
+} else {
+    $title = get_string('myprograms', 'tool_muprog');
+}
+
+$PAGE->navigation->extend_for_user($user);
 $PAGE->set_title($title);
 $PAGE->set_pagelayout('report');
-$PAGE->navbar->add(get_string('profile'), new moodle_url('/user/profile.php', ['id' => $USER->id]));
-$PAGE->navbar->add($title, new moodle_url('/admin/tool/muprog/my/index.php'));
+$PAGE->navbar->add(get_string('profile'), new core\url('/user/profile.php', ['id' => $user->id]));
+$PAGE->navbar->add($title, new core\url('/admin/tool/muprog/my/index.php', ['userid' => $user->id]));
 $PAGE->navbar->add(format_string($program->fullname));
 
 $actions = new \tool_mulib\output\header_actions(get_string('program_actions', 'tool_muprog'));
 
 if (has_capability('tool/muprog:view', $programcontext)) {
-    $manageurl = new moodle_url('/admin/tool/muprog/management/program.php', ['id' => $program->id]);
-    $actions->get_dropdown()->add_item(get_string('management', 'tool_muprog'), $manageurl);
+    $url = new core\url('/admin/tool/muprog/management/allocation.php', ['id' => $allocation->id]);
+    $actions->get_dropdown()->add_item(get_string('allocation', 'tool_muprog'), $url);
+
+    $url = new core\url('/admin/tool/muprog/management/program.php', ['id' => $program->id]);
+    $actions->get_dropdown()->add_item(get_string('management', 'tool_muprog'), $url);
 }
 
 if ($actions->has_items()) {
     $PAGE->set_button($PAGE->button . $OUTPUT->render($actions));
 }
 
+\tool_muprog\event\allocation_viewed::create_from_allocation($allocation, $program)->trigger();
+
 /** @var \tool_muprog\output\my\renderer $myouput */
 $myouput = $PAGE->get_renderer('tool_muprog', 'my');
 
 echo $OUTPUT->header();
-
-$event = \tool_muprog\event\program_viewed::create_from_program($program);
-$event->trigger();
 
 echo $myouput->render_program($program);
 

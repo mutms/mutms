@@ -49,7 +49,7 @@ if ($context->contextlevel != CONTEXT_SYSTEM && $context->contextlevel != CONTEX
     throw new moodle_exception('invalidcontext');
 }
 
-$currenturl = new moodle_url('/admin/tool/muprog/management/program_create.php', ['contextid' => $context->id]);
+$currenturl = new core\url('/admin/tool/muprog/management/program_create.php', ['contextid' => $context->id]);
 $PAGE->set_context($context);
 $PAGE->set_url($currenturl);
 
@@ -66,12 +66,12 @@ $editoroptions = program::get_description_editor_options($context->id);
 $form = new \tool_muprog\local\form\program_create(null, ['data' => $program, 'editoroptions' => $editoroptions, 'context' => $context]);
 
 if ($form->is_cancelled()) {
-    redirect(new moodle_url('/admin/tool/muprog/management/index.php', ['contextid' => $context->id]));
+    redirect(new core\url('/admin/tool/muprog/management/index.php', ['contextid' => $context->id]));
 }
 
 if ($data = $form->get_data()) {
     $program = program::create($data);
-    $returnurl = new moodle_url('/admin/tool/muprog/management/program.php', ['id' => $program->id]);
+    $returnurl = new core\url('/admin/tool/muprog/management/program.php', ['id' => $program->id]);
     $form->ajax_form_submitted($returnurl);
 }
 

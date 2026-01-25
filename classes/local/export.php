@@ -151,6 +151,16 @@ final class export {
                     return $result;
                 }
 
+                if ($item instanceof \tool_muprog\local\content\attendance) {
+                    $result = [
+                        'itemtype' => 'attendance',
+                        'reference' => $item->get_fullname(),
+                        'points' => $item->get_points(),
+                        'completiondelay' => $item->get_completiondelay(),
+                    ];
+                    return $result;
+                }
+
                 if ($item instanceof \tool_muprog\local\content\credits) {
                     if (mulib::is_mutrain_available()) {
                         $framework = $DB->get_record('tool_mutrain_framework', ['id' => $item->get_creditframeworkid()]);

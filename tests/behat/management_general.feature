@@ -32,18 +32,18 @@ Feature: General programs management tests
       | Fields manager  | cfmanager |
 
     And the following "permission overrides" exist:
-      | capability                     | permission | role     | contextlevel | reference |
-      | tool/muprog:view            | Allow      | pviewer  | System       |           |
-      | tool/muprog:view            | Allow      | pmanager | System       |           |
-      | tool/muprog:edit            | Allow      | pmanager | System       |           |
-      | tool/muprog:delete          | Allow      | pmanager | System       |           |
-      | tool/muprog:addcourse       | Allow      | pmanager | System       |           |
-      | tool/muprog:allocate        | Allow      | pmanager | System       |           |
-      | tool/muprog:edit            | Allow      | peditor  | System       |           |
-      | tool/muprog:view            | Allow      | peditor  | System       |           |
-      | tool/muprog:admin          | Allow      | peditor  | System       |           |
-      | moodle/site:configview         | Allow      | cfmanager| System       |           |
-      | tool/muprog:configurecustomfields   | Allow      | cfmanager| System       |           |
+      | capability                        | permission | role     | contextlevel | reference |
+      | tool/muprog:view                  | Allow      | pviewer  | System       |           |
+      | tool/muprog:view                  | Allow      | pmanager | System       |           |
+      | tool/muprog:edit                  | Allow      | pmanager | System       |           |
+      | tool/muprog:delete                | Allow      | pmanager | System       |           |
+      | tool/muprog:addcourse             | Allow      | pmanager | System       |           |
+      | tool/muprog:allocate              | Allow      | pmanager | System       |           |
+      | tool/muprog:edit                  | Allow      | peditor  | System       |           |
+      | tool/muprog:view                  | Allow      | peditor  | System       |           |
+      | tool/muprog:admin                 | Allow      | peditor  | System       |           |
+      | moodle/site:configview            | Allow      | cfmanager| System       |           |
+      | tool/muprog:configurecustomfields | Allow      | cfmanager| System       |           |
 
     And the following "role assigns" exist:
       | user      | role          | contextlevel | reference |
@@ -143,6 +143,30 @@ Feature: General programs management tests
     And I should see "No" in the "Archived" definition list item
 
   @javascript
+  Scenario: Manager may move program into a different category
+    Given I log in as "manager1"
+    And I am on the "tool_muprog > All programs management" page
+    And I click on "Add program" "button"
+    And I set the following fields in the ".modal-dialog" "css_element" to these values:
+      | Program name  | Program 001 |
+      | Category      | System      |
+      | Program ID    | PR01        |
+    And I click on "Add program" "button" in the ".modal-dialog" "css_element"
+    And I should see "System" in the "Category" definition list item
+
+    When I click on "Move program" "link"
+    And I set the following fields in the ".modal-dialog" "css_element" to these values:
+      | Category      | Cat 1      |
+    And I click on "Move program" "button" in the ".modal-dialog" "css_element"
+    Then I should see "Cat 1" in the "Category" definition list item
+
+    When I click on "Move program" "link"
+    And I set the following fields in the ".modal-dialog" "css_element" to these values:
+      | Category      | System      |
+    And I click on "Move program" "button" in the ".modal-dialog" "css_element"
+    Then I should see "System" in the "Category" definition list item
+
+  @javascript
   Scenario: Manager may archive and restore program
     Given I log in as "manager1"
     And I am on the "tool_muprog > All programs management" page
@@ -196,12 +220,11 @@ Feature: General programs management tests
       | Course groups | Yes         |
       | Description   | Nice desc   |
     And I upload "admin/tool/muprog/tests/fixtures/badge.png" file to "Program image" filemanager
-    And I set the field "Category" to "Cat 2"
     And I set the field "Tags" to "Mathematics, Algebra"
     And I click on "Update program" "button" in the ".modal-dialog" "css_element"
     Then I should see "Program 001" in the "Program name" definition list item
     And I should see "PR01" in the "Program ID" definition list item
-    And I should see "Cat 2" in the "Category" definition list item
+    And I should see "Cat 1" in the "Category" definition list item
     And I should see "Yes" in the "Course groups" definition list item
     And I should see "No" in the "Archived" definition list item
     And I should see "Mathematics" in the "Tags" definition list item
@@ -235,7 +258,7 @@ Feature: General programs management tests
   @javascript
   Scenario: Manager may see there are deleted courses in program in list of programs
     Given the following "tool_muprog > programs" exist:
-      | fullname    | idnumber |
+      | fullname    | idnumber  |
       | Program 001 | PR01      |
       | Program 002 | PR02      |
       | Program 003 | PR03      |

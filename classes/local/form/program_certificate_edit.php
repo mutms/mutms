@@ -41,7 +41,7 @@ final class program_certificate_edit extends \tool_mulib\local\ajax_form {
         $templates = self::get_templates($context, $data->templateid);
 
         $templateoptions = ['' => get_string('certificatetemplatechoose', 'tool_muprog')] + $templates;
-        $manageurl = new \moodle_url('/admin/tool/certificate/manage_templates.php');
+        $manageurl = new \core\url('/admin/tool/certificate/manage_templates.php');
 
         $elements = [];
         $elements[] = $mform->createElement('select', 'templateid', get_string('certificatetemplate', 'tool_certificate'), $templateoptions);

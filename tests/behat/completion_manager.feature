@@ -130,7 +130,7 @@ Feature: Program completion by managers tests
     And I follow "Program 000"
     And I follow "Users"
     And I follow "Student 1"
-    And I click on "Override program completion" action from "Allocation actions" dropdown
+    And I click on "Override program completion" "link"
     And I set the following fields in the ".modal-dialog" "css_element" to these values:
       | timecompleted[enabled] | 1    |
     And I click on "Update" "button" in the ".modal-dialog" "css_element"

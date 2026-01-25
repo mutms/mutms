@@ -29,31 +29,49 @@
 /** @var moodle_database $DB */
 /** @var moodle_page $PAGE */
 /** @var core_renderer $OUTPUT */
-/** @var stdClass $CFG */
 /** @var stdClass $USER */
 
 require('../../../../config.php');
 
-require_login();
+$userid = optional_param('userid', 0, PARAM_INT);
 
-$usercontext = context_user::instance($USER->id);
+require_login();
+if (isguestuser()) {
+    redirect(new core\url('/'));
+}
+
+$currenturl = new core\url('/admin/tool/muprog/my/index.php');
+
+if ($userid) {
+    $currenturl->param('userid', $userid);
+} else {
+    $userid = $USER->id;
+}
+$PAGE->set_url($currenturl);
+
+$usercontext = context_user::instance($userid);
 $PAGE->set_context($usercontext);
 
 if (!\tool_mulib\local\mulib::is_muprog_active()) {
-    redirect(new moodle_url('/'));
-}
-if (isguestuser()) {
-    redirect(new moodle_url('/admin/tool/muprog/catalogue/index.php'));
+    redirect(new core\url('/'));
 }
 
-$currenturl = new moodle_url('/admin/tool/muprog/my/index.php');
+$user = $DB->get_record('user', ['id' => $userid, 'deleted' => 0], '*', MUST_EXIST);
+if (isguestuser($user)) {
+    redirect(new core\url('/'));
+}
 
-$title = get_string('myprograms', 'tool_muprog');
-$PAGE->navigation->extend_for_user($USER);
+if ($userid != $USER->id) {
+    require_capability('tool/muprog:viewuserprograms', $usercontext);
+    $title = get_string('programs', 'tool_muprog');
+} else {
+    $title = get_string('myprograms', 'tool_muprog');
+}
+
+$PAGE->navigation->extend_for_user($user);
 $PAGE->set_title($title);
-$PAGE->set_url($currenturl);
 $PAGE->set_pagelayout('report');
-$PAGE->navbar->add(get_string('profile'), new moodle_url('/user/profile.php', ['id' => $USER->id]));
+$PAGE->navbar->add(get_string('profile'), new core\url('/user/profile.php', ['id' => $user->id]));
 $PAGE->navbar->add($title);
 
 $actions = new \tool_mulib\output\header_actions(get_string('program_actions', 'tool_muprog'));
@@ -76,7 +94,7 @@ echo $OUTPUT->header();
 echo $OUTPUT->heading($title);
 
 $report = \core_reportbuilder\system_report_factory::create(
-    \tool_muprog\reportbuilder\local\systemreports\my_allocations::class,
+    \tool_muprog\reportbuilder\local\systemreports\allocations_user::class,
     $usercontext
 );
 echo $report->output();

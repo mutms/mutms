@@ -166,7 +166,7 @@ class renderer extends \plugin_renderer_base {
                         }
                     }
                     if ($canaccesscourse) {
-                        $detailurl = new \moodle_url('/course/view.php', ['id' => $courseid]);
+                        $detailurl = new \core\url('/course/view.php', ['id' => $courseid]);
                         $fullname = \html_writer::link($detailurl, $fullname);
                     }
                 } else {

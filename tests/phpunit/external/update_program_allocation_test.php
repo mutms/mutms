@@ -19,6 +19,8 @@
 
 namespace tool_muprog\phpunit\external;
 
+use tool_muprog\external\update_program_allocation;
+
 /**
  * External API for updating of program allocations
  *
@@ -81,9 +83,9 @@ final class update_program_allocation_test extends \advanced_testcase {
 
         $this->setUser($user2);
 
-        $result = \tool_muprog\external\update_program_allocation::clean_returnvalue(
-            \tool_muprog\external\update_program_allocation::execute_returns(),
-            \tool_muprog\external\update_program_allocation::execute(
+        $result = update_program_allocation::clean_returnvalue(
+            update_program_allocation::execute_returns(),
+            update_program_allocation::execute(
                 $program1->id,
                 $user1->id,
                 ['timestart' => $now - 10],
@@ -94,16 +96,22 @@ final class update_program_allocation_test extends \advanced_testcase {
         $this->assertSame((int)$allocation1->id, $result->id);
         $this->assertSame((int)$source1->id, $result->sourceid);
         $this->assertSame((int)$user1->id, $result->userid);
+        $this->assertSame(false, $result->archived);
         $this->assertSame($now - 10, $result->timestart);
         $this->assertSame($now + 60, $result->timedue);
         $this->assertSame($now + 120, $result->timeend);
         $this->assertSame('manual', $result->sourcetype);
-        $this->assertSame(true, $result->deletesupported);
-        $this->assertSame(true, $result->editsupported);
+        $this->assertSame(true, $result->deletepossible);
+        $this->assertSame(true, $result->archivepossible);
+        $this->assertSame(false, $result->restorepossible);
+        $this->assertSame(true, $result->deletepossible);
+        $this->assertSame(true, $result->editpossible);
+        $this->assertObjectNotHasProperty('sourcedatajson', $result);
+        $this->assertObjectNotHasProperty('sourceinstanceid', $result);
 
-        $result = \tool_muprog\external\update_program_allocation::clean_returnvalue(
-            \tool_muprog\external\update_program_allocation::execute_returns(),
-            \tool_muprog\external\update_program_allocation::execute(
+        $result = update_program_allocation::clean_returnvalue(
+            update_program_allocation::execute_returns(),
+            update_program_allocation::execute(
                 $program1->id,
                 $user1->id,
                 ['timestart' => $now - 10, 'timedue' => null, 'timeend' => $now + 60]
@@ -115,14 +123,9 @@ final class update_program_allocation_test extends \advanced_testcase {
         $this->assertSame(null, $result->timedue);
         $this->assertSame($now + 60, $result->timeend);
 
-        $result = \tool_muprog\external\update_program_allocation::clean_returnvalue(
-            \tool_muprog\external\update_program_allocation::execute_returns(),
-            \tool_muprog\external\update_program_allocation::execute(
-                $program1->id,
-                $user1->id,
-                [],
-                false
-            )
+        $result = update_program_allocation::clean_returnvalue(
+            update_program_allocation::execute_returns(),
+            update_program_allocation::execute($program1->id, $user1->id, [])
         );
         $result = (object)$result;
         $this->assertSame((int)$allocation1->id, $result->id);
@@ -131,7 +134,7 @@ final class update_program_allocation_test extends \advanced_testcase {
         $this->assertSame($now + 60, $result->timeend);
 
         try {
-            \tool_muprog\external\update_program_allocation::execute(
+            update_program_allocation::execute(
                 $program1->id,
                 $user1->id,
                 ['timestart' => $now - 10, 'timecompleted' => $now],
@@ -143,25 +146,21 @@ final class update_program_allocation_test extends \advanced_testcase {
         }
 
         try {
-            \tool_muprog\external\update_program_allocation::execute(
-                $program1->id,
-                $user1->id,
-                ['timestart' => 0]
-            );
+            update_program_allocation::execute($program1->id, $user1->id, ['timestart' => 0]);
             $this->fail('Exception expected');
         } catch (\moodle_exception $ex) {
             $this->assertInstanceOf(\invalid_parameter_exception::class, $ex);
         }
 
         try {
-            \tool_muprog\external\update_program_allocation::execute($program1->id, $user3->id, [], true);
+            update_program_allocation::execute($program1->id, $user3->id, [], true);
             $this->fail('Exception expected');
         } catch (\moodle_exception $ex) {
             $this->assertInstanceOf(\dml_missing_record_exception::class, $ex);
         }
 
         try {
-            \tool_muprog\external\update_program_allocation::execute($program2->id, $user2->id, [], true);
+            update_program_allocation::execute($program2->id, $user2->id, [], true);
             $this->fail('Exception expected');
         } catch (\moodle_exception $ex) {
             $this->assertInstanceOf(\required_capability_exception::class, $ex);

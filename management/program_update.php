@@ -31,9 +31,6 @@ use tool_muprog\local\program;
 
 /** @var moodle_database $DB */
 /** @var moodle_page $PAGE */
-/** @var core_renderer $OUTPUT */
-/** @var stdClass $CFG */
-/** @var stdClass $COURSE */
 
 define('AJAX_SCRIPT', true);
 
@@ -47,7 +44,7 @@ $program = $DB->get_record('tool_muprog_program', ['id' => $id], '*', MUST_EXIST
 $context = context::instance_by_id($program->contextid);
 require_capability('tool/muprog:edit', $context);
 
-$currenturl = new moodle_url('/admin/tool/muprog/management/program_update.php', ['id' => $program->id]);
+$currenturl = new core\url('/admin/tool/muprog/management/program_update.php', ['id' => $program->id]);
 $PAGE->set_context($context);
 $PAGE->set_url($currenturl);
 
@@ -68,7 +65,7 @@ file_prepare_draft_area($program->image, $context->id, 'tool_muprog', 'image', $
 
 $form = new \tool_muprog\local\form\program_update(null, ['data' => $program, 'editoroptions' => $editoroptions, 'context' => $context]);
 
-$returnurl = new moodle_url('/admin/tool/muprog/management/program.php', ['id' => $program->id]);
+$returnurl = new core\url('/admin/tool/muprog/management/program.php', ['id' => $program->id]);
 
 if ($form->is_cancelled()) {
     $form->ajax_form_cancelled($returnurl);

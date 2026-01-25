@@ -29,18 +29,16 @@ use tool_muprog\local\content\credits;
  * @author     Petr Skoda
  * @license    https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-final class item_credits_edit extends \tool_mulib\local\ajax_form {
+final class item_update_credits extends \tool_mulib\local\ajax_form {
     #[\Override]
     protected function definition() {
         $mform = $this->_form;
         /** @var credits $credits */
         $credits = $this->_customdata['credits'];
 
-        $mform->addElement('static', 'staticfullname', get_string('fullname'), format_string($credits->get_fullname()));
+        $mform->addElement('static', 'statictype', get_string('item_type', 'tool_muprog'), $credits::get_type_name());
 
-        $mform->addElement('text', 'points', get_string('itempoints', 'tool_muprog'));
-        $mform->setType('points', PARAM_INT);
-        $mform->setDefault('points', $credits->get_points());
+        $mform->addElement('static', 'staticfullname', get_string('fullname'), format_string($credits->get_fullname()));
 
         $mform->addElement(
             'duration',
@@ -49,6 +47,10 @@ final class item_credits_edit extends \tool_mulib\local\ajax_form {
             ['optional' => true, 'defaultunit' => DAYSECS]
         );
         $mform->setDefault('completiondelay', $credits->get_completiondelay());
+
+        $mform->addElement('text', 'points', get_string('itempoints', 'tool_muprog'));
+        $mform->setType('points', PARAM_INT);
+        $mform->setDefault('points', $credits->get_points());
 
         $mform->addElement('hidden', 'id');
         $mform->setType('id', PARAM_INT);

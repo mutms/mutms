@@ -27,6 +27,7 @@ use tool_muprog\local\source\selfallocation;
  * @group      MuTMS
  * @package    tool_muprog
  * @copyright  2023 Open LMS (https://www.openlms.net/)
+ * @copyright  2025 Petr Skoda
  * @author     Farhan Karmali
  * @license    https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  *
@@ -88,7 +89,7 @@ final class delete_program_allocations_test extends \advanced_testcase {
         \cohort_add_member($cohort1->id, $user4->id);
 
         $allocatorroleid = $this->getDataGenerator()->create_role();
-        assign_capability('tool/muprog:allocate', CAP_ALLOW, $allocatorroleid, $syscontext);
+        assign_capability('tool/muprog:deallocate', CAP_ALLOW, $allocatorroleid, $syscontext);
         role_assign($allocatorroleid, $user1->id, $syscontext->id);
         role_assign($allocatorroleid, $user2->id, $catcontext1->id);
 

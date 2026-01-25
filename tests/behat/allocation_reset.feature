@@ -25,7 +25,7 @@ Feature: Program progress reset by managers tests
       | Program viewer  | pviewer   |
       | Program manager | pmanager  |
     And the following "permission overrides" exist:
-      | capability                       | permission | role     | contextlevel | reference |
+      | capability                    | permission | role     | contextlevel | reference |
       | tool/muprog:view              | Allow      | pviewer  | System       |           |
       | tool/muprog:view              | Allow      | pmanager | System       |           |
       | tool/muprog:edit              | Allow      | pmanager | System       |           |
@@ -68,50 +68,51 @@ Feature: Program progress reset by managers tests
     And I follow "Program 000"
     And I follow "Users"
     And I follow "Student 1"
-    And I click on "Reset program progress" action from "Allocation actions" dropdown
+    And I click on "Reset program progress" "link"
     And I set the following fields to these values:
       | Reset type         | Standard course purge |
       | Update allocation  | 0                     |
     And I click on "Reset program progress" "button" in the ".modal-dialog" "css_element"
     Then I should see "Not set" in the "Program completion date" definition list item
 
-    When I click on "Reset program progress" action from "Allocation actions" dropdown
+    When I click on "Reset program progress" "link"
     And I set the following fields to these values:
       | Reset type         | Full course purge |
       | Update allocation  | 1                 |
-      | timestart[year]    | 2023 |
-      | timestart[day]     | 5    |
-      | timestart[month]   | 11   |
-      | timestart[hour]    | 09   |
-      | timestart[minute]  | 00   |
-      | timedue[enabled]   | 1    |
-      | timedue[year]      | 2024 |
-      | timedue[day]       | 22   |
-      | timedue[month]     | 1    |
-      | timedue[hour]      | 09   |
-      | timedue[minute]    | 00   |
-      | timeend[enabled]   | 1    |
-      | timeend[year]      | 2030 |
-      | timeend[month]     | 12   |
-      | timeend[day]       | 31   |
-      | timeend[hour]      | 09   |
-      | timeend[minute]    | 00   |
+      | timestart[year]    | 2023              |
+      | timestart[day]     | 5                 |
+      | timestart[month]   | 11                |
+      | timestart[hour]    | 09                |
+      | timestart[minute]  | 00                |
+      | timedue[enabled]   | 1                 |
+      | timedue[year]      | 2024              |
+      | timedue[day]       | 22                |
+      | timedue[month]     | 1                 |
+      | timedue[hour]      | 09                |
+      | timedue[minute]    | 00                |
+      | timeend[enabled]   | 1                 |
+      | timeend[year]      | 2030              |
+      | timeend[month]     | 12                |
+      | timeend[day]       | 31                |
+      | timeend[hour]      | 09                |
+      | timeend[minute]    | 00                |
     And I click on "Reset program progress" "button" in the ".modal-dialog" "css_element"
     Then I should see "Not set" in the "Program completion date" definition list item
     And I should see "Sunday, 5 November 2023, 9:00 AM" in the "Program start" definition list item
     And I should see "Monday, 22 January 2024, 9:00 AM" in the "Program due" definition list item
     And I should see "Tuesday, 31 December 2030, 9:00 AM" in the "Program end" definition list item
 
-    When I click on "Reset program progress" action from "Allocation actions" dropdown
+    When I click on "Reset program progress" "link"
     And I set the following fields to these values:
-      | Update allocation  | 1    |
-      | timestart[year]    | 2024 |
-      | timestart[day]     | 5    |
-      | timestart[month]   | 11   |
-      | timestart[hour]    | 09   |
-      | timestart[minute]  | 00   |
-      | timedue[enabled]   | 0    |
-      | timeend[enabled]   | 0    |
+      | Reset type         | Standard course purge |
+      | Update allocation  | 1                     |
+      | timestart[year]    | 2024                  |
+      | timestart[day]     | 5                     |
+      | timestart[month]   | 11                    |
+      | timestart[hour]    | 09                    |
+      | timestart[minute]  | 00                    |
+      | timedue[enabled]   | 0                     |
+      | timeend[enabled]   | 0                     |
     And I click on "Reset program progress" "button" in the ".modal-dialog" "css_element"
     Then I should see "Not set" in the "Program completion date" definition list item
     And I should see "Tuesday, 5 November 2024, 9:00 AM" in the "Program start" definition list item

@@ -15,6 +15,7 @@
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 // phpcs:disable moodle.Files.BoilerplateComment.CommentEndedTooSoon
+// phpcs:disable moodle.Files.LineLength.TooLong
 
 namespace tool_muprog\external;
 
@@ -23,13 +24,13 @@ use core_external\external_function_parameters;
 use core_external\external_value;
 use core_external\external_api;
 use core_external\external_multiple_structure;
-use core_external\external_single_structure;
 
 /**
  * Remove cohort from the list of synchronised cohorts in a program.
  *
  * @package     tool_muprog
  * @copyright   2023 Open LMS (https://www.openlms.net/)
+ * @copyright   2025 Petr Skoda
  * @author      Farhan Karmali
  * @license     https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
@@ -55,10 +56,13 @@ final class source_cohort_delete_cohort extends external_api {
      */
     public static function execute(int $programid, int $cohortid): array {
         global $DB;
-        ['programid' => $programid, 'cohortid' => $cohortid] = self::validate_parameters(
-            self::execute_parameters(),
-            ['programid' => $programid, 'cohortid' => $cohortid]
-        );
+        [
+            'programid' => $programid,
+            'cohortid' => $cohortid,
+        ] = self::validate_parameters(self::execute_parameters(), [
+            'programid' => $programid,
+            'cohortid' => $cohortid,
+        ]);
 
         $program = $DB->get_record('tool_muprog_program', ['id' => $programid], '*', MUST_EXIST);
         $source = $DB->get_record('tool_muprog_source', ['programid' => $program->id, 'type' => 'cohort'], '*', MUST_EXIST);

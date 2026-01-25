@@ -70,10 +70,10 @@ final class catalogue_program_viewed extends \core\event\base {
     /**
      * Get URL related to the action.
      *
-     * @return \moodle_url
+     * @return \core\url
      */
     public function get_url() {
-        return new \moodle_url('/admin/tool/muprog/catalogue/program.php', ['id' => $this->objectid]);
+        return new \core\url('/admin/tool/muprog/catalogue/program.php', ['id' => $this->objectid]);
     }
 
     /**

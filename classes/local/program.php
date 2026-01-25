@@ -20,6 +20,7 @@
 namespace tool_muprog\local;
 
 use stdClass;
+use core\exception\invalid_parameter_exception;
 
 /**
  * Program helper.
@@ -64,16 +65,15 @@ final class program {
     public static function pre_course_category_delete(stdClass $category): void {
         global $DB;
 
-        $catcontext = \context_coursecat::instance($category->id, MUST_EXIST);
+        $catcontext = \context_coursecat::instance($category->id);
         $parentcontext = $catcontext->get_parent_context();
 
         $programs = $DB->get_records('tool_muprog_program', ['contextid' => $catcontext->id]);
         foreach ($programs as $program) {
-            $data = (object)[
-                'id' => $program->id,
-                'contextid' => $parentcontext->id,
-            ];
-            self::update_general($data);
+            if (!$program->archived) {
+                self::archive($program->id);
+            }
+            self::move($program->id, $parentcontext->id);
         }
     }
 
@@ -231,6 +231,7 @@ final class program {
 
         $item = new \stdClass();
         $item->programid = $data->id;
+        $item->type = 'top';
         $item->topitem = 1;
         $item->courseid = null;
         $item->fullname = $data->fullname;
@@ -288,42 +289,19 @@ final class program {
 
         $data = clone($data);
 
-        $trans = $DB->start_delegated_transaction();
-
         $oldprogram = $DB->get_record('tool_muprog_program', ['id' => $data->id], '*', MUST_EXIST);
+        $context = \context::instance_by_id($oldprogram->contextid);
 
         $record = new stdClass();
         $record->id = $oldprogram->id;
 
-        if (isset($data->contextid) && $data->contextid != $oldprogram->contextid) {
-            // Cohort was moved to another context.
-            $context = \context::instance_by_id($data->contextid);
-            if (!($context instanceof \context_system) && !($context instanceof \context_coursecat)) {
-                throw new \coding_exception('program contextid must be a system or course category');
+        if (property_exists($data, 'contextid')) {
+            if ($data->contextid != $oldprogram->contextid) {
+                throw new \core\exception\coding_exception('program::update_general() cannot change contextid, use program::move() instead');
             }
-            // The category pre-delete hook should be called before the category delete,
-            // so the $oldcontext should be still here.
-            $oldcontext = \context::instance_by_id($oldprogram->contextid, IGNORE_MISSING);
-            if ($oldcontext) {
-                get_file_storage()->move_area_files_to_new_context(
-                    $oldprogram->contextid,
-                    $context->id,
-                    'tool_muprog',
-                    'description',
-                    $data->id
-                );
-                // Delete tags even if they are not enabled before move,
-                // tags API is not designed to deal with this,
-                // we cannot create instance of deleted context.
-                \core_tag_tag::set_item_tags('tool_muprog', 'tool_muprog_program', $data->id, $oldcontext, null);
-            }
-            $record->contextid = $context->id;
-            // Fix favourites.
-            $DB->set_field('favourite', 'contextid', $context->id, ['component' => 'tool_muprog', 'itemtype' => 'programs', 'itemid' => $record->id]);
-        } else {
-            $record->contextid = $oldprogram->contextid;
-            $context = \context::instance_by_id($record->contextid);
         }
+
+        $trans = $DB->start_delegated_transaction();
 
         if (isset($data->fullname)) {
             if (strlen($data->fullname) === 0) {
@@ -341,7 +319,7 @@ final class program {
         if (isset($data->description_editor)) {
             $data->description = $data->description_editor['text'];
             $data->descriptionformat = $data->description_editor['format'];
-            $editoroptions = self::get_description_editor_options($data->contextid);
+            $editoroptions = self::get_description_editor_options($oldprogram->contextid);
             $data = file_postupdate_standard_editor(
                 $data,
                 'description',
@@ -373,7 +351,9 @@ final class program {
             $invalidatecalendarevents = true;
         }
 
-        $DB->update_record('tool_muprog_program', $record);
+        if (count((array)$record) > 1) {
+            $DB->update_record('tool_muprog_program', $record);
+        }
 
         if ($CFG->usetags && isset($data->tags)) {
             \core_tag_tag::set_item_tags('tool_muprog', 'tool_muprog_program', $data->id, $context, $data->tags);
@@ -426,6 +406,69 @@ final class program {
         allocation::fix_enrol_instances($program->id);
         allocation::fix_user_enrolments($program->id, null);
         calendar::fix_program_events($program);
+
+        return $program;
+    }
+
+    /**
+     * Move program to a different context.
+     *
+     * @param int $id program id
+     * @param int $contextid new context id
+     * @return stdClass program record
+     */
+    public static function move(int $id, int $contextid): stdClass {
+        global $DB;
+
+        $program = $DB->get_record('tool_muprog_program', ['id' => $id], '*', MUST_EXIST);
+
+        $context = \context::instance_by_id($contextid);
+        if ($context->contextlevel != CONTEXT_SYSTEM && $context->contextlevel != CONTEXT_COURSECAT) {
+            throw new invalid_parameter_exception('System or category context expected');
+        }
+
+        if ($program->contextid == $context->id) {
+            return $program;
+        }
+
+        $trans = $DB->start_delegated_transaction();
+
+        get_file_storage()->move_area_files_to_new_context(
+            $program->contextid,
+            $context->id,
+            'tool_muprog',
+            'image',
+            $program->id
+        );
+        get_file_storage()->move_area_files_to_new_context(
+            $program->contextid,
+            $context->id,
+            'tool_muprog',
+            'description',
+            $program->id
+        );
+
+        // Do not check if tags enabled here.
+        $tags = \core_tag_tag::get_item_tags_array('tool_muprog', 'tool_muprog_program', $program->id);
+        if ($tags) {
+            \core_tag_tag::set_item_tags('tool_muprog', 'tool_muprog_program', $program->id, $context, $tags);
+        }
+
+        // Fix favourites.
+        $DB->set_field('favourite', 'contextid', $context->id, ['component' => 'tool_muprog', 'itemtype' => 'programs', 'itemid' => $program->id]);
+
+        $record = (object)[
+            'id' => $program->id,
+            'contextid' => $context->id,
+        ];
+
+        $DB->update_record('tool_muprog_program', $record);
+
+        $program = $DB->get_record('tool_muprog_program', ['id' => $program->id], '*', MUST_EXIST);
+
+        \tool_muprog\event\program_updated::create_from_program($program)->trigger();
+
+        $trans->allow_commit();
 
         return $program;
     }
@@ -639,7 +682,7 @@ final class program {
         $sql = "SELECT COUNT('x')
                   FROM {tool_muprog_item} i
                  WHERE i.programid = :programid
-                       AND (i.courseid IS NOT NULL OR i.creditframeworkid IS NOT NULL)";
+                       AND i.type <> 'set' AND i.type <> 'top'";
         $count = $DB->count_records_sql($sql, ['programid' => $programid]);
 
         $sql = "UPDATE {tool_muprog_program}
@@ -980,6 +1023,7 @@ final class program {
 
         $items = $DB->get_records('tool_muprog_item', ['programid' => $program->id]);
         foreach ($items as $item) {
+            $DB->delete_records('tool_muprog_attendance', ['itemid' => $item->id]);
             $DB->delete_records('tool_muprog_evidence', ['itemid' => $item->id]);
             $DB->delete_records('tool_muprog_completion', ['itemid' => $item->id]);
             $DB->delete_records('tool_muprog_prerequisite', ['itemid' => $item->id]);

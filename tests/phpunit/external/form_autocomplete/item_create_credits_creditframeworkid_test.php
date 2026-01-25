@@ -19,7 +19,7 @@
 
 namespace tool_muprog\phpunit\external\form_autocomplete;
 
-use tool_muprog\external\form_autocomplete\item_append_creditframeworkid;
+use tool_muprog\external\form_autocomplete\item_create_credits_creditframeworkid;
 use tool_mulib\local\mulib;
 
 /**
@@ -32,9 +32,9 @@ use tool_mulib\local\mulib;
  * @author     Petr Skoda
  * @license    https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  *
- * @covers \tool_muprog\external\form_autocomplete\item_append_creditframeworkid
+ * @covers \tool_muprog\external\form_autocomplete\item_create_credits_creditframeworkid
  */
-final class item_append_creditframeworkid_test extends \advanced_testcase {
+final class item_create_credits_creditframeworkid_test extends \advanced_testcase {
     public function setUp(): void {
         parent::setUp();
         if (!mulib::is_mutrain_available()) {
@@ -121,9 +121,9 @@ final class item_append_creditframeworkid_test extends \advanced_testcase {
         role_assign($fviewerroleid, $user1->id, $syscontext->id);
 
         $this->setUser($user1);
-        $response = item_append_creditframeworkid::execute('', $program1->id);
-        $results = item_append_creditframeworkid::clean_returnvalue(
-            item_append_creditframeworkid::execute_returns(),
+        $response = item_create_credits_creditframeworkid::execute('', $program1->id);
+        $results = item_create_credits_creditframeworkid::clean_returnvalue(
+            item_create_credits_creditframeworkid::execute_returns(),
             $response
         );
         $this->assertFalse($results['overflow']);
@@ -134,9 +134,9 @@ final class item_append_creditframeworkid_test extends \advanced_testcase {
         ];
         $this->assertSame($expectedlist, $results['list']);
 
-        $response = item_append_creditframeworkid::execute('framework', $program1->id);
-        $results = item_append_creditframeworkid::clean_returnvalue(
-            item_append_creditframeworkid::execute_returns(),
+        $response = item_create_credits_creditframeworkid::execute('framework', $program1->id);
+        $results = item_create_credits_creditframeworkid::clean_returnvalue(
+            item_create_credits_creditframeworkid::execute_returns(),
             $response
         );
         $this->assertFalse($results['overflow']);
@@ -147,9 +147,9 @@ final class item_append_creditframeworkid_test extends \advanced_testcase {
         ];
         $this->assertSame($expectedlist, $results['list']);
 
-        $response = item_append_creditframeworkid::execute('Another', $program1->id);
-        $results = item_append_creditframeworkid::clean_returnvalue(
-            item_append_creditframeworkid::execute_returns(),
+        $response = item_create_credits_creditframeworkid::execute('Another', $program1->id);
+        $results = item_create_credits_creditframeworkid::clean_returnvalue(
+            item_create_credits_creditframeworkid::execute_returns(),
             $response
         );
         $this->assertFalse($results['overflow']);
@@ -158,9 +158,9 @@ final class item_append_creditframeworkid_test extends \advanced_testcase {
         ];
         $this->assertSame($expectedlist, $results['list']);
 
-        $response = item_append_creditframeworkid::execute('fr2', $program1->id);
-        $results = item_append_creditframeworkid::clean_returnvalue(
-            item_append_creditframeworkid::execute_returns(),
+        $response = item_create_credits_creditframeworkid::execute('fr2', $program1->id);
+        $results = item_create_credits_creditframeworkid::clean_returnvalue(
+            item_create_credits_creditframeworkid::execute_returns(),
             $response
         );
         $this->assertFalse($results['overflow']);
@@ -169,9 +169,9 @@ final class item_append_creditframeworkid_test extends \advanced_testcase {
         ];
         $this->assertSame($expectedlist, $results['list']);
 
-        $response = item_append_creditframeworkid::execute('xxx', $program1->id);
-        $results = item_append_creditframeworkid::clean_returnvalue(
-            item_append_creditframeworkid::execute_returns(),
+        $response = item_create_credits_creditframeworkid::execute('xxx', $program1->id);
+        $results = item_create_credits_creditframeworkid::clean_returnvalue(
+            item_create_credits_creditframeworkid::execute_returns(),
             $response
         );
         $this->assertFalse($results['overflow']);
@@ -179,9 +179,9 @@ final class item_append_creditframeworkid_test extends \advanced_testcase {
         $this->assertSame($expectedlist, $results['list']);
 
         $this->setUser($user2);
-        $response = item_append_creditframeworkid::execute('', $program1->id);
-        $results = item_append_creditframeworkid::clean_returnvalue(
-            item_append_creditframeworkid::execute_returns(),
+        $response = item_create_credits_creditframeworkid::execute('', $program1->id);
+        $results = item_create_credits_creditframeworkid::clean_returnvalue(
+            item_create_credits_creditframeworkid::execute_returns(),
             $response
         );
         $this->assertFalse($results['overflow']);
@@ -192,21 +192,41 @@ final class item_append_creditframeworkid_test extends \advanced_testcase {
         $this->assertSame($expectedlist, $results['list']);
 
         $this->setUser($user3);
-        $response = item_append_creditframeworkid::execute('', $program2->id);
-        $results = item_append_creditframeworkid::clean_returnvalue(
-            item_append_creditframeworkid::execute_returns(),
+        $response = item_create_credits_creditframeworkid::execute('', $program2->id);
+        $results = item_create_credits_creditframeworkid::clean_returnvalue(
+            item_create_credits_creditframeworkid::execute_returns(),
             $response
         );
         $this->assertFalse($results['overflow']);
         $expectedlist = [
             ['value' => (int)$framework2->id, 'label' => $framework2->name],
             ['value' => (int)$framework1->id, 'label' => $framework1->name],
+        ];
+        $this->assertSame($expectedlist, $results['list']);
+
+        $this->setUser($user1);
+
+        $record = [
+            'programid' => $program1->id,
+            'creditframeworkid' => $framework1->id,
+        ];
+        $item = $generator->create_program_item($record);
+
+        $response = item_create_credits_creditframeworkid::execute('', $program1->id);
+        $results = item_create_credits_creditframeworkid::clean_returnvalue(
+            item_create_credits_creditframeworkid::execute_returns(),
+            $response
+        );
+        $this->assertFalse($results['overflow']);
+        $expectedlist = [
+            ['value' => (int)$framework3->id, 'label' => $framework3->name],
+            ['value' => (int)$framework2->id, 'label' => $framework2->name],
         ];
         $this->assertSame($expectedlist, $results['list']);
 
         $this->setUser($user3);
         try {
-            item_append_creditframeworkid::execute('', $program1->id);
+            item_create_credits_creditframeworkid::execute('', $program1->id);
             $this->fail('Exception expected');
         } catch (\moodle_exception $ex) {
             $this->assertInstanceOf(\required_capability_exception::class, $ex);
@@ -214,7 +234,7 @@ final class item_append_creditframeworkid_test extends \advanced_testcase {
 
         $this->setUser($user4);
         try {
-            item_append_creditframeworkid::execute('', $program1->id);
+            item_create_credits_creditframeworkid::execute('', $program1->id);
             $this->fail('Exception expected');
         } catch (\moodle_exception $ex) {
             $this->assertInstanceOf(\required_capability_exception::class, $ex);
@@ -282,9 +302,9 @@ final class item_append_creditframeworkid_test extends \advanced_testcase {
         role_assign($editorroleid, $user2->id, $tenant2catcontext->id);
 
         $this->setUser($user0);
-        $response = item_append_creditframeworkid::execute('', $program0->id);
-        $results = item_append_creditframeworkid::clean_returnvalue(
-            item_append_creditframeworkid::execute_returns(),
+        $response = item_create_credits_creditframeworkid::execute('', $program0->id);
+        $results = item_create_credits_creditframeworkid::clean_returnvalue(
+            item_create_credits_creditframeworkid::execute_returns(),
             $response
         );
         $this->assertFalse($results['overflow']);
@@ -295,9 +315,9 @@ final class item_append_creditframeworkid_test extends \advanced_testcase {
         ];
         $this->assertSame($expectedlist, $results['list']);
 
-        $response = item_append_creditframeworkid::execute('', $program1->id);
-        $results = item_append_creditframeworkid::clean_returnvalue(
-            item_append_creditframeworkid::execute_returns(),
+        $response = item_create_credits_creditframeworkid::execute('', $program1->id);
+        $results = item_create_credits_creditframeworkid::clean_returnvalue(
+            item_create_credits_creditframeworkid::execute_returns(),
             $response
         );
         $this->assertFalse($results['overflow']);
@@ -307,9 +327,9 @@ final class item_append_creditframeworkid_test extends \advanced_testcase {
         ];
         $this->assertSame($expectedlist, $results['list']);
 
-        $response = item_append_creditframeworkid::execute('', $program2->id);
-        $results = item_append_creditframeworkid::clean_returnvalue(
-            item_append_creditframeworkid::execute_returns(),
+        $response = item_create_credits_creditframeworkid::execute('', $program2->id);
+        $results = item_create_credits_creditframeworkid::clean_returnvalue(
+            item_create_credits_creditframeworkid::execute_returns(),
             $response
         );
         $this->assertFalse($results['overflow']);
@@ -320,9 +340,9 @@ final class item_append_creditframeworkid_test extends \advanced_testcase {
         $this->assertSame($expectedlist, $results['list']);
 
         $this->setUser($user2);
-        $response = item_append_creditframeworkid::execute('', $program2->id);
-        $results = item_append_creditframeworkid::clean_returnvalue(
-            item_append_creditframeworkid::execute_returns(),
+        $response = item_create_credits_creditframeworkid::execute('', $program2->id);
+        $results = item_create_credits_creditframeworkid::clean_returnvalue(
+            item_create_credits_creditframeworkid::execute_returns(),
             $response
         );
         $this->assertFalse($results['overflow']);

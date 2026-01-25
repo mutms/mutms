@@ -55,18 +55,6 @@ final class selfallocation extends base {
     }
 
     /**
-     * Is it possible to manually archive and unarchive user allocation?
-     *
-     * @param stdClass $program
-     * @param stdClass $source
-     * @param stdClass $allocation
-     * @return bool
-     */
-    public static function is_allocation_archive_possible(stdClass $program, stdClass $source, stdClass $allocation): bool {
-        return true;
-    }
-
-    /**
      * Can settings of this source be imported to other program?
      *
     /**
@@ -182,7 +170,7 @@ final class selfallocation extends base {
             }
         }
 
-        $url = new \moodle_url('/admin/tool/muprog/catalogue/source_selfallocation.php', ['sourceid' => $source->id]);
+        $url = new \core\url('/admin/tool/muprog/catalogue/source_selfallocation.php', ['sourceid' => $source->id]);
         $button = new \tool_mulib\output\ajax_form\button($url, get_string('source_selfallocation_allocate', 'tool_muprog'));
 
         $button = $OUTPUT->render($button);

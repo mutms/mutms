@@ -20,6 +20,7 @@
 namespace tool_muprog\phpunit\external;
 
 use tool_mulib\local\mulib;
+use tool_muprog\external\get_programs;
 
 /**
  * External API for get program list
@@ -27,6 +28,7 @@ use tool_mulib\local\mulib;
  * @group      MuTMS
  * @package    tool_muprog
  * @copyright  2023 Open LMS (https://www.openlms.net/)
+ * @copyright  2025 Petr Skoda
  * @author     Farhan Karmali
  * @license    https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  *
@@ -91,8 +93,8 @@ final class get_programs_test extends \advanced_testcase {
         ]);
 
         $this->setUser($admin);
-        $response = \tool_muprog\external\get_programs::execute([]);
-        $results = \tool_muprog\external\get_programs::clean_returnvalue(\tool_muprog\external\get_programs::execute_returns(), $response);
+        $response = get_programs::execute([]);
+        $results = get_programs::clean_returnvalue(get_programs::execute_returns(), $response);
         $this->assertCount(3, $results);
 
         $result = $results[0];
@@ -161,93 +163,93 @@ final class get_programs_test extends \advanced_testcase {
         $this->assertSame(['manual'], $result->sources);
         $this->assertSame([], $result->cohortids);
 
-        $response = \tool_muprog\external\get_programs::execute([['field' => 'id', 'value' => $program1->id]]);
-        $results = \tool_muprog\external\get_programs::clean_returnvalue(\tool_muprog\external\get_programs::execute_returns(), $response);
+        $response = get_programs::execute([['field' => 'id', 'value' => $program1->id]]);
+        $results = get_programs::clean_returnvalue(get_programs::execute_returns(), $response);
         $this->assertCount(1, $results);
         $this->assertEquals($program1->id, $results[0]['id']);
 
-        $response = \tool_muprog\external\get_programs::execute([['field' => 'idnumber', 'value' => $program1->idnumber]]);
-        $results = \tool_muprog\external\get_programs::clean_returnvalue(\tool_muprog\external\get_programs::execute_returns(), $response);
+        $response = get_programs::execute([['field' => 'idnumber', 'value' => $program1->idnumber]]);
+        $results = get_programs::clean_returnvalue(get_programs::execute_returns(), $response);
         $this->assertCount(1, $results);
         $this->assertEquals($program1->id, $results[0]['id']);
 
-        $response = \tool_muprog\external\get_programs::execute([['field' => 'fullname', 'value' => $program1->fullname]]);
-        $results = \tool_muprog\external\get_programs::clean_returnvalue(\tool_muprog\external\get_programs::execute_returns(), $response);
+        $response = get_programs::execute([['field' => 'fullname', 'value' => $program1->fullname]]);
+        $results = get_programs::clean_returnvalue(get_programs::execute_returns(), $response);
         $this->assertCount(1, $results);
         $this->assertEquals($program1->id, $results[0]['id']);
 
-        $response = \tool_muprog\external\get_programs::execute([['field' => 'contextid', 'value' => $syscontext->id]]);
-        $results = \tool_muprog\external\get_programs::clean_returnvalue(\tool_muprog\external\get_programs::execute_returns(), $response);
+        $response = get_programs::execute([['field' => 'contextid', 'value' => $syscontext->id]]);
+        $results = get_programs::clean_returnvalue(get_programs::execute_returns(), $response);
         $this->assertCount(2, $results);
         $this->assertEquals($program1->id, $results[0]['id']);
         $this->assertEquals($program3->id, $results[1]['id']);
 
-        $response = \tool_muprog\external\get_programs::execute([['field' => 'publicaccess', 'value' => 1]]);
-        $results = \tool_muprog\external\get_programs::clean_returnvalue(\tool_muprog\external\get_programs::execute_returns(), $response);
+        $response = get_programs::execute([['field' => 'publicaccess', 'value' => 1]]);
+        $results = get_programs::clean_returnvalue(get_programs::execute_returns(), $response);
         $this->assertCount(2, $results);
         $this->assertEquals($program1->id, $results[0]['id']);
         $this->assertEquals($program3->id, $results[1]['id']);
 
-        $response = \tool_muprog\external\get_programs::execute([['field' => 'archived', 'value' => 0]]);
-        $results = \tool_muprog\external\get_programs::clean_returnvalue(\tool_muprog\external\get_programs::execute_returns(), $response);
+        $response = get_programs::execute([['field' => 'archived', 'value' => 0]]);
+        $results = get_programs::clean_returnvalue(get_programs::execute_returns(), $response);
         $this->assertCount(2, $results);
         $this->assertEquals($program1->id, $results[0]['id']);
         $this->assertEquals($program2->id, $results[1]['id']);
 
-        $response = \tool_muprog\external\get_programs::execute([['field' => 'id', 'value' => $program1->id], ['field' => 'publicaccess', 'value' => 1]]);
-        $results = \tool_muprog\external\get_programs::clean_returnvalue(\tool_muprog\external\get_programs::execute_returns(), $response);
+        $response = get_programs::execute([['field' => 'id', 'value' => $program1->id], ['field' => 'publicaccess', 'value' => 1]]);
+        $results = get_programs::clean_returnvalue(get_programs::execute_returns(), $response);
         $this->assertCount(1, $results);
         $this->assertEquals($program1->id, $results[0]['id']);
 
-        $response = \tool_muprog\external\get_programs::execute([['field' => 'id', 'value' => $program1->id], ['field' => 'publicaccess', 'value' => true]]);
-        $results = \tool_muprog\external\get_programs::clean_returnvalue(\tool_muprog\external\get_programs::execute_returns(), $response);
+        $response = get_programs::execute([['field' => 'id', 'value' => $program1->id], ['field' => 'publicaccess', 'value' => true]]);
+        $results = get_programs::clean_returnvalue(get_programs::execute_returns(), $response);
         $this->assertCount(1, $results);
         $this->assertEquals($program1->id, $results[0]['id']);
 
-        $response = \tool_muprog\external\get_programs::execute([['field' => 'id', 'value' => $program1->id], ['field' => 'publicaccess', 'value' => 0]]);
-        $results = \tool_muprog\external\get_programs::clean_returnvalue(\tool_muprog\external\get_programs::execute_returns(), $response);
+        $response = get_programs::execute([['field' => 'id', 'value' => $program1->id], ['field' => 'publicaccess', 'value' => 0]]);
+        $results = get_programs::clean_returnvalue(get_programs::execute_returns(), $response);
         $this->assertCount(0, $results);
 
-        $response = \tool_muprog\external\get_programs::execute([['field' => 'id', 'value' => $program1->id], ['field' => 'publicaccess', 'value' => false]]);
-        $results = \tool_muprog\external\get_programs::clean_returnvalue(\tool_muprog\external\get_programs::execute_returns(), $response);
+        $response = get_programs::execute([['field' => 'id', 'value' => $program1->id], ['field' => 'publicaccess', 'value' => false]]);
+        $results = get_programs::clean_returnvalue(get_programs::execute_returns(), $response);
         $this->assertCount(0, $results);
 
         $this->setUser($user1);
-        $response = \tool_muprog\external\get_programs::execute([]);
-        $results = \tool_muprog\external\get_programs::clean_returnvalue(\tool_muprog\external\get_programs::execute_returns(), $response);
+        $response = get_programs::execute([]);
+        $results = get_programs::clean_returnvalue(get_programs::execute_returns(), $response);
         $this->assertCount(3, $results);
         $this->assertEquals($program1->id, $results[0]['id']);
         $this->assertEquals($program2->id, $results[1]['id']);
         $this->assertEquals($program3->id, $results[2]['id']);
 
         $this->setUser($user2);
-        $response = \tool_muprog\external\get_programs::execute([]);
-        $results = \tool_muprog\external\get_programs::clean_returnvalue(\tool_muprog\external\get_programs::execute_returns(), $response);
+        $response = get_programs::execute([]);
+        $results = get_programs::clean_returnvalue(get_programs::execute_returns(), $response);
         $this->assertCount(1, $results);
         $this->assertEquals($program2->id, $results[0]['id']);
 
         $this->setUser($user3);
-        $response = \tool_muprog\external\get_programs::execute([]);
-        $results = \tool_muprog\external\get_programs::clean_returnvalue(\tool_muprog\external\get_programs::execute_returns(), $response);
+        $response = get_programs::execute([]);
+        $results = get_programs::clean_returnvalue(get_programs::execute_returns(), $response);
         $this->assertCount(0, $results);
 
         $this->setUser($admin);
         try {
-            \tool_muprog\external\get_programs::execute([['field' => 'arar', 'value' => 'hokus']]);
+            get_programs::execute([['field' => 'arar', 'value' => 'hokus']]);
             $this->fail('Exception expected');
         } catch (\moodle_exception $ex) {
             $this->assertInstanceOf(\invalid_parameter_exception::class, $ex);
             $this->assertSame('Invalid parameter value detected (Invalid field name: arar)', $ex->getMessage());
         }
         try {
-            \tool_muprog\external\get_programs::execute([['field' => 'id', 'value' => null]]);
+            get_programs::execute([['field' => 'id', 'value' => null]]);
             $this->fail('Exception expected');
         } catch (\moodle_exception $ex) {
             $this->assertInstanceOf(\invalid_parameter_exception::class, $ex);
             $this->assertSame('Invalid parameter value detected (Field value cannot be NULL: id)', $ex->getMessage());
         }
         try {
-            \tool_muprog\external\get_programs::execute([['field' => 'id', 'value' => 1], ['field' => 'id', 'value' => 2]]);
+            get_programs::execute([['field' => 'id', 'value' => 1], ['field' => 'id', 'value' => 2]]);
             $this->fail('Exception expected');
         } catch (\moodle_exception $ex) {
             $this->assertInstanceOf(\invalid_parameter_exception::class, $ex);
@@ -299,28 +301,33 @@ final class get_programs_test extends \advanced_testcase {
 
         $this->setAdminUser();
 
-        $response = \tool_muprog\external\get_programs::execute([]);
-        $results = \tool_muprog\external\get_programs::clean_returnvalue(\tool_muprog\external\get_programs::execute_returns(), $response);
+        $response = get_programs::execute([]);
+        $results = get_programs::clean_returnvalue(get_programs::execute_returns(), $response);
         $this->assertCount(4, $results);
 
-        $response = \tool_muprog\external\get_programs::execute([['field' => 'tenantid', 'value' => null]]);
-        $results = \tool_muprog\external\get_programs::clean_returnvalue(\tool_muprog\external\get_programs::execute_returns(), $response);
+        $response = get_programs::execute([['field' => 'tenantid', 'value' => null]]);
+        $results = get_programs::clean_returnvalue(get_programs::execute_returns(), $response);
         $this->assertCount(1, $results);
         $this->assertEquals($program0->id, $results[0]['id']);
 
-        $response = \tool_muprog\external\get_programs::execute([['field' => 'tenantid', 'value' => $tenant1->id]]);
-        $results = \tool_muprog\external\get_programs::clean_returnvalue(\tool_muprog\external\get_programs::execute_returns(), $response);
+        $response = get_programs::execute([['field' => 'tenantid', 'value' => 0]]);
+        $results = get_programs::clean_returnvalue(get_programs::execute_returns(), $response);
+        $this->assertCount(1, $results);
+        $this->assertEquals($program0->id, $results[0]['id']);
+
+        $response = get_programs::execute([['field' => 'tenantid', 'value' => $tenant1->id]]);
+        $results = get_programs::clean_returnvalue(get_programs::execute_returns(), $response);
         $this->assertCount(1, $results);
         $this->assertEquals($program1->id, $results[0]['id']);
 
-        $response = \tool_muprog\external\get_programs::execute([['field' => 'tenantid', 'value' => $tenant2->id]]);
-        $results = \tool_muprog\external\get_programs::clean_returnvalue(\tool_muprog\external\get_programs::execute_returns(), $response);
+        $response = get_programs::execute([['field' => 'tenantid', 'value' => $tenant2->id]]);
+        $results = get_programs::clean_returnvalue(get_programs::execute_returns(), $response);
         $this->assertCount(2, $results);
         $this->assertEquals($program2->id, $results[0]['id']);
         $this->assertEquals($program3->id, $results[1]['id']);
 
-        $response = \tool_muprog\external\get_programs::execute([['field' => 'tenantid', 'value' => $tenant2->id], ['field' => 'publicaccess', 'value' => 1]]);
-        $results = \tool_muprog\external\get_programs::clean_returnvalue(\tool_muprog\external\get_programs::execute_returns(), $response);
+        $response = get_programs::execute([['field' => 'tenantid', 'value' => $tenant2->id], ['field' => 'publicaccess', 'value' => 1]]);
+        $results = get_programs::clean_returnvalue(get_programs::execute_returns(), $response);
         $this->assertCount(1, $results);
         $this->assertEquals($program2->id, $results[0]['id']);
     }

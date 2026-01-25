@@ -66,10 +66,10 @@ final class program_archived extends \core\event\base {
     /**
      * Get URL related to the action.
      *
-     * @return \moodle_url
+     * @return \core\url
      */
     public function get_url() {
-        return new \moodle_url('/admin/tool/muprog/management/program.php', ['id' => $this->objectid]);
+        return new \core\url('/admin/tool/muprog/management/program.php', ['id' => $this->objectid]);
     }
 
     /**

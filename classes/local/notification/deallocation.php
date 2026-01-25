@@ -63,9 +63,9 @@ final class deallocation extends base {
         $a = parent::get_allocation_placeholders($program, $source, $allocation, $user, $supervisoruser);
         $context = \context::instance_by_id($program->contextid);
         if (has_capability('tool/muprog:view', $context)) {
-            $a['program_url'] = (new \moodle_url('/admin/tool/muprog/management/program.php', ['id' => $program->id]))->out(false);
+            $a['program_url'] = (new \core\url('/admin/tool/muprog/management/program.php', ['id' => $program->id]))->out(false);
         } else {
-            $a['program_url'] = (new \moodle_url('/admin/tool/muprog/catalogue/program.php', ['id' => $program->id]))->out(false);
+            $a['program_url'] = (new \core\url('/admin/tool/muprog/catalogue/program.php', ['id' => $program->id]))->out(false);
         }
         return $a;
     }

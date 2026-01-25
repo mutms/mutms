@@ -49,11 +49,11 @@ $program = $DB->get_record('tool_muprog_program', ['id' => $itemrecord->programi
 $context = context::instance_by_id($program->contextid);
 require_capability('tool/muprog:edit', $context);
 
-$currenturl = new moodle_url('/admin/tool/muprog/management/item_delete.php', ['id' => $itemrecord->id]);
+$currenturl = new core\url('/admin/tool/muprog/management/item_delete.php', ['id' => $itemrecord->id]);
 $PAGE->set_context($context);
 $PAGE->set_url($currenturl);
 
-$returnurl = new moodle_url('/admin/tool/muprog/management/program_content.php', ['id' => $program->id]);
+$returnurl = new core\url('/admin/tool/muprog/management/program_content.php', ['id' => $program->id]);
 
 if ($program->archived) {
     redirect($returnurl);
