@@ -4,6 +4,22 @@ Plugin versioning is derived from Moodle releases, it does not comply with the s
 
 The format of this change log follows the advice given at [Keep a CHANGELOG](https://keepachangelog.com).
 
+## [mu-5.0.4-04] - 2026-01-25
+
+### Added
+
+- Added link to detailed report with completion credits
+
+### Changed
+
+- Added separate "Move framework" action for moving of credit frameworks into different contexts to match other MuTMS plugins
+- Improved navigation to start with "Credit frameworks" instead of "System"
+
+### Fixed
+
+- Frameworks from deleted categories will be automatically marked as archived and moved to parent context
+- Fixed usage of legacy moodle_url class
+
 ## [mu-5.0.4-03] - 2025-12-31
 
 ### Changed

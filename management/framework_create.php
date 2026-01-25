@@ -45,11 +45,11 @@ $context = context::instance_by_id($contextid);
 require_login();
 require_capability('tool/mutrain:manageframeworks', $context);
 
-$currenturl = new moodle_url('/admin/tool/mutrain/management/framework_create.php', ['contextid' => $context->id]);
+$currenturl = new core\url('/admin/tool/mutrain/management/framework_create.php', ['contextid' => $context->id]);
 $PAGE->set_context($context);
 $PAGE->set_url($currenturl);
 
-$returnurl = new moodle_url('/admin/tool/mutrain/management/index.php', ['contextid' => $context->id]);
+$returnurl = new core\url('/admin/tool/mutrain/management/index.php', ['contextid' => $context->id]);
 
 $framework = new \stdClass();
 $framework->contextid = $context->id;

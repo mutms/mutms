@@ -78,7 +78,7 @@ final class framework {
             throw new invalid_parameter_exception('framework public must be 1 or 0');
         }
 
-        $data->requiredcredits = str_replace(',', '.', $data->requiredcredits);
+        $data->requiredcredits = str_replace(',', '.', $data->requiredcredits ?? '0');
         if (!is_numeric($data->requiredcredits) || $data->requiredcredits <= 0) {
             throw new invalid_parameter_exception('framework requiredcredits must be positive number');
         }
@@ -130,18 +130,14 @@ final class framework {
 
         $data = (object)$data;
         $oldrecord = $DB->get_record('tool_mutrain_framework', ['id' => $data->id], '*', MUST_EXIST);
+        $context = \context::instance_by_id($oldrecord->contextid);
 
         $record = clone($oldrecord);
 
-        if (isset($data->contextid) && $data->contextid != $oldrecord->contextid) {
-            // Framework was moved to another context.
-            $context = \context::instance_by_id($data->contextid);
-            if (!($context instanceof \context_system) && !($context instanceof \context_coursecat)) {
-                throw new \coding_exception('framework contextid must be a system or course category');
+        if (property_exists($data, 'contextid')) {
+            if ($data->contextid != $oldrecord->contextid) {
+                throw new \core\exception\coding_exception('framework::update() cannot change contextid, use framework::move() instead');
             }
-            $record->contextid = $context->id;
-        } else {
-            $context = \context::instance_by_id($record->contextid);
         }
 
         if (property_exists($data, 'name')) {
@@ -164,7 +160,7 @@ final class framework {
         if (property_exists($data, 'description_editor')) {
             $data->description = $data->description_editor['text'];
             $data->descriptionformat = $data->description_editor['format'];
-            $editoroptions = self::get_description_editor_options($oldrecord->contextid);
+            $editoroptions = self::get_description_editor_options();
             $data = file_postupdate_standard_editor(
                 $data,
                 'description',
@@ -231,6 +227,51 @@ final class framework {
     }
 
     /**
+     * Move framework to different context.
+     *
+     * @param int $id framework id
+     * @param int $contextid new context
+     * @param int|null $restrictcontext
+     * @return stdClass framework record
+     */
+    public static function move(int $id, int $contextid, ?int $restrictcontext): stdClass {
+        global $DB;
+
+        $framework = $DB->get_record('tool_mutrain_framework', ['id' => $id], '*', MUST_EXIST);
+
+        $context = \context::instance_by_id($contextid);
+        if ($context->contextlevel != CONTEXT_SYSTEM && $context->contextlevel != CONTEXT_COURSECAT) {
+            throw new invalid_parameter_exception('System or category context expected');
+        }
+
+        $trans = $DB->start_delegated_transaction();
+
+        $record = (object)[
+            'id' => $framework->id,
+            'contextid' => $context->id,
+        ];
+
+        if ($context instanceof \context_system) {
+            $record->restrictcontext = 0;
+        } else if (isset($restrictcontext)) {
+            $record->restrictcontext = $restrictcontext;
+            if ($record->restrictcontext !== 0 && $record->restrictcontext !== 1) {
+                throw new invalid_parameter_exception('framework restrictcontext must be 1 or 0');
+            }
+        }
+
+        $DB->update_record('tool_mutrain_framework', $record);
+
+        $framework = $DB->get_record('tool_mutrain_framework', ['id' => $framework->id], '*', MUST_EXIST);
+
+        $trans->allow_commit();
+
+        self::sync_credits(null, $framework->id);
+
+        return $framework;
+    }
+
+    /**
      * Archive framework.
      *
      * @param int $frameworkid
@@ -282,6 +323,27 @@ final class framework {
         self::sync_credits(null, $framework->id);
 
         return $framework;
+    }
+
+    /**
+     * Called before course category is deleted.
+     *
+     * @param stdClass $category
+     * @return void
+     */
+    public static function pre_course_category_delete(stdClass $category): void {
+        global $DB;
+
+        $catcontext = \context_coursecat::instance($category->id);
+        $parentcontext = $catcontext->get_parent_context();
+
+        $frameworks = $DB->get_records('tool_mutrain_framework', ['contextid' => $catcontext->id]);
+        foreach ($frameworks as $framework) {
+            if (!$framework->archived) {
+                self::archive($framework->id);
+            }
+            self::move($framework->id, $parentcontext->id, null);
+        }
     }
 
     /**

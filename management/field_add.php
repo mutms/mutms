@@ -46,11 +46,11 @@ $framework = $DB->get_record('tool_mutrain_framework', ['id' => $frameworkid]);
 $context = context::instance_by_id($framework->contextid);
 require_capability('tool/mutrain:manageframeworks', $context);
 
-$currenturl = new moodle_url('/admin/tool/mutrain/management/field_add.php', ['frameworkid' => $frameworkid]);
+$currenturl = new core\url('/admin/tool/mutrain/management/field_add.php', ['frameworkid' => $frameworkid]);
 $PAGE->set_context($context);
 $PAGE->set_url($currenturl);
 
-$returnurl = new moodle_url('/admin/tool/mutrain/management/framework.php', ['id' => $frameworkid]);
+$returnurl = new core\url('/admin/tool/mutrain/management/framework.php', ['id' => $frameworkid]);
 
 if ($framework->archived) {
     redirect($returnurl);
