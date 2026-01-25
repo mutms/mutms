@@ -63,9 +63,9 @@ final class renderer extends \tool_mutenancy\output\tenant_renderer_base {
         if ($context) {
             $url = null;
             if (has_capability('moodle/category:manage', $context)) {
-                $url = new \moodle_url('/course/management.php', ['categoryid' => $tenant->categoryid]);
+                $url = new \core\url('/course/management.php', ['categoryid' => $tenant->categoryid]);
             } else if (has_capability('moodle/category:viewcourselist', $context)) {
-                $url = new \moodle_url('/course/index.php', ['categoryid' => $tenant->categoryid]);
+                $url = new \core\url('/course/index.php', ['categoryid' => $tenant->categoryid]);
             }
             $name = $context->get_context_name(false);
             if ($url) {
@@ -82,7 +82,7 @@ final class renderer extends \tool_mutenancy\output\tenant_renderer_base {
             $name = format_string($cohort->name);
             $url = null;
             if (has_capability('moodle/cohort:view', $context)) {
-                $url = new \moodle_url('/cohort/index.php', ['contextid' => $context->id]);
+                $url = new \core\url('/cohort/index.php', ['contextid' => $context->id]);
             }
             if ($url) {
                 $name = \html_writer::link($url, $name);
@@ -99,7 +99,7 @@ final class renderer extends \tool_mutenancy\output\tenant_renderer_base {
                 $name = format_string($cohort->name);
                 $url = null;
                 if (has_capability('moodle/cohort:view', $context)) {
-                    $url = new \moodle_url('/cohort/index.php', ['contextid' => $context->id]);
+                    $url = new \core\url('/cohort/index.php', ['contextid' => $context->id]);
                 }
                 if ($url) {
                     $name = \html_writer::link($url, $name);
@@ -116,13 +116,13 @@ final class renderer extends \tool_mutenancy\output\tenant_renderer_base {
         $details->add(get_string('tenant_siteshortname', 'tool_mutenancy'), format_string($tenant->siteshortname ?? $tenant->idnumber));
 
         $count = user::count_users($tenant->id);
-        $url = new \moodle_url('/admin/tool/mutenancy/tenant_users.php', ['id' => $tenant->id]);
+        $url = new \core\url('/admin/tool/mutenancy/tenant_users.php', ['id' => $tenant->id]);
         $count = \html_writer::link($url, $count);
         $details->add(get_string('tenant_users', 'tool_mutenancy'), $count);
 
         $managers = \tool_mutenancy\local\manager::get_manager_users($tenant->id);
         foreach ($managers as $uid => $fullname) {
-            $url = new \moodle_url('/user/profile.php', ['id' => $uid]);
+            $url = new \core\url('/user/profile.php', ['id' => $uid]);
             $managers[$uid] = \html_writer::link($url, $fullname);
         }
         $managers = implode(', ', $managers);
@@ -132,7 +132,7 @@ final class renderer extends \tool_mutenancy\output\tenant_renderer_base {
         $action = '';
         $context = \context_tenant::instance($tenant->id);
         if (has_capability('tool/mutenancy:admin', $context)) {
-            $url = new \moodle_url('/admin/tool/mutenancy/management/tenant_managers.php', ['id' => $tenant->id]);
+            $url = new \core\url('/admin/tool/mutenancy/management/tenant_managers.php', ['id' => $tenant->id]);
             $action = new \tool_mulib\output\ajax_form\icon($url, get_string('tenant_managers', 'tool_mutenancy'), 'i/users');
             $action->set_form_size('sm');
             $action = $this->render($action);
@@ -142,11 +142,11 @@ final class renderer extends \tool_mutenancy\output\tenant_renderer_base {
         $action = '';
         if (has_capability('tool/mutenancy:admin', $context)) {
             if ($tenant->archived) {
-                $url = new \moodle_url('/admin/tool/mutenancy/management/tenant_restore.php', ['id' => $tenant->id]);
+                $url = new \core\url('/admin/tool/mutenancy/management/tenant_restore.php', ['id' => $tenant->id]);
                 $action = new \tool_mulib\output\ajax_form\icon($url, tenancy::get_tenant_string('tenant_restore'), 't/edit');
                 $action->set_form_size('sm');
             } else if ($USER->tenantid != $tenant->id) {
-                $url = new \moodle_url('/admin/tool/mutenancy/management/tenant_archive.php', ['id' => $tenant->id]);
+                $url = new \core\url('/admin/tool/mutenancy/management/tenant_archive.php', ['id' => $tenant->id]);
                 $action = new \tool_mulib\output\ajax_form\icon($url, tenancy::get_tenant_string('tenant_archive'), 'i/settings');
                 $action->set_form_size('sm');
             }

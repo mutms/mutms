@@ -47,7 +47,7 @@ if (!tenancy::is_active()) {
 $PAGE->set_url('/admin/tool/mutenancy/management/tenant_create.php');
 $PAGE->set_context($context);
 
-$returnurl = new moodle_url('/admin/tool/mutenancy/index.php');
+$returnurl = new \core\url('/admin/tool/mutenancy/index.php');
 
 $tenantlimit = get_config('tool_mutenancy', 'tenantlimit');
 if ($tenantlimit && $tenantlimit <= $DB->count_records('tool_mutenancy_tenant', [])) {
@@ -62,7 +62,7 @@ if ($form->is_cancelled()) {
 
 if ($data = $form->get_data()) {
     $tenant = tenant::create($data);
-    $returnurl = new moodle_url('/admin/tool/mutenancy/tenant.php', ['id' => $tenant->id]);
+    $returnurl = new \core\url('/admin/tool/mutenancy/tenant.php', ['id' => $tenant->id]);
     $form->ajax_form_submitted($returnurl);
 }
 

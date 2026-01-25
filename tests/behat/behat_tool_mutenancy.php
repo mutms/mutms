@@ -55,7 +55,7 @@ class behat_tool_mutenancy extends behat_base {
     protected function resolve_page_url(string $page): moodle_url {
         switch (strtolower($page)) {
             case 'tenants':
-                return new moodle_url('/admin/tool/mutenancy/index.php');
+                return new \core\url('/admin/tool/mutenancy/index.php');
 
             default:
                 throw new Exception('Unrecognised tool_mutenancy page "' . $page . '."');
@@ -77,30 +77,30 @@ class behat_tool_mutenancy extends behat_base {
                 if (!$tenant) {
                     throw new Exception('Invalid tenant idnumber "' . $identifier . '."');
                 }
-                return new moodle_url('/admin/tool/mutenancy/tenant.php', ['id' => $tenant->id]);
+                return new \core\url('/admin/tool/mutenancy/tenant.php', ['id' => $tenant->id]);
             case 'tenant users':
                 $tenant = $DB->get_record('tool_mutenancy_tenant', ['idnumber' => $identifier]);
                 if (!$tenant) {
                     throw new Exception('Invalid tenant idnumber "' . $identifier . '."');
                 }
-                return new moodle_url('/admin/tool/mutenancy/tenant_users.php', ['id' => $tenant->id]);
+                return new \core\url('/admin/tool/mutenancy/tenant_users.php', ['id' => $tenant->id]);
             case 'tenant authentication':
                 $tenant = $DB->get_record('tool_mutenancy_tenant', ['idnumber' => $identifier]);
                 if (!$tenant) {
                     throw new Exception('Invalid tenant idnumber "' . $identifier . '."');
                 }
-                return new moodle_url('/admin/tool/mutenancy/tenant_auth.php', ['id' => $tenant->id]);
+                return new \core\url('/admin/tool/mutenancy/tenant_auth.php', ['id' => $tenant->id]);
             case 'tenant appearance':
                 $tenant = $DB->get_record('tool_mutenancy_tenant', ['idnumber' => $identifier]);
                 if (!$tenant) {
                     throw new Exception('Invalid tenant idnumber "' . $identifier . '."');
                 }
-                return new moodle_url('/admin/tool/mutenancy/tenant_appearance.php', ['id' => $tenant->id]);
+                return new \core\url('/admin/tool/mutenancy/tenant_appearance.php', ['id' => $tenant->id]);
             case 'tenant login':
                 if (!$identifier) {
                     $identifier = '0';
                 }
-                return new moodle_url('/login/', ['tenant' => $identifier]);
+                return new \core\url('/login/', ['tenant' => $identifier]);
 
             default:
                 throw new Exception('Unrecognised tool_mutenancy page type "' . $type . '."');

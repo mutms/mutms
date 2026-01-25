@@ -40,7 +40,7 @@ $tenantid = required_param('id', PARAM_INT);
 require_login();
 
 if (!tenancy::is_active()) {
-    redirect(new moodle_url('/'));
+    redirect(new \core\url('/'));
 }
 
 $tenant = $DB->get_record('tool_mutenancy_tenant', ['id' => $tenantid], '*', MUST_EXIST);
@@ -52,7 +52,7 @@ require_capability('tool/mutenancy:configauth', $context);
 $PAGE->set_url('/admin/tool/mutenancy/management/auth_favicon.php', ['id' => $tenant->id]);
 $PAGE->set_context($context);
 
-$returnurl = new moodle_url('/admin/tool/tenant_auth.php', ['id' => $tenant->id]);
+$returnurl = new \core\url('/admin/tool/tenant_auth.php', ['id' => $tenant->id]);
 
 $form = new \tool_mutenancy\local\form\auth_edit(null, ['tenant' => $tenant]);
 

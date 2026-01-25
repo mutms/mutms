@@ -93,7 +93,7 @@ final class renderer extends \tool_mutenancy\output\tenant_renderer_base {
 
         $buttons = [];
         if ($canconfig) {
-            $url = new \moodle_url('/admin/tool/mutenancy/management/logos_edit.php', ['id' => $tenant->id]);
+            $url = new \core\url('/admin/tool/mutenancy/management/logos_edit.php', ['id' => $tenant->id]);
             $button = new \tool_mulib\output\ajax_form\button($url, get_string('logos_edit', 'tool_mutenancy'));
             $button->set_form_size('xl');
             $buttons[] = $this->render($button);
@@ -209,7 +209,7 @@ final class renderer extends \tool_mutenancy\output\tenant_renderer_base {
 
         $buttons = [];
         if ($canconfig) {
-            $url = new \moodle_url('/admin/tool/mutenancy/management/theme_boost_edit.php', ['id' => $tenant->id]);
+            $url = new \core\url('/admin/tool/mutenancy/management/theme_boost_edit.php', ['id' => $tenant->id]);
             $button = new \tool_mulib\output\ajax_form\button($url, get_string('boost_edit', 'tool_mutenancy'));
             $button->set_form_size('xl');
             $buttons[] = $this->render($button);

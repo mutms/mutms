@@ -42,7 +42,7 @@ $userid = required_param('id', PARAM_INT);
 require_login();
 
 if (!tenancy::is_active()) {
-    redirect(new moodle_url('/'));
+    redirect(new \core\url('/'));
 }
 
 $tenant = $DB->get_record('tool_mutenancy_tenant', ['id' => $tenantid], '*', MUST_EXIST);
@@ -65,7 +65,7 @@ $user = $DB->get_record('user', ['id' => $userid, 'tenantid' => null]);
 $PAGE->set_url('/admin/tool/mutenancy/management/associate_remove.php', ['tenantid' => $tenant->id, 'id' => $user->id]);
 $PAGE->set_context($context);
 
-$returnurl = new moodle_url('/admin/tool/mutenancy/tenant_users.php', ['id' => $tenant->id]);
+$returnurl = new \core\url('/admin/tool/mutenancy/tenant_users.php', ['id' => $tenant->id]);
 
 if (!$DB->record_exists('cohort_members', ['cohortid' => $cohort->id, 'userid' => $user->id])) {
     redirect($returnurl);

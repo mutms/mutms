@@ -18,8 +18,6 @@
 
 namespace tool_mutenancy\local;
 
-use moodle_url;
-
 /**
  * Multi-tenancy appearance helper.
  *
@@ -46,7 +44,7 @@ final class appearance {
      * @param int|null $maxwidth
      * @param int|null $maxheight
      * @param int|null $tenantid -1 means use current tenant
-     * @return moodle_url|false
+     * @return \core\url|false
      */
     public static function get_logo_url(?int $maxwidth, ?int $maxheight, ?int $tenantid = -1) {
         if ($tenantid < 0) {
@@ -60,7 +58,7 @@ final class appearance {
 
             $filepath = ((int) $maxwidth . 'x' . (int) $maxheight) . '/';
 
-            return moodle_url::make_pluginfile_url(
+            return \core\url::make_pluginfile_url(
                 \context_system::instance()->id,
                 'core_admin',
                 'logo',
@@ -79,7 +77,7 @@ final class appearance {
 
         $filepath = ((int) $maxwidth . 'x' . (int) $maxheight) . '/';
 
-        return moodle_url::make_pluginfile_url(
+        return \core\url::make_pluginfile_url(
             $tenantcontext->id,
             'core_admin',
             'logo',
@@ -95,7 +93,7 @@ final class appearance {
      * @param int|null $maxwidth
      * @param int|null $maxheight
      * @param int|null $tenantid -1 means use current tenant
-     * @return moodle_url|false
+     * @return \core\url|false
      */
     public static function get_compact_logo_url(?int $maxwidth, ?int $maxheight, ?int $tenantid = -1) {
         if ($tenantid < 0) {
@@ -109,7 +107,7 @@ final class appearance {
 
             $filepath = ((int) $maxwidth . 'x' . (int) $maxheight) . '/';
 
-            return moodle_url::make_pluginfile_url(
+            return \core\url::make_pluginfile_url(
                 \context_system::instance()->id,
                 'core_admin',
                 'logocompact',
@@ -128,7 +126,7 @@ final class appearance {
 
         $filepath = ((int) $maxwidth . 'x' . (int) $maxheight) . '/';
 
-        return moodle_url::make_pluginfile_url(
+        return \core\url::make_pluginfile_url(
             $tenantcontext->id,
             'core_admin',
             'logocompact',
@@ -142,7 +140,7 @@ final class appearance {
      * Returns tenant specific favicon URL if configured.
      *
      * @param int|null $tenantid -1 means use current tenant
-     * @return moodle_url|false
+     * @return \core\url|false
      */
     public static function get_favicon_url(?int $tenantid = -1) {
         if ($tenantid < 0) {
@@ -154,7 +152,7 @@ final class appearance {
                 return false;
             }
 
-            return moodle_url::make_pluginfile_url(
+            return \core\url::make_pluginfile_url(
                 \context_system::instance()->id,
                 'core_admin',
                 'favicon',
@@ -171,7 +169,7 @@ final class appearance {
 
         $tenantcontext = \context_tenant::instance($tenantid);
 
-        return moodle_url::make_pluginfile_url(
+        return \core\url::make_pluginfile_url(
             $tenantcontext->id,
             'core_admin',
             'favicon',
@@ -186,7 +184,7 @@ final class appearance {
      *
      * @param string $setting
      * @param int|null $tenantid -1 means use current tenant
-     * @return moodle_url|false
+     * @return \core\url|false
      */
     public static function get_boost_setting_image_url(string $setting, ?int $tenantid = -1) {
         global $CFG;
@@ -209,7 +207,7 @@ final class appearance {
         }
 
         $itemid = theme_get_revision();
-        return moodle_url::make_file_url(
+        return \core\url::make_file_url(
             "$CFG->wwwroot/pluginfile.php",
             "/$context->id/theme_boost/$setting/$itemid" . $image,
         );
