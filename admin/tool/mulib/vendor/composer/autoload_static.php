@@ -4,10 +4,10 @@
 
 namespace Composer\Autoload;
 
-class ComposerStaticInitdbec4d4bc8617e7a2e6437a23894a057
+class ComposerStaticInitdea8ffdc41c560a25f7309db084d4e83
 {
     public static $prefixLengthsPsr4 = array (
-        'O' => 
+        'O' =>
         array (
             'Opis\\Uri\\' => 9,
             'Opis\\String\\' => 12,
@@ -16,15 +16,15 @@ class ComposerStaticInitdbec4d4bc8617e7a2e6437a23894a057
     );
 
     public static $prefixDirsPsr4 = array (
-        'Opis\\Uri\\' => 
+        'Opis\\Uri\\' =>
         array (
             0 => __DIR__ . '/..' . '/opis/uri/src',
         ),
-        'Opis\\String\\' => 
+        'Opis\\String\\' =>
         array (
             0 => __DIR__ . '/..' . '/opis/string/src',
         ),
-        'Opis\\JsonSchema\\' => 
+        'Opis\\JsonSchema\\' =>
         array (
             0 => __DIR__ . '/..' . '/opis/json-schema/src',
         ),
@@ -240,9 +240,9 @@ class ComposerStaticInitdbec4d4bc8617e7a2e6437a23894a057
     public static function getInitializer(ClassLoader $loader)
     {
         return \Closure::bind(function () use ($loader) {
-            $loader->prefixLengthsPsr4 = ComposerStaticInitdbec4d4bc8617e7a2e6437a23894a057::$prefixLengthsPsr4;
-            $loader->prefixDirsPsr4 = ComposerStaticInitdbec4d4bc8617e7a2e6437a23894a057::$prefixDirsPsr4;
-            $loader->classMap = ComposerStaticInitdbec4d4bc8617e7a2e6437a23894a057::$classMap;
+            $loader->prefixLengthsPsr4 = ComposerStaticInitdea8ffdc41c560a25f7309db084d4e83::$prefixLengthsPsr4;
+            $loader->prefixDirsPsr4 = ComposerStaticInitdea8ffdc41c560a25f7309db084d4e83::$prefixDirsPsr4;
+            $loader->classMap = ComposerStaticInitdea8ffdc41c560a25f7309db084d4e83::$classMap;
 
         }, null, ClassLoader::class);
     }

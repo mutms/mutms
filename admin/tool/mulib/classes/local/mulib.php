@@ -33,6 +33,27 @@ use stdClass;
  */
 final class mulib {
     /**
+     * Is catalogue plugin available?
+     *
+     * @return bool
+     */
+    public static function is_mucatalog_available(): bool {
+        return class_exists(\tool_mucatalog\local\util::class);
+    }
+
+    /**
+     * Are any sections present in catalogue?
+     *
+     * @return bool
+     */
+    public static function is_mucatalog_active(): bool {
+        if (!self::is_mucatalog_available()) {
+            return false;
+        }
+        return (bool)get_config('tool_mucatalog', 'active');
+    }
+
+    /**
      * Is programs plugin available?
      *
      * @return bool
