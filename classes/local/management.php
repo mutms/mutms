@@ -20,7 +20,7 @@
 namespace tool_mutrain\local;
 
 use tool_mutrain\local\util;
-use moodle_url, stdClass;
+use core\url, stdClass;
 
 /**
  * Training management helper.
@@ -35,9 +35,9 @@ final class management {
     /**
      * Guess if user can access framework management UI.
      *
-     * @return moodle_url|null
+     * @return url|null
      */
-    public static function get_management_url(): ?moodle_url {
+    public static function get_management_url(): ?url {
         if (isguestuser() || !isloggedin()) {
             return null;
         }
@@ -45,7 +45,7 @@ final class management {
         // NOTE: this has to be very fast, do NOT loop all categories here!
 
         if (has_capability('tool/mutrain:viewframeworks', \context_system::instance())) {
-            return new moodle_url('/admin/tool/mutrain/management/index.php');
+            return new url('/admin/tool/mutrain/management/index.php');
         } else if (\tool_mulib\local\mulib::is_mutenancy_active()) {
             $tenantid = \tool_mutenancy\local\tenancy::get_current_tenantid();
             if ($tenantid) {
@@ -53,7 +53,7 @@ final class management {
                 if ($tenant) {
                     $catcontext = \context_coursecat::instance($tenant->categoryid);
                     if (has_capability('tool/mutrain:viewframeworks', $catcontext)) {
-                        return new moodle_url('/admin/tool/mutrain/management/index.php', ['contextid' => $catcontext->id]);
+                        return new url('/admin/tool/mutrain/management/index.php', ['contextid' => $catcontext->id]);
                     }
                 }
             }
@@ -109,80 +109,74 @@ final class management {
     /**
      * Set up $PAGE for framework management UI.
      *
-     * @param moodle_url $pageurl
+     * @param url $pageurl
      * @param \context $context
      * @return void
      */
-    public static function setup_index_page(\moodle_url $pageurl, \context $context): void {
+    public static function setup_index_page(url $pageurl, \context $context): void {
         global $PAGE;
 
         $PAGE->set_pagelayout('admin');
         $PAGE->set_context($context);
         $PAGE->set_url($pageurl);
-        $PAGE->set_title(get_string('frameworks', 'tool_mutrain'));
+        $PAGE->set_title(get_string('management_frameworks', 'tool_mutrain'));
         $PAGE->set_heading(get_string('frameworks', 'tool_mutrain'));
         $PAGE->set_secondary_navigation(false);
 
-        $contexts = [];
-        while (true) {
-            $contexts[] = $context;
-            $parent = $context->get_parent_context();
-            if (!$parent) {
-                break;
+        $parentcontextids = $context->get_parent_context_ids(true);
+        $parentcontextids = array_reverse($parentcontextids);
+        foreach ($parentcontextids as $parentcontextid) {
+            $parentcontext = \context::instance_by_id($parentcontextid);
+            if ($parentcontext instanceof \context_system) {
+                $name = get_string('frameworks', 'tool_mutrain');
+            } else {
+                $name = $parentcontext->get_context_name(false);
             }
-            $context = $parent;
-        }
-
-        $contexts = array_reverse($contexts);
-
-        /** @var \context $context */
-        foreach ($contexts as $context) {
             $url = null;
-            if (has_capability('tool/mutrain:viewframeworks', $context)) {
-                $url = new moodle_url('/admin/tool/mutrain/management/index.php', ['contextid' => $context->id]);
+            if (has_capability('tool/mutrain:viewframeworks', $parentcontext)) {
+                $url = new url('/admin/tool/mutrain/management/index.php', ['contextid' => $parentcontext->id]);
             }
-            $PAGE->navbar->add($context->get_context_name(false), $url);
+            $PAGE->navbar->add($name, $url);
         }
     }
 
     /**
      * Set up $PAGE for framework management UI.
      *
-     * @param moodle_url $pageurl
+     * @param url $pageurl
      * @param \context $context
      * @param stdClass $framework
      * @return void
      */
-    public static function setup_framework_page(\moodle_url $pageurl, \context $context, stdClass $framework): void {
+    public static function setup_framework_page(url $pageurl, \context $context, stdClass $framework): void {
         global $PAGE;
 
         $PAGE->set_pagelayout('admin');
         $PAGE->set_context($context);
         $PAGE->set_url($pageurl);
-        $PAGE->set_title(get_string('frameworks', 'tool_mutrain'));
+
+        $frameworkname = format_string($framework->name);
+
+        $PAGE->set_title($frameworkname . \moodle_page::TITLE_SEPARATOR . get_string('management_frameworks', 'tool_mutrain'));
         $PAGE->set_heading(format_string($framework->name));
         $PAGE->set_secondary_navigation(false);
 
-        $contexts = [];
-        while (true) {
-            $contexts[] = $context;
-            $parent = $context->get_parent_context();
-            if (!$parent) {
-                break;
+        $parentcontextids = $context->get_parent_context_ids(true);
+        $parentcontextids = array_reverse($parentcontextids);
+        foreach ($parentcontextids as $parentcontextid) {
+            $parentcontext = \context::instance_by_id($parentcontextid);
+            if ($parentcontext instanceof \context_system) {
+                $name = get_string('frameworks', 'tool_mutrain');
+            } else {
+                $name = $parentcontext->get_context_name(false);
             }
-            $context = $parent;
-        }
-
-        $contexts = array_reverse($contexts);
-
-        /** @var \context $context */
-        foreach ($contexts as $context) {
             $url = null;
-            if (has_capability('tool/mutrain:viewframeworks', $context)) {
-                $url = new moodle_url('/admin/tool/mutrain/management/index.php', ['contextid' => $context->id]);
+            if (has_capability('tool/mutrain:viewframeworks', $parentcontext)) {
+                $url = new url('/admin/tool/mutrain/management/index.php', ['contextid' => $parentcontext->id]);
             }
-            $PAGE->navbar->add($context->get_context_name(false), $url);
+            $PAGE->navbar->add($name, $url);
         }
-        $PAGE->navbar->add(format_string($framework->name));
+
+        $PAGE->navbar->add($frameworkname);
     }
 }

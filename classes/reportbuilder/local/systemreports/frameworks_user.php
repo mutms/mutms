@@ -23,9 +23,10 @@ use tool_mutrain\reportbuilder\local\entities\framework;
 use core_reportbuilder\system_report;
 use core_reportbuilder\local\report\column;
 use lang_string;
+use core\url;
 
 /**
- * Embedded user credits report.
+ * Embedded user credit frameworks report.
  *
  * @package     tool_mutrain
  * @copyright   2025 Petr Skoda
@@ -71,6 +72,7 @@ final class frameworks_user extends system_report {
         $this->add_columns();
         $this->add_filters();
 
+        $this->set_initial_sort_column('framework:name', SORT_ASC);
         $this->set_downloadable(true);
         $this->set_default_no_results_notice(new lang_string('error_nocredits', 'tool_mutrain'));
     }
@@ -81,11 +83,15 @@ final class frameworks_user extends system_report {
         if (isguestuser() || !isloggedin()) {
             return false;
         }
+        if (!\tool_mulib\local\mulib::is_mutrain_available()) {
+            return false;
+        }
+
         $usercontext = $this->get_context();
         if (!$usercontext instanceof \context_user) {
             return false;
         }
-        if ($usercontext->instanceid === $USER->id) {
+        if ($usercontext->instanceid == $USER->id) {
             return true;
         }
 
@@ -110,13 +116,34 @@ final class frameworks_user extends system_report {
         ))
             ->add_joins($this->get_joins())
             ->set_type(column::TYPE_FLOAT)
-            ->add_field("{$this->creditalias}.credits")
-            ->set_is_sortable(true);
+            ->add_fields("{$this->creditalias}.credits, {$this->frameworkalias}.id, {$this->frameworkalias}.publicaccess, {$this->frameworkalias}.contextid")
+            ->set_is_sortable(true)
+            ->set_callback(function (mixed $value, \stdClass $row): string {
+                global $USER;
+                if (!isset($value)) {
+                    return '';
+                }
+                if (!$value) {
+                    return '0';
+                }
+
+                $credits = format_float($value, 2, true, true);
+
+                $usercontext = $this->get_context();
+                if ($usercontext->instanceid == $USER->id || has_capability('tool/mutrain:viewusercredits', $usercontext)) {
+                    $context = \context::instance_by_id($row->contextid);
+                    if ($row->publicaccess || has_capability('tool/mutrain:viewframeworks', $context)) {
+                        $url = new url('/admin/tool/mutrain/my/completions.php', ['frameworkid' => $row->id, 'userid' => $usercontext->instanceid]);
+                        $credits = \html_writer::link($url, $credits);
+                    }
+                }
+
+                return $credits;
+            });
+
         $this->add_column($column);
 
         $this->add_column_from_entity('framework:requiredcredits');
-
-        $this->set_initial_sort_column('framework:name', SORT_ASC);
     }
 
     /**

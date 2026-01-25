@@ -20,8 +20,7 @@
 namespace tool_mutrain\table;
 
 use stdClass;
-use moodle_url;
-use tool_mutrain\local\framework;
+use core\url;
 
 defined('MOODLE_INTERNAL') || die();
 
@@ -45,10 +44,10 @@ final class fields extends \table_sql {
     /**
      * Constructor.
      *
-     * @param moodle_url $url
+     * @param url $url
      * @param stdClass $framework
      */
-    public function __construct(moodle_url $url, stdClass $framework) {
+    public function __construct(url $url, stdClass $framework) {
         parent::__construct('tool_mutrain_field');
 
         $this->framework = $framework;
@@ -58,7 +57,7 @@ final class fields extends \table_sql {
             $params['page'] = $page;
             $this->currpage = $page;
         }
-        $baseurl = new moodle_url($url, $params);
+        $baseurl = new url($url, $params);
         $this->define_baseurl($baseurl);
         $this->pagesize = self::DEFAULT_PERPAGE;
 
@@ -163,7 +162,7 @@ final class fields extends \table_sql {
         $html = '';
 
         if (!$this->framework->archived && has_capability('tool/mutrain:manageframeworks', \context_system::instance())) {
-            $url = new \moodle_url(
+            $url = new \core\url(
                 '/admin/tool/mutrain/management/field_remove.php',
                 ['frameworkid' => $this->framework->id, 'fieldid' => $field->id]
             );

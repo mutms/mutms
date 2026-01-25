@@ -49,31 +49,38 @@ Feature: Managers can manage credit frameworks
       | Framework name   | Framework 1 |
       | Required credits | 33          |
     And I click on "Add framework" "button" in the ".modal-dialog" "css_element"
-    Then the following should exist in the "reportbuilder-table" table:
-      | Framework name | Framework ID | Custom fields | Public | Required credits | Restricted to category |
-      | Framework 1    |              | 0             | Yes    | 33               | No                     |
-
-    When I press "Add framework"
+    And I press "Add framework"
     And I set the following fields in the ".modal-dialog" "css_element" to these values:
       | Framework name                 | Framework 2 |
       | Framework ID                   | fwid2       |
       | Description                    | Blah        |
       | Public                         | 0           |
       | Required credits               | 13          |
+      | Category                       | Cat 1       |
+      | Restricted to category         | 1           |
+    And I click on "Add framework" "button" in the ".modal-dialog" "css_element"
+    And the following should exist in the "reportbuilder-table" table:
+      | Framework name | Framework ID | Custom fields | Public | Required credits | Restricted to category |
+    And I press "Add framework"
+    And I set the following fields in the ".modal-dialog" "css_element" to these values:
+      | Framework name                 | Framework 3 |
+      | Required credits               | 77          |
+      | Category                       | System      |
       | Restricted to category         | 1           |
     And I click on "Add framework" "button" in the ".modal-dialog" "css_element"
     Then the following should exist in the "reportbuilder-table" table:
-      | Framework name | Framework ID | Custom fields | Public | Required credits | Restricted to category |
-      | Framework 1    |              | 0             | Yes    | 33               | No                     |
-      | Framework 2    | fwid2        | 0             | No     | 13               | No                     |
+      | Framework name | Framework ID | Category | Custom fields | Public | Required credits | Restricted to category |
+      | Framework 1    |              | System   | 0             | Yes    | 33               | No                     |
+      | Framework 2    | fwid2        | Cat 1    | 0             | No     | 13               | Cat 1                  |
+      | Framework 3    |              | System   | 0             | Yes    | 77               | No                     |
 
     When I follow "Framework 2"
     And I should see "Blah"
     And I should see "fwid2" in the "Framework ID" definition list item
     And I should see "No" in the "Public" definition list item
-    And I should see "System" in the "Category" definition list item
+    And I should see "Cat 1" in the "Category" definition list item
     And I should see "13" in the "Required credits" definition list item
-    And I should see "No" in the "Restricted to category" definition list item
+    And I should see "Cat 1" in the "Restricted to category" definition list item
     And I should see "No" in the "Archived" definition list item
     And I press "Update framework"
     And the following fields in the ".modal-dialog" "css_element" match these values:
@@ -82,15 +89,14 @@ Feature: Managers can manage credit frameworks
       | Description                    | Blah        |
       | Public                         | 0           |
       | Required credits               | 13          |
-      | Restricted to category         | 0           |
+      | Restricted to category         | 1           |
     And I set the following fields in the ".modal-dialog" "css_element" to these values:
       | Framework name                 | Framework X |
       | Framework ID                   | fwidx       |
       | Description                    | Argh        |
       | Public                         | 1           |
       | Required credits               | 31          |
-      | Restricted to category         | 1           |
-      | Category                       | Cat 1       |
+      | Restricted to category         | 0           |
     And I click on "Update framework" "button" in the ".modal-dialog" "css_element"
     Then I should see "Framework X"
     And I should see "Argh"
@@ -98,7 +104,7 @@ Feature: Managers can manage credit frameworks
     And I should see "Yes" in the "Public" definition list item
     And I should see "Cat 1" in the "Category" definition list item
     And I should see "31" in the "Required credits" definition list item
-    And I should see "Cat 1" in the "Restricted to category" definition list item
+    And I should see "No" in the "Restricted to category" definition list item
     And I should see "No" in the "Archived" definition list item
 
     And I navigate to "Training credits > Credit frameworks" in site administration
@@ -110,20 +116,19 @@ Feature: Managers can manage credit frameworks
       | Description                    | Argh        |
       | Public                         | 1           |
       | Required credits               | 31          |
-      | Restricted to category         | 1           |
+      | Restricted to category         | 0           |
     And I set the following fields in the ".modal-dialog" "css_element" to these values:
       | Framework name                 | Framework 2 |
       | Framework ID                   | fwid2       |
       | Description                    | Blah        |
       | Public                         | 0           |
       | Required credits               | 13          |
-      | Category                       | System      |
     And I click on "Update framework" "button" in the ".modal-dialog" "css_element"
     Then I should see "Framework 2"
     And I should see "Blah"
     And I should see "fwid2" in the "Framework ID" definition list item
     And I should see "No" in the "Public" definition list item
-    And I should see "System" in the "Category" definition list item
+    And I should see "Cat 1" in the "Category" definition list item
     And I should see "13" in the "Required credits" definition list item
     And I should see "No" in the "Restricted to category" definition list item
     And I should see "No" in the "Archived" definition list item
@@ -140,10 +145,51 @@ Feature: Managers can manage credit frameworks
     And I click on "Archive framework" "button" in the ".modal-dialog" "css_element"
     And I should see "Yes" in the "Archived" definition list item
 
-    When I click on "Delete framework" action from "Framework actions" dropdown
+    When I press "Delete framework"
     And I click on "Delete framework" "button" in the ".modal-dialog" "css_element"
-    Then I should see "Framework 1"
-    And I should not see "Framework 2"
+    And I navigate to "Training credits > Credit frameworks" in site administration
+    Then I should not see "Framework 2"
+    And the following should exist in the "reportbuilder-table" table:
+      | Framework name | Framework ID | Category | Custom fields | Public | Required credits | Restricted to category |
+      | Framework 1    |              | System   | 0             | Yes    | 33               | No                     |
+      | Framework 3    |              | System   | 0             | Yes    | 77               | No                     |
+
+  Scenario: Move credit framework to different context as manager
+    Given I log in as "manager1"
+    And I navigate to "Training credits > Credit frameworks" in site administration
+    And I press "Add framework"
+    And I set the following fields in the ".modal-dialog" "css_element" to these values:
+      | Framework name   | Framework 1 |
+      | Required credits | 33          |
+    And I click on "Add framework" "button" in the ".modal-dialog" "css_element"
+    And the following should exist in the "reportbuilder-table" table:
+      | Framework name | Framework ID | Category | Custom fields | Public | Required credits | Restricted to category |
+      | Framework 1    |              | System   | 0             | Yes    | 33               | No                     |
+    And I follow "Framework 1"
+
+    When I click on "Move framework" "link"
+    And I set the following fields in the ".modal-dialog" "css_element" to these values:
+      | Category                       | Cat 1       |
+      | Restricted to category         | 1           |
+    And I click on "Move framework" "button" in the ".modal-dialog" "css_element"
+    Then I should see "Cat 1" in the "Category" definition list item
+    And I should see "Cat 1" in the "Restricted to category" definition list item
+
+    When I click on "Move framework" "link"
+    And I set the following fields in the ".modal-dialog" "css_element" to these values:
+      | Category                       | System      |
+      | Restricted to category         | 1           |
+    And I click on "Move framework" "button" in the ".modal-dialog" "css_element"
+    Then I should see "System" in the "Category" definition list item
+    And I should see "No" in the "Restricted to category" definition list item
+
+    When I click on "Move framework" "link"
+    And I set the following fields in the ".modal-dialog" "css_element" to these values:
+      | Category                       | Cat 1       |
+      | Restricted to category         | 0           |
+    And I click on "Move framework" "button" in the ".modal-dialog" "css_element"
+    Then I should see "Cat 1" in the "Category" definition list item
+    And I should see "No" in the "Restricted to category" definition list item
 
   Scenario: Add and remove credit framework fields
     Given I log in as "manager1"

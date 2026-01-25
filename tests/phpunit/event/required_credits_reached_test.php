@@ -102,7 +102,7 @@ final class required_credits_reached_test extends \advanced_testcase {
         $this->assertSame('tool_mutrain_credit', $event->objecttable);
         $this->assertSame('User reached required credits', $event::get_name());
         $description = $event->get_description();
-        $url = new \moodle_url('/admin/tool/mutrain/management/framework.php', ['id' => $framework->id]);
+        $url = new \core\url('/admin/tool/mutrain/management/framework.php', ['id' => $framework->id]);
         $this->assertSame($url->out(false), $event->get_url()->out(false));
     }
 }

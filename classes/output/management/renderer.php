@@ -19,7 +19,7 @@
 
 namespace tool_mutrain\output\management;
 
-use stdClass, moodle_url;
+use stdClass, core\url, html_writer;
 
 /**
  * Frameworks management renderer.
@@ -44,6 +44,7 @@ class renderer extends \plugin_renderer_base {
             $description = $this->output->box($description);
         }
 
+        $buttons = [];
         $details = new \tool_mulib\output\entity_details();
 
         $details->add(get_string('framework_name', 'tool_mutrain'), format_string($framework->name));
@@ -53,7 +54,15 @@ class renderer extends \plugin_renderer_base {
             $idnumber = s($framework->idnumber);
         }
         $details->add(get_string('framework_idnumber', 'tool_mutrain'), $idnumber);
-        $details->add(get_string('category'), $context->get_context_name(false));
+
+        $category = $context->get_context_name(false);
+        if (has_capability('tool/mutrain:manageframeworks', $context)) {
+            $url = new url('/admin/tool/mutrain/management/framework_move.php', ['id' => $framework->id]);
+            $action = new \tool_mulib\output\ajax_form\icon($url, get_string('framework_move', 'tool_mutrain'), 'i/edit');
+            $category .= $this->output->render($action);
+        }
+        $details->add(get_string('category'), $category);
+
         $details->add(get_string('publicaccess', 'tool_mutrain'), ($framework->publicaccess ? get_string('yes') : get_string('no')));
         $details->add(get_string('requiredcredits', 'tool_mutrain'), format_float($framework->requiredcredits, 2, true, true));
         if ($framework->restrictcontext) {
@@ -71,10 +80,10 @@ class renderer extends \plugin_renderer_base {
         $archived = $framework->archived ? get_string('yes') : get_string('no');
         if (has_capability('tool/mutrain:manageframeworks', $context)) {
             if ($framework->archived) {
-                $url = new moodle_url('/admin/tool/mutrain/management/framework_restore.php', ['id' => $framework->id]);
+                $url = new url('/admin/tool/mutrain/management/framework_restore.php', ['id' => $framework->id]);
                 $action = new \tool_mulib\output\ajax_form\icon($url, get_string('framework_restore', 'tool_mutrain'), 'i/settings');
             } else {
-                $url = new moodle_url('/admin/tool/mutrain/management/framework_archive.php', ['id' => $framework->id]);
+                $url = new url('/admin/tool/mutrain/management/framework_archive.php', ['id' => $framework->id]);
                 $action = new \tool_mulib\output\ajax_form\icon($url, get_string('framework_archive', 'tool_mutrain'), 'i/settings');
             }
             $action->set_form_size('sm');
@@ -82,6 +91,26 @@ class renderer extends \plugin_renderer_base {
         }
         $details->add(get_string('archived', 'tool_mutrain'), $archived);
 
-        return $description . $this->output->render($details);
+        if (has_capability('tool/mutrain:manageframeworks', $context)) {
+            $url = new url('/admin/tool/mutrain/management/framework_update.php', ['id' => $framework->id]);
+            $button = new \tool_mulib\output\ajax_form\button($url, get_string('framework_update', 'tool_mutrain'));
+            $buttons[] = $this->output->render($button);
+            if (\tool_mutrain\local\framework::is_deletable($framework->id)) {
+                $url = new url('/admin/tool/mutrain/management/framework_delete.php', ['id' => $framework->id]);
+                $button = new \tool_mulib\output\ajax_form\button($url, get_string('framework_delete', 'tool_mutrain'));
+                $button->set_submitted_action($button::SUBMITTED_ACTION_REDIRECT);
+                $buttons[] = $this->output->render($button);
+            }
+        }
+
+        $result = $description . $this->output->render($details);
+
+        if ($buttons) {
+            $result .= '<div class="buttons mb-5">';
+            $result .= implode(' ', $buttons);
+            $result .= '</div>';
+        }
+
+        return $result;
     }
 }
