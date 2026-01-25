@@ -47,7 +47,7 @@ require_login();
 require_capability('tool/mucertify:viewcatalogue', $syscontext);
 
 if (!\tool_mulib\local\mulib::is_mucertify_active()) {
-    redirect(new moodle_url('/'));
+    redirect(new \core\url('/'));
 }
 
 $actions = new \tool_mulib\output\header_actions(get_string('catalogue_actions', 'tool_mucertify'));
@@ -57,7 +57,7 @@ if ($manageurl) {
     $actions->get_dropdown()->add_item(get_string('management', 'tool_mucertify'), $manageurl);
 }
 if (!isguestuser() && isloggedin()) {
-    $mycertificationsurl = new moodle_url('/admin/tool/mucertify/my/index.php');
+    $mycertificationsurl = new \core\url('/admin/tool/mucertify/my/index.php');
     $button = html_writer::link($mycertificationsurl, get_string('mycertifications', 'tool_mucertify'), ['class' => 'btn btn-secondary']);
     $actions->add_button($button);
 }

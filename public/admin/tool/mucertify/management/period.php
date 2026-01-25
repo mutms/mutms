@@ -53,7 +53,7 @@ require_capability('tool/mucertify:view', $context);
 
 $user = $DB->get_record('user', ['id' => $period->userid], '*', MUST_EXIST);
 
-$currenturl = new moodle_url('/admin/tool/mucertify/management/period.php', ['id' => $period->id]);
+$currenturl = new \core\url('/admin/tool/mucertify/management/period.php', ['id' => $period->id]);
 
 management::setup_certification_page($currenturl, $context, $certification, 'certification_users');
 

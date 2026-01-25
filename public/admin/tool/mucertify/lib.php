@@ -89,9 +89,16 @@ function tool_mucertify_myprofile_navigation(core_user\output\myprofile\tree $tr
         return;
     }
 
-    if ($USER->id == $user->id) {
-        $link = get_string('mycertifications', 'tool_mucertify');
-        $url = new moodle_url('/admin/tool/mucertify/my/index.php');
+    $usercontext = context_user::instance($user->id);
+
+    if ($USER->id == $user->id || has_capability('tool/mucertify:viewusercertifications', $usercontext)) {
+        $url = new \core\url('/admin/tool/mucertify/my/index.php');
+        if ($USER->id == $user->id) {
+            $link = get_string('mycertifications', 'tool_mucertify');
+        } else {
+            $link = get_string('certifications', 'tool_mucertify');
+            $url->param('userid', $user->id);
+        }
         $node = new core_user\output\myprofile\node('miscellaneous', 'toolcertify_certifications', $link, null, $url);
         $tree->add_node($node);
     }
@@ -171,7 +178,7 @@ function tool_mucertify_extend_navigation_category_settings($navigation, $course
     // NOTE: catnav is added to unbreak breadcrums on management pages.
     $settingsnode = navigation_node::create(
         get_string('certifications', 'tool_mucertify'),
-        new moodle_url('/admin/tool/mucertify/management/index.php', ['contextid' => $coursecategorycontext->id, 'catnav' => 1]),
+        new \core\url('/admin/tool/mucertify/management/index.php', ['contextid' => $coursecategorycontext->id, 'catnav' => 1]),
         navigation_node::TYPE_CUSTOM,
         null,
         'tool_mucertify_certifications'

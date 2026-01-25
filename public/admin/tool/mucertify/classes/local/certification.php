@@ -21,6 +21,7 @@ namespace tool_mucertify\local;
 
 use stdClass;
 use tool_muprog\local\course_reset;
+use core\exception\invalid_parameter_exception;
 
 /**
  * Certification helper.
@@ -81,8 +82,6 @@ final class certification {
         global $DB, $CFG;
         $data = clone($data);
 
-        $trans = $DB->start_delegated_transaction();
-
         $context = \context::instance_by_id($data->contextid);
         if (!($context instanceof \context_system) && !($context instanceof \context_coursecat)) {
             throw new \coding_exception('certification contextid must be a system or course category');
@@ -95,6 +94,8 @@ final class certification {
         if (trim($data->idnumber ?? '') === '') {
             throw new \coding_exception('certification idnumber is required');
         }
+
+        $trans = $DB->start_delegated_transaction();
 
         $editorused = false;
         $rawdescription = null;
@@ -213,36 +214,15 @@ final class certification {
         $trans = $DB->start_delegated_transaction();
 
         $oldcertification = $DB->get_record('tool_mucertify_certification', ['id' => $data->id], '*', MUST_EXIST);
+        $context = \context::instance_by_id($oldcertification->contextid);
 
         $record = new stdClass();
         $record->id = $oldcertification->id;
 
-        if (isset($data->contextid) && $data->contextid != $oldcertification->contextid) {
-            // Cohort was moved to another context.
-            $context = \context::instance_by_id($data->contextid);
-            if (!($context instanceof \context_system) && !($context instanceof \context_coursecat)) {
-                throw new \coding_exception('certification contextid must be a system or course category');
+        if (property_exists($data, 'contextid')) {
+            if ($data->contextid != $oldcertification->contextid) {
+                throw new \core\exception\coding_exception('certification::update_general() cannot change contextid, use certification::move() instead');
             }
-            // The category pre-delete hook should be called before the category delete,
-            // so the $oldcontext should be still here.
-            $oldcontext = \context::instance_by_id($oldcertification->contextid, IGNORE_MISSING);
-            if ($oldcontext) {
-                get_file_storage()->move_area_files_to_new_context(
-                    $oldcertification->contextid,
-                    $context->id,
-                    'tool_mucertify',
-                    'description',
-                    $data->id
-                );
-                // Delete tags even if they are not enabled before move,
-                // tags API is not designed to deal with this,
-                // we cannot create instance of deleted context.
-                \core_tag_tag::set_item_tags('tool_mucertify', 'tool_mucertify_certification', $data->id, $oldcontext, null);
-            }
-            $record->contextid = $context->id;
-        } else {
-            $record->contextid = $oldcertification->contextid;
-            $context = \context::instance_by_id($record->contextid);
         }
 
         if (isset($data->fullname)) {
@@ -261,7 +241,7 @@ final class certification {
         if (isset($data->description_editor)) {
             $data->description = $data->description_editor['text'];
             $data->descriptionformat = $data->description_editor['format'];
-            $editoroptions = self::get_description_editor_options($data->contextid);
+            $editoroptions = self::get_description_editor_options($context->id);
             $data = file_postupdate_standard_editor(
                 $data,
                 'description',
@@ -283,7 +263,9 @@ final class certification {
             debugging('Use certification::archive() and certification::restore() to change archived flag', DEBUG_DEVELOPER);
         }
 
-        $DB->update_record('tool_mucertify_certification', $record);
+        if (count((array)$record) > 1) {
+            $DB->update_record('tool_mucertify_certification', $record);
+        }
 
         if ($CFG->usetags && isset($data->tags)) {
             \core_tag_tag::set_item_tags('tool_mucertify', 'tool_mucertify_certification', $data->id, $context, $data->tags);
@@ -303,6 +285,66 @@ final class certification {
 
         \tool_mucertify\local\assignment::fix_assignment_sources($certification->id, null);
         \tool_muprog\local\source\mucertify::sync_certifications($certification->id, null);
+
+        return $certification;
+    }
+
+    /**
+     * Move certification to a different context.
+     *
+     * @param int $id certification id
+     * @param int $contextid new context id
+     * @return stdClass certification record
+     */
+    public static function move(int $id, int $contextid): stdClass {
+        global $DB;
+
+        $certification = $DB->get_record('tool_mucertify_certification', ['id' => $id], '*', MUST_EXIST);
+
+        $context = \context::instance_by_id($contextid);
+        if ($context->contextlevel != CONTEXT_SYSTEM && $context->contextlevel != CONTEXT_COURSECAT) {
+            throw new invalid_parameter_exception('System or category context expected');
+        }
+
+        if ($certification->contextid == $context->id) {
+            return $certification;
+        }
+
+        $trans = $DB->start_delegated_transaction();
+
+        get_file_storage()->move_area_files_to_new_context(
+            $certification->contextid,
+            $context->id,
+            'tool_mucertify',
+            'image',
+            $certification->id
+        );
+        get_file_storage()->move_area_files_to_new_context(
+            $certification->contextid,
+            $context->id,
+            'tool_mucertify',
+            'description',
+            $certification->id
+        );
+
+        // Do not check if tags enabled here.
+        $tags = \core_tag_tag::get_item_tags_array('tool_mucertify', 'tool_mucertify_certification', $certification->id);
+        if ($tags) {
+            \core_tag_tag::set_item_tags('tool_mucertify', 'tool_mucertify_certification', $certification->id, $context, $tags);
+        }
+
+        $record = (object)[
+            'id' => $certification->id,
+            'contextid' => $context->id,
+        ];
+
+        $DB->update_record('tool_mucertify_certification', $record);
+
+        $certification = $DB->get_record('tool_mucertify_certification', ['id' => $certification->id], '*', MUST_EXIST);
+
+        \tool_mucertify\event\certification_updated::create_from_certification($certification)->trigger();
+
+        $trans->allow_commit();
 
         return $certification;
     }
@@ -726,16 +768,15 @@ final class certification {
     public static function pre_course_category_delete(stdClass $category): void {
         global $DB;
 
-        $catcontext = \context_coursecat::instance($category->id, MUST_EXIST);
+        $catcontext = \context_coursecat::instance($category->id);
         $parentcontext = $catcontext->get_parent_context();
 
         $certifications = $DB->get_records('tool_mucertify_certification', ['contextid' => $catcontext->id]);
         foreach ($certifications as $certification) {
-            $data = (object)[
-                'id' => $certification->id,
-                'contextid' => $parentcontext->id,
-            ];
-            self::update_general($data);
+            if (!$certification->archived) {
+                self::archive($certification->id);
+            }
+            self::move($certification->id, $parentcontext->id);
         }
     }
 

@@ -29,4 +29,4 @@
 
 require('../../config.php');
 
-redirect(new moodle_url('/admin/tool/mucertify/catalogue/index.php'));
+redirect(new \core\url('/admin/tool/mucertify/catalogue/index.php'));

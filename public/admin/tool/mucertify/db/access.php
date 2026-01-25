@@ -38,6 +38,17 @@ $capabilities = [
         ],
     ],
 
+
+    /* View certifications in profile of other users */
+    'tool/mucertify:viewusercertifications' => [
+        'captype' => 'read',
+        'riskbitmask' => RISK_PERSONAL,
+        'contextlevel' => CONTEXT_USER,
+        'archetypes' => [
+            'manager' => CAP_ALLOW,
+        ],
+    ],
+
     /*
      * Access the certification management UI - needed for certification management capabilities
      * this allows sidestepping of regular certification visibility rules.

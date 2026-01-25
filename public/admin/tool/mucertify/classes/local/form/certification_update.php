@@ -19,8 +19,6 @@
 
 namespace tool_mucertify\local\form;
 
-use tool_mucertify\external\form_autocomplete\certification_contextid;
-
 /**
  * Update certification.
  *
@@ -41,7 +39,6 @@ final class certification_update extends \tool_mulib\local\ajax_form {
         $mform = $this->_form;
         $editoroptions = $this->_customdata['editoroptions'];
         $data = $this->_customdata['data'];
-        $context = $this->_customdata['context'];
 
         $mform->addElement('text', 'fullname', get_string('certificationname', 'tool_mucertify'), 'maxlength="254" size="50"');
         $mform->addRule('fullname', get_string('required'), 'required', null, 'client');
@@ -50,8 +47,6 @@ final class certification_update extends \tool_mulib\local\ajax_form {
         $mform->addElement('text', 'idnumber', get_string('certificationidnumber', 'tool_mucertify'), 'maxlength="254" size="50"');
         $mform->addRule('idnumber', get_string('required'), 'required', null, 'client');
         $mform->setType('idnumber', PARAM_RAW); // Idnumbers are plain text.
-
-        certification_contextid::add_element($mform, [], 'contextid', get_string('category'), $context);
 
         if ($CFG->usetags) {
             $mform->addElement('tags', 'tags', get_string('tags'), ['itemtype' => 'tool_mucertify_certification', 'component' => 'tool_mucertify']);
@@ -92,8 +87,6 @@ final class certification_update extends \tool_mulib\local\ajax_form {
     #[\Override]
     public function validation($data, $files) {
         global $DB;
-        $context = $this->_customdata['context'];
-
         $errors = parent::validation($data, $files);
 
         if (trim($data['fullname']) === '') {
@@ -108,11 +101,6 @@ final class certification_update extends \tool_mulib\local\ajax_form {
             if ($DB->record_exists_select('tool_mucertify_certification', "LOWER(idnumber) = LOWER(?) AND id <> ?", [$data['idnumber'], $data['id']])) {
                 $errors['idnumber'] = get_string('error');
             }
-        }
-
-        $error = certification_contextid::validate_value($data['contextid'], [], $context);
-        if ($error !== null) {
-            $errors['contextid'] = $error;
         }
 
         // Add the custom fields validation.

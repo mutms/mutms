@@ -63,7 +63,7 @@ final class certification_archived_test extends \advanced_testcase {
         $this->assertSame('tool_mucertify_certification', $event->objecttable);
         $this->assertSame('Certification archived', $event::get_name());
         $description = $event->get_description();
-        $certificationurl = new \moodle_url('/admin/tool/mucertify/management/certification.php', ['id' => $certification->id]);
+        $certificationurl = new \core\url('/admin/tool/mucertify/management/certification.php', ['id' => $certification->id]);
         $this->assertSame($certificationurl->out(false), $event->get_url()->out(false));
     }
 }

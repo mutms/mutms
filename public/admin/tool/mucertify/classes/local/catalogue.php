@@ -69,9 +69,9 @@ final class catalogue {
     /**
      * Current catalogue URL.
      *
-     * @return \moodle_url
+     * @return \core\url
      */
-    public function get_current_url(): \moodle_url {
+    public function get_current_url(): \core\url {
         $pageparams = [];
         if ($this->page != 0) {
             $pageparams['page'] = $this->page;
@@ -82,7 +82,7 @@ final class catalogue {
         if ($this->searchtext !== null) {
             $pageparams['searchtext'] = $this->searchtext;
         }
-        return new \moodle_url('/admin/tool/mucertify/catalogue/index.php', $pageparams);
+        return new \core\url('/admin/tool/mucertify/catalogue/index.php', $pageparams);
     }
 
     /**
@@ -162,7 +162,7 @@ final class catalogue {
         $result = '';
 
         $data = [
-            'action' => new \moodle_url('/admin/tool/mucertify/catalogue/index.php'),
+            'action' => new \core\url('/admin/tool/mucertify/catalogue/index.php'),
             'inputname' => 'searchtext',
             'searchstring' => get_string('search', 'cohort'),
             'query' => $this->searchtext,
@@ -183,9 +183,9 @@ final class catalogue {
             $context = \context::instance_by_id($certification->contextid);
             $fullname = format_string($certification->fullname);
             if ($assignment) {
-                $url = new \moodle_url('/admin/tool/mucertify/my/certification.php', ['id' => $certification->id]);
+                $url = new \core\url('/admin/tool/mucertify/my/certification.php', ['id' => $certification->id]);
             } else {
-                $url = new \moodle_url('/admin/tool/mucertify/catalogue/certification.php', ['id' => $certification->id]);
+                $url = new \core\url('/admin/tool/mucertify/catalogue/certification.php', ['id' => $certification->id]);
             }
 
             $description = file_rewrite_pluginfile_urls($certification->description, 'pluginfile.php', $context->id, 'tool_mucertify', 'description', $certification->id);
@@ -207,7 +207,7 @@ final class catalogue {
             $certificationimage = '';
             $presentation = (array)json_decode($certification->presentationjson);
             if (!empty($presentation['image'])) {
-                $imageurl = \moodle_url::make_file_url(
+                $imageurl = \core\url::make_file_url(
                     "$CFG->wwwroot/pluginfile.php",
                     '/' . $context->id . '/tool_mucertify/image/' . $certification->id . '/' . $presentation['image'],
                     false
@@ -351,9 +351,9 @@ final class catalogue {
     /**
      * Returns link to certification catalogue.
      *
-     * @return ?\moodle_url null of certifications disabled or user cannot access catalogue
+     * @return ?\core\url null of certifications disabled or user cannot access catalogue
      */
-    public static function get_catalogue_url(): ?\moodle_url {
+    public static function get_catalogue_url(): ?\core\url {
         if (!mulib::is_mucertify_active()) {
             return null;
         }
@@ -363,7 +363,7 @@ final class catalogue {
         if (!has_capability('tool/mucertify:viewcatalogue', \context_system::instance())) {
             return null;
         }
-        return new \moodle_url('/admin/tool/mucertify/catalogue/index.php');
+        return new \core\url('/admin/tool/mucertify/catalogue/index.php');
     }
 
     /**
@@ -440,7 +440,7 @@ final class catalogue {
         $result = [];
         foreach ($certifications as $certification) {
             $fullname = format_string($certification->fullname);
-            $url = new \moodle_url('/admin/tool/mucertify/catalogue/certification.php', ['id' => $certification->id]);
+            $url = new \core\url('/admin/tool/mucertify/catalogue/certification.php', ['id' => $certification->id]);
             $icon = $OUTPUT->pix_icon('certification', '', 'tool_mucertify');
             $result[] = '<div class="certification-link">' . $icon . \html_writer::link($url, $fullname) . '</div>';
         }

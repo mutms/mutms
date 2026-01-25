@@ -58,7 +58,7 @@ class renderer extends \plugin_renderer_base {
         $certificationimage = '';
         $presentation = (array)json_decode($certification->presentationjson);
         if (!empty($presentation['image'])) {
-            $imageurl = \moodle_url::make_file_url(
+            $imageurl = \core\url::make_file_url(
                 "$CFG->wwwroot/pluginfile.php",
                 '/' . $context->id . '/tool_mucertify/image/' . $certification->id . '/' . $presentation['image'],
                 false
@@ -129,13 +129,11 @@ class renderer extends \plugin_renderer_base {
      * @return string
      */
     public function render_user_periods(stdClass $certification, stdClass $assignment): string {
-        global $USER;
-
         $result = $this->output->heading(get_string('periods', 'tool_mucertify'), 3);
 
-        $context = \context_user::instance($USER->id);
+        $context = \context_user::instance($assignment->userid);
         $report = \core_reportbuilder\system_report_factory::create(
-            \tool_mucertify\reportbuilder\local\systemreports\my_assignment_periods::class,
+            \tool_mucertify\reportbuilder\local\systemreports\assignment_periods_user::class,
             $context,
             parameters:['assignmentid' => $assignment->id]
         );
@@ -172,7 +170,7 @@ class renderer extends \plugin_renderer_base {
 
             $certification = $DB->get_record('tool_mucertify_certification', ['id' => $assignment->certificationid]);
             $fullname = $certificationicon . format_string($certification->fullname);
-            $detailurl = new \moodle_url('/admin/tool/mucertify/my/certification.php', ['id' => $certification->id]);
+            $detailurl = new \core\url('/admin/tool/mucertify/my/certification.php', ['id' => $certification->id]);
             $fullname = \html_writer::link($detailurl, $fullname);
             $row[] = $fullname;
 

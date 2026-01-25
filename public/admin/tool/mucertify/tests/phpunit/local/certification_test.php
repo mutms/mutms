@@ -21,6 +21,8 @@ namespace tool_mucertify\phpunit\local;
 
 use tool_muprog\local\course_reset;
 use tool_mucertify\local\certification;
+use core\exception\moodle_exception;
+use core\exception\invalid_parameter_exception;
 
 /**
  * Certification helper test.
@@ -174,7 +176,7 @@ final class certification_test extends \advanced_testcase {
         $data = [
             'fullname' => 'Certifikace 1',
             'idnumber' => 'c1',
-            'contextid' => $syscontext->id,
+            'contextid' => $catcontext->id,
         ];
         $certification = certification::create((object)$data);
 
@@ -214,6 +216,110 @@ final class certification_test extends \advanced_testcase {
         $certification = certification::update_general($data);
         $this->assertDebuggingCalled('Use certification::archive() and certification::restore() to change archived flag');
         $this->assertSame('0', $certification->archived);
+    }
+
+    public function test_move(): void {
+        $syscontext = \context_system::instance();
+
+        $category = $this->getDataGenerator()->create_category();
+        $catcontext = \context_coursecat::instance($category->id);
+        $course = $this->getDataGenerator()->create_course();
+        $coursecontext = \context_course::instance($course->id);
+
+        $data = [
+            'fullname' => 'Certifikace 1',
+            'idnumber' => 'c1',
+            'contextid' => $catcontext->id,
+        ];
+        $certification = certification::create((object)$data);
+        $this->assertSame((string)$catcontext->id, $certification->contextid);
+
+        $certification = certification::move($certification->id, $syscontext->id);
+        $this->assertSame((string)$syscontext->id, $certification->contextid);
+
+        $certification = certification::move($certification->id, $catcontext->id);
+        $this->assertSame((string)$catcontext->id, $certification->contextid);
+
+        try {
+            certification::move($certification->id, $coursecontext->id);
+            $this->fail('Exception expected');
+        } catch (moodle_exception $ex) {
+            $this->assertInstanceOf(invalid_parameter_exception::class, $ex);
+            $this->assertSame('Invalid parameter value detected (System or category context expected)', $ex->getMessage());
+        }
+
+        // Test tags are moved.
+
+        $data = [
+            'fullname' => 'Certifikace 2',
+            'idnumber' => 'c2',
+            'contextid' => $catcontext->id,
+            'tags' => ['hokus', 'pokus'],
+        ];
+        $certification2 = certification::create((object)$data);
+        $this->assertEqualsCanonicalizing(
+            ['hokus', 'pokus'],
+            \core_tag_tag::get_item_tags_array('tool_mucertify', 'tool_mucertify_certification', $certification2->id)
+        );
+        $tags = \core_tag_tag::get_item_tags('tool_mucertify', 'tool_mucertify_certification', $certification2->id);
+        foreach ($tags as $tag) {
+            $this->assertEquals($catcontext->id, $tag->taginstancecontextid);
+        }
+
+        $certification2 = certification::move($certification2->id, $syscontext->id);
+        $this->assertEqualsCanonicalizing(
+            ['hokus', 'pokus'],
+            \core_tag_tag::get_item_tags_array('tool_mucertify', 'tool_mucertify_certification', $certification2->id)
+        );
+        $tags = \core_tag_tag::get_item_tags('tool_mucertify', 'tool_mucertify_certification', $certification2->id);
+        foreach ($tags as $tag) {
+            $this->assertEquals($syscontext->id, $tag->taginstancecontextid);
+        }
+
+        // Test images are moved.
+
+        $admin = get_admin();
+        $this->setUser($admin);
+        $fs = get_file_storage();
+        $context = \context_user::instance($admin->id);
+
+        $draftid1 = \file_get_unused_draft_itemid();
+        $record = [
+            'contextid' => $context->id,
+            'component' => 'user',
+            'filearea' => 'draft',
+            'itemid' => $draftid1,
+            'filepath' => '/',
+            'filename' => 'someimage.jpg',
+        ];
+        $fs->create_file_from_string($record, 'content is irrelevant');
+        $draftid2 = \file_get_unused_draft_itemid();
+        $record = [
+            'contextid' => $context->id,
+            'component' => 'user',
+            'filearea' => 'draft',
+            'itemid' => $draftid2,
+            'filepath' => '/',
+            'filename' => 'otherimage.jpg',
+        ];
+        $fs->create_file_from_string($record, 'content is irrelevant');
+
+        $data = [
+            'fullname' => 'Certifikace 3',
+            'idnumber' => 'c3',
+            'contextid' => $catcontext->id,
+            'description_editor' => ['text' => 'xx', 'format' => FORMAT_HTML, 'itemid' => $draftid1],
+            'image' => $draftid2,
+        ];
+        $certification3 = certification::create((object)$data);
+        $this->assertTrue($fs->file_exists($catcontext->id, 'tool_mucertify', 'description', $certification3->id, '/', 'someimage.jpg'));
+        $this->assertTrue($fs->file_exists($catcontext->id, 'tool_mucertify', 'image', $certification3->id, '/', 'otherimage.jpg'));
+
+        $certification3 = certification::move($certification3->id, $syscontext->id);
+        $this->assertFalse($fs->file_exists($catcontext->id, 'tool_mucertify', 'description', $certification3->id, '/', 'someimage.jpg'));
+        $this->assertFalse($fs->file_exists($catcontext->id, 'tool_mucertify', 'image', $certification3->id, '/', 'otherimage.jpg'));
+        $this->assertTrue($fs->file_exists($syscontext->id, 'tool_mucertify', 'description', $certification3->id, '/', 'someimage.jpg'));
+        $this->assertTrue($fs->file_exists($syscontext->id, 'tool_mucertify', 'image', $certification3->id, '/', 'otherimage.jpg'));
     }
 
     public function test_archive(): void {

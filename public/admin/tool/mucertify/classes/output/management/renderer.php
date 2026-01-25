@@ -25,7 +25,7 @@ use tool_mucertify\local\management;
 use tool_mucertify\local\util;
 use tool_mucertify\local\certification;
 use tool_mucertify\local\period;
-use stdClass, moodle_url, html_writer;
+use stdClass, \core\url, html_writer;
 
 /**
  * Certification management renderer.
@@ -52,7 +52,7 @@ class renderer extends \plugin_renderer_base {
 
         $presentation = (array)json_decode($certification->presentationjson);
         if (!empty($presentation['image'])) {
-            $imageurl = moodle_url::make_file_url(
+            $imageurl = \core\url::make_file_url(
                 "$CFG->wwwroot/pluginfile.php",
                 '/' . $context->id . '/tool_mucertify/image/' . $certification->id . '/' . $presentation['image'],
                 false
@@ -63,8 +63,15 @@ class renderer extends \plugin_renderer_base {
         $details = new \tool_mulib\output\entity_details();
         $details->add(get_string('certificationname', 'tool_mucertify'), format_string($certification->fullname));
         $details->add(get_string('certificationidnumber', 'tool_mucertify'), s($certification->idnumber));
-        $url = new moodle_url('/admin/tool/mucertify/management/index.php', ['contextid' => $context->id]);
-        $details->add(get_string('category'), html_writer::link($url, $context->get_context_name(false)));
+
+        $category = $context->get_context_name(false);
+        if (has_capability('tool/mucertify:edit', $context)) {
+            $url = new url('/admin/tool/mucertify/management/certification_move.php', ['id' => $certification->id]);
+            $action = new \tool_mulib\output\ajax_form\icon($url, get_string('certification_move', 'tool_mucertify'), 'i/edit');
+            $category .= $this->output->render($action);
+        }
+        $details->add(get_string('category'), $category);
+
         if ($CFG->usetags) {
             $tags = \core_tag_tag::get_item_tags('tool_mucertify', 'tool_mucertify_certification', $certification->id);
             if ($tags) {
@@ -81,10 +88,10 @@ class renderer extends \plugin_renderer_base {
         $archived = $certification->archived ? get_string('yes') : get_string('no');
         if (has_capability('tool/mucertify:edit', $context)) {
             if ($certification->archived) {
-                $url = new moodle_url('/admin/tool/mucertify/management/certification_restore.php', ['id' => $certification->id]);
+                $url = new \core\url('/admin/tool/mucertify/management/certification_restore.php', ['id' => $certification->id]);
                 $action = new \tool_mulib\output\ajax_form\icon($url, get_string('certification_restore', 'tool_mucertify'), 'i/settings');
             } else {
-                $url = new moodle_url('/admin/tool/mucertify/management/certification_archive.php', ['id' => $certification->id]);
+                $url = new \core\url('/admin/tool/mucertify/management/certification_archive.php', ['id' => $certification->id]);
                 $action = new \tool_mulib\output\ajax_form\icon($url, get_string('certification_archive', 'tool_mucertify'), 'i/settings');
             }
             $action->set_form_size('sm');
@@ -150,7 +157,7 @@ class renderer extends \plugin_renderer_base {
                 $context = \context::instance_by_id($program1->contextid, IGNORE_MISSING);
                 $program1str = format_string($program1->fullname);
                 if ($context && has_capability('tool/muprog:view', $context)) {
-                    $url = new moodle_url('/admin/tool/muprog/management/program.php', ['id' => $program1->id]);
+                    $url = new \core\url('/admin/tool/muprog/management/program.php', ['id' => $program1->id]);
                     $program1str = html_writer::link($url, $program1str);
                 }
                 if (!$DB->record_exists('tool_muprog_source', ['programid' => $program1->id, 'type' => 'mucertify'])) {
@@ -231,7 +238,7 @@ class renderer extends \plugin_renderer_base {
                 $context = \context::instance_by_id($program2->contextid, IGNORE_MISSING);
                 $program2str = format_string($program2->fullname);
                 if ($context && has_capability('tool/muprog:view', $context)) {
-                    $url = new moodle_url('/admin/tool/muprog/management/program.php', ['id' => $program2->id]);
+                    $url = new \core\url('/admin/tool/muprog/management/program.php', ['id' => $program2->id]);
                     $program2str = html_writer::link($url, $program2str);
                 }
                 if (!$DB->record_exists('tool_muprog_source', ['programid' => $program2->id, 'type' => 'mucertify'])) {
@@ -304,7 +311,7 @@ class renderer extends \plugin_renderer_base {
                 if ($template) {
                     $templatecontext = \context::instance_by_id($template->contextid);
                     if (has_capability('tool/certificate:viewallcertificates', $templatecontext)) {
-                        $url = new moodle_url('/admin/tool/certificate/certificates.php', ['templateid' => $template->id]);
+                        $url = new \core\url('/admin/tool/certificate/certificates.php', ['templateid' => $template->id]);
                         $name = html_writer::link($url, $name);
                     }
                 }
@@ -341,27 +348,27 @@ class renderer extends \plugin_renderer_base {
         $buttons = [];
         $backheading = '';
         if ($subpage) {
-            $backurl = new moodle_url('/admin/tool/mucertify/management/assignment.php', ['id' => $assignment->id]);
+            $backurl = new \core\url('/admin/tool/mucertify/management/assignment.php', ['id' => $assignment->id]);
             $backheading = $this->output->heading(get_string('periods', 'tool_mucertify'), 3, ['h4']);
             $backheading = \html_writer::link($backurl, $backheading);
         } else {
             if (has_capability('tool/mucertify:admin', $context)) {
                 if ($sourceclass::is_assignment_update_possible($certification, $source, $assignment)) {
-                    $url = new moodle_url('/admin/tool/mucertify/management/assignment_update.php', ['id' => $assignment->id]);
+                    $url = new \core\url('/admin/tool/mucertify/management/assignment_update.php', ['id' => $assignment->id]);
                     $button = new \tool_mulib\output\ajax_form\button($url, get_string('assignment_update', 'tool_mucertify'));
                     $buttons[] = $this->output->render($button);
                 }
             }
             if (has_capability('tool/mucertify:unassign', $context)) {
                 if ($sourceclass::is_assignment_delete_possible($certification, $source, $assignment)) {
-                    $url = new moodle_url('/admin/tool/mucertify/management/assignment_delete.php', ['id' => $assignment->id]);
+                    $url = new \core\url('/admin/tool/mucertify/management/assignment_delete.php', ['id' => $assignment->id]);
                     $button = new \tool_mulib\output\ajax_form\button($url, get_string('assignment_delete', 'tool_mucertify'));
                     $button->set_submitted_action($button::SUBMITTED_ACTION_REDIRECT);
                     $buttons[] = $this->output->render($button);
                 }
             }
             if (!$certification->archived && !$assignment->archived && has_capability('tool/mucertify:admin', $context)) {
-                $url = new moodle_url('/admin/tool/mucertify/management/period_create.php', ['assignmentid' => $assignment->id]);
+                $url = new \core\url('/admin/tool/mucertify/management/period_create.php', ['assignmentid' => $assignment->id]);
                 $button = new \tool_mulib\output\ajax_form\button($url, get_string('period_create', 'tool_mucertify'));
                 $buttons[] = $this->output->render($button);
             }
@@ -391,7 +398,7 @@ class renderer extends \plugin_renderer_base {
             $archived = $assignment->archived ? get_string('yes') : get_string('no');
             if ($assignment->archived && has_capability('tool/mucertify:assign', $context)) {
                 if ($sourceclass::is_assignment_restore_possible($certification, $source, $assignment)) {
-                    $url = new moodle_url('/admin/tool/mucertify/management/assignment_restore.php', ['id' => $assignment->id]);
+                    $url = new \core\url('/admin/tool/mucertify/management/assignment_restore.php', ['id' => $assignment->id]);
                     $action = new \tool_mulib\output\ajax_form\icon($url, get_string('assignment_restore', 'tool_mucertify'), 'i/settings');
                     $action->set_form_size('sm');
                     $archived .= $this->output->render($action);
@@ -399,7 +406,7 @@ class renderer extends \plugin_renderer_base {
             }
             if (!$assignment->archived && has_capability('tool/mucertify:unassign', $context)) {
                 if ($sourceclass::is_assignment_archive_possible($certification, $source, $assignment)) {
-                    $url = new moodle_url('/admin/tool/mucertify/management/assignment_archive.php', ['id' => $assignment->id]);
+                    $url = new \core\url('/admin/tool/mucertify/management/assignment_archive.php', ['id' => $assignment->id]);
                     $action = new \tool_mulib\output\ajax_form\icon($url, get_string('assignment_archive', 'tool_mucertify'), 'i/settings');
                     $action->set_form_size('sm');
                     $archived .= $this->output->render($action);
@@ -480,12 +487,12 @@ class renderer extends \plugin_renderer_base {
         $buttons = [];
 
         if (!$certification->archived && (!$assignment || !$assignment->archived) && has_capability('tool/mucertify:admin', $context)) {
-            $updateurl = new moodle_url('/admin/tool/mucertify/management/period_update.php', ['id' => $period->id]);
+            $updateurl = new \core\url('/admin/tool/mucertify/management/period_update.php', ['id' => $period->id]);
             $updatebutton = new \tool_mulib\output\ajax_form\button($updateurl, get_string('period_update', 'tool_mucertify'));
             $buttons[] = $this->output->render($updatebutton);
 
             if ($period->timerevoked) {
-                $deleteurl = new moodle_url('/admin/tool/mucertify/management/period_delete.php', ['id' => $period->id]);
+                $deleteurl = new \core\url('/admin/tool/mucertify/management/period_delete.php', ['id' => $period->id]);
                 $deletebutton = new \tool_mulib\output\ajax_form\button($deleteurl, get_string('period_delete', 'tool_mucertify'));
                 $deletebutton->set_submitted_action($deletebutton::SUBMITTED_ACTION_REDIRECT);
                 $buttons[] = $this->output->render($deletebutton);
@@ -499,9 +506,9 @@ class renderer extends \plugin_renderer_base {
             $programname = format_string($program->fullname);
             if ($programcontext && has_capability('tool/muprog:view', $programcontext)) {
                 if ($allocation) {
-                    $url = new moodle_url('/admin/tool/muprog/management/allocation.php', ['id' => $allocation->id]);
+                    $url = new \core\url('/admin/tool/muprog/management/allocation.php', ['id' => $allocation->id]);
                 } else {
-                    $url = new moodle_url('/admin/tool/muprog/management/program.php', ['id' => $program->id]);
+                    $url = new \core\url('/admin/tool/muprog/management/program.php', ['id' => $program->id]);
                 }
                 $programname = html_writer::link($url, $programname);
             }

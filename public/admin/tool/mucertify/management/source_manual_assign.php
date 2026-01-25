@@ -48,11 +48,11 @@ $certification = $DB->get_record('tool_mucertify_certification', ['id' => $sourc
 $context = context::instance_by_id($certification->contextid);
 require_capability('tool/mucertify:assign', $context);
 
-$currenturl = new moodle_url('/admin/tool/mucertify/management/source_manual_assign.php', ['sourceid' => $source->id]);
+$currenturl = new \core\url('/admin/tool/mucertify/management/source_manual_assign.php', ['sourceid' => $source->id]);
 $PAGE->set_context($context);
 $PAGE->set_url($currenturl);
 
-$returnurl = new moodle_url('/admin/tool/mucertify/management/certification_users.php', ['id' => $certification->id]);
+$returnurl = new \core\url('/admin/tool/mucertify/management/certification_users.php', ['id' => $certification->id]);
 
 if (!manual::is_assignment_possible($certification, $source)) {
     redirect($returnurl);

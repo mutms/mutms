@@ -82,7 +82,7 @@ final class assignment_created_test extends \advanced_testcase {
         $this->assertSame('tool_mucertify_assignment', $event->objecttable);
         $this->assertSame('User assigned to certification', $event::get_name());
         $description = $event->get_description();
-        $certificationurl = new \moodle_url('/admin/tool/mucertify/management/assignment.php', ['id' => $assignment->id]);
+        $certificationurl = new \core\url('/admin/tool/mucertify/management/assignment.php', ['id' => $assignment->id]);
         $this->assertSame($certificationurl->out(false), $event->get_url()->out(false));
 
         $event = $events[1];

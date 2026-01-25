@@ -61,7 +61,7 @@ final class unassignment extends base {
         ?stdClass $supervisoruser = null
     ): array {
         $a = parent::get_assignment_placeholders($certification, $source, $assignment, $user, $supervisoruser);
-        $a['certification_url'] = (new \moodle_url('/admin/tool/mucertify/catalogue/certification.php', ['id' => $certification->id]))->out(false);
+        $a['certification_url'] = (new \core\url('/admin/tool/mucertify/catalogue/certification.php', ['id' => $certification->id]))->out(false);
         return $a;
     }
 

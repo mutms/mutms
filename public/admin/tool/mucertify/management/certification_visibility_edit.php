@@ -48,7 +48,7 @@ $certification = $DB->get_record('tool_mucertify_certification', ['id' => $id], 
 $context = context::instance_by_id($certification->contextid);
 require_capability('tool/mucertify:edit', $context);
 
-$currenturl = new moodle_url('/admin/tool/mucertify/management/certification_visibility_edit.php', ['id' => $id]);
+$currenturl = new \core\url('/admin/tool/mucertify/management/certification_visibility_edit.php', ['id' => $id]);
 $PAGE->set_context($context);
 $PAGE->set_url($currenturl);
 
@@ -59,7 +59,7 @@ $current->cohorts = array_keys(management::fetch_current_cohorts_menu($certifica
 
 $form = new \tool_mucertify\local\form\certification_visibility_edit(null, ['data' => $current, 'context' => $context]);
 
-$returnurl = new moodle_url('/admin/tool/mucertify/management/certification_visibility.php', ['id' => $certification->id]);
+$returnurl = new \core\url('/admin/tool/mucertify/management/certification_visibility.php', ['id' => $certification->id]);
 
 if ($form->is_cancelled()) {
     $form->ajax_form_cancelled($returnurl);

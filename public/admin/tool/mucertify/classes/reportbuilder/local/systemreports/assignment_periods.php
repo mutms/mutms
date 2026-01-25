@@ -28,7 +28,6 @@ use tool_muprog\reportbuilder\local\entities\allocation;
 use core_reportbuilder\system_report;
 use core_reportbuilder\local\helpers\database;
 use lang_string;
-use moodle_url;
 
 /**
  * Embedded certification assignment periods report.
@@ -123,7 +122,7 @@ final class assignment_periods extends system_report {
         $column = $this->periodentity->get_column('timewindowstart')
             ->add_field("{$periodalias}.id")
             ->add_callback(static function ($value, \stdClass $row): string {
-                $url = new \moodle_url('/admin/tool/mucertify/management/period.php', ['id' => $row->id]);
+                $url = new \core\url('/admin/tool/mucertify/management/period.php', ['id' => $row->id]);
                 return \html_writer::link($url, $value);
             });
         $this->add_column($column);
@@ -148,7 +147,7 @@ final class assignment_periods extends system_report {
                 if (!$context || !has_capability('tool/muprog:view', $context)) {
                     return $fullname;
                 }
-                $url = new \moodle_url('/admin/tool/muprog/management/allocation.php', ['id' => $row->allocationid]);
+                $url = new \core\url('/admin/tool/muprog/management/allocation.php', ['id' => $row->allocationid]);
                 return \html_writer::link($url, $fullname);
             });
         $this->add_column($column);

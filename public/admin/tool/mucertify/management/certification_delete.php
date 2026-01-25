@@ -47,12 +47,12 @@ $certification = $DB->get_record('tool_mucertify_certification', ['id' => $id], 
 $context = context::instance_by_id($certification->contextid);
 require_capability('tool/mucertify:delete', $context);
 
-$currenturl = new moodle_url('/admin/tool/mucertify/management/certification_delete.php', ['id' => $certification->id]);
+$currenturl = new \core\url('/admin/tool/mucertify/management/certification_delete.php', ['id' => $certification->id]);
 $PAGE->set_context($context);
 $PAGE->set_url($currenturl);
 
 $form = new \tool_mucertify\local\form\certification_delete(null, ['certification' => $certification]);
-$returnurl = new moodle_url('/admin/tool/mucertify/management/certification.php', ['id' => $certification->id]);
+$returnurl = new \core\url('/admin/tool/mucertify/management/certification.php', ['id' => $certification->id]);
 if (!$certification->archived) {
     redirect($returnurl);
 }
@@ -63,7 +63,7 @@ if ($form->is_cancelled()) {
 
 if ($data = $form->get_data()) {
     certification::delete($certification->id);
-    $returnurl = new moodle_url('/admin/tool/mucertify/management/index.php', ['contextid' => $certification->contextid]);
+    $returnurl = new \core\url('/admin/tool/mucertify/management/index.php', ['contextid' => $certification->contextid]);
     $form->ajax_form_submitted($returnurl);
 }
 
