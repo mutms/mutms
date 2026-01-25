@@ -152,9 +152,12 @@ final class tool_mutenancy_test extends \advanced_testcase {
         $tenant2 = \tool_mutenancy\local\tenant::archive($tenant2->id);
         \tool_mutenancy\local\tenant::delete($tenant2->id);
 
+        $page2x = $DB->get_record('tool_muhome_page', ['id' => $page2->id]);
         $page2->status = (string)page::STATUS_ARCHIVED;
+        $page2->timemodified = $page2x->timemodified;
+        $this->assertEquals($page2, $page2x);
+
         $this->assertEquals($page0, $DB->get_record('tool_muhome_page', ['id' => $page0->id]));
         $this->assertEquals($page1, $DB->get_record('tool_muhome_page', ['id' => $page1->id]));
-        $this->assertEquals($page2, $DB->get_record('tool_muhome_page', ['id' => $page2->id]));
     }
 }
