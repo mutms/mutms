@@ -45,7 +45,7 @@ $certification = $DB->get_record('tool_mucertify_certification', ['id' => $id], 
 $context = context::instance_by_id($certification->contextid);
 require_capability('tool/mucertify:view', $context);
 
-$currenturl = new moodle_url('/admin/tool/mucertify/management/source_approval_requests.php', ['id' => $certification->id]);
+$currenturl = new \core\url('/admin/tool/mucertify/management/source_approval_requests.php', ['id' => $certification->id]);
 
 management::setup_certification_page($currenturl, $context, $certification, 'certification_approval_requests');
 

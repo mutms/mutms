@@ -48,11 +48,11 @@ $assignment = $DB->get_record('tool_mucertify_assignment', ['certificationid' =>
 $context = context::instance_by_id($certification->contextid);
 require_capability('tool/mucertify:admin', $context);
 
-$currenturl = new moodle_url('/admin/tool/mucertify/management/period_update.php', ['id' => $period->id]);
+$currenturl = new \core\url('/admin/tool/mucertify/management/period_update.php', ['id' => $period->id]);
 $PAGE->set_context($context);
 $PAGE->set_url($currenturl);
 
-$returnurl = new moodle_url('/admin/tool/mucertify/management/period.php', ['id' => $period->id]);
+$returnurl = new \core\url('/admin/tool/mucertify/management/period.php', ['id' => $period->id]);
 if (!$period->timerevoked || ($assignment && $assignment->archived) || $certification->archived) {
     redirect($returnurl);
 }
@@ -68,9 +68,9 @@ if ($form->is_cancelled()) {
 if ($data = $form->get_data()) {
     \tool_mucertify\local\period::delete($data->id);
     if ($assignment) {
-        $returnurl = new moodle_url('/admin/tool/mucertify/management/assignment.php', ['id' => $assignment->id]);
+        $returnurl = new \core\url('/admin/tool/mucertify/management/assignment.php', ['id' => $assignment->id]);
     } else {
-        $returnurl = new moodle_url('/admin/tool/mucertify/management/certification.php', ['id' => $certification->id]);
+        $returnurl = new \core\url('/admin/tool/mucertify/management/certification.php', ['id' => $certification->id]);
     }
     $form->ajax_form_submitted($returnurl);
 }

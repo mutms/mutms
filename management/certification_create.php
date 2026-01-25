@@ -49,7 +49,7 @@ if ($context->contextlevel != CONTEXT_SYSTEM && $context->contextlevel != CONTEX
     throw new moodle_exception('invalidcontext');
 }
 
-$currenturl = new moodle_url('/admin/tool/mucertify/management/certification_create.php', ['contextid' => $context->id]);
+$currenturl = new \core\url('/admin/tool/mucertify/management/certification_create.php', ['contextid' => $context->id]);
 $PAGE->set_context($context);
 $PAGE->set_url($currenturl);
 
@@ -65,12 +65,12 @@ $editoroptions = certification::get_description_editor_options($context->id);
 $form = new \tool_mucertify\local\form\certification_create(null, ['data' => $certification, 'editoroptions' => $editoroptions, 'context' => $context]);
 
 if ($form->is_cancelled()) {
-    redirect(new moodle_url('/admin/tool/mucertify/management/index.php', ['contextid' => $context->id]));
+    redirect(new \core\url('/admin/tool/mucertify/management/index.php', ['contextid' => $context->id]));
 }
 
 if ($data = $form->get_data()) {
     $certification = certification::create($data);
-    $returnurl = new moodle_url('/admin/tool/mucertify/management/certification_settings.php', ['id' => $certification->id]);
+    $returnurl = new \core\url('/admin/tool/mucertify/management/certification_settings.php', ['id' => $certification->id]);
     $form->ajax_form_submitted($returnurl);
 }
 

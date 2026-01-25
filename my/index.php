@@ -18,7 +18,7 @@
 // phpcs:disable moodle.Files.LineLength.TooLong
 
 /**
- * My certifications.
+ * User certifications.
  *
  * @package    tool_mucertify
  * @copyright  2022 Open LMS (https://www.openlms.net/)
@@ -30,31 +30,49 @@
 /** @var moodle_database $DB */
 /** @var moodle_page $PAGE */
 /** @var core_renderer $OUTPUT */
-/** @var stdClass $CFG */
 /** @var stdClass $USER */
 
 require('../../../../config.php');
 
-require_login();
+$userid = optional_param('userid', 0, PARAM_INT);
 
-$usercontext = context_user::instance($USER->id);
+require_login();
+if (isguestuser()) {
+    redirect(new core\url('/'));
+}
+
+$currenturl = new core\url('/admin/tool/mucertify/my/index.php');
+
+if ($userid) {
+    $currenturl->param('userid', $userid);
+} else {
+    $userid = $USER->id;
+}
+$PAGE->set_url($currenturl);
+
+$usercontext = context_user::instance($userid);
 $PAGE->set_context($usercontext);
 
 if (!\tool_mulib\local\mulib::is_mucertify_active()) {
-    redirect(new moodle_url('/'));
-}
-if (isguestuser()) {
-    redirect(new moodle_url('/admin/tool/mucertify/catalogue/index.php'));
+    redirect(new core\url('/'));
 }
 
-$currenturl = new moodle_url('/admin/tool/mucertify/my/index.php');
+$user = $DB->get_record('user', ['id' => $userid, 'deleted' => 0], '*', MUST_EXIST);
+if (isguestuser($user)) {
+    redirect(new core\url('/'));
+}
 
-$title = get_string('mycertifications', 'tool_mucertify');
-$PAGE->navigation->extend_for_user($USER);
+if ($userid != $USER->id) {
+    require_capability('tool/mucertify:viewusercertifications', $usercontext);
+    $title = get_string('certifications', 'tool_mucertify');
+} else {
+    $title = get_string('mycertifications', 'tool_mucertify');
+}
+
+$PAGE->navigation->extend_for_user($user);
 $PAGE->set_title($title);
-$PAGE->set_url($currenturl);
 $PAGE->set_pagelayout('report');
-$PAGE->navbar->add(get_string('profile'), new moodle_url('/user/profile.php', ['id' => $USER->id]));
+$PAGE->navbar->add(get_string('profile'), new core\url('/user/profile.php', ['id' => $user->id]));
 $PAGE->navbar->add($title);
 
 $actions = new \tool_mulib\output\header_actions(get_string('certification_actions', 'tool_mucertify'));
@@ -77,7 +95,7 @@ echo $OUTPUT->header();
 echo $OUTPUT->heading($title);
 
 $report = \core_reportbuilder\system_report_factory::create(
-    \tool_mucertify\reportbuilder\local\systemreports\my_assignments::class,
+    \tool_mucertify\reportbuilder\local\systemreports\assignments_user::class,
     $usercontext
 );
 echo $report->output();

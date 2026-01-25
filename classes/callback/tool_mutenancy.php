@@ -39,7 +39,7 @@ final class tool_mutenancy {
             return;
         }
 
-        $url = new \moodle_url('/admin/tool/mucertify/management/index.php', ['contextid' => $hook->catcontext->id]);
+        $url = new \core\url('/admin/tool/mucertify/management/index.php', ['contextid' => $hook->catcontext->id]);
         $hook->tenantnode->add(
             get_string('management', 'tool_mucertify'),
             $url

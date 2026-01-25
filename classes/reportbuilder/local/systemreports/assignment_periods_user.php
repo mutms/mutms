@@ -28,16 +28,15 @@ use tool_muprog\reportbuilder\local\entities\allocation;
 use core_reportbuilder\system_report;
 use core_reportbuilder\local\helpers\database;
 use lang_string;
-use moodle_url;
 
 /**
- * Embedded My certification periods report.
+ * Embedded User certification periods report.
  *
  * @package     tool_mucertify
  * @copyright   2025 Petr Skoda
  * @license     https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-final class my_assignment_periods extends system_report {
+final class assignment_periods_user extends system_report {
     /** @var \stdClass */
     protected $certification;
     /** @var \stdClass */
@@ -54,10 +53,13 @@ final class my_assignment_periods extends system_report {
 
     #[\Override]
     protected function initialise(): void {
-        global $DB, $USER;
+        global $DB;
+
+        $usercontext = $this->get_context();
+
         $this->assignment = $DB->get_record(
             'tool_mucertify_assignment',
-            ['id' => $this->get_parameters()['assignmentid'], 'userid' => $USER->id, 'archived' => 0],
+            ['id' => $this->get_parameters()['assignmentid'], 'userid' => $usercontext->instanceid, 'archived' => 0],
             '*',
             MUST_EXIST
         );
@@ -110,19 +112,24 @@ final class my_assignment_periods extends system_report {
     #[\Override]
     protected function can_view(): bool {
         global $USER;
-
-        // Everybody may view own certifications.
-        if (!\tool_mulib\local\mulib::is_mucertify_active()) {
-            return false;
-        }
         if (isguestuser() || !isloggedin()) {
             return false;
         }
-        $usercontext = $this->get_context();
-        if ($usercontext->contextlevel != CONTEXT_USER || $usercontext->instanceid != $USER->id) {
+        if (!\tool_mulib\local\mulib::is_mucertify_active()) {
             return false;
         }
-        return true;
+
+        $usercontext = $this->get_context();
+        if (!$usercontext instanceof \context_user) {
+            return false;
+        }
+
+        if ($usercontext->instanceid == $USER->id) {
+            // Everybody may see own certifications.
+            return true;
+        }
+
+        return has_capability('tool/mucertify:viewusercertifications', $usercontext);
     }
 
     /**
@@ -147,7 +154,7 @@ final class my_assignment_periods extends system_report {
                     return '';
                 }
                 $fullname = format_string($row->fullname);
-                $url = new \moodle_url('/admin/tool/muprog/my/program.php', ['id' => $row->programid]);
+                $url = new \core\url('/admin/tool/muprog/my/program.php', ['id' => $row->programid]);
                 return \html_writer::link($url, $fullname);
             });
         $this->add_column($column);

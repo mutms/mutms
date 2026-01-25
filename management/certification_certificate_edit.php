@@ -48,16 +48,16 @@ $context = context::instance_by_id($certification->contextid);
 require_capability('tool/mucertify:edit', $context);
 
 if (!\tool_mucertify\local\certificate::is_available()) {
-    redirect(new moodle_url('/admin/tool/mucertify/certification.php', ['id' => $certification->id]));
+    redirect(new \core\url('/admin/tool/mucertify/certification.php', ['id' => $certification->id]));
 }
 
-$currenturl = new moodle_url('/admin/tool/mucertify/management/certification_certificate_edit.php', ['id' => $id]);
+$currenturl = new \core\url('/admin/tool/mucertify/management/certification_certificate_edit.php', ['id' => $id]);
 $PAGE->set_context($context);
 $PAGE->set_url($currenturl);
 
 $form = new \tool_mucertify\local\form\certification_certificate_edit(null, ['data' => $certification, 'context' => $context]);
 
-$returnurl = new moodle_url('/admin/tool/mucertify/management/certification_settings.php', ['id' => $certification->id]);
+$returnurl = new \core\url('/admin/tool/mucertify/management/certification_settings.php', ['id' => $certification->id]);
 
 if ($form->is_cancelled()) {
     $form->ajax_form_cancelled($returnurl);

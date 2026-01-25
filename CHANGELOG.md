@@ -4,7 +4,29 @@ Plugin versioning is derived from Moodle releases, it does not comply with the s
 
 The format of this change log follows the advice given at [Keep a CHANGELOG](https://keepachangelog.com).
 
-## [mu-5.0.4-03] - 2025-12-31
+## [mu-5.0.4-04] - 2026-01-25
+
+### Added
+
+- New web services for fetching of certifications, certification assignments and periods 
+- Icons added to dropdown actions
+- Added "Certification assignment viewed" event
+- Added new capability "View other users certifications" to allow viewing of other users certifications via profile pages
+
+### Changed
+
+- Added separate "Move certification" action for moving of certifications into different contexts to match other MuTMS plugins
+- Used red colour for "Delete certification" action
+- Improved navigation on assigned users management page
+
+### Fixed
+
+- Fixed usage of legacy moodle_url class
+- Certifications from deleted categories will be automatically marked as archived when moved to parent context
+- Fixed missing certification image when moving certification to a different context
+- Improved navigation to start with "Certifications" instead of "System"
+
+## [mu-4.5.8-03] - 2025-12-31
 
 ### Changed
 

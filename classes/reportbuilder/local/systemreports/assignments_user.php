@@ -27,16 +27,15 @@ use core_reportbuilder\system_report;
 use core_reportbuilder\local\helpers\database;
 use core_reportbuilder\local\helpers\user_profile_fields;
 use lang_string;
-use moodle_url;
 
 /**
- * Embedded My certification report.
+ * Embedded User certifications report.
  *
  * @package     tool_mucertify
  * @copyright   2025 Petr Skoda
  * @license     https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-final class my_assignments extends system_report {
+final class assignments_user extends system_report {
     /** @var user */
     protected $userentity;
     /** @var assignment */
@@ -48,8 +47,6 @@ final class my_assignments extends system_report {
 
     #[\Override]
     protected function initialise(): void {
-        global $USER;
-
         $this->assignmententity = new assignment();
         $assignmentalias = $this->assignmententity->get_table_alias('tool_mucertify_assignment');
         $this->set_main_table('tool_mucertify_assignment', $assignmentalias);
@@ -65,10 +62,12 @@ final class my_assignments extends system_report {
         $this->add_entity($this->certificationentity);
         $this->add_join("JOIN {tool_mucertify_certification} {$certificationalias} ON {$certificationalias}.id = {$assignmentalias}.certificationid");
 
+        $usercontext = $this->get_context();
+
         $param = database::generate_param_name();
         $this->add_base_condition_sql(
             "{$assignmentalias}.userid = :$param AND {$assignmentalias}.archived = 0 AND {$certificationalias}.archived = 0",
-            [$param => $USER->id]
+            [$param => $usercontext->instanceid]
         );
 
         $this->add_columns();
@@ -81,37 +80,41 @@ final class my_assignments extends system_report {
     #[\Override]
     protected function can_view(): bool {
         global $USER;
-
-        // Everybody may view own certifications.
-        if (!\tool_mulib\local\mulib::is_mucertify_active()) {
-            return false;
-        }
         if (isguestuser() || !isloggedin()) {
             return false;
         }
-        $usercontext = $this->get_context();
-        if ($usercontext->contextlevel != CONTEXT_USER || $usercontext->instanceid != $USER->id) {
+        if (!\tool_mulib\local\mulib::is_mucertify_active()) {
             return false;
         }
-        return true;
+
+        $usercontext = $this->get_context();
+        if (!$usercontext instanceof \context_user) {
+            return false;
+        }
+
+        if ($usercontext->instanceid == $USER->id) {
+            // Everybody may see own certifications.
+            return true;
+        }
+
+        return has_capability('tool/mucertify:viewusercertifications', $usercontext);
     }
 
     /**
      * Adds the columns we want to display in the report.
      */
     public function add_columns(): void {
-        $assignmentalias = $this->assignmententity->get_table_alias('tool_mucertify_assignment');
-        $sourcealias = $this->sourceentity->get_table_alias('tool_mucertify_source');
         $certificationalias = $this->certificationentity->get_table_alias('tool_mucertify_certification');
+        $assignmentalias = $this->assignmententity->get_table_alias('tool_mucertify_assignment');
 
         $column = $this->certificationentity->get_column('fullname')
-            ->add_field("{$certificationalias}.id")
+            ->add_fields("{$certificationalias}.id, {$assignmentalias}.userid")
             ->add_callback(static function ($value, \stdClass $row): string {
                 if (!$value) {
                     return '';
                 }
                 $value = format_string($value);
-                $url = new \moodle_url('/admin/tool/mucertify/my/certification.php', ['id' => $row->id]);
+                $url = new \core\url('/admin/tool/mucertify/my/certification.php', ['id' => $row->id, 'userid' => $row->userid]);
                 return \html_writer::link($url, $value);
             });
         $this->add_column($column);

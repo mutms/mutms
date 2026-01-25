@@ -175,6 +175,7 @@ final class generator_test extends \advanced_testcase {
         $user3 = $this->getDataGenerator()->create_user();
         $user4 = $this->getDataGenerator()->create_user();
         $user5 = $this->getDataGenerator()->create_user();
+        $user6 = $this->getDataGenerator()->create_user();
 
         $this->setCurrentTimeStart();
         $assignment1 = $generator->create_certification_assignment(
@@ -226,5 +227,25 @@ final class generator_test extends \advanced_testcase {
             'tool_mucertify_period',
             ['certificationid' => $certification1->id, 'userid' => $user5->id]
         ));
+
+        $data = (object)[
+            'certificationid' => $certification1->id,
+            'userid' => $user6->id,
+            'timewindowstart' => $now - HOURSECS * 2,
+            'timewindowdue' => $now + HOURSECS * 2,
+            'timewindowend' => $now + HOURSECS * 3,
+            'timefrom' => $now,
+            'timeuntil' => $now + YEARSECS,
+        ];
+        $assignment6 = $generator->create_certification_assignment($data);
+        $period6 = $DB->get_record(
+            'tool_mucertify_period',
+            ['certificationid' => $certification1->id, 'userid' => $user6->id]
+        );
+        $this->assertEquals($data->timewindowstart, $period6->timewindowstart);
+        $this->assertEquals($data->timewindowdue, $period6->timewindowdue);
+        $this->assertEquals($data->timewindowend, $period6->timewindowend);
+        $this->assertEquals($data->timefrom, $period6->timefrom);
+        $this->assertEquals($data->timeuntil, $period6->timeuntil);
     }
 }

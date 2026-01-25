@@ -47,12 +47,12 @@ $certification = $DB->get_record('tool_mucertify_certification', ['id' => $id], 
 $context = context::instance_by_id($certification->contextid);
 require_capability('tool/mucertify:edit', $context);
 
-$currenturl = new moodle_url('/admin/tool/mucertify/management/certification_restore.php', ['id' => $certification->id]);
+$currenturl = new \core\url('/admin/tool/mucertify/management/certification_restore.php', ['id' => $certification->id]);
 $PAGE->set_context($context);
 $PAGE->set_url($currenturl);
 
 $form = new \tool_mucertify\local\form\certification_restore(null, ['certification' => $certification]);
-$returnurl = new moodle_url('/admin/tool/mucertify/management/certification.php', ['id' => $certification->id]);
+$returnurl = new \core\url('/admin/tool/mucertify/management/certification.php', ['id' => $certification->id]);
 
 if (!$certification->archived) {
     redirect($returnurl);

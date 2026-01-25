@@ -46,7 +46,7 @@ $certification = $DB->get_record('tool_mucertify_certification', ['id' => $id], 
 $context = context::instance_by_id($certification->contextid);
 require_capability('tool/mucertify:view', $context);
 
-$currenturl = new moodle_url('/admin/tool/mucertify/management/certification.php', ['id' => $id]);
+$currenturl = new \core\url('/admin/tool/mucertify/management/certification.php', ['id' => $id]);
 
 management::setup_certification_page($currenturl, $context, $certification, 'certification_general');
 $PAGE->set_docs_path('https://github.com/mutms/moodle-tool_mucertify/wiki/Certification-settings');
@@ -56,8 +56,9 @@ $managementoutput = $PAGE->get_renderer('tool_mucertify', 'management');
 
 $actions = new header_actions(get_string('management_certification_general_actions', 'tool_mucertify'));
 if ($certification->archived && has_capability('tool/mucertify:delete', $context)) {
-    $url = new moodle_url('/admin/tool/mucertify/management/certification_delete.php', ['id' => $certification->id]);
-    $link = new tool_mulib\output\ajax_form\link($url, get_string('certification_delete', 'tool_mucertify'));
+    $url = new \core\url('/admin/tool/mucertify/management/certification_delete.php', ['id' => $certification->id]);
+    $link = new tool_mulib\output\ajax_form\link($url, get_string('certification_delete', 'tool_mucertify'), 'i/delete');
+    $link->add_class('text-danger');
     $link->set_form_size('sm');
     $link->set_submitted_action($link::SUBMITTED_ACTION_REDIRECT);
     $actions->get_dropdown()->add_ajax_form($link);
@@ -70,7 +71,7 @@ echo $OUTPUT->header();
 
 $buttons = [];
 if (has_capability('tool/mucertify:edit', $context)) {
-    $url = new moodle_url('/admin/tool/mucertify/management/certification_update.php', ['id' => $certification->id]);
+    $url = new \core\url('/admin/tool/mucertify/management/certification_update.php', ['id' => $certification->id]);
     $editbutton = new tool_mulib\output\ajax_form\button($url, get_string('edit'));
     $buttons[] = $OUTPUT->render($editbutton);
 }

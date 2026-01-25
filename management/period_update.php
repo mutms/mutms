@@ -49,7 +49,7 @@ $assignment = $DB->get_record('tool_mucertify_assignment', ['certificationid' =>
 $context = context::instance_by_id($certification->contextid);
 require_capability('tool/mucertify:admin', $context);
 
-$returnurl = new moodle_url('/admin/tool/mucertify/management/period.php', ['id' => $period->id]);
+$returnurl = new \core\url('/admin/tool/mucertify/management/period.php', ['id' => $period->id]);
 
 if (($assignment && $assignment->archived) || $certification->archived) {
     redirect($returnurl);
@@ -57,7 +57,7 @@ if (($assignment && $assignment->archived) || $certification->archived) {
 
 $user = $DB->get_record('user', ['id' => $period->userid], '*', MUST_EXIST);
 
-$currenturl = new moodle_url('/admin/tool/mucertify/management/period_update.php', ['id' => $period->id]);
+$currenturl = new \core\url('/admin/tool/mucertify/management/period_update.php', ['id' => $period->id]);
 $PAGE->set_context($context);
 $PAGE->set_url($currenturl);
 

@@ -57,7 +57,7 @@ if ($context->contextlevel == CONTEXT_SYSTEM) {
     throw new moodle_exception('invalidcontext');
 }
 
-$currenturl = new moodle_url('/admin/tool/mucertify/management/index.php', ['contextid' => $context->id]);
+$currenturl = new \core\url('/admin/tool/mucertify/management/index.php', ['contextid' => $context->id]);
 
 management::setup_index_page($currenturl, $context);
 $PAGE->set_docs_path('https://github.com/mutms/moodle-tool_mucertify/wiki/Certification-management');
@@ -65,7 +65,7 @@ $PAGE->set_docs_path('https://github.com/mutms/moodle-tool_mucertify/wiki/Certif
 $actions = new header_actions(get_string('management_index_actions', 'tool_muprog'));
 
 if (has_capability('tool/mucertify:edit', $context)) {
-    $url = new moodle_url('/admin/tool/mucertify/management/certification_create.php', ['contextid' => $context->id]);
+    $url = new \core\url('/admin/tool/mucertify/management/certification_create.php', ['contextid' => $context->id]);
     $button = new tool_mulib\output\ajax_form\button($url, get_string('certification_create', 'tool_mucertify'));
     $button->set_submitted_action($button::SUBMITTED_ACTION_REDIRECT);
     $actions->add_button($button);

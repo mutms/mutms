@@ -57,6 +57,7 @@ Archiving is a required step before certification can be deleted.';
 $string['certification_create'] = 'Add certification';
 $string['certification_delete'] = 'Delete certification';
 $string['certification_delete_info'] = 'During certification deletion all certification data is deleted and users are de-allocated from programs.';
+$string['certification_move'] = 'Move certification';
 $string['certification_restore'] = 'Restore certification';
 $string['certification_restore_info'] = 'Restoring of certification reverts changes done during certification archiving.
 
@@ -105,6 +106,7 @@ $string['event_assignment_created'] = 'User assigned to certification';
 $string['event_assignment_deleted'] = 'User was un-assigned from certification';
 $string['event_assignment_restored'] = 'User certification assignment restored';
 $string['event_assignment_updated'] = 'User certification assignment updated';
+$string['event_assignment_viewed'] = 'Certification assignment viewed';
 $string['event_certification_archived'] = 'Certification archived';
 $string['event_certification_created'] = 'Certification created';
 $string['event_certification_deleted'] = 'Certification deleted';
@@ -149,6 +151,7 @@ $string['mucertify:edit'] = 'Add and update certifications';
 $string['mucertify:unassign'] = 'Unassign users from certifications';
 $string['mucertify:view'] = 'View certification management';
 $string['mucertify:viewcatalogue'] = 'Access certifications catalogue';
+$string['mucertify:viewusercertifications'] = 'View other users certifications';
 $string['mycertifications'] = 'My certifications';
 $string['never'] = 'Never';
 $string['noexpiration'] = 'No expiration';

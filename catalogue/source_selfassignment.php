@@ -40,13 +40,13 @@ require('../../../../config.php');
 $sourceid = required_param('sourceid', PARAM_INT);
 
 $PAGE->set_context(context_system::instance());
-$PAGE->set_url(new moodle_url('/admin/tool/mucertify/catalogue/source_selfassignment.php', ['sourceid' => $sourceid]));
+$PAGE->set_url(new \core\url('/admin/tool/mucertify/catalogue/source_selfassignment.php', ['sourceid' => $sourceid]));
 
 require_login();
 require_capability('tool/mucertify:viewcatalogue', context_system::instance());
 
 if (!\tool_mulib\local\mulib::is_mucertify_active()) {
-    redirect(new moodle_url('/'));
+    redirect(new \core\url('/'));
 }
 
 $source = $DB->get_record('tool_mucertify_source', ['id' => $sourceid, 'type' => 'selfassignment'], '*', MUST_EXIST);
@@ -54,10 +54,10 @@ $certification = $DB->get_record('tool_mucertify_certification', ['id' => $sourc
 $certificationcontext = context::instance_by_id($certification->contextid);
 
 if (!\tool_mucertify\local\source\selfassignment::can_user_request($certification, $source, $USER->id)) {
-    redirect(new moodle_url('/admin/tool/mucertify/catalogue/index.php'));
+    redirect(new \core\url('/admin/tool/mucertify/catalogue/index.php'));
 }
 
-$returnurl = new moodle_url('/admin/tool/mucertify/catalogue/certification.php', ['id' => $certification->id]);
+$returnurl = new \core\url('/admin/tool/mucertify/catalogue/certification.php', ['id' => $certification->id]);
 
 $form = new tool_mucertify\local\form\source_selfassignment(null, ['source' => $source, 'certification' => $certification]);
 

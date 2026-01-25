@@ -21,7 +21,6 @@ namespace tool_mucertify\navigation\views;
 
 use tool_mucertify\local\assignment;
 use stdClass;
-use moodle_url;
 
 /**
  * Certification page secondary menu.
@@ -53,19 +52,19 @@ class certification_secondary extends \core\navigation\views\secondary {
 
         $certification = $this->certification;
 
-        $url = new moodle_url('/admin/tool/mucertify/management/certification.php', ['id' => $certification->id]);
+        $url = new \core\url('/admin/tool/mucertify/management/certification.php', ['id' => $certification->id]);
         $this->add(get_string('tabgeneral', 'tool_mucertify'), $url, \navigation_node::TYPE_SETTING, null, 'certification_general');
 
-        $url = new moodle_url('/admin/tool/mucertify/management/certification_settings.php', ['id' => $certification->id]);
+        $url = new \core\url('/admin/tool/mucertify/management/certification_settings.php', ['id' => $certification->id]);
         $this->add(get_string('tabsettings', 'tool_mucertify'), $url, \navigation_node::TYPE_SETTING, null, 'certification_periods');
 
-        $url = new moodle_url('/admin/tool/mucertify/management/certification_visibility.php', ['id' => $certification->id]);
+        $url = new \core\url('/admin/tool/mucertify/management/certification_visibility.php', ['id' => $certification->id]);
         $this->add(get_string('tabvisibility', 'tool_mucertify'), $url, \navigation_node::TYPE_SETTING, null, 'certification_visibility');
 
-        $url = new moodle_url('/admin/tool/mucertify/management/certification_assignment.php', ['id' => $certification->id]);
+        $url = new \core\url('/admin/tool/mucertify/management/certification_assignment.php', ['id' => $certification->id]);
         $this->add(get_string('tabassignment', 'tool_mucertify'), $url, \navigation_node::TYPE_SETTING, null, 'certification_assignment');
 
-        $url = new moodle_url('/admin/tool/mucertify/management/certification_notifications.php', ['id' => $certification->id]);
+        $url = new \core\url('/admin/tool/mucertify/management/certification_notifications.php', ['id' => $certification->id]);
         $this->add(get_string('notifications', 'tool_mulib'), $url, \navigation_node::TYPE_SETTING, null, 'certification_notifications');
 
         /** @var \tool_mucertify\local\source\base[] $sourceclasses */ // Class name hack.
@@ -74,7 +73,7 @@ class certification_secondary extends \core\navigation\views\secondary {
             $sourceclass::add_certification_secondary_tabs($this, $certification);
         }
 
-        $url = new moodle_url('/admin/tool/mucertify/management/certification_users.php', ['id' => $certification->id]);
+        $url = new \core\url('/admin/tool/mucertify/management/certification_users.php', ['id' => $certification->id]);
         $this->add(get_string('tabusers', 'tool_mucertify'), $url, \navigation_node::TYPE_SETTING, null, 'certification_users');
 
         $this->scan_for_active_node($this);
