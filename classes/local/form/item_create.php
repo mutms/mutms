@@ -41,6 +41,7 @@ final class item_create extends \tool_mulib\local\ajax_form {
             $radios[] = $mform->createElement('radio', 'type', '', $v, $k);
         }
         $mform->addElement('group', 'type_group', get_string('item_type', 'tool_muprog'), $radios, '<div class="w-100" />', false);
+        $mform->addRule('type_group', get_string('required'), 'required', null, 'client');
 
         $mform->addElement('hidden', 'parentid');
         $mform->setType('parentid', PARAM_INT);
