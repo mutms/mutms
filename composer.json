@@ -2,8 +2,11 @@
     "name": "moodle/moodle",
     "license": "GPL-3.0-or-later",
     "description": "Moodle - the world's open source learning platform",
-    "type": "project",
+    "type": "moodle-core",
     "homepage": "https://moodle.org",
+    "provide": {
+        "moodle/lms": "5.1"
+    },
     "require-dev": {
         "phpunit/phpunit": "^11",
         "mikey179/vfsstream": "1.6.*",
@@ -25,6 +28,9 @@
             "core_testing\\": "public/lib/testing/classes/",
             "core_phpunit\\": "public/lib/phpunit/classes/"
         }
+    },
+    "extra": {
+        "haspublicdir": true
     },
     "minimum-stability": "dev",
     "prefer-stable": true,
