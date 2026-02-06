@@ -56,6 +56,7 @@ $sourceclasses = \tool_mucertify\local\assignment::get_source_classes();
 
 $actions = new header_actions(get_string('management_certification_users_actions', 'tool_mucertify'));
 
+$allowhistoryupload = false;
 foreach ($sourceclasses as $sourceclass) {
     $sourcetype = $sourceclass::get_type();
     $sourcerecord = $DB->get_record('tool_mucertify_source', ['certificationid' => $certification->id, 'type' => $sourcetype]);
@@ -63,8 +64,15 @@ foreach ($sourceclasses as $sourceclass) {
         continue;
     }
     $sourceclass::add_management_certification_users_actions($actions, $certification, $sourcerecord);
+    if ($sourcetype === 'manual') {
+        if (has_capability('tool/mucertify:admin', $context)) {
+            if ($sourceclass::is_assignment_possible($certification, $sourcerecord)) {
+                $allowhistoryupload = true;
+            }
+        }
+    }
 }
-if (!$certification->archived && has_capability('tool/mucertify:admin', $context)) {
+if ($allowhistoryupload) {
     $url = new \core\url('/admin/tool/mucertify/management/history_upload.php', ['certificationid' => $certification->id]);
     $link = new \tool_mulib\output\ajax_form\link($url, get_string('history_upload', 'tool_mucertify'), 'i/upload');
     $link->set_form_size('xl');
