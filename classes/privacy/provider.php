@@ -16,6 +16,7 @@
 
 // phpcs:disable moodle.Files.BoilerplateComment.CommentEndedTooSoon
 // phpcs:disable moodle.Files.LineLength.TooLong
+// phpcs:disable Universal.OOStructures.AlphabeticExtendsImplements
 
 namespace tool_murelation\privacy;
 
@@ -36,7 +37,10 @@ use tool_murelation\local\subordinate;
  * @copyright   2025 Petr Skoda
  * @license     https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class provider implements \core_privacy\local\request\core_userlist_provider, \core_privacy\local\metadata\provider, \core_privacy\local\request\plugin\provider {
+class provider implements
+    \core_privacy\local\request\core_userlist_provider,
+    \core_privacy\local\metadata\provider,
+    \core_privacy\local\request\plugin\provider {
     /**
      * Returns data about this plugin.
      *
