@@ -135,7 +135,7 @@ final class page {
         if (!$record->uservisible && !empty($data->cohortvisible)) {
             foreach ($data->cohortvisible as $cohortid) {
                 $cohort = $DB->get_record('cohort', ['id' => $cohortid], '*', MUST_EXIST);
-                $DB->insert_record('tool_muhome_cohortvisible', ['pageid' => $record->id, 'cohortid' => $cohort->id]);
+                $DB->insert_record('tool_muhome_page_cohortvisible', ['pageid' => $record->id, 'cohortid' => $cohort->id]);
             }
         }
 
@@ -245,7 +245,7 @@ final class page {
         $record = $DB->get_record('tool_muhome_page', ['id' => $record->id], '*', MUST_EXIST);
 
         if ($record->uservisible) {
-            $DB->delete_records('tool_muhome_cohortvisible', ['pageid' => $record->id]);
+            $DB->delete_records('tool_muhome_page_cohortvisible', ['pageid' => $record->id]);
         } else if (property_exists($data, 'cohortvisible')) {
             $currentcohorts = self::get_cohortvisible_menu($oldpage->id);
             foreach ($data->cohortvisible as $cohortid) {
@@ -254,10 +254,10 @@ final class page {
                     continue;
                 }
                 $cohort = $DB->get_record('cohort', ['id' => $cohortid], '*', MUST_EXIST);
-                $DB->insert_record('tool_muhome_cohortvisible', ['pageid' => $record->id, 'cohortid' => $cohort->id]);
+                $DB->insert_record('tool_muhome_page_cohortvisible', ['pageid' => $record->id, 'cohortid' => $cohort->id]);
             }
             foreach ($currentcohorts as $cohortid => $unused) {
-                $DB->delete_records('tool_muhome_cohortvisible', ['pageid' => $record->id, 'cohortid' => $cohortid]);
+                $DB->delete_records('tool_muhome_page_cohortvisible', ['pageid' => $record->id, 'cohortid' => $cohortid]);
             }
         }
 
@@ -332,7 +332,7 @@ final class page {
 
         $trans = $DB->start_delegated_transaction();
 
-        $DB->delete_records('tool_muhome_cohortvisible', ['pageid' => $page->id]);
+        $DB->delete_records('tool_muhome_page_cohortvisible', ['pageid' => $page->id]);
 
         if ($context) {
             // Delete all blocks.
@@ -392,7 +392,7 @@ final class page {
         $sql = new sql(
             "SELECT c.id, c.name
                FROM {cohort} c
-               JOIN {tool_muhome_cohortvisible} vc ON c.id = vc.cohortid
+               JOIN {tool_muhome_page_cohortvisible} vc ON c.id = vc.cohortid
               WHERE vc.pageid = ?
            ORDER BY c.name ASC, c.id ASC",
             [$pageid]
@@ -460,7 +460,7 @@ final class page {
             $sql = $sql->replace_comment(
                 'userwhere',
                 "AND (p.uservisible = 1 OR EXISTS(SELECT 'x'
-                                                     FROM {tool_muhome_cohortvisible} cv
+                                                     FROM {tool_muhome_page_cohortvisible} cv
                                                      JOIN {cohort_members} cm ON cm.cohortid = cv.cohortid AND cm.userid = :userid
                                                    WHERE cv.pageid = p.id))",
                 ['userid' => $USER->id]
