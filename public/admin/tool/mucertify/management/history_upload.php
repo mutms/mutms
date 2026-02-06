@@ -52,6 +52,11 @@ $PAGE->set_url($currenturl);
 
 $returnurl = new \core\url('/admin/tool/mucertify/management/certification_users.php', ['id' => $certification->id]);
 
+$sourceclass = \tool_mucertify\local\assignment::get_source_classname('manual');
+if (!$sourceclass::is_assignment_possible($certification, $source)) {
+    redirect($returnurl);
+}
+
 $filedata = null;
 if ($draftitemid && confirm_sesskey()) {
     $filedata = \tool_mucertify\local\util::get_uploaded_data($draftitemid);
