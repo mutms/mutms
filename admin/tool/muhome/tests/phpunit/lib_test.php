@@ -73,9 +73,9 @@ final class lib_test extends \advanced_testcase {
         $category1->delete_full(false);
 
         $this->assertFalse($DB->record_exists('tool_muhome_page', ['id' => $page1->id]));
-        $this->assertFalse($DB->record_exists('tool_muhome_cohortvisible', ['pageid' => $page1->id]));
+        $this->assertFalse($DB->record_exists('tool_muhome_page_cohortvisible', ['pageid' => $page1->id]));
         $this->assertEquals($page0, $DB->get_record('tool_muhome_page', ['id' => $page0->id]));
         $this->assertEquals($page2, $DB->get_record('tool_muhome_page', ['id' => $page2->id]));
-        $this->assertTrue($DB->record_exists('tool_muhome_cohortvisible', ['pageid' => $page2->id]));
+        $this->assertTrue($DB->record_exists('tool_muhome_page_cohortvisible', ['pageid' => $page2->id]));
     }
 }

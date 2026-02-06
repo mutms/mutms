@@ -386,8 +386,8 @@ final class page_test extends \advanced_testcase {
             'subpagepattern' => $page3->id,
         ]);
 
-        $this->assertTrue($DB->record_exists('tool_muhome_cohortvisible', ['pageid' => $page2->id, 'cohortid' => $cohort1->id]));
-        $this->assertTrue($DB->record_exists('tool_muhome_cohortvisible', ['pageid' => $page2->id, 'cohortid' => $cohort2->id]));
+        $this->assertTrue($DB->record_exists('tool_muhome_page_cohortvisible', ['pageid' => $page2->id, 'cohortid' => $cohort1->id]));
+        $this->assertTrue($DB->record_exists('tool_muhome_page_cohortvisible', ['pageid' => $page2->id, 'cohortid' => $cohort2->id]));
         $this->assertTrue($DB->record_exists('block_instances', ['pagetypepattern' => page::PAGE_TYPE, 'subpagepattern' => $page1->id]));
         $this->assertTrue($DB->record_exists('block_instances', ['pagetypepattern' => page::PAGE_TYPE, 'subpagepattern' => $page2->id]));
         $this->assertTrue($DB->record_exists('block_instances', ['pagetypepattern' => page::PAGE_TYPE, 'subpagepattern' => $page3->id]));
@@ -396,8 +396,8 @@ final class page_test extends \advanced_testcase {
         $this->assertFalse($DB->record_exists('tool_muhome_page', ['id' => $page1->id]));
         $this->assertTrue($DB->record_exists('tool_muhome_page', ['id' => $page2->id]));
         $this->assertTrue($DB->record_exists('tool_muhome_page', ['id' => $page3->id]));
-        $this->assertTrue($DB->record_exists('tool_muhome_cohortvisible', ['pageid' => $page2->id, 'cohortid' => $cohort1->id]));
-        $this->assertTrue($DB->record_exists('tool_muhome_cohortvisible', ['pageid' => $page2->id, 'cohortid' => $cohort2->id]));
+        $this->assertTrue($DB->record_exists('tool_muhome_page_cohortvisible', ['pageid' => $page2->id, 'cohortid' => $cohort1->id]));
+        $this->assertTrue($DB->record_exists('tool_muhome_page_cohortvisible', ['pageid' => $page2->id, 'cohortid' => $cohort2->id]));
         $this->assertFalse($DB->record_exists('block_instances', ['pagetypepattern' => page::PAGE_TYPE, 'subpagepattern' => $page1->id]));
         $this->assertTrue($DB->record_exists('block_instances', ['pagetypepattern' => page::PAGE_TYPE, 'subpagepattern' => $page2->id]));
         $this->assertTrue($DB->record_exists('block_instances', ['pagetypepattern' => page::PAGE_TYPE, 'subpagepattern' => $page3->id]));
@@ -406,8 +406,8 @@ final class page_test extends \advanced_testcase {
         $this->assertFalse($DB->record_exists('tool_muhome_page', ['id' => $page1->id]));
         $this->assertFalse($DB->record_exists('tool_muhome_page', ['id' => $page2->id]));
         $this->assertTrue($DB->record_exists('tool_muhome_page', ['id' => $page3->id]));
-        $this->assertFalse($DB->record_exists('tool_muhome_cohortvisible', ['pageid' => $page2->id, 'cohortid' => $cohort1->id]));
-        $this->assertFalse($DB->record_exists('tool_muhome_cohortvisible', ['pageid' => $page2->id, 'cohortid' => $cohort2->id]));
+        $this->assertFalse($DB->record_exists('tool_muhome_page_cohortvisible', ['pageid' => $page2->id, 'cohortid' => $cohort1->id]));
+        $this->assertFalse($DB->record_exists('tool_muhome_page_cohortvisible', ['pageid' => $page2->id, 'cohortid' => $cohort2->id]));
         $this->assertFalse($DB->record_exists('block_instances', ['pagetypepattern' => page::PAGE_TYPE, 'subpagepattern' => $page1->id]));
         $this->assertFalse($DB->record_exists('block_instances', ['pagetypepattern' => page::PAGE_TYPE, 'subpagepattern' => $page2->id]));
         $this->assertTrue($DB->record_exists('block_instances', ['pagetypepattern' => page::PAGE_TYPE, 'subpagepattern' => $page3->id]));
@@ -754,10 +754,10 @@ final class page_test extends \advanced_testcase {
         page::pre_course_category_delete($category1->id);
 
         $this->assertFalse($DB->record_exists('tool_muhome_page', ['id' => $page1->id]));
-        $this->assertFalse($DB->record_exists('tool_muhome_cohortvisible', ['pageid' => $page1->id]));
+        $this->assertFalse($DB->record_exists('tool_muhome_page_cohortvisible', ['pageid' => $page1->id]));
         $this->assertEquals($page0, $DB->get_record('tool_muhome_page', ['id' => $page0->id]));
         $this->assertEquals($page2, $DB->get_record('tool_muhome_page', ['id' => $page2->id]));
-        $this->assertTrue($DB->record_exists('tool_muhome_cohortvisible', ['pageid' => $page2->id]));
+        $this->assertTrue($DB->record_exists('tool_muhome_page_cohortvisible', ['pageid' => $page2->id]));
     }
 
     public function test_archive_tenant_pages(): void {

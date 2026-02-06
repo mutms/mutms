@@ -17,23 +17,29 @@
 // phpcs:disable moodle.Files.BoilerplateComment.CommentEndedTooSoon
 
 /**
- * Custom home pages plugin version.
+ * Plugin tool_muhome upgrades.
  *
- * @package     tool_muhome
- * @copyright   2025 Petr Skoda
- * @license     https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @package    tool_muhome
+ * @copyright  2026 Petr Skoda
+ * @license    https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-defined('MOODLE_INTERNAL') || die();
+/**
+ * Upgrade muhome.
+ *
+ * @param mixed $oldversion
+ * @return true
+ */
+function xmldb_tool_muhome_upgrade($oldversion): bool {
+    global $DB;
 
-/** @var stdClass $plugin */
-$plugin->component = 'tool_muhome';
-$plugin->version = 2026020850;
-$plugin->requires = 2024100700;
-$plugin->maturity = MATURITY_BETA;
-$plugin->supported = [500, 501];
-$plugin->release = 'mu-5.0.5-01';
+    $dbman = $DB->get_manager();
 
-$plugin->dependencies = [
-    'tool_mulib' => 2026020850,
-];
+    if ($oldversion < 2026013145) {
+        $table = new xmldb_table('tool_muhome_cohortvisible');
+        $dbman->rename_table($table, 'tool_muhome_page_cohortvisible');
+        upgrade_plugin_savepoint(true, 2026013145, 'tool', 'muhome');
+    }
+
+    return true;
+}

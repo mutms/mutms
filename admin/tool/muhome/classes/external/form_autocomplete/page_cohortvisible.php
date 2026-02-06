@@ -127,7 +127,7 @@ final class page_cohortvisible extends \tool_mulib\external\form_autocomplete\co
 
         $pageid = $args['pageid'];
         if ($pageid) {
-            if ($DB->record_exists('tool_muhome_cohortvisible', ['cohortid' => $cohort->id, 'pageid' => $pageid])) {
+            if ($DB->record_exists('tool_muhome_page_cohortvisible', ['cohortid' => $cohort->id, 'pageid' => $pageid])) {
                 // Existing cohorts are always fine.
                 return null;
             }
