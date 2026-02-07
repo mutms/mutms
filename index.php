@@ -53,6 +53,8 @@ $PAGE->blocks->add_region('content');
 $PAGE->set_title($title);
 $PAGE->set_heading($title);
 
+\block_muprogmyoverview\local\util::ensure_block_added();
+
 // No blocks can be edited on this page (including by managers/admins)!
 $PAGE->force_lock_all_blocks();
 
