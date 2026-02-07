@@ -2181,6 +2181,8 @@ class behat_course extends behat_base {
      */
     public function i_open_the_activity_chooser() {
         // Open the "Activity or resource and Subsection" dropdown first.
+        $this->execute('behat_general::i_hover',
+            ['//button[@data-action="open-addingcontent"]', 'xpath_element']);
         $this->execute('behat_general::i_click_on',
                 ['//button[@data-action="open-addingcontent"]', 'xpath_element']);
         $this->execute('behat_general::i_click_on',
