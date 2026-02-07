@@ -6,7 +6,9 @@ The format of this change log follows the advice given at [Keep a CHANGELOG](htt
 
 ## [mu-5.0.5-01] - 2026-02-08
 
-- No changes
+### Fixed
+
+- Added workaround for problematic Timeline block installation
 
 ## [mu-5.0.4-04] - 2026-01-25
 

@@ -29,6 +29,30 @@ use tool_mulib\local\sql;
  */
 final class util {
     /**
+     * Add block to the overview page if necessary.
+     *
+     * @return void
+     */
+    public static function ensure_block_added(): void {
+        global $DB, $PAGE;
+
+        $syscontext = \context_system::instance();
+        if ($PAGE->context->id != $syscontext->id) {
+            throw new \core\exception\coding_exception('block can be added only to the dedicated programs overview page');
+        }
+
+        // Thanks to broken timeline block we cannot add the block during plugin installation.
+        $conditions = [
+            'blockname' => 'muprogmyoverview',
+            'parentcontextid' => $syscontext->id,
+            'pagetypepattern' => 'block-muprogmyoverview-index',
+        ];
+        if (!$DB->record_exists('block_instances', $conditions)) {
+            $PAGE->blocks->add_blocks(['content' => ['muprogmyoverview']], 'block-muprogmyoverview-index');
+        }
+    }
+
+    /**
      * Count active programs of current user.
      *
      * @return int

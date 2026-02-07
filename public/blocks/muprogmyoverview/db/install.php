@@ -28,7 +28,5 @@
  * Installation code for the muprogmyoverview block.
  */
 function xmldb_block_muprogmyoverview_install(): void {
-    $page = new moodle_page();
-    $page->set_context(context_system::instance());
-    $page->blocks->add_blocks(['content' => ['muprogmyoverview']], 'block-muprogmyoverview-index');
+    // NOTE: do add the block here because it would cause problems in broken block_timeline upgrade via install.php.
 }
