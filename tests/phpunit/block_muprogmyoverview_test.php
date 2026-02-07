@@ -35,7 +35,7 @@ final class block_muprogmyoverview_test extends \advanced_testcase {
      * Test getting block configuration
      */
     public function test_get_block_config_for_external(): void {
-        global $PAGE, $CFG, $OUTPUT;
+        global $PAGE, $OUTPUT;
         $this->resetAfterTest(true);
 
         $user = $this->getDataGenerator()->create_user();
@@ -49,6 +49,8 @@ final class block_muprogmyoverview_test extends \advanced_testcase {
         $PAGE->set_pagelayout('mycourses');
         $PAGE->set_pagetype('block-muprogmyoverview-index');
         $PAGE->blocks->add_region('content');
+
+        \block_muprogmyoverview\local\util::ensure_block_added();
 
         // Load the block instances for all the regions.
         $PAGE->blocks->load_blocks();
