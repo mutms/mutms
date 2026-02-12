@@ -15,7 +15,6 @@
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 // phpcs:disable moodle.Files.BoilerplateComment.CommentEndedTooSoon
-// phpcs:disable Universal.OOStructures.AlphabeticExtendsImplements
 
 namespace tool_mulib\privacy;
 
@@ -37,8 +36,8 @@ use core_privacy\local\request\writer;
  * @license     https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class provider implements
-    \core_privacy\local\request\core_userlist_provider,
     \core_privacy\local\metadata\provider,
+    \core_privacy\local\request\core_userlist_provider,
     \core_privacy\local\request\plugin\provider {
     /**
      * Returns meta-data about additional tools plugin.
