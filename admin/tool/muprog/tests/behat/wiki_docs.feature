@@ -192,12 +192,6 @@ Feature: Programs plugin English wiki documentation image generator
     And I open the "Recently accessed items" blocks action menu
     And I follow "Delete Recently accessed items block"
     And I click on "Delete" "button" in the "Delete block?" "dialogue"
-    And I open the "Recently accessed courses" blocks action menu
-    And I follow "Delete Recently accessed courses block"
-    And I click on "Delete" "button" in the "Delete block?" "dialogue"
-    And I open the "Timeline" blocks action menu
-    And I follow "Delete Timeline block"
-    And I click on "Delete" "button" in the "Delete block?" "dialogue"
     And I open the "Timeline" blocks action menu
     And I follow "Delete Timeline block"
     And I click on "Delete" "button" in the "Delete block?" "dialogue"
