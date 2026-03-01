@@ -2,21 +2,34 @@
 
 ![Moodle Plugin CI](https://github.com/mutms/moodle-tool_muhome/actions/workflows/moodle-ci.yml/badge.svg)
 
-Create flexible, customizable home pages for your Moodle LMS. This plugin empowers site administrators to design and deploy multiple custom home pages, with the option to replace the default Home item in the primary navigation.
+Custom home pages for standard Moodle™ LMS installations — fully open source under GPL 3.0,
+with no restrictions on commercial use. Part of the [MuTMS suite](https://github.com/mutms).
 
-Build tailored landing experiences for different user groups, align pages with your branding strategy, or support multi-tenant environments—all from a single installation.
+Allows administrators to define multiple custom home pages and assign them to different user groups
+— replacing or supplementing the default Moodle home page to provide tailored landing experiences
+per tenant or cohort.
 
-## Key Features
+## Features
 
-- Define multiple custom home pages with unique layouts and content
-- Replace or supplement the default Moodle home page
-- Customize primary navigation to match your institutional needs
-- Perfect for multi-tenant deployments or audience-specific experiences
+* Multiple custom home pages with unique layouts and content
+* Replace or supplement the default Moodle home page
+* Customisable primary navigation
+* Multi-tenancy aware — suitable for tenant-specific landing pages
 
-## Security Note
+## Security note
 
-**Important**: Moodle blocks do not implement additional access controls for attached files. Do not include files containing sensitive or confidential information in custom home page blocks.
+Moodle blocks do not implement additional access controls for attached files. Do not include files
+containing sensitive or confidential information in custom home page blocks.
 
-## Roadmap
+## Requirements
 
-* Target for production release and availability of paid support: Q2 2026
+> This plugin is included in the [MuTMS distribution](https://github.com/mutms/mutms) —
+> no manual installation needed if you use the distribution.
+
+Required plugins:
+
+* [Additional tools library plugin](https://github.com/mutms/moodle-tool_mulib)
+
+---
+
+> MuTMS is an independent open-source project, not affiliated with Moodle HQ.
