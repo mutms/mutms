@@ -279,6 +279,25 @@ final class sql_test extends \advanced_testcase {
     }
 
     /**
+     * Test ensuring there are no left-over comments.
+     *
+     * @covers  \tool_mulib\local\sql::ensure_no_comments
+     */
+    public function test_ensure_no_comments(): void {
+        $sql = new sql('SELECT u.* FROM {user} u WHERE u.deleted = 0');
+        $sql->ensure_no_comments();
+
+        $sql = new sql('SELECT u.* FROM {user} u WHERE /* abc */ u.deleted = 0');
+        try {
+            $sql->ensure_no_comments();
+            $this->fail('Exception expected');
+        } catch (moodle_exception $ex) {
+            $this->assertInstanceOf(coding_exception::class, $ex);
+            $this->assertSame('Coding error detected, it must be fixed by a programmer: Unexpected comment found', $ex->getMessage());
+        }
+    }
+
+    /**
      * Test magic property access.
      *
      * @covers \tool_mulib\local\sql::__get
