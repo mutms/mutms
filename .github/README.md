@@ -79,8 +79,7 @@ Commercial support available from Q2 2026 — contact [petr@mutms.com](mailto:pe
 
 ## License
 
-MuTMS is free and open source software, licensed under the
-[GNU General Public License v3.0](COPYING.txt).
+MuTMS is free and open source software, licensed under the GNU General Public License v3.0.
 
 ---
 
