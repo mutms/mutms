@@ -85,6 +85,15 @@ abstract class base extends external_api {
     }
 
     /**
+     * Returns default field name.
+     *
+     * @return string
+     */
+    public static function get_form_field_name(): string {
+        return get_string('select');
+    }
+
+    /**
      * Describes the external function arguments.
      *
      * NOTE: override to include all args
