@@ -329,6 +329,17 @@ final class sql implements \ArrayAccess {
     }
 
     /**
+     * Throw coding exception if any comments present in SQL.
+     *
+     * @return void
+     */
+    public function ensure_no_comments(): void {
+        if (str_contains($this->sql, '/*')) {
+            throw new coding_exception('Unexpected comment found');
+        }
+    }
+
+    /**
      * Magic getter method.
      *
      * @param string $name
