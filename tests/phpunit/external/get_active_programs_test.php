@@ -112,7 +112,7 @@ final class get_active_programs_test extends \advanced_testcase {
         $this->assertSame(userdate($now + WEEKSECS, $shortdate), $p1->duedate);
         $this->assertSame(null, $p1->enddate);
         $this->assertSame('System', $p1->programcategory);
-        $this->assertStringStartsWith('data:image/svg+xml;base64', $p1->programimage);
+        $this->assertStringEndsWith('/geopattern.svg', $p1->programimage);
         $this->assertSame(
             "https://www.example.com/moodle/admin/tool/muprog/my/program.php?id={$program1->id}",
             $p1->viewurl
@@ -132,7 +132,7 @@ final class get_active_programs_test extends \advanced_testcase {
         $this->assertSame(userdate($now + DAYSECS, $shortdate), $p2->duedate);
         $this->assertSame(null, $p2->enddate);
         $this->assertSame($category1->name, $p2->programcategory);
-        $this->assertStringStartsWith('data:image/svg+xml;base64', $p2->programimage);
+        $this->assertStringEndsWith('/geopattern.svg', $p2->programimage);
         $this->assertSame(
             "https://www.example.com/moodle/admin/tool/muprog/my/program.php?id={$program2->id}",
             $p2->viewurl
