@@ -16,6 +16,7 @@
 
 // phpcs:disable moodle.Files.BoilerplateComment.CommentEndedTooSoon
 // phpcs:disable moodle.Commenting.InlineComment.TypeHintingMatch
+// phpcs:disable moodle.Files.LineLength.TooLong
 
 /**
  * My programs overview page.
@@ -24,6 +25,8 @@
  * @copyright   2025 Petr Skoda
  * @license     https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
+
+use core\url;
 
 /** @var moodle_page $PAGE */
 /** @var core_renderer $OUTPUT */
@@ -52,6 +55,16 @@ $PAGE->set_pagetype('block-muprogmyoverview-index');
 $PAGE->blocks->add_region('content');
 $PAGE->set_title($title);
 $PAGE->set_heading($title);
+
+$actions = new \tool_mulib\output\header_actions(get_string('actions'));
+if (has_capability('tool/muprog:view', $context)) {
+    $url = new url('/admin/tool/muprog/management/index.php');
+    $actions->get_dropdown()->add_item(get_string('management', 'tool_muprog'), $url, new \core\output\pix_icon('i/menubars', ''));
+}
+
+if ($actions->has_items()) {
+    $PAGE->add_header_action($OUTPUT->render($actions));
+}
 
 \block_muprogmyoverview\local\util::ensure_block_added();
 
