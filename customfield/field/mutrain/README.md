@@ -2,15 +2,21 @@
 
 ![Moodle Plugin CI](https://github.com/mutms/moodle-customfield_mutrain/actions/workflows/moodle-ci.yml/badge.svg)
 
-This plugin is required by [Training credits plugin for Moodle™ LMS](https://github.com/mutms/moodle-tool_mutrain).
+Custom field required by the [Training credits plugin](https://github.com/mutms/moodle-tool_mutrain)
+— fully open source under GPL 3.0. Part of the [MuTMS suite](https://github.com/mutms).
 
-Please note that this plugin does not do anything useful by itself.
+This plugin does not provide any functionality by itself.
+
+## Requirements
+
+> This plugin is included in the [MuTMS distribution](https://github.com/mutms/mutms) —
+> no manual installation needed if you use the distribution.
+
+## Documentation
 
 See [online documentation](https://github.com/mutms/moodle-tool_mutrain/wiki) for more information.
 
-## Acknowledgement
+---
 
-This plugin is a fork of [Training value custom field by Open LMS](https://github.com/open-lms-open-source/moodle-customfield_training)
-and exists thanks to Open LMS's decision to release it to the public under the GPL 3.0 license.
-
-MuTMS suite of plugins is not associated with Moodle HQ or Open LMS in any way.
+> This plugin is a fork of [Training value custom field by Open LMS](https://github.com/open-lms-open-source/moodle-customfield_training),
+> released under GPL 3.0. MuTMS is an independent open-source project, not affiliated with Moodle HQ or Open LMS.
