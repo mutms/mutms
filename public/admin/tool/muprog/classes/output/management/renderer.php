@@ -51,11 +51,12 @@ class renderer extends \plugin_renderer_base {
     public function render_program_general(stdClass $program): string {
         global $CFG;
 
+        $syscontext = \context_system::instance();
         $context = \context::instance_by_id($program->contextid);
 
-        $imageuri = program::get_image_uri($program, false);
-        if ($imageuri) {
-            $programimage = \html_writer::img($imageuri, '', ['class' => 'programimage float-end']);
+        $imageurl = program::get_image_url($program, false);
+        if ($imageurl) {
+            $programimage = \html_writer::img($imageurl, '', ['class' => 'programimage float-end']);
         } else {
             $programimage = '';
         }
@@ -80,8 +81,8 @@ class renderer extends \plugin_renderer_base {
                 $details->add(get_string('tags'), $this->output->tag_list($tags, '', 'program-tags'));
             }
         }
-        $description = file_rewrite_pluginfile_urls($program->description, 'pluginfile.php', $context->id, 'tool_muprog', 'description', $program->id);
-        $description = format_text($description, $program->descriptionformat, ['context' => $context]);
+        $description = file_rewrite_pluginfile_urls($program->description, 'pluginfile.php', $syscontext->id, 'tool_muprog', 'description', $program->id);
+        $description = format_text($description, $program->descriptionformat, ['context' => $syscontext]);
         if (trim($description) === '') {
             $description = '&nbsp;';
         }
