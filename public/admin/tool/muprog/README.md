@@ -2,63 +2,59 @@
 
 ![Moodle Plugin CI](https://github.com/mutms/moodle-tool_muprog/actions/workflows/moodle-ci.yml/badge.svg)
 
-Programs is a comprehensive set of plugins designed to implement programs, also known as learning pathways.
-This functionality enables educators, administrators, and organizations to create structured, sequential
-learning journeys tailored to meet diverse learning goals and requirements. The robust features of Programs
-provide enhanced flexibility and automation, making it an indispensable tool for managing complex educational
-or training offerings.
+Structured learning programs for standard Moodle™ LMS installations — fully open source under GPL 3.0,
+with no restrictions on commercial use. Part of the [MuTMS suite](https://github.com/mutms).
 
-Programs enhance Moodle's core functionality by bridging gaps in traditional course management.
-They offer solutions for challenges such as organizing courses across categories and scheduling individualized course access.
-With seamless integration into Moodle™ LMS, Programs provide a scalable and
-efficient way to manage both small-scale and large-scale learning initiatives and training.
+Programs allow educators and administrators to define structured learning paths composed of courses,
+offline activities, and credit frameworks — with flexible sequencing, automated enrolments, and
+dedicated learner-facing pages. Designed for organisations managing complex training or educational
+offerings at scale.
 
-## Key features
+## Features
 
-* program content created as a hierarchy of courses, credit frameworks, offline activities and nested sets with flexible sequencing rules
-* multiple sources for allocation of students to programs, including allocation based on external database
-* advanced program scheduling settings
-* efficient course enrolment automation
-* easy-to-use _Program management_ interface
-* _Program catalogue_ where students may browse available programs and related courses
-* dedicated _My programs profile page_
-* _My programs overview page_ similar to "My courses" page; it offers card, list and details view on a dedicated page accessible directly from the main menu
-* _My programs dashboard block_ for quick access to details
-* configurable notification options, including supervisors receiving copy of notifications sent to subordinates
+* Program content built as a hierarchy of courses, credit frameworks, offline activities, and nested
+  sets with flexible sequencing rules
+* Multiple allocation sources, including allocation from an external database
+* Advanced scheduling settings per program
+* Automated course enrolment
+* Program catalogue — learners can browse available programs and related courses
+* My programs profile page and overview page (card, list, and details views), accessible from the
+  main menu
+* My programs dashboard block for quick access
+* Configurable notifications, including supervisors receiving copies of learner notifications
 
 ## Requirements
 
-This plugin requires following plugins:
+> This plugin is included in the [MuTMS distribution](https://github.com/mutms/mutms) —
+> no manual installation needed if you use the distribution.
+
+Required plugins:
 
 * [Additional tools library plugin](https://github.com/mutms/moodle-tool_mulib)
 * [Program enrolment plugin](https://github.com/mutms/moodle-enrol_muprog)
 * [My programs block](https://github.com/mutms/moodle-block_muprog_my)
-* [My programs overview page](https://github.com/mutms/moodle-block_muprogmyoverview)
+* [My programs overview page plugin](https://github.com/mutms/moodle-block_muprogmyoverview)
 
-Other recommended plugins:
+Recommended plugins:
 
 * [Supervisors and teams plugin](https://github.com/mutms/moodle-tool_murelation)
 * [Training credits plugin](https://github.com/mutms/moodle-tool_mutrain)
-* [Training credits custom field](https://github.com/mutms/moodle-customfield_mutrain)
+* [Training credits custom field plugin](https://github.com/mutms/moodle-customfield_mutrain)
 * [Certificate plugin](https://github.com/moodleworkplace/moodle-tool_certificate)
 * [Program fields for Certificate plugin](https://github.com/mutms/moodle-certificateelement_muprog)
-* [Multi-tenancy](https://github.com/mutms/moodle-tool_mutenancy)
-
-## Documentation
-
-and [Wiki pages](https://github.com/mutms/moodle-tool_muprog/wiki) for more information.
-
-## Acknowledgement
-
-This plugin is a fork of [Programs by Open LMS](https://github.com/open-lms-open-source/moodle-enrol_programs)
-and exists thanks to Open LMS's decision to release it to the public under the GPL 3.0 license.
-
-MuTMS suite of plugins is not associated with Moodle HQ or Open LMS in any way.
-This plugin is not suitable for existing customers of Open LMS due to the lack of upgrade path.
+* [Multi-tenancy plugin](https://github.com/mutms/moodle-tool_mutenancy)
 
 ## Roadmap
 
-* Target for production release and availability of paid support: Q2 2026
-* Planned features:
-   * integration of Supervisors and teams plugin for approvals
-   * integration of Universal catalogue plugin
+* Universal catalogue plugin replacing current Program catalogue
+* Supervisor approval workflows via Supervisors and teams plugin
+* Script for migration from Programs by Open LMS
+
+## Documentation
+
+See [online documentation](https://github.com/mutms/moodle-tool_muprog/wiki) for more information.
+
+---
+
+> This plugin is a fork of [Programs by Open LMS](https://github.com/open-lms-open-source/moodle-enrol_programs).
+> MuTMS is an independent open-source project, not affiliated with Moodle HQ or Open LMS.
