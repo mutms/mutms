@@ -15,6 +15,7 @@
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 // phpcs:disable moodle.Files.BoilerplateComment.CommentEndedTooSoon
+// phpcs:disable moodle.Files.LineLength.TooLong
 
 /**
  * Certification upgrade.
@@ -97,6 +98,30 @@ function xmldb_tool_mucertify_upgrade($oldversion) {
         );
 
         upgrade_plugin_savepoint(true, 2025092450.01, 'tool', 'mucertify');
+    }
+
+    if ($oldversion < 2026022045) {
+        $syscontext = context_system::instance();
+        $fs = get_file_storage();
+
+        $sql = "SELECT f.contextid, f.itemid, f.filearea
+                  FROM {files} f
+                 WHERE f.component = 'tool_mucertify' AND f.contextid <> :syscontextid
+              GROUP BY f.contextid, f.itemid, f.filearea";
+        $rs = $DB->get_recordset_sql($sql, ['syscontextid' => $syscontext->id]);
+        foreach ($rs as $area) {
+            $fs->move_area_files_to_new_context($area->contextid, $syscontext->id, 'tool_mucertify', $area->filearea, $area->itemid);
+        }
+        $rs->close();
+
+        upgrade_plugin_savepoint(true, 2026022045, 'tool', 'mucertify');
+    }
+
+    if ($oldversion < 2026022045.02) {
+        $syscontext = context_system::instance();
+        $DB->set_field('tag_instance', 'contextid', $syscontext->id, ['component' => 'tool_mucertify']);
+
+        upgrade_plugin_savepoint(true, 2026022045.02, 'tool', 'mucertify');
     }
 
     return true;

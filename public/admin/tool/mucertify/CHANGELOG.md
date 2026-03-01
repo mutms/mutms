@@ -4,19 +4,28 @@ Plugin versioning is derived from Moodle releases, it does not comply with the s
 
 The format of this change log follows the advice given at [Keep a CHANGELOG](https://keepachangelog.com).
 
-## [v5.0.6.01] - 2026-02-12
+## [v5.0.6.02](https://github.com/mutms/moodle-tool_mucertify/compare/v5.0.6.01...v5.0.6.02) - 2026-03-01
+
+### Changes
+
+- Refactored certification image support
+- All images were moved to system context, certification context will be used only for management access control and tenant separation
+- All tags were moved to system context
+- Added all Programs dependencies to simplify installation from Plugins database
+
+## [v5.0.6.01](https://github.com/mutms/moodle-tool_mucertify/compare/mu-5.0.5-01...v5.0.6.01) - 2026-02-12
 
 ### Changed
 
 - Switched to new release number format to prepare for composer support
 
-## [mu-5.0.5-01] - 2026-02-08
+## [mu-5.0.5-01](https://github.com/mutms/moodle-tool_mucertify/compare/mu-5.0.4-04...mu-5.0.5-01) - 2026-02-08
 
 ### Fixed
 
 - Fixed certification history upload action to not be visible when manual assignment source is disabled
 
-## [mu-5.0.4-04] - 2026-01-25
+## [mu-5.0.4-04](https://github.com/mutms/moodle-tool_mucertify/compare/mu-4.5.8-03...mu-5.0.4-04) - 2026-01-25
 
 ### Added
 
@@ -38,7 +47,7 @@ The format of this change log follows the advice given at [Keep a CHANGELOG](htt
 - Fixed missing certification image when moving certification to a different context
 - Improved navigation to start with "Certifications" instead of "System"
 
-## [mu-4.5.8-03] - 2025-12-31
+## [mu-4.5.8-03](https://github.com/mutms/moodle-tool_mucertify/compare/mu-5.0.4-02...mu-4.5.8-03) - 2025-12-31
 
 ### Changed
 
@@ -49,11 +58,11 @@ The format of this change log follows the advice given at [Keep a CHANGELOG](htt
 - Fixed category selection autocomplete element in certification editing form
 - Standardised certification idnumber to be case-insensitively unique
 
-## [mu-5.0.4-02] - 2025-12-16
+## [mu-5.0.4-02](https://github.com/mutms/moodle-tool_mucertify/compare/mu-5.0.4-01...mu-5.0.4-02) - 2025-12-16
 
 - Fixed placement of custom fields in certification creation form.
 
-## [mu-5.0.4-01] - 2025-12-08
+## [mu-5.0.4-01](https://github.com/mutms/moodle-tool_mucertify/compare/mu-5.0.3-02...mu-5.0.4-01) - 2025-12-08
 
 - After creating new certification user is now redirected to Period settings page because they need to add program. 
 - Fixed timezones in notifications.
@@ -62,21 +71,21 @@ The format of this change log follows the advice given at [Keep a CHANGELOG](htt
 - Added Expiration to certification assignment form - this can be used to align employee re-certifications to fixed dates. 
 - Added option for enabling of Manual allocations during certification creation.
 
-## [mu-5.0.3-02] - 2025-11-08
+## [mu-5.0.3-02](https://github.com/mutms/moodle-tool_mucertify/compare/mu-5.0.3-01...mu-5.0.3-02) - 2025-11-08
 
 - Documentation was moved to https://github.com/mutms/moodle-tool_mucertify/wiki
 - Improved table visuals.
 
-## [mu-5.0.3-01] - 2025-10-06
+## [mu-5.0.3-01](https://github.com/mutms/moodle-tool_mucertify/compare/mu-5.0.2-03...mu-5.0.3-01) - 2025-10-06
 
 - Fixed certification tags itemtype to match database table name.
 - Added support for Moodle 5.1.
 
-## [mu-5.0.2-03] - 2025-09-24
+## [mu-5.0.2-03](https://github.com/mutms/moodle-tool_mucertify/compare/mu-5.0.2-02...mu-5.0.2-03) - 2025-09-24
 
 - Program allocation conflicts are now handled gracefully. However, mixing certification allocation sources with other types of allocations within a single program remains discouraged.
 
-## [mu-5.0.2-02] - 2025-08-31
+## [mu-5.0.2-02](https://github.com/mutms/moodle-tool_mucertify/compare/mu-5.0.2-01...mu-5.0.2-02) - 2025-08-31
 
 - Fixed automatic cohort assignment source form.
 - Empty custom fields are not displayed anymore.
@@ -84,11 +93,11 @@ The format of this change log follows the advice given at [Keep a CHANGELOG](htt
 - Fixed compatibility with unsupported MS SQL databases.
 - Fixed error when sending unassignment email and SMTP is down.
 
-## [mu-5.0.2-01] - 2025-08-09
+## [mu-5.0.2-01](https://github.com/mutms/moodle-tool_mucertify/compare/mu-5.0.1-01...mu-5.0.2-01) - 2025-08-09
 
 - Internal refactoring.
 - Moodle 5.0.2 support.
 
-## [mu-5.0.1-01] - 2025-06-30
+## [mu-5.0.1-01](https://github.com/mutms/moodle-tool_mucertify/tree/mu-5.0.1-01) - 2025-06-30
 
 - Added support for Moodle 5.0

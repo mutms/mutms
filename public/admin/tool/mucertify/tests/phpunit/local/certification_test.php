@@ -45,7 +45,7 @@ final class certification_test extends \advanced_testcase {
     public function test_get_description_editor_options(): void {
         $syscontext = \context_system::instance();
 
-        $result = certification::get_description_editor_options($syscontext->id);
+        $result = certification::get_description_editor_options();
         $this->assertIsArray($result);
         $this->assertSame(-1, $result['maxfiles']);
         $this->assertSame($syscontext, $result['context']);
@@ -248,7 +248,7 @@ final class certification_test extends \advanced_testcase {
             $this->assertSame('Invalid parameter value detected (System or category context expected)', $ex->getMessage());
         }
 
-        // Test tags are moved.
+        // Test tags are not moved.
 
         $data = [
             'fullname' => 'Certifikace 2',
@@ -263,7 +263,7 @@ final class certification_test extends \advanced_testcase {
         );
         $tags = \core_tag_tag::get_item_tags('tool_mucertify', 'tool_mucertify_certification', $certification2->id);
         foreach ($tags as $tag) {
-            $this->assertEquals($catcontext->id, $tag->taginstancecontextid);
+            $this->assertEquals($syscontext->id, $tag->taginstancecontextid);
         }
 
         $certification2 = certification::move($certification2->id, $syscontext->id);
@@ -276,7 +276,7 @@ final class certification_test extends \advanced_testcase {
             $this->assertEquals($syscontext->id, $tag->taginstancecontextid);
         }
 
-        // Test images are moved.
+        // Test images are not moved.
 
         $admin = get_admin();
         $this->setUser($admin);
@@ -312,14 +312,73 @@ final class certification_test extends \advanced_testcase {
             'image' => $draftid2,
         ];
         $certification3 = certification::create((object)$data);
-        $this->assertTrue($fs->file_exists($catcontext->id, 'tool_mucertify', 'description', $certification3->id, '/', 'someimage.jpg'));
-        $this->assertTrue($fs->file_exists($catcontext->id, 'tool_mucertify', 'image', $certification3->id, '/', 'otherimage.jpg'));
-
-        $certification3 = certification::move($certification3->id, $syscontext->id);
-        $this->assertFalse($fs->file_exists($catcontext->id, 'tool_mucertify', 'description', $certification3->id, '/', 'someimage.jpg'));
-        $this->assertFalse($fs->file_exists($catcontext->id, 'tool_mucertify', 'image', $certification3->id, '/', 'otherimage.jpg'));
         $this->assertTrue($fs->file_exists($syscontext->id, 'tool_mucertify', 'description', $certification3->id, '/', 'someimage.jpg'));
         $this->assertTrue($fs->file_exists($syscontext->id, 'tool_mucertify', 'image', $certification3->id, '/', 'otherimage.jpg'));
+
+        $certification3 = certification::move($certification3->id, $syscontext->id);
+        $this->assertTrue($fs->file_exists($syscontext->id, 'tool_mucertify', 'description', $certification3->id, '/', 'someimage.jpg'));
+        $this->assertTrue($fs->file_exists($syscontext->id, 'tool_mucertify', 'image', $certification3->id, '/', 'otherimage.jpg'));
+    }
+
+    public function test_get_image_url(): void {
+        $syscontext = \context_system::instance();
+
+        $admin = get_admin();
+        $this->setUser($admin);
+        $draftid = \file_get_unused_draft_itemid();
+        $fs = get_file_storage();
+        $context = \context_user::instance($admin->id);
+        $record = [
+            'contextid' => $context->id,
+            'component' => 'user',
+            'filearea' => 'draft',
+            'itemid' => $draftid,
+            'filepath' => '/',
+            'filename' => 'image.png',
+        ];
+        $fs->create_file_from_string($record, 'content is irrelevant');
+        $data = (object)[
+            'fullname' => 'Some certification',
+            'idnumber' => 'SP1',
+            'contextid' => $syscontext->id,
+            'image' => $draftid,
+        ];
+        $certification1 = certification::create($data);
+        $this->assertSame('{"image":"image.png"}', $certification1->presentationjson);
+
+        $data = (object)[
+            'fullname' => 'Some other certification',
+            'idnumber' => 'SP2',
+            'contextid' => $syscontext->id,
+        ];
+        $certification2 = certification::create($data);
+        $this->assertSame('[]', $certification2->presentationjson);
+
+        $this->assertSame(
+            "https://www.example.com/moodle/pluginfile.php/{$syscontext->id}/tool_mucertify/image/{$certification1->id}/image.png",
+            certification::get_image_url($certification1, false)->out(false)
+        );
+        $this->assertSame(
+            "https://www.example.com/moodle/pluginfile.php/{$syscontext->id}/tool_mucertify/image/{$certification1->id}/image.png",
+            certification::get_image_url($certification1, true)->out(false)
+        );
+
+        $this->assertSame(
+            null,
+            certification::get_image_url($certification2, false)
+        );
+        $this->assertSame(
+            "https://www.example.com/moodle/pluginfile.php/{$syscontext->id}/tool_mucertify/image/{$certification2->id}/geopattern.svg",
+            certification::get_image_url($certification2, true)->out(false)
+        );
+    }
+
+    public function test_get_image_geopattern(): void {
+        $geopattern = certification::get_image_geopattern(77);
+        $this->assertStringStartsWith(
+            '<?xml version="1.0"?><svg xmlns="http://www.w3.org/2000/svg" width="340" height="340"><rect x="0" y="0" width="100%" height="100%"',
+            $geopattern->toSVG()
+        );
     }
 
     public function test_archive(): void {

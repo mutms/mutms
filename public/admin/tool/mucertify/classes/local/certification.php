@@ -22,6 +22,7 @@ namespace tool_mucertify\local;
 use stdClass;
 use tool_muprog\local\course_reset;
 use core\exception\invalid_parameter_exception;
+use core\url;
 
 /**
  * Certification helper.
@@ -47,15 +48,14 @@ final class certification {
     /**
      * Options for editing of certification descriptions.
      *
-     * @param int $contextid
      * @return array
      */
-    public static function get_description_editor_options(int $contextid): array {
+    public static function get_description_editor_options(): array {
         global $CFG;
         require_once($CFG->dirroot . '/lib/formslib.php');
 
-        $context = \context::instance_by_id($contextid);
-        return ['maxfiles' => EDITOR_UNLIMITED_FILES, 'maxbytes' => get_site()->maxbytes, 'context' => $context];
+        $syscontext = \context_system::instance();
+        return ['maxfiles' => EDITOR_UNLIMITED_FILES, 'maxbytes' => get_site()->maxbytes, 'context' => $syscontext];
     }
 
     /**
@@ -82,6 +82,7 @@ final class certification {
         global $DB, $CFG;
         $data = clone($data);
 
+        $syscontext = \context_system::instance();
         $context = \context::instance_by_id($data->contextid);
         if (!($context instanceof \context_system) && !($context instanceof \context_coursecat)) {
             throw new \coding_exception('certification contextid must be a system or course category');
@@ -149,11 +150,11 @@ final class certification {
         self::update_image($data);
 
         if ($CFG->usetags && isset($data->tags)) {
-            \core_tag_tag::set_item_tags('tool_mucertify', 'tool_mucertify_certification', $data->id, $context, $data->tags);
+            \core_tag_tag::set_item_tags('tool_mucertify', 'tool_mucertify_certification', $data->id, $syscontext, $data->tags);
         }
 
         if ($editorused) {
-            $editoroptions = self::get_description_editor_options($data->contextid);
+            $editoroptions = self::get_description_editor_options();
             $data = file_postupdate_standard_editor(
                 $data,
                 'description',
@@ -215,6 +216,7 @@ final class certification {
 
         $oldcertification = $DB->get_record('tool_mucertify_certification', ['id' => $data->id], '*', MUST_EXIST);
         $context = \context::instance_by_id($oldcertification->contextid);
+        $syscontext = \context_system::instance();
 
         $record = new stdClass();
         $record->id = $oldcertification->id;
@@ -241,7 +243,7 @@ final class certification {
         if (isset($data->description_editor)) {
             $data->description = $data->description_editor['text'];
             $data->descriptionformat = $data->description_editor['format'];
-            $editoroptions = self::get_description_editor_options($context->id);
+            $editoroptions = self::get_description_editor_options();
             $data = file_postupdate_standard_editor(
                 $data,
                 'description',
@@ -268,7 +270,7 @@ final class certification {
         }
 
         if ($CFG->usetags && isset($data->tags)) {
-            \core_tag_tag::set_item_tags('tool_mucertify', 'tool_mucertify_certification', $data->id, $context, $data->tags);
+            \core_tag_tag::set_item_tags('tool_mucertify', 'tool_mucertify_certification', $data->id, $syscontext, $data->tags);
         }
 
         $certification = self::update_image($data);
@@ -312,27 +314,6 @@ final class certification {
 
         $trans = $DB->start_delegated_transaction();
 
-        get_file_storage()->move_area_files_to_new_context(
-            $certification->contextid,
-            $context->id,
-            'tool_mucertify',
-            'image',
-            $certification->id
-        );
-        get_file_storage()->move_area_files_to_new_context(
-            $certification->contextid,
-            $context->id,
-            'tool_mucertify',
-            'description',
-            $certification->id
-        );
-
-        // Do not check if tags enabled here.
-        $tags = \core_tag_tag::get_item_tags_array('tool_mucertify', 'tool_mucertify_certification', $certification->id);
-        if ($tags) {
-            \core_tag_tag::set_item_tags('tool_mucertify', 'tool_mucertify_certification', $certification->id, $context, $tags);
-        }
-
         $record = (object)[
             'id' => $certification->id,
             'contextid' => $context->id,
@@ -359,11 +340,11 @@ final class certification {
         global $DB;
 
         $certification = $DB->get_record('tool_mucertify_certification', ['id' => $data->id], '*', MUST_EXIST);
-        $context = \context::instance_by_id($certification->contextid);
+        $syscontext = \context_system::instance();
 
         if (isset($data->image)) {
-            file_save_draft_area_files($data->image, $context->id, 'tool_mucertify', 'image', $data->id, ['subdirs' => 0, 'maxfiles' => 1]);
-            $files = get_file_storage()->get_area_files($context->id, 'tool_mucertify', 'image', $data->id, '', false);
+            file_save_draft_area_files($data->image, $syscontext->id, 'tool_mucertify', 'image', $data->id, ['subdirs' => 0, 'maxfiles' => 1]);
+            $files = get_file_storage()->get_area_files($syscontext->id, 'tool_mucertify', 'image', $data->id, '', false);
             $presenation = (array)json_decode($certification->presentationjson);
             if ($files) {
                 $file = reset($files);
@@ -376,6 +357,56 @@ final class certification {
         }
 
         return $certification;
+    }
+
+    /**
+     * Returns certification image URL.
+     *
+     * @param stdClass $certification must include id, contextid and presentationjson property.
+     * @param bool $generateifmissing
+     * @return url|null
+     */
+    public static function get_image_url(stdClass $certification, bool $generateifmissing): ?url {
+        global $CFG;
+
+        $syscontext = \context_system::instance();
+        $presentation = (array)json_decode($certification->presentationjson);
+        if (!empty($presentation['image'])) {
+            return url::make_file_url(
+                "$CFG->wwwroot/pluginfile.php",
+                '/' . $syscontext->id . '/tool_mucertify/image/' . $certification->id . '/' . $presentation['image']
+            );
+        }
+
+        if (!$generateifmissing) {
+            return null;
+        }
+
+        return url::make_file_url(
+            "$CFG->wwwroot/pluginfile.php",
+            '/' . $syscontext->id . '/tool_mucertify/image/' . $certification->id . '/geopattern.svg'
+        );
+    }
+
+    /**
+     * Create certification image using geopattern.
+     *
+     * @param int $certificationid
+     * @return \core_geopattern
+     */
+    public static function get_image_geopattern(int $certificationid): \core_geopattern {
+        $colornumbers = range(1, 10);
+        $basecolors = [];
+        foreach ($colornumbers as $number) {
+            $basecolors[] = get_config('core_admin', 'coursecolor' . $number);
+        }
+        $color = $basecolors[($certificationid + 7) % 10]; // Do not start with the same colour as courses.
+
+        $pattern = new \core_geopattern();
+        $pattern->setColor($color);
+        $pattern->patternbyid('certification_' . $certificationid);
+
+        return $pattern;
     }
 
     /**
@@ -722,7 +753,7 @@ final class certification {
         $trans = $DB->start_delegated_transaction();
 
         $certification = $DB->get_record('tool_mucertify_certification', ['id' => $id], '*', MUST_EXIST);
-        $context = \context::instance_by_id($certification->contextid);
+        $syscontext = \context_system::instance();
 
         // Delete notifications configuration and data.
         notification_manager::delete_certification_notifications($certification);
@@ -739,10 +770,11 @@ final class certification {
         $DB->delete_records('tool_mucertify_period', ['certificationid' => $certification->id]);
 
         // Certification details last.
-        \core_tag_tag::set_item_tags('tool_mucertify', 'tool_mucertify_certification', $certification->id, $context, null);
+        \core_tag_tag::remove_all_item_tags('tool_mucertify', 'tool_mucertify_certification', $certification->id);
+
         $fs = get_file_storage();
-        $fs->delete_area_files($context->id, 'tool_mucertify', 'description', $certification->id);
-        $fs->delete_area_files($context->id, 'tool_mucertify', 'image', $certification->id);
+        $fs->delete_area_files($syscontext->id, 'tool_mucertify', 'description', $certification->id);
+        $fs->delete_area_files($syscontext->id, 'tool_mucertify', 'image', $certification->id);
 
         $DB->delete_records('tool_mucertify_certification', ['id' => $certification->id]);
 
