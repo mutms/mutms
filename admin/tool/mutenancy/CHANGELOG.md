@@ -4,24 +4,28 @@ Plugin versioning is derived from Moodle releases, it does not comply with the s
 
 The format of this change log follows the advice given at [Keep a CHANGELOG](https://keepachangelog.com).
 
-## [v5.0.6.01] - 2026-02-12
+## [v5.0.6.02](https://github.com/mutms/moodle-tool_mutenancy/compare/v5.0.6.01...v5.0.6.02) - 2026-03-01
+
+- No changes
+
+## [v5.0.6.01](https://github.com/mutms/moodle-tool_mutenancy/compare/mu-5.0.5-01...v5.0.6.01) - 2026-02-12
 
 ### Changed
 
 - Switched to new release number format to prepare for composer support
 
-## [mu-5.0.5-01] - 2026-02-08
+## [mu-5.0.5-01](https://github.com/mutms/moodle-tool_mutenancy/compare/mu-5.0.4-04...mu-5.0.5-01) - 2026-02-08
 
 - No changes
 
-## [mu-5.0.4-04] - 2026-01-25
+## [mu-5.0.4-04](https://github.com/mutms/moodle-tool_mutenancy/compare/mu-5.0.4-03...mu-5.0.4-04) - 2026-01-25
 
 ### Fixed
 
 - Added internal key to Tenant management primary menu
 - Fixed usage of legacy moodle_url class
 
-## [mu-5.0.4-03] - 2025-12-31
+## [mu-5.0.4-03](https://github.com/mutms/moodle-tool_mutenancy/compare/mu-5.0.4-02...mu-5.0.4-03) - 2025-12-31
 
 ### Fixed
 
@@ -38,11 +42,11 @@ The format of this change log follows the advice given at [Keep a CHANGELOG](htt
 - Tenant login URL in PDF and HTML exports was changed to link.
 - Removed \tool_mutenancy\output\loginurl renderable and template
 
-## [mu-5.0.4-02] - 2025-12-16
+## [mu-5.0.4-02](https://github.com/mutms/moodle-tool_mutenancy/compare/mu-5.0.4-01...mu-5.0.4-02) - 2025-12-16
 
 - No changes.
 
-## [mu-5.0.4-01] - 2025-12-08
+## [mu-5.0.4-01](https://github.com/mutms/moodle-tool_mutenancy/compare/mu-5.0.3-02...mu-5.0.4-01) - 2025-12-08
 
 - Added new setting to allow guest access to tenants.
 - Added tenant restriction to get_with_capability_sql().
@@ -54,19 +58,19 @@ The format of this change log follows the advice given at [Keep a CHANGELOG](htt
 - Added web services for management of tenants.
 - Tenant switching has been simplified: associated users and tenant managers can now switch tenants by default. Internally, the tool/mutenancy:switch capability is now used in the tenant context instead of the system context, and no longer requires the tool/mutenancy:view capability. Existing tenant manager roles need to be updated manually to include the switch permission.
 
-## [mu-5.0.3-02] - 2025-11-08
+## [mu-5.0.3-02](https://github.com/mutms/moodle-tool_mutenancy/compare/mu-5.0.3-01...mu-5.0.3-02) - 2025-11-08
 
 - No changes.
 
-## [mu-5.0.3-01] - 2025-10-06
+## [mu-5.0.3-01](https://github.com/mutms/moodle-tool_mutenancy/compare/mu-5.0.2-03...mu-5.0.3-01) - 2025-10-06
 
 - No changes.
 
-## [mu-5.0.2-03] - 2025-09-24
+## [mu-5.0.2-03](https://github.com/mutms/moodle-tool_mutenancy/compare/mu-5.0.2-02...mu-5.0.2-03) - 2025-09-24
 
 - Added event for user tenant allocation changes.
 
-## [mu-5.0.2-02] - 2025-08-31
+## [mu-5.0.2-02](https://github.com/mutms/moodle-tool_mutenancy/compare/mu-5.0.2-01...mu-5.0.2-02) - 2025-08-31
 
 - Added bulk tenant members allocation and deallocation in Browse list of users.
 - Added help icons to tenant forms.
@@ -74,11 +78,11 @@ The format of this change log follows the advice given at [Keep a CHANGELOG](htt
 - Added Tenant management section to primary menu.
 - Fixed compatibility with unsupported MS SQL databases.
 
-## [mu-5.0.2-01] - 2025-08-09
+## [mu-5.0.2-01](https://github.com/mutms/moodle-tool_mutenancy/compare/mu-5.0.1-01...mu-5.0.2-01) - 2025-08-09
 
 - Internal refactoring.
 - Moodle 5.0.2 support.
 
-## [mu-5.0.1-01] - 2025-06-30
+## [mu-5.0.1-01](https://github.com/mutms/moodle-tool_mutenancy/tree/mu-5.0.1-01) - 2025-06-30
 
 - Added support for Moodle 5.0
