@@ -146,10 +146,9 @@ final class catalogue {
      * @return string
      */
     public function render_certifications(): string {
-        global $OUTPUT, $CFG, $DB, $USER, $PAGE;
+        global $OUTPUT, $CFG, $DB, $USER;
 
-        $catalogueoutput = $PAGE->get_renderer('tool_mucertify', 'catalogue');
-
+        $syscontext = \context_system::instance();
         $totalcount = $this->count_certifications();
         $certifications = $this->get_certifications();
 
@@ -180,7 +179,6 @@ final class catalogue {
         $result .= '<div class="certifications">';
         foreach ($certifications as $certification) {
             $assignment = $DB->get_record('tool_mucertify_assignment', ['certificationid' => $certification->id, 'userid' => $USER->id, 'archived' => 0]);
-            $context = \context::instance_by_id($certification->contextid);
             $fullname = format_string($certification->fullname);
             if ($assignment) {
                 $url = new \core\url('/admin/tool/mucertify/my/certification.php', ['id' => $certification->id]);
@@ -188,8 +186,8 @@ final class catalogue {
                 $url = new \core\url('/admin/tool/mucertify/catalogue/certification.php', ['id' => $certification->id]);
             }
 
-            $description = file_rewrite_pluginfile_urls($certification->description, 'pluginfile.php', $context->id, 'tool_mucertify', 'description', $certification->id);
-            $description = format_text($description, $certification->descriptionformat, ['context' => $context]);
+            $description = file_rewrite_pluginfile_urls($certification->description, 'pluginfile.php', $syscontext->id, 'tool_mucertify', 'description', $certification->id);
+            $description = format_text($description, $certification->descriptionformat, ['context' => $syscontext]);
 
             $tagsdiv = '';
             if ($CFG->usetags) {
@@ -205,13 +203,8 @@ final class catalogue {
             }
 
             $certificationimage = '';
-            $presentation = (array)json_decode($certification->presentationjson);
-            if (!empty($presentation['image'])) {
-                $imageurl = \core\url::make_file_url(
-                    "$CFG->wwwroot/pluginfile.php",
-                    '/' . $context->id . '/tool_mucertify/image/' . $certification->id . '/' . $presentation['image'],
-                    false
-                );
+            $imageurl = certification::get_image_url($certification, false);
+            if ($imageurl) {
                 $certificationimage = \html_writer::img($imageurl, '', ['class' => 'certificationimage']);
             }
 

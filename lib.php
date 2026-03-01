@@ -41,7 +41,7 @@
 function tool_mucertify_pluginfile($course, $cm, $context, $filearea, $args, $forcedownload, array $options = []) {
     global $DB;
 
-    if ($context->contextlevel != CONTEXT_SYSTEM && $context->contextlevel != CONTEXT_COURSECAT) {
+    if ($context->contextlevel != CONTEXT_SYSTEM) {
         send_file_not_found();
     }
 
@@ -50,20 +50,25 @@ function tool_mucertify_pluginfile($course, $cm, $context, $filearea, $args, $fo
     }
 
     $certificationid = (int)array_shift($args);
+    $filename = array_pop($args);
+    $filepath = implode('/', $args) . '/';
+
+    if ($context->contextlevel == CONTEXT_SYSTEM && $filename === 'geopattern.svg' && $filepath === '/') {
+        $geopattern = \tool_mucertify\local\certification::get_image_geopattern($certificationid);
+        send_file($geopattern->toSVG(), $filename, 60 * 60 * 24 * 7, 0, true, false);
+    }
 
     $certification = $DB->get_record('tool_mucertify_certification', ['id' => $certificationid]);
     if (!$certification) {
         send_file_not_found();
     }
+    $certificationcontext = context::instance_by_id($certification->contextid);
     if (
-        !has_capability('tool/mucertify:view', $context)
+        !has_capability('tool/mucertify:view', $certificationcontext)
         && !\tool_mucertify\local\catalogue::is_certification_visible($certification)
     ) {
         send_file_not_found();
     }
-
-    $filename = array_pop($args);
-    $filepath = implode('/', $args) . '/';
 
     $fs = get_file_storage();
     $file = $fs->get_file($context->id, 'tool_mucertify', $filearea, $certificationid, $filepath, $filename);
