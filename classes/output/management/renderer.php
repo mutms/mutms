@@ -46,17 +46,13 @@ class renderer extends \plugin_renderer_base {
     public function render_certification_general(stdClass $certification): string {
         global $CFG;
 
+        $syscontext = \context_system::instance();
         $context = \context::instance_by_id($certification->contextid);
 
         $certificationimage = '';
 
-        $presentation = (array)json_decode($certification->presentationjson);
-        if (!empty($presentation['image'])) {
-            $imageurl = \core\url::make_file_url(
-                "$CFG->wwwroot/pluginfile.php",
-                '/' . $context->id . '/tool_mucertify/image/' . $certification->id . '/' . $presentation['image'],
-                false
-            );
+        $imageurl = certification::get_image_url($certification, false);
+        if ($imageurl) {
             $certificationimage = '<div class="certificationimage">' . html_writer::img($imageurl, '') . '</div>';
         }
 
@@ -78,8 +74,8 @@ class renderer extends \plugin_renderer_base {
                 $details->add(get_string('tags'), $this->output->tag_list($tags, '', 'certification-tags'));
             }
         }
-        $description = file_rewrite_pluginfile_urls($certification->description, 'pluginfile.php', $context->id, 'tool_mucertify', 'description', $certification->id);
-        $description = format_text($description, $certification->descriptionformat, ['context' => $context]);
+        $description = file_rewrite_pluginfile_urls($certification->description, 'pluginfile.php', $syscontext->id, 'tool_mucertify', 'description', $certification->id);
+        $description = format_text($description, $certification->descriptionformat, ['context' => $syscontext]);
         if (trim($description) === '') {
             $description = '&nbsp;';
         }

@@ -21,6 +21,7 @@ namespace tool_mucertify\output\my;
 
 use tool_mucertify\local\assignment;
 use stdClass;
+use tool_mucertify\local\certification;
 
 /**
  * My certification renderer.
@@ -41,11 +42,11 @@ class renderer extends \plugin_renderer_base {
     public function render_certification(\stdClass $certification): string {
         global $CFG;
 
-        $context = \context::instance_by_id($certification->contextid);
+        $syscontext = \context_system::instance();
         $fullname = format_string($certification->fullname);
 
-        $description = file_rewrite_pluginfile_urls($certification->description, 'pluginfile.php', $context->id, 'tool_mucertify', 'description', $certification->id);
-        $description = format_text($description, $certification->descriptionformat, ['context' => $context]);
+        $description = file_rewrite_pluginfile_urls($certification->description, 'pluginfile.php', $syscontext->id, 'tool_mucertify', 'description', $certification->id);
+        $description = format_text($description, $certification->descriptionformat, ['context' => $syscontext]);
 
         $tagsdiv = '';
         if ($CFG->usetags) {
@@ -56,13 +57,8 @@ class renderer extends \plugin_renderer_base {
         }
 
         $certificationimage = '';
-        $presentation = (array)json_decode($certification->presentationjson);
-        if (!empty($presentation['image'])) {
-            $imageurl = \core\url::make_file_url(
-                "$CFG->wwwroot/pluginfile.php",
-                '/' . $context->id . '/tool_mucertify/image/' . $certification->id . '/' . $presentation['image'],
-                false
-            );
+        $imageurl = certification::get_image_url($certification, false);
+        if ($imageurl) {
             $certificationimage = '<div class="certificationimage">' . \html_writer::img($imageurl, '') . '</div>';
         }
 
