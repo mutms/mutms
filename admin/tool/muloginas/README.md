@@ -2,24 +2,35 @@
 
 ![Moodle Plugin CI](https://github.com/mutms/moodle-tool_muloginas/actions/workflows/moodle-ci.yml/badge.svg)
 
-This plugin enhances the standard **"Log in as"** feature in Moodle™ LMS, improving user experience and security.
+Enhances the standard Moodle™ LMS "Log in as" feature — fully open source under GPL 3.0, with no
+restrictions on commercial use. Part of the [MuTMS suite](https://github.com/mutms).
 
-Instead of switching users within the same session, it introduces an option to launch a **new Incognito window** for a separate **"Log in as"** session.
+Instead of switching users within the same browser session, this plugin adds an option to open the
+"Log in as" session in a new Incognito window — keeping the admin session active in the main window
+and avoiding the need to log back in afterwards.
 
-## Key benefits
-- **No repeated logins:** Administrators don’t need to log back in after ending the **"Log in as"** session.
-- **Parallel access:** The admin’s session remains active in the main browser window, while the **"Log in as"** session runs separately in Incognito mode.
-- **Improved security:** Incognito mode is designed for handling untrusted content, ensuring the **"Log in as"** session does not interfere with normal LMS use.
+## Features
 
-## Known issues
+* "Log in as" opens in a new Incognito window — no repeated logins for administrators
+* Admin session remains active in the main window in parallel
+* Incognito mode isolates the "Log in as" session from normal LMS use
 
-- In Safari the option to *"Open in New Private Window"* is only available when already using a private window.
-- In Chrome and Microsoft Edge the Incognito windows share a single session, meaning only *one "Log in as" session* can be active at a time.
-- Course level "Log in as" is not supported.
-- For security reasons, the generated log in as link expires after fifteen seconds, which may not be optional for accessibility.
-- This feature may not be compatible with mobile phone and tablet browsers.
-- Test coverage is minimal due to the inability to test Incognito sessions in Behat.
+## Known limitations
 
-## Roadmap
+* In Safari, "Open in New Private Window" is only available when already in a private window
+* In Chrome and Edge, Incognito windows share a single session — only one "Log in as" session can be active at a time
+* Course-level "Log in as" is not supported
+* The generated link expires after fifteen seconds, which may be an accessibility concern
+* Mobile and tablet browsers may not be fully supported
+* Test coverage is minimal due to the inability to test Incognito sessions in Behat
 
-* Target for production release and availability of paid support: Q2 2026
+## Requirements
+
+> This plugin is included in the [MuTMS distribution](https://github.com/mutms/mutms) —
+> no manual installation needed if you use the distribution.
+
+No other plugins are required.
+
+---
+
+> MuTMS is an independent open-source project, not affiliated with Moodle HQ.
