@@ -149,10 +149,10 @@ class tool_muprog_generator extends component_generator_base {
             if (!file_exists($imagefile)) {
                 throw new Exception('Program image file does not exist');
             }
-            $context = \context::instance_by_id($program->contextid);
+            $syscontext = \context_system::instance();
             $fs = get_file_storage();
             $filerecord = [
-                'contextid' => $context->id,
+                'contextid' => $syscontext->id,
                 'component' => 'tool_muprog',
                 'filearea' => 'image',
                 'itemid' => $program->id,
