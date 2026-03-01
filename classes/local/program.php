@@ -21,6 +21,7 @@ namespace tool_muprog\local;
 
 use stdClass;
 use core\exception\invalid_parameter_exception;
+use core\url;
 
 /**
  * Program helper.
@@ -35,14 +36,13 @@ final class program {
     /**
      * Options for editing of program descriptions.
      *
-     * @param int $contextid
      * @return array
      */
-    public static function get_description_editor_options(int $contextid): array {
+    public static function get_description_editor_options(): array {
         global $CFG;
         require_once($CFG->dirroot . '/lib/formslib.php');
 
-        $context = \context::instance_by_id($contextid);
+        $context = \context_system::instance();
         return ['maxfiles' => EDITOR_UNLIMITED_FILES, 'maxbytes' => get_site()->maxbytes, 'context' => $context];
     }
 
@@ -89,8 +89,7 @@ final class program {
         global $DB, $CFG;
         $data = clone($data);
 
-        $trans = $DB->start_delegated_transaction();
-
+        $syscontext = \context_system::instance();
         $context = \context::instance_by_id($data->contextid);
         if (!($context instanceof \context_system) && !($context instanceof \context_coursecat)) {
             throw new \coding_exception('program contextid must be a system or course category');
@@ -103,6 +102,8 @@ final class program {
         if (strlen($data->idnumber) === 0) {
             throw new \coding_exception('program idnumber is required');
         }
+
+        $trans = $DB->start_delegated_transaction();
 
         $editorused = false;
         if (isset($data->description_editor)) {
@@ -205,11 +206,11 @@ final class program {
         $program = self::update_image($data);
 
         if ($CFG->usetags && isset($data->tags)) {
-            \core_tag_tag::set_item_tags('tool_muprog', 'tool_muprog_program', $data->id, $context, $data->tags);
+            \core_tag_tag::set_item_tags('tool_muprog', 'tool_muprog_program', $data->id, $syscontext, $data->tags);
         }
 
         if ($editorused) {
-            $editoroptions = self::get_description_editor_options($data->contextid);
+            $editoroptions = self::get_description_editor_options();
             $data = file_postupdate_standard_editor(
                 $data,
                 'description',
@@ -291,6 +292,7 @@ final class program {
 
         $oldprogram = $DB->get_record('tool_muprog_program', ['id' => $data->id], '*', MUST_EXIST);
         $context = \context::instance_by_id($oldprogram->contextid);
+        $syscontext = \context_system::instance();
 
         $record = new stdClass();
         $record->id = $oldprogram->id;
@@ -319,7 +321,7 @@ final class program {
         if (isset($data->description_editor)) {
             $data->description = $data->description_editor['text'];
             $data->descriptionformat = $data->description_editor['format'];
-            $editoroptions = self::get_description_editor_options($oldprogram->contextid);
+            $editoroptions = self::get_description_editor_options();
             $data = file_postupdate_standard_editor(
                 $data,
                 'description',
@@ -356,7 +358,7 @@ final class program {
         }
 
         if ($CFG->usetags && isset($data->tags)) {
-            \core_tag_tag::set_item_tags('tool_muprog', 'tool_muprog_program', $data->id, $context, $data->tags);
+            \core_tag_tag::set_item_tags('tool_muprog', 'tool_muprog_program', $data->id, $syscontext, $data->tags);
         }
 
         $program = self::update_image($data);
@@ -431,44 +433,11 @@ final class program {
             return $program;
         }
 
-        $trans = $DB->start_delegated_transaction();
-
-        get_file_storage()->move_area_files_to_new_context(
-            $program->contextid,
-            $context->id,
-            'tool_muprog',
-            'image',
-            $program->id
-        );
-        get_file_storage()->move_area_files_to_new_context(
-            $program->contextid,
-            $context->id,
-            'tool_muprog',
-            'description',
-            $program->id
-        );
-
-        // Do not check if tags enabled here.
-        $tags = \core_tag_tag::get_item_tags_array('tool_muprog', 'tool_muprog_program', $program->id);
-        if ($tags) {
-            \core_tag_tag::set_item_tags('tool_muprog', 'tool_muprog_program', $program->id, $context, $tags);
-        }
-
-        // Fix favourites.
-        $DB->set_field('favourite', 'contextid', $context->id, ['component' => 'tool_muprog', 'itemtype' => 'programs', 'itemid' => $program->id]);
-
-        $record = (object)[
-            'id' => $program->id,
-            'contextid' => $context->id,
-        ];
-
-        $DB->update_record('tool_muprog_program', $record);
+        $DB->set_field('tool_muprog_program', 'contextid', $context->id, ['id' => $program->id]);
 
         $program = $DB->get_record('tool_muprog_program', ['id' => $program->id], '*', MUST_EXIST);
 
         \tool_muprog\event\program_updated::create_from_program($program)->trigger();
-
-        $trans->allow_commit();
 
         return $program;
     }
@@ -483,11 +452,11 @@ final class program {
         global $DB;
 
         $program = $DB->get_record('tool_muprog_program', ['id' => $data->id], '*', MUST_EXIST);
-        $context = \context::instance_by_id($program->contextid);
+        $syscontext = \context_system::instance();
 
         if (isset($data->image)) {
-            file_save_draft_area_files($data->image, $context->id, 'tool_muprog', 'image', $data->id, ['subdirs' => 0, 'maxfiles' => 1]);
-            $files = get_file_storage()->get_area_files($context->id, 'tool_muprog', 'image', $data->id, '', false);
+            file_save_draft_area_files($data->image, $syscontext->id, 'tool_muprog', 'image', $data->id, ['subdirs' => 0, 'maxfiles' => 1]);
+            $files = get_file_storage()->get_area_files($syscontext->id, 'tool_muprog', 'image', $data->id, '', false);
             $presenation = (array)json_decode($program->presentationjson);
             if ($files) {
                 $file = reset($files);
@@ -507,36 +476,49 @@ final class program {
      *
      * @param stdClass $program must include id, contextid and presentationjson property.
      * @param bool $generateifmissing
-     * @return string|null
+     * @return url|null
      */
-    public static function get_image_uri(stdClass $program, bool $generateifmissing): ?string {
+    public static function get_image_url(stdClass $program, bool $generateifmissing): ?url {
         global $CFG;
 
+        $syscontext = \context_system::instance();
         $presentation = (array)json_decode($program->presentationjson);
         if (!empty($presentation['image'])) {
-            $context = \context::instance_by_id($program->contextid);
-            $imageurl = \core\url::make_file_url(
+            return url::make_file_url(
                 "$CFG->wwwroot/pluginfile.php",
-                '/' . $context->id . '/tool_muprog/image/' . $program->id . '/' . $presentation['image']
+                '/' . $syscontext->id . '/tool_muprog/image/' . $program->id . '/' . $presentation['image']
             );
-            return $imageurl->out(false);
         }
 
         if (!$generateifmissing) {
             return null;
         }
 
+        return url::make_file_url(
+            "$CFG->wwwroot/pluginfile.php",
+            '/' . $syscontext->id . '/tool_muprog/image/' . $program->id . '/geopattern.svg'
+        );
+    }
+
+    /**
+     * Create program image using geopattern.
+     *
+     * @param int $programid
+     * @return \core_geopattern
+     */
+    public static function get_image_geopattern(int $programid): \core_geopattern {
         $colornumbers = range(1, 10);
         $basecolors = [];
         foreach ($colornumbers as $number) {
             $basecolors[] = get_config('core_admin', 'coursecolor' . $number);
         }
-        $color = $basecolors[($program->id + 5) % 10]; // Do not start with the same colour as courses.
+        $color = $basecolors[($programid + 5) % 10]; // Do not start with the same colour as courses.
 
         $pattern = new \core_geopattern();
         $pattern->setColor($color);
-        $pattern->patternbyid('program_' . $program->id);
-        return $pattern->datauri();
+        $pattern->patternbyid('program_' . $programid);
+
+        return $pattern;
     }
 
     /**
@@ -1008,7 +990,7 @@ final class program {
         $trans = $DB->start_delegated_transaction();
 
         $program = $DB->get_record('tool_muprog_program', ['id' => $id], '*', MUST_EXIST);
-        $context = \context::instance_by_id($program->contextid);
+        $syscontext = \context_system::instance();
 
         $favservice = \core_favourites\service_factory::get_service_for_component('tool_muprog');
         $favservice->delete_favourites_by_type_and_item('programs', $program->id);
@@ -1045,10 +1027,11 @@ final class program {
         $DB->delete_records('tool_muprog_cert', ['programid' => $program->id]);
 
         // Program details last.
-        \core_tag_tag::set_item_tags('tool_muprog', 'tool_muprog_program', $program->id, $context, null);
+        \core_tag_tag::remove_all_item_tags('tool_muprog', 'tool_muprog_program', $program->id);
+
         $fs = get_file_storage();
-        $fs->delete_area_files($context->id, 'tool_muprog', 'description', $program->id);
-        $fs->delete_area_files($context->id, 'tool_muprog', 'image', $program->id);
+        $fs->delete_area_files($syscontext->id, 'tool_muprog', 'description', $program->id);
+        $fs->delete_area_files($syscontext->id, 'tool_muprog', 'image', $program->id);
 
         $DB->delete_records('tool_muprog_program', ['id' => $program->id]);
 

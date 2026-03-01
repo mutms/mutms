@@ -218,5 +218,29 @@ function xmldb_tool_muprog_upgrade($oldversion): bool {
         upgrade_plugin_savepoint(true, 2026010645, 'tool', 'muprog');
     }
 
+    if ($oldversion < 2026022045) {
+        $syscontext = context_system::instance();
+        $fs = get_file_storage();
+
+        $sql = "SELECT f.contextid, f.itemid, f.filearea
+                  FROM {files} f
+                 WHERE f.component = 'tool_muprog' AND f.contextid <> :syscontextid
+              GROUP BY f.contextid, f.itemid, f.filearea";
+        $rs = $DB->get_recordset_sql($sql, ['syscontextid' => $syscontext->id]);
+        foreach ($rs as $area) {
+            $fs->move_area_files_to_new_context($area->contextid, $syscontext->id, 'tool_muprog', $area->filearea, $area->itemid);
+        }
+        $rs->close();
+
+        upgrade_plugin_savepoint(true, 2026022045, 'tool', 'muprog');
+    }
+
+    if ($oldversion < 2026022045.02) {
+        $syscontext = context_system::instance();
+        $DB->set_field('tag_instance', 'contextid', $syscontext->id, ['component' => 'tool_muprog']);
+
+        upgrade_plugin_savepoint(true, 2026022045.02, 'tool', 'muprog');
+    }
+
     return true;
 }

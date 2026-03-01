@@ -61,7 +61,7 @@ $program->creategroups = 0;
 $program->description = '';
 $program->descriptionformat = FORMAT_HTML;
 
-$editoroptions = program::get_description_editor_options($context->id);
+$editoroptions = program::get_description_editor_options();
 
 $form = new \tool_muprog\local\form\program_create(null, ['data' => $program, 'editoroptions' => $editoroptions, 'context' => $context]);
 

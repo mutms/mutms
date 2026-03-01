@@ -241,7 +241,7 @@ final class program_test extends \advanced_testcase {
             $this->assertSame('Invalid parameter value detected (System or category context expected)', $ex->getMessage());
         }
 
-        // Test tags are moved.
+        // Test tags are not moved.
 
         $data = [
             'fullname' => 'Program 2',
@@ -256,7 +256,7 @@ final class program_test extends \advanced_testcase {
         );
         $tags = \core_tag_tag::get_item_tags('tool_muprog', 'tool_muprog_program', $program2->id);
         foreach ($tags as $tag) {
-            $this->assertEquals($catcontext->id, $tag->taginstancecontextid);
+            $this->assertEquals($syscontext->id, $tag->taginstancecontextid);
         }
 
         $program2 = program::move($program2->id, $syscontext->id);
@@ -269,7 +269,7 @@ final class program_test extends \advanced_testcase {
             $this->assertEquals($syscontext->id, $tag->taginstancecontextid);
         }
 
-        // Test images are moved.
+        // Test images do not move.
 
         $admin = get_admin();
         $this->setUser($admin);
@@ -305,12 +305,10 @@ final class program_test extends \advanced_testcase {
             'image' => $draftid2,
         ];
         $program3 = program::create((object)$data);
-        $this->assertTrue($fs->file_exists($catcontext->id, 'tool_muprog', 'description', $program3->id, '/', 'someimage.jpg'));
-        $this->assertTrue($fs->file_exists($catcontext->id, 'tool_muprog', 'image', $program3->id, '/', 'otherimage.jpg'));
+        $this->assertTrue($fs->file_exists($syscontext->id, 'tool_muprog', 'description', $program3->id, '/', 'someimage.jpg'));
+        $this->assertTrue($fs->file_exists($syscontext->id, 'tool_muprog', 'image', $program3->id, '/', 'otherimage.jpg'));
 
         $program3 = program::move($program3->id, $syscontext->id);
-        $this->assertFalse($fs->file_exists($catcontext->id, 'tool_muprog', 'description', $program3->id, '/', 'someimage.jpg'));
-        $this->assertFalse($fs->file_exists($catcontext->id, 'tool_muprog', 'image', $program3->id, '/', 'otherimage.jpg'));
         $this->assertTrue($fs->file_exists($syscontext->id, 'tool_muprog', 'description', $program3->id, '/', 'someimage.jpg'));
         $this->assertTrue($fs->file_exists($syscontext->id, 'tool_muprog', 'image', $program3->id, '/', 'otherimage.jpg'));
     }
@@ -347,7 +345,7 @@ final class program_test extends \advanced_testcase {
         $this->assertSame('{"image":"image.png"}', $program->presentationjson);
     }
 
-    public function test_get_image_uri(): void {
+    public function test_get_image_url(): void {
         $syscontext = \context_system::instance();
 
         $admin = get_admin();
@@ -383,20 +381,28 @@ final class program_test extends \advanced_testcase {
 
         $this->assertSame(
             "https://www.example.com/moodle/pluginfile.php/{$syscontext->id}/tool_muprog/image/{$program1->id}/image.png",
-            program::get_image_uri($program1, false)
+            program::get_image_url($program1, false)->out(false)
         );
         $this->assertSame(
             "https://www.example.com/moodle/pluginfile.php/{$syscontext->id}/tool_muprog/image/{$program1->id}/image.png",
-            program::get_image_uri($program1, true)
+            program::get_image_url($program1, true)->out(false)
         );
 
         $this->assertSame(
             null,
-            program::get_image_uri($program2, false)
+            program::get_image_url($program2, false)
         );
+        $this->assertSame(
+            "https://www.example.com/moodle/pluginfile.php/{$syscontext->id}/tool_muprog/image/{$program2->id}/geopattern.svg",
+            program::get_image_url($program2, true)->out(false)
+        );
+    }
+
+    public function test_get_image_geopattern(): void {
+        $geopattern = program::get_image_geopattern(77);
         $this->assertStringStartsWith(
-            'data:image/svg+xml;base64',
-            program::get_image_uri($program2, true)
+            '<?xml version="1.0"?><svg xmlns="http://www.w3.org/2000/svg" width="72" height="83"><rect x="0" y="0" width="100%" height="100%"',
+            $geopattern->toSVG()
         );
     }
 

@@ -4,19 +4,28 @@ Plugin versioning is derived from Moodle releases, it does not comply with the s
 
 The format of this change log follows the advice given at [Keep a CHANGELOG](https://keepachangelog.com).
 
-## [v5.0.6.01] - 2026-02-12
+## [v5.0.6.02](https://github.com/mutms/moodle-tool_muprog/compare/v5.0.6.01...v5.0.6.02) - 2026-03-01
+
+### Changes
+
+- Geopattern generated program images are served via standard pluginfile.php
+- All images were moved to system context, program context will be used only for management access control and tenant separation
+- All tags were moved to system context
+- Moved favourites storage to system context
+
+## [v5.0.6.01](https://github.com/mutms/moodle-tool_muprog/compare/mu-5.0.5-01...v5.0.6.01) - 2026-02-12
 
 ### Changed
 
 - Switched to new release number format to prepare for composer support
 
-## [mu-5.0.5-01] - 2026-02-08
+## [mu-5.0.5-01](https://github.com/mutms/moodle-tool_muprog/compare/mu-5.0.4-04...mu-5.0.5-01) - 2026-02-08
 
 ### Fixed
 
 - Added missing required icon when selecting new program item type
 
-## [mu-5.0.4-04] - 2026-01-25
+## [mu-5.0.4-04](https://github.com/mutms/moodle-tool_muprog/compare/mu-5.0.4-03...mu-5.0.4-04) - 2026-01-25
 
 ### Added
 
@@ -60,7 +69,7 @@ The format of this change log follows the advice given at [Keep a CHANGELOG](htt
 - To prevent data loss users have to explicitly select "Reset type" option in "Reset program progress" dialog
 - Prevented duplicate credit frameworks in programs
 
-## [mu-5.0.4-03] - 2025-12-31
+## [mu-5.0.4-03](https://github.com/mutms/moodle-tool_muprog/compare/mu-5.0.4-02...mu-5.0.4-03) - 2025-12-31
 
 ### Added
 
@@ -74,7 +83,7 @@ The format of this change log follows the advice given at [Keep a CHANGELOG](htt
 - Fixed category selection autocomplete element in program editing and export forms
 - Standardised program idnumber to be case-insensitively unique
 
-## [mu-5.0.4-02] - 2025-12-16
+## [mu-5.0.4-02](https://github.com/mutms/moodle-tool_muprog/compare/mu-5.0.4-01...mu-5.0.4-02) - 2025-12-16
 
 - Added program progress as percentage of completed non-set items.
 - Training points were renamed to Training credits.
@@ -84,7 +93,7 @@ The format of this change log follows the advice given at [Keep a CHANGELOG](htt
 - Fixed placement of custom fields in program creation form.
 - Added support for generated program images.
 
-## [mu-5.0.4-01] - 2025-12-08
+## [mu-5.0.4-01](https://github.com/mutms/moodle-tool_muprog/compare/mu-5.0.3-02...mu-5.0.4-01) - 2025-12-08
 
 - Updated use of SQL fragments API.
 - Fixed timezones in notifications.
@@ -92,22 +101,22 @@ The format of this change log follows the advice given at [Keep a CHANGELOG](htt
 - Added option for enabling of Manual and Certification allocations during program creation.
 - Added source for allocation from external database.
 
-## [mu-5.0.3-02] - 2025-11-08
+## [mu-5.0.3-02](https://github.com/mutms/moodle-tool_muprog/compare/mu-5.0.3-01...mu-5.0.3-02) - 2025-11-08
 
 - Improved training item icon - grid icon is used instead of ellipsis.
 - Documentation was moved to https://github.com/mutms/moodle-tool_muprog/wiki
 - Improved table visuals.
 
-## [mu-5.0.3-01] - 2025-10-06
+## [mu-5.0.3-01](https://github.com/mutms/moodle-tool_muprog/compare/mu-5.0.2-03...mu-5.0.3-01) - 2025-10-06
 
 - Fixed program tags itemtype to match database table name.
 - Added support for Moodle 5.1.
 
-## [mu-5.0.2-03] - 2025-09-24
+## [mu-5.0.2-03](https://github.com/mutms/moodle-tool_muprog/compare/mu-5.0.2-02...mu-5.0.2-03) - 2025-09-24
 
 - Certification allocation conflicts are now handled gracefully.
 
-## [mu-5.0.2-02] - 2025-08-31
+## [mu-5.0.2-02](https://github.com/mutms/moodle-tool_muprog/compare/mu-5.0.2-01...mu-5.0.2-02) - 2025-08-31
 
 - Added Program completion allocation source - users may get allocated to a program when they complete another program.
 - Fixed automatic cohort allocation source form.
@@ -118,11 +127,11 @@ The format of this change log follows the advice given at [Keep a CHANGELOG](htt
 - Fixed compatibility with unsupported MS SQL databases.
 - Fixed fatal errors when sending deallocation email and SMTP is down, you may need to wait for next cron run to resolve blocking errors for students.
 
-## [mu-5.0.2-01] - 2025-08-09
+## [mu-5.0.2-01](https://github.com/mutms/moodle-tool_muprog/compare/mu-5.0.1-01...mu-5.0.2-01) - 2025-08-09
 
 - Internal refactoring.
 - Moodle 5.0.2 support.
 
-## [mu-5.0.1-01] - 2025-06-30
+## [mu-5.0.1-01](https://github.com/mutms/moodle-tool_muprog/tree/mu-5.0.1-01) - 2025-06-30
 
 - Added support for Moodle 5.0
