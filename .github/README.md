@@ -75,7 +75,7 @@ See the GitHub wikis in relevant plugins.
 ## Support
 
 Community support via GitHub Issues in relevant plugins.
-Commercial support available from Q2 2026 — contact [petr@mutms.com](mailto:petr@mutms.com).
+Commercial support available from Q2 2026 — contact [support@mutms.com](mailto:support@mutms.com).
 
 ## License
 
