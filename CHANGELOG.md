@@ -1,5 +1,9 @@
 # Changelog
 
+## 5.0.6 - 2026-02-13
+### Fixed
+- Fixed redundant string formatting of user profile fields in certificates
+
 ## 5.0.4 - 2025-12-09
 ### Added
 - Added bulk certificate regeneration
