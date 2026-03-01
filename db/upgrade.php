@@ -31,6 +31,16 @@
  * @param int $oldversion
  */
 function xmldb_block_muprogmyoverview_upgrade($oldversion) {
+    global $DB;
+
+    $dbman = $DB->get_manager();
+
+    if ($oldversion < 2026022045.02) {
+        $syscontext = context_system::instance();
+        $DB->set_field('favourite', 'contextid', $syscontext->id, ['component' => 'block_muprogmyoverview']);
+
+        upgrade_plugin_savepoint(true, 2026022045.02, 'block', 'muprogmyoverview');
+    }
 
     return true;
 }

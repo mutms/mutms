@@ -242,7 +242,7 @@ final class get_active_programs extends external_api {
                 $result->enddate = null;
             }
 
-            $result->programimage = \tool_muprog\local\program::get_image_uri($program, true);
+            $result->programimage = \tool_muprog\local\program::get_image_url($program, true)->out(false);
             $result->viewurl = (new \core\url('/admin/tool/muprog/my/program.php', ['id' => $program->id]))->out(false);
 
             [$result->status, $result->statusclass] = \tool_muprog\local\allocation::get_completion_status($program, $allocation);
