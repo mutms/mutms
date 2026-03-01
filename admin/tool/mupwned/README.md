@@ -2,18 +2,39 @@
 
 ![Moodle Plugin CI](https://github.com/mutms/moodle-tool_mupwned/actions/workflows/moodle-ci.yml/badge.svg)
 
-This Moodle plugin strengthens account security by adding a site‑wide setting that checks user passwords both when they are created or updated and optionally during every login. It verifies passwords against the Have I Been Pwned database of known breaches, using the anonymous (k‑Anonymity) API mode so the full password is never sent outside Moodle. If a compromised password is detected at any of these points, the user is blocked from proceeding until they reset their password to a safer alternative. This continuous verification helps prevent account access with credentials exposed in past breaches and reduces the risk of account takeover.
+Blocks compromised passwords in standard Moodle™ LMS installations — fully open source under GPL
+3.0, with no restrictions on commercial use. Part of the [MuTMS suite](https://github.com/mutms).
 
-## Configuration steps
+Checks passwords against the [Have I Been Pwned](https://haveibeenpwned.com) database of known
+breaches when passwords are created, updated, or optionally on every login. Uses the k-Anonymity
+API — the full password is never sent outside Moodle. Users with a compromised password are blocked
+until they reset it.
 
-1. Install plugin.
-2. Log in as admin - make sure you can reset your own administrator password via email if necessary.
-3. Enable "Password policy" setting and review password requirements.
-4. Enable "Check password on login" setting.
-5. Navigate to "Site administration / Plugins / Authentication / Compromised password blocking" settings page.
-6. Enable "Detect compromised passwords".
-7. If anything goes wrong you can also reset passwords from CLI, see /admin/cli/reset_password.php
+## Features
 
-## Roadmap
+* Checks passwords on creation and update
+* Optional check on every login
+* k-Anonymity API — no full password ever leaves Moodle
+* Blocks access until a compromised password is replaced
 
-* Target for production release and availability of paid support: Q2 2026
+## Configuration
+
+1. Install the plugin
+2. Log in as admin — ensure you can reset your administrator password via email if needed
+3. Enable the Password policy setting and review password requirements
+4. Enable the Check password on login setting
+5. Go to Site administration / Plugins / Authentication / Compromised password blocking
+6. Enable Detect compromised passwords
+
+If anything goes wrong, passwords can be reset from the CLI via `/admin/cli/reset_password.php`.
+
+## Requirements
+
+> This plugin is included in the [MuTMS distribution](https://github.com/mutms/mutms) —
+> no manual installation needed if you use the distribution.
+
+No other plugins are required.
+
+---
+
+> MuTMS is an independent open-source project, not affiliated with Moodle HQ.
