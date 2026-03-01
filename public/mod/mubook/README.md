@@ -2,72 +2,52 @@
 
 ![Moodle Plugin CI](https://github.com/mutms/moodle-mod_mubook/actions/workflows/moodle-ci.yml/badge.svg)
 
-Interactive book module is the successor to original Book module for Moodle. It is part of [MuTMS](https://github.com/mutms/) suite of plugins.
+A modern replacement for the standard Moodle™ Book module — fully open source under GPL 3.0, with
+no restrictions on commercial use. Part of the [MuTMS suite](https://github.com/mutms).
 
-## New features and improvements
+Brings a redesigned reading experience with full Markdown support, improved navigation, interactive
+content types, and safer student editing capabilities.
 
-1. Modern look and feel
-2. Full-page table of contents
-3. Page showing all chapters
-4. Redesigned chapter navigation
-5. Full support for Markdown format
-6. Support for new chapter content types including interactive elements
-7. Print sub-plugin was replaced with optimised printing support on regular book pages 
-8. Hidden chapters were replaced with hidden chapter content
-9. Editing of unsafe HTML content is controlled by a separate capability
-10. It is safe to allow students to edit chapters and content  
+## Features
 
-## Future ideas
+* Modern look and feel with redesigned chapter navigation
+* Full-page table of contents and chapter overview page
+* Full support for GitHub Flavored Markdown, including relative file links
+* Support for new chapter content types including interactive elements
+* Hidden chapter content (replaces hidden chapters)
+* Optimised print support on regular book pages (replaces print sub-plugin)
+* Editing of unsafe HTML controlled by a separate capability — safe to allow student editing
+
+## Roadmap
 
 * Markdown preview
 * Chapter content visibility based on group membership
-* Content snapshots for tracking of changes
+* Content snapshots for change tracking
 * Optional user experience tracking
 * Export and import
-* Integration of react-markdown editor
 * Full text search
-* New block with table of contents, progress indicators and bookmarks
+* New block with table of contents, progress indicators, and bookmarks
 * Reusable content libraries
 
-_Note that development of new features will depend on availability of funding._
+_Development of new features depends on availability of funding._
 
-## Markdown support
+## Requirements
 
-Interactive book supports a subset of [GitHub Flavored Markdown](https://docs.github.com/en/get-started/writing-on-github/getting-started-with-writing-and-formatting-on-github/basic-writing-and-formatting-syntax). 
+> This plugin is included in the [MuTMS distribution](https://github.com/mutms/mutms) —
+> no manual installation needed if you use the distribution.
 
-Additional features:
+Required plugins:
 
-* content files are accessible via relative links or @@PLUGINFILE@@ prefix
-
-## Installation from plugins database
-
-1. Install [Additional tools library for MuTMS plugins](https://moodle.org/plugins/view.php?id=3560) plugin
-2. Install [interactive book](https://moodle.org/plugins/view.php?id=3822) plugin
-
-## Installation via git
-
-In Moodle 5.0 use:
-
-```bash
-cd moodle
-git clone -b MOODLE_500_STABLE https://github.com/mutms/moodle-mod_mubook.git mod/mubook
-git clone -b MOODLE_500_STABLE https://github.com/mutms/moodle-tool_mulib.git admin/tool/mulib
-```
-
-In Moodle 5.1 start with `cd moodle/public` instead. 
-
-_Note that the preview version is not compatible with Moodle 4.5 and earlier._
+* [Additional tools library plugin](https://github.com/mutms/moodle-tool_mulib)
 
 ## Credits
 
-Original Book module was developed for Technical University of Liberec (Czech Republic).
+The original Book module was developed for the Technical University of Liberec, Czech Republic.
+The Interactive book module was inspired by the design of [The Modern JavaScript Tutorial](https://javascript.info/)
+and initiated at [Moodle Moot DACH 2025](https://moodlemootdach.org/mod/forum/discuss.php?d=7076).
 
-The impulse to create new Interactive book module came from the participants of
-[Moodle Moot DACH 2025](https://moodlemootdach.org/mod/forum/discuss.php?d=7076).
+Developers: Petr Skoda (lead), Mojmir Volf, Eloy Lafuente, Antonio Vicent, Moodle HQ, and others.
 
-The user interface of Interactive book module was inspired by [The Modern JavaScript Tutorial](https://javascript.info/) design.
+---
 
-Developers (including legacy Book module):
-
-* Petr Skoda - majority the coding and design
-* Mojmir Volf, Eloy Lafuente, Antonio Vicent, Moodle HQ and others
+> MuTMS is an independent open-source project, not affiliated with Moodle HQ.
