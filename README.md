@@ -2,64 +2,77 @@
 
 ![Moodle Plugin CI](https://github.com/mutms/moodle-tool_murelation/actions/workflows/moodle-ci.yml/badge.svg)
 
-The Supervisors and teams plugin enables administrators to establish structured relationships between users in Moodle™ LMS, such as parents, homeroom teachers, or managers. These connections are organized as supervisor-subordinate relationships, allowing institutions to manage global and even project based user roles efficiently. This plugin also allows managers to create teams of subordinates that share the same supervisor, for example students in homeroom classes or long term project teams.
+Structured supervisor-subordinate relationships for standard Moodle™ LMS installations — fully open
+source under GPL 3.0, with no restrictions on commercial use. Part of the [MuTMS suite](https://github.com/mutms).
 
-Administrators can define relationship frameworks that assign specific roles to supervisors in the user context of their subordinates. Access to managing these relationships can be restricted based on cohort membership, ensuring precise control over assignments. If needed, position eligibility within frameworks can also be limited to specific cohort members.
+Allows administrators to define relationship frameworks between users — managers and employees,
+teachers and students, parents and children — and use those relationships across other MuTMS plugins
+for notifications, approval workflows, and report content restrictions.
 
-Each user may hold only one subordinate position within a framework while having multiple supervisor positions. This structural limitation allows relationships to be represented as a tree hierarchy. When multiple supervisors of the same type are required, separate frameworks can be created, such as Parent A and Parent B.
+## Features
 
-Beyond role assignments, the plugin enhances LMS functionality by enabling relationships to be utilized across other plugins for notifications, approval processes, report content restrictions, etc. To support real-world scenarios, it also allows administrators to designate subordinate teams, such as "Class A 2025," even before assigning a supervisor. This approach ensures uninterrupted transitions when changes in management hierarchy occur.
-
-With its flexible framework design, this plugin makes relationship management in Moodle™ LMS more structured, adaptable, and aligned with diverse educational and organizational needs.
-
-To use this plugin you need to install [Additional MuTMS libraries plugin for Moodle™ LMS](https://github.com/mutms/moodle-tool_mulib).
+* Flexible framework design supporting both simple supervisor relationships and named teams
+* Role assignments in the subordinate's user context based on the defined relationship
+* Cohort-based access restrictions for managing relationships
+* Team cohorts — subordinates of a team can be automatically added as cohort members
+* Multi-tenancy aware — relationships respect tenant boundaries
+* Used by other MuTMS plugins for notifications, approvals, and report restrictions
 
 ## Supervisors mode
 
-- Frameworks using this simple mode allow you to define one supervisor for each subordinate.
-- It is not possible to have unassigned positions of supervisors.
-- Supervisors cannot supervise themselves.
-- Subordinates that share the same supervisor are not supposed to have any team interactions.
-- Workflows usually start with subordinate selection.
-- Access control is defined in the subordinate user context with optional cohort restrictions.
-- If multi-tenancy is active then relationship belongs into the same tenant as the subordinate.
-- There are no team or position names.
-- Cohorts cannot be created automatically.
-- When changing tenant memberships supervisors may be deleted to respect tenant separation, this is done at a later time from cron task.
+One supervisor per subordinate, organised as a tree hierarchy. Suitable for manager-employee or
+teacher-student relationships where workflows start with subordinate selection.
 
-How to create supervisors:
+* One supervisor position per subordinate per framework
+* No vacant supervisor positions
+* No team names or position names
+* Access control defined in the subordinate user context with optional cohort restrictions
 
-1. Login as admin and go to "Site administration / Users / User relation frameworks"
-2. Add a new framework using "Supervisors" framework mode
-3. Go to user profile
-4. To add user supervisor click Actions icon in user details section and select Add supervisor action
+How to set up:
+
+1. Go to Site administration / Users / User relation frameworks
+2. Add a new framework using the Supervisors mode
+3. Open a user profile and use the Actions menu to add a supervisor
 
 ## Teams mode
 
-- In the Teams mode the emphasis is on groups of subordinates managed by a team supervisor.
-- The team name is required, team ID number is option, each team member may have different position name.
-- It is possible to add supervisor as own subordinate (aka team member).
-- Unlike in Supervisors mode, the team supervisor position may be vacant.
-- Workflows usually start with team creation.
-- Access control is defined on the system or tenant context level with optional cohort restrictions. 
-- If multi-tenancy is active then new teams are created in the current tenant.
-- Team name is required.
-- Team cohort may be created, all subordinates of the team are then automatically added as cohort members.
-- When changing tenant memberships user may be removed from teams to respect tenant separation, this is done at a later time from cron task.
+Named teams of subordinates managed by a team supervisor. Suitable for classes, project teams, or
+organisational units where workflows start with team creation.
 
-How to create teams:
+* Teams have a name and optional ID number; each member can have a different position name
+* Supervisor position may be vacant
+* Supervisor can be added as their own team member
+* Team cohort can be created automatically — all team members are added as cohort members
+* Access control defined at system or tenant level with optional cohort restrictions
 
-1. Login as admin and go to "Site administration / Users / User relation frameworks"
-2. Add a new framework using "Teams" framework mode
-3. Go to Team tab
-4. Add teams
-5. Add team members
-6. Teams are visible in user profiles
+How to set up:
+
+1. Go to Site administration / Users / User relation frameworks
+2. Add a new framework using the Teams mode
+3. Go to the Teams tab
+4. Add teams and team members
+5. Relationships are visible in user profiles
+
+## Requirements
+
+> This plugin is included in the [MuTMS distribution](https://github.com/mutms/mutms) —
+> no manual installation needed if you use the distribution.
+
+Required plugins:
+
+* [Additional tools library plugin](https://github.com/mutms/moodle-tool_mulib)
 
 ## Roadmap
 
-* Target for production release and availability of paid support: Q2 2026
-* Planned features:
-   * Approvals by related users in programs allocations and certification assignments
-   * Additional/temporary supervisors
-   * Report builder content restrictions
+* Approval workflows for program allocations and certification assignments
+* Additional and temporary supervisors
+* Report builder content restrictions
+
+## Documentation
+
+See [online documentation](https://github.com/mutms/moodle-tool_murelation/wiki) for more
+information.
+
+---
+
+> MuTMS is an independent open-source project, not affiliated with Moodle HQ.
