@@ -84,15 +84,14 @@ final class set_favourite_program extends external_api {
         if (!$record) {
             return $result;
         }
-        $context = \context::instance_by_id($record->contextid);
 
-        if ($ufservice->favourite_exists('tool_muprog', 'programs', $record->id, $context)) {
+        if ($ufservice->favourite_exists('tool_muprog', 'programs', $record->id, $syscontext)) {
             if (!$favourite) {
-                $ufservice->delete_favourite('tool_muprog', 'programs', $record->id, $context);
+                $ufservice->delete_favourite('tool_muprog', 'programs', $record->id, $syscontext);
             }
         } else {
             if ($favourite) {
-                $ufservice->create_favourite('tool_muprog', 'programs', $record->id, $context);
+                $ufservice->create_favourite('tool_muprog', 'programs', $record->id, $syscontext);
             }
         }
 
