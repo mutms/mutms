@@ -146,8 +146,9 @@ final class catalogue {
      * @return string
      */
     public function render_programs(): string {
-        global $OUTPUT, $CFG, $DB, $USER, $PAGE;
+        global $OUTPUT, $CFG, $DB, $USER;
 
+        $syscontext = \context_system::instance();
         $totalcount = $this->count_programs();
         $programs = $this->get_programs();
 
@@ -186,8 +187,8 @@ final class catalogue {
                 $url = new \core\url('/admin/tool/muprog/catalogue/program.php', ['id' => $program->id]);
             }
 
-            $description = file_rewrite_pluginfile_urls($program->description, 'pluginfile.php', $context->id, 'tool_muprog', 'description', $program->id);
-            $description = format_text($description, $program->descriptionformat, ['context' => $context]);
+            $description = file_rewrite_pluginfile_urls($program->description, 'pluginfile.php', $syscontext->id, 'tool_muprog', 'description', $program->id);
+            $description = format_text($description, $program->descriptionformat, ['context' => $syscontext]);
 
             $tagsdiv = '';
             if ($CFG->usetags) {

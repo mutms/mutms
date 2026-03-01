@@ -43,17 +43,18 @@ require_login();
 $program = $DB->get_record('tool_muprog_program', ['id' => $id], '*', MUST_EXIST);
 $context = context::instance_by_id($program->contextid);
 require_capability('tool/muprog:edit', $context);
+$syscontext = \context_system::instance();
 
 $currenturl = new core\url('/admin/tool/muprog/management/program_update.php', ['id' => $program->id]);
 $PAGE->set_context($context);
 $PAGE->set_url($currenturl);
 
-$editoroptions = program::get_description_editor_options($context->id);
+$editoroptions = program::get_description_editor_options();
 $program = file_prepare_standard_editor(
     $program,
     'description',
     $editoroptions,
-    $context,
+    $syscontext,
     'tool_muprog',
     'description',
     $program->id
@@ -61,7 +62,7 @@ $program = file_prepare_standard_editor(
 $program->tags = core_tag_tag::get_item_tags_array('tool_muprog', 'tool_muprog_program', $program->id);
 
 $program->image = file_get_submitted_draft_itemid('image');
-file_prepare_draft_area($program->image, $context->id, 'tool_muprog', 'image', $program->id, ['subdirs' => 0]);
+file_prepare_draft_area($program->image, $syscontext->id, 'tool_muprog', 'image', $program->id, ['subdirs' => 0]);
 
 $form = new \tool_muprog\local\form\program_update(null, ['data' => $program, 'editoroptions' => $editoroptions, 'context' => $context]);
 
