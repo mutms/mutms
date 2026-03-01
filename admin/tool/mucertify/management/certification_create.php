@@ -60,7 +60,7 @@ $certification->idnumber = '';
 $certification->description = '';
 $certification->descriptionformat = FORMAT_HTML;
 
-$editoroptions = certification::get_description_editor_options($context->id);
+$editoroptions = certification::get_description_editor_options();
 
 $form = new \tool_mucertify\local\form\certification_create(null, ['data' => $certification, 'editoroptions' => $editoroptions, 'context' => $context]);
 
