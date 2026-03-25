@@ -44,7 +44,7 @@ See [online documentation](https://docs.mutms.org/).
 
 Open an issue in the relevant plugin repository for community support.
 
-For paid support, see [www.mutms.com](https://www.mutms.com/).
+For support, see [mutms.org#support](https://www.mutms.org/#support).
 
 ## License
 
