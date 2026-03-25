@@ -46,6 +46,10 @@ Required plugins:
 
 * [Additional tools library plugin](https://github.com/mutms/moodle-tool_mulib)
 
+## Documentation
+
+See [online documentation](https://docs.mutms.org/musudo/) for more information.
+
 ---
 
 > MuTMS is an independent open-source project, not affiliated with Moodle HQ.
