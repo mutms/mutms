@@ -80,6 +80,14 @@ final class sql_test extends \advanced_testcase {
         $this->assertSame('a = :param1 AND b = :param2', $sql->sql);
         $this->assertSame(['param1' => 11, 'param2' => 0], $sql->params);
 
+        $sql = new sql('SELECT * FROM {user} WHERE deleted = 0', []);
+        $this->assertSame('SELECT * FROM {user} WHERE deleted = 0', $sql->sql);
+        $this->assertSame([], $sql->params);
+
+        $sql = new sql('SELECT * FROM "mdl_user" WHERE deleted = 0', []);
+        $this->assertSame('SELECT * FROM {user} WHERE deleted = 0', $sql->sql);
+        $this->assertSame([], $sql->params);
+
         try {
             new sql('a = ? AND b = ?', [11, new \stdClass()]);
             $this->fail('Exception expected');
@@ -275,6 +283,13 @@ final class sql_test extends \advanced_testcase {
 --confirmed = 1
 --auth = manual
 ";
+        $this->assertSame($expected, $sql->export_debug_query());
+
+        // Test alternative table name placeholders.
+        $sql = new sql(
+            'SELECT u.* FROM "mdl_user" u WHERE u.deleted = 0 AND u.confirmed = :confirmed AND u.auth = :auth',
+            ['confirmed' => 1, 'auth' => 'manual']
+        );
         $this->assertSame($expected, $sql->export_debug_query());
     }
 
