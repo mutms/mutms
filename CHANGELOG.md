@@ -4,6 +4,16 @@ Plugin versioning is derived from Moodle releases, it does not comply with the s
 
 The format of this change log follows the advice given at [Keep a CHANGELOG](https://keepachangelog.com).
 
+## [v5.0.6.03](https://github.com/mutms/moodle-tool_murelation/compare/v5.0.6.02...v5.0.6.03) - 2026-03-26
+
+### Fixed
+
+- Fixed error on management page when framework not available in all tenants
+
+### Added
+
+- Added new dialog to allow adding of cohort members to an existing team 
+
 ## [v5.0.6.02](https://github.com/mutms/moodle-tool_murelation/compare/v5.0.6.01...v5.0.6.02) - 2026-03-01
 
 - No changes

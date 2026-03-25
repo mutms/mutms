@@ -97,6 +97,10 @@ if (uimode_teams::can_manage_members($framework, $supervisor)) {
         $url = new \moodle_url('/admin/tool/murelation/management/members_create.php', ['supervisorid' => $supervisor->id]);
         $button = new \tool_mulib\output\ajax_form\button($url, get_string('members_create_a', 'tool_murelation', $subordinatestitle));
         $actions->add_button($button);
+
+        $url = new \moodle_url('/admin/tool/murelation/management/members_add_cohort.php', ['supervisorid' => $supervisor->id]);
+        $link = new \tool_mulib\output\ajax_form\link($url, get_string('members_add_cohort_a', 'tool_murelation', $subordinatestitle), 'i/users');
+        $actions->get_dropdown()->add_ajax_form($link);
     }
 }
 

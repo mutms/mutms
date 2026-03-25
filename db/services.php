@@ -55,6 +55,13 @@ $functions = [
         'ajax' => true,
         'loginrequired' => true,
     ],
+    'tool_murelation_form_autocomplete_members_add_cohort_cohortid' => [
+        'classname' => tool_murelation\external\form_autocomplete\members_add_cohort_cohortid::class,
+        'description' => 'Returns list of cohort ids with subordinate candidates for existing team.',
+        'type' => 'read',
+        'ajax' => true,
+        'loginrequired' => true,
+    ],
     'tool_murelation_form_autocomplete_members_create_subuserids' => [
         'classname' => tool_murelation\external\form_autocomplete\members_create_subuserids::class,
         'description' => 'Returns list of subordinate candidates for existing team.',

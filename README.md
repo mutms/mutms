@@ -70,7 +70,7 @@ Required plugins:
 
 ## Documentation
 
-See [online documentation](https://github.com/mutms/moodle-tool_murelation/wiki) for more
+See [online documentation](https://docs.mutms.org/murelation/) for more
 information.
 
 ---
