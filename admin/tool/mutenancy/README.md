@@ -43,7 +43,7 @@ For manual installation:
 
 ## Documentation
 
-See the [online documentation](https://github.com/mutms/moodle-tool_mutenancy/wiki) for installation
+See the [online documentation](https://docs.mutms.org/mutenancy/) for installation
 instructions and configuration reference.
 
 ---
