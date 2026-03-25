@@ -35,6 +35,10 @@ If anything goes wrong, passwords can be reset from the CLI via `/admin/cli/rese
 
 No other plugins are required.
 
+## Documentation
+
+See [online documentation](https://docs.mutms.org/mupwned/) for more information.
+
 ---
 
 > MuTMS is an independent open-source project, not affiliated with Moodle HQ.
