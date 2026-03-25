@@ -17,7 +17,7 @@ This plugin is recommended for the [Programs plugin](https://github.com/mutms/mo
 
 ## Documentation
 
-See [online documentation](https://github.com/mutms/moodle-tool_muprog/wiki) for more information.
+See [online documentation](https://docs.mutms.org/muprog/) for more information.
 
 ---
 
