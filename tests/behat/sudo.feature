@@ -93,6 +93,7 @@ Feature: Test tool_musudo privileged session
       | Enter code | 123456 |
     And I should see "Wrong code. Try again."
     And I should see "You have 2 attempts left."
+    And I wait "1" seconds
     And I set the following fields to these values:
       | Enter code | 654321 |
     And I should see "Wrong code. Try again."
