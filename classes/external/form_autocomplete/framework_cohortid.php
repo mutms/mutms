@@ -99,8 +99,8 @@ final class framework_cohortid extends \tool_mulib\external\form_autocomplete\co
         if (!$cohort) {
             return get_string('error');
         }
-        $context = \context::instance_by_id($cohort->contextid, IGNORE_MISSING);
-        if (!$context) {
+        $cohortcontext = \context::instance_by_id($cohort->contextid, IGNORE_MISSING);
+        if (!$cohortcontext) {
             return get_string('error');
         }
 

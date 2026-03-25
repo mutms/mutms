@@ -94,7 +94,7 @@ class renderer extends \plugin_renderer_base {
                           JOIN {tool_murelation_tenant_allow} ta ON ta.tenantid = t.id
                          WHERE ta.frameworkid = :frameworkid
                       ORDER BY t.name ASC";
-                $tenants = $DB->get_records_menu($sql, ['frameworkid' => $framework->id]);
+                $tenants = $DB->get_records_sql_menu($sql, ['frameworkid' => $framework->id]);
                 $tenants = array_map('format_string', $tenants);
                 $tenants = implode(', ', $tenants);
                 $details->add(get_string('tenants', 'tool_mutenancy'), $tenants);

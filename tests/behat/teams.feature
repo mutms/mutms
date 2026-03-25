@@ -269,3 +269,29 @@ Feature: Teams management
       | Student 1  | subleader     |
       | Student 2  |               |
     And I should not see "Student 3"
+
+  Scenario: Position manager may add cohort members to team
+    Given the following "tool_murelation > frameworks" exist:
+      | name        | idnumber | uimode | visibility | managecohort | supervisortitle | supervisorstitle | supervisorcohort | supervisorrole | subordinatetitle | subordinatestitle | subordinatecohort |
+      | Framework 1 | fw1      | teams  | managers   |              | Ucitel          | Ucitele          |                  |                | Zak              | Zaci              |                   |
+    And I log in as "manager1"
+    And I am on the "Framework 1" "tool_murelation > Framework" page
+    And I follow "Teams"
+    And I press "Create team"
+    And I set the following fields in the ".modal-dialog" "css_element" to these values:
+      | Team name | Team One |
+    And I click on "Create team" "button" in the ".modal-dialog" "css_element"
+
+    When I click on "Team actions" "link_or_button"
+    And I click on "Add from cohort" "link"
+    And I set the following fields in the ".modal-dialog" "css_element" to these values:
+      | Team position | xyz      |
+      | Cohort        | Cohort 3 |
+    And I click on "Add from cohort" "button" in the ".modal-dialog" "css_element"
+    Then the following should exist in the "reportbuilder-table" table:
+      | First name | Email address        | Team position |
+      | Student 1  | student1@example.com | xyz           |
+      | Student 2  | student2@example.com | xyz           |
+      | Student 3  | student3@example.com | xyz           |
+      | Student 4  | student4@example.com | xyz           |
+      | Student 5  | student5@example.com | xyz           |
