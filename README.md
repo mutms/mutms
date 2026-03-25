@@ -40,6 +40,10 @@ Required plugins:
 
 * [Additional tools library plugin](https://github.com/mutms/moodle-tool_mulib)
 
+## Documentation
+
+See [online documentation](https://docs.mutms.org/mubook/) for more information.
+
 ## Credits
 
 The original Book module was developed for the Technical University of Liberec, Czech Republic.
