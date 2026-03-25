@@ -15,6 +15,10 @@ period, and expiry date.
 
 This plugin is recommended for [Certifications plugin](https://github.com/mutms/moodle-tool_mucertify).
 
+## Documentation
+
+See [online documentation](https://docs.mutms.org/mucertify/) for more information.
+
 ---
 
 > This plugin is a fork of [Certifications certificate element by Open LMS](https://github.com/open-lms-open-source/moodle-certificateelement_certify),
