@@ -53,7 +53,7 @@ final class unsafehtml extends \mod_mubook\local\content {
 
         // Filtering may break raw HTML, skip it here.
 
-        if ($this->unsafetrusted !== 1) {
+        if ($this->unsafetrusted != 1) {
             $html = clean_text($html, FORMAT_HTML);
         }
 
