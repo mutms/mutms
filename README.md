@@ -23,7 +23,7 @@ This plugin is required by the [Programs plugin](https://github.com/mutms/moodle
 
 ## Documentation
 
-See [online documentation](https://github.com/mutms/moodle-tool_mutrain/wiki) for more information.
+See [online documentation](https://docs.mutms.org/mutrain/) for more information.
 
 ---
 
