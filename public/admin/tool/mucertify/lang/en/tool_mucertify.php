@@ -287,6 +287,7 @@ $string['source_manual_hasheaders'] = 'First line is header';
 $string['source_manual_result_assigned'] = '{$a} users were assigned to certification';
 $string['source_manual_result_errors'] = '{$a} errors detected when assigning certification';
 $string['source_manual_result_skipped'] = '{$a} users were already assigned to certification';
+$string['source_manual_timecertifiedtempcolumn'] = 'Temporary certification until column';
 $string['source_manual_timeduecolumn'] = 'Certification due time column';
 $string['source_manual_timeendcolumn'] = 'Window closing time column';
 $string['source_manual_timestartcolumn'] = 'Window opening time column';

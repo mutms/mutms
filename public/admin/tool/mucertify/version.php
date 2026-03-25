@@ -30,17 +30,17 @@ defined('MOODLE_INTERNAL') || die();
 
 /** @var stdClass $plugin */
 $plugin->component = 'tool_mucertify';
-$plugin->version = 2026030150;
+$plugin->version = 2026032650;
 $plugin->requires = 2025041400;
 $plugin->supported = [500, 501];
 
-$plugin->release = 'v5.0.6.02';
+$plugin->release = 'v5.0.6.03';
 
 $plugin->dependencies = [
-    'tool_mulib' => 2026030150,
-    'enrol_muprog' => 2026030150,
-    'block_muprog_my' => 2026030150,
-    'block_muprogmyoverview' => 2026030150,
-    'tool_muprog' => 2026030150,
-    'block_mucertify_my' => 2026030150,
+    'tool_mulib' => 2026032650,
+    'enrol_muprog' => 2026032650,
+    'block_muprog_my' => 2026032650,
+    'block_muprogmyoverview' => 2026032650,
+    'tool_muprog' => 2026032650,
+    'block_mucertify_my' => 2026032650,
 ];
