@@ -21,6 +21,7 @@ namespace tool_mucertify\phpunit\local\source;
 
 use tool_mucertify\local\certification;
 use tool_mucertify\local\source\manual;
+use tool_muprog\local\program;
 
 /**
  * Certification manual assignment source test.
@@ -836,5 +837,122 @@ final class manual_test extends \advanced_testcase {
         $this->setGuestUser();
         $result = manual::get_assigner($certification, $source, $assignment);
         $this->assertSame($admin->id, $result->id);
+    }
+
+    public function test_process_uploaded_data(): void {
+        global $CFG, $DB;
+        require_once("$CFG->libdir/filelib.php");
+
+        /** @var \tool_mucertify_generator $generator */
+        $generator = $this->getDataGenerator()->get_plugin_generator('tool_mucertify');
+
+        /** @var \tool_muprog_generator $programgenerator */
+        $programgenerator = $this->getDataGenerator()->get_plugin_generator('tool_muprog');
+
+        $admin = get_admin();
+        $this->setUser($admin);
+
+        $admin = get_admin();
+        $user1 = $this->getDataGenerator()->create_user(['username' => 'user1', 'email' => 'user1@example.com', 'idnumber' => 'u1']);
+        $user2 = $this->getDataGenerator()->create_user(['username' => 'user2', 'email' => 'user2@example.com', 'idnumber' => 'u2']);
+        $user3 = $this->getDataGenerator()->create_user(['username' => 'user3', 'email' => 'user3@example.com', 'idnumber' => 'u3']);
+        $user4 = $this->getDataGenerator()->create_user(['username' => 'user4', 'email' => 'user4@example.com', 'idnumber' => 'u4']);
+        $user5 = $this->getDataGenerator()->create_user(['username' => 'user5', 'email' => 'user5@example.com', 'idnumber' => 'u5']);
+        $user6 = $this->getDataGenerator()->create_user(['username' => 'user6', 'email' => 'user6@example.com', 'idnumber' => 'u6']);
+
+        $program1 = $programgenerator->create_program(['sources' => ['mucertify' => []]]);
+        $program2 = $programgenerator->create_program(['sources' => ['mucertify' => []]]);
+
+        $timestart = time();
+
+        $pdata = (object)[
+            'id' => $program1->id,
+            'programstart_type' => 'date',
+            'programstart_date' => $timestart,
+            'programdue_type' => 'date',
+            'programdue_date' => $timestart + (20 * 60 * 60 * 24),
+            'programend_type' => 'date',
+            'programend_date' => $timestart + (30 * 60 * 60 * 24),
+        ];
+        $program1 = program::update_scheduling($pdata);
+
+        $certification1 = $generator->create_certification([
+            'sources' => ['manual' => []],
+            'programid1' => $program1->id,
+        ]);
+        $source1 = $DB->get_record(
+            'tool_mucertify_source',
+            ['type' => 'manual', 'certificationid' => $certification1->id],
+            '*',
+            MUST_EXIST
+        );
+
+        $generator->create_certification_assignment(['certificationid' => $certification1->id, 'userid' => $user5->id]);
+
+        $draftid = \file_get_unused_draft_itemid();
+
+        $timestart2 = new \DateTime('@' . ($timestart - (10 * 60 * 60 * 24)));
+        $timedue3 = new \DateTime('@' . ($timestart + (1 * 60 * 60 * 24)));
+        $timeend3 = new \DateTime('@' . ($timestart + (2 * 60 * 60 * 24)));
+        $timetemp6 = new \DateTime('@' . ($timestart + (10 * 60 * 60 * 24)));
+        $csvdata = [
+            ['u1', '', '', '', ''],
+            ['u2', $timestart2->format(\DateTime::ATOM), '', '', ''],
+            ['u3', '', $timedue3->format(\DateTime::ATOM), $timeend3->format(\DateTime::COOKIE), ''],
+            ['u4', 'abc', '', '', ''],
+            ['u5', '', '', '', ''],
+            ['u6', '', '', '', $timetemp6->format(\DateTime::W3C)],
+        ];
+        $data = (object)[
+            'sourceid' => $source1->id,
+            'usermapping' => 'idnumber',
+            'usercolumn' => 0,
+            'timestartcolumn' => 1,
+            'timeduecolumn' => 2,
+            'timeendcolumn' => 3,
+            'timecertifiedtempcolumn' => 4,
+            'hasheaders' => 0,
+            'userfile' => $draftid,
+        ];
+        $expected = [
+            'assigned' => 4,
+            'skipped' => 1,
+            'errors' => 1,
+        ];
+        $this->setCurrentTimeStart();
+        $result = manual::process_uploaded_data($data, $csvdata);
+        $this->assertSame($expected, $result);
+
+        $period1 = $DB->get_record('tool_mucertify_period', ['certificationid' => $certification1->id, 'userid' => $user1->id], '*', MUST_EXIST);
+        $allocation1 = $DB->get_record('tool_muprog_allocation', ['programid' => $program1->id, 'userid' => $user1->id]);
+        $this->assertTimeCurrent($allocation1->timestart);
+        $this->assertEquals(null, $allocation1->timedue);
+        $this->assertEquals(null, $allocation1->timeend);
+        $assignment1 = $DB->get_record('tool_mucertify_assignment', ['certificationid' => $certification1->id, 'userid' => $user1->id]);
+        $this->assertSame(null, $assignment1->timecertifiedtemp);
+
+        $period2 = $DB->get_record('tool_mucertify_period', ['certificationid' => $certification1->id, 'userid' => $user2->id], '*', MUST_EXIST);
+        $allocation2 = $DB->get_record('tool_muprog_allocation', ['programid' => $program1->id, 'userid' => $user2->id]);
+        $this->assertEquals($timestart2->getTimestamp(), $allocation2->timestart);
+        $this->assertEquals(null, $allocation2->timedue);
+        $this->assertEquals(null, $allocation2->timeend);
+        $assignment2 = $DB->get_record('tool_mucertify_assignment', ['certificationid' => $certification1->id, 'userid' => $user2->id]);
+        $this->assertSame(null, $assignment2->timecertifiedtemp);
+
+        $period3 = $DB->get_record('tool_mucertify_period', ['certificationid' => $certification1->id, 'userid' => $user3->id], '*', MUST_EXIST);
+        $allocation3 = $DB->get_record('tool_muprog_allocation', ['programid' => $program1->id, 'userid' => $user3->id]);
+        $this->assertTimeCurrent($allocation3->timestart);
+        $this->assertEquals($timedue3->getTimestamp(), $allocation3->timedue);
+        $this->assertEquals($timeend3->getTimestamp(), $allocation3->timeend);
+        $assignment3 = $DB->get_record('tool_mucertify_assignment', ['certificationid' => $certification1->id, 'userid' => $user3->id]);
+        $this->assertSame(null, $assignment3->timecertifiedtemp);
+
+        $period6 = $DB->get_record('tool_mucertify_period', ['certificationid' => $certification1->id, 'userid' => $user6->id], '*', MUST_EXIST);
+        $allocation6 = $DB->get_record('tool_muprog_allocation', ['programid' => $program1->id, 'userid' => $user6->id]);
+        $this->assertTimeCurrent($allocation6->timestart);
+        $this->assertEquals(null, $allocation6->timedue);
+        $this->assertEquals(null, $allocation6->timeend);
+        $assignment6 = $DB->get_record('tool_mucertify_assignment', ['certificationid' => $certification1->id, 'userid' => $user6->id]);
+        $this->assertEquals($timetemp6->getTimestamp(), $assignment6->timecertifiedtemp);
     }
 }

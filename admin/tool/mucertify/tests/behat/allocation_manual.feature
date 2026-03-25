@@ -300,6 +300,36 @@ Feature: Manual certification assignment tests
       | Certification due | Window closing | Program     | Expiration     | Re-certify automatically | Status  |
       | Not set           | Not set        | Program 003 | Not set        | If expired               | Pending |
 
+  @javascript @_file_upload
+  Scenario: Manager may assign users with temporary certification in bulk using csv to certification
+    Given I log in as "manager1"
+    And I am on the "tool_mucertify > All certifications management" page
+    And I follow "Certification 003"
+    And I click on "Users" "link" in the ".secondary-navigation" "css_element"
+
+    When I click on "Upload assignments" action from "User actions" dropdown
+    And I upload "admin/tool/mucertify/tests/fixtures/assign_temp.csv" file to "CSV file" filemanager
+    And I click on "Continue" "button" in the ".modal-dialog" "css_element"
+    And I set the following fields in the ".modal-dialog" "css_element" to these values:
+      | User identification column             | username  |
+      | User mapping via                       | Username  |
+      | Temporary certification until column   | timetemp  |
+      | First line is header                   | 1         |
+    And I click on "Upload assignments" "button" in the ".modal-dialog" "css_element"
+    And I should see "2 users were assigned to certification"
+    And I follow "Student 1"
+    Then I should see "Temporary valid" in the "Certification status" definition list item
+    And I should see "Tuesday, 2 January 2035, 12:00" in the "Temporary certification until" definition list item
+    And the following should exist in the "reportbuilder-table" table:
+      | Certification due | Window closing | Program     | Expiration     | Re-certify automatically | Status  |
+      | Not set           | Not set        | Program 003 | Not set        | If expired               | Pending |
+    And I click on "Users" "link" in the ".secondary-navigation" "css_element"
+    And I follow "Student 2"
+    Then I should see "Not certified" in the "Certification status" definition list item
+    And the following should exist in the "reportbuilder-table" table:
+      | Certification due | Window closing | Program     | Expiration     | Re-certify automatically | Status  |
+      | Not set           | Not set        | Program 003 | Not set        | If expired               | Pending |
+
   @javascript
   Scenario: Set up, add and update custom fields for certification assignments
     And the following "permission overrides" exist:

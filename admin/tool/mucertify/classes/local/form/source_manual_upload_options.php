@@ -75,6 +75,7 @@ final class source_manual_upload_options extends \tool_mulib\local\ajax_form {
         $mform->addElement('select', 'timeduecolumn', get_string('source_manual_timeduecolumn', 'tool_mucertify'), $options);
         $mform->addElement('select', 'timeendcolumn', get_string('source_manual_timeendcolumn', 'tool_mucertify'), $options);
         $mform->addElement('select', 'timeuntilcolumn', get_string('source_manual_timeuntilcolumn', 'tool_mucertify'), $options);
+        $mform->addElement('select', 'timecertifiedtempcolumn', get_string('source_manual_timecertifiedtempcolumn', 'tool_mucertify'), $options);
 
         $mform->addElement('hidden', 'sourceid');
         $mform->setType('sourceid', PARAM_INT);
@@ -92,7 +93,7 @@ final class source_manual_upload_options extends \tool_mulib\local\ajax_form {
         $errors = parent::validation($data, $files);
         $usedfields = [];
 
-        $columns = ['timestartcolumn', 'timeduecolumn', 'timeendcolumn', 'timeuntilcolumn', 'usermapping'];
+        $columns = ['timestartcolumn', 'timeduecolumn', 'timeendcolumn', 'timeuntilcolumn', 'timecertifiedtempcolumn', 'usermapping'];
         foreach ($columns as $column) {
             if ($data[$column] != -1 && in_array($data[$column], $usedfields)) {
                 $errors[$column] = get_string('columnusedalready', 'tool_mucertify');
