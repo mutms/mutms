@@ -58,7 +58,7 @@ final class unsafehtml_update extends \mod_mubook\local\form\content_update_base
             get_string('content_unsafetrusted', 'mod_mubook'),
             get_string('content_unsafetrusted_confirmation', 'mod_mubook')
         );
-        $mform->setDefault('trusted', $content->unsafetrusted);
+        $mform->setDefault('unsafetrusted', $content->unsafetrusted);
 
         $this->add_shared_content_elements();
 
