@@ -14,7 +14,7 @@ This plugin does not provide any functionality by itself.
 
 ## Documentation
 
-See [online documentation](https://github.com/mutms/moodle-tool_mucertify/wiki) for more
+See [online documentation](https://docs.mutms.org/mucertify/) for more
 information.
 
 ---
