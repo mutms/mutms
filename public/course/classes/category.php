@@ -3300,9 +3300,16 @@ class core_course_category implements renderable, cacheable_object, IteratorAggr
         //
         // IMPORTANT: This is an exception, not a precedent. The broader use of CTEs
         // and potential abstraction-layer support will be discussed separately.
+
+        $tenantidcolumn = '';
+        if (mutenancy_is_active()) {
+            // MuTMS: workaround for missing regualr context preloading logic.
+            $tenantidcolumn = ', tenantid';
+        }
+
         $sql = "
         WITH ctx AS (
-            SELECT id, instanceid, path, depth, contextlevel, locked
+            SELECT id, instanceid, path, depth, contextlevel, locked $tenantidcolumn
               FROM {context}
              WHERE contextlevel = :ctxlevel
                AND $likeparent
