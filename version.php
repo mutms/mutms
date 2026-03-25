@@ -28,8 +28,8 @@ defined('MOODLE_INTERNAL') || die();
 
 /** @var stdClass $plugin */
 $plugin->component = 'tool_muloginas';
-$plugin->version = 2026030150;
+$plugin->version = 2026032650;
 $plugin->requires = 2025041400;
 $plugin->supported = [500, 501];
 
-$plugin->release = 'v5.0.6.02';
+$plugin->release = 'v5.0.6.03';

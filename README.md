@@ -31,6 +31,10 @@ and avoiding the need to log back in afterwards.
 
 No other plugins are required.
 
+## Documentation
+
+See [online documentation](https://docs.mutms.org/muloginas/) for more information.
+
 ---
 
 > MuTMS is an independent open-source project, not affiliated with Moodle HQ.
