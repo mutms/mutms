@@ -220,6 +220,7 @@ final class manual extends base {
             'timeduecolumn' => 'timewindowdue',
             'timeendcolumn' => 'timewindowend',
             'timeuntilcolumn' => 'timeuntil',
+            'timecertifiedtempcolumn' => 'timecertifiedtemp',
         ];
         $datecolumns = [];
         foreach ($datefields as $key => $value) {
