@@ -268,3 +268,85 @@ Feature: Site managers can manage frameworks for user relations
     And I should see "Pesak" in the "Subordinate title" definition list item
     And I should see "Pesaci" in the "Subordinates plural" definition list item
     And I should see "Cohort 3" in the "Subordinate candidates cohort" definition list item
+
+  Scenario: Framework manager may create and update tenant user relation frameworks
+    Given I skip tests if "tool_mutenancy" is not installed
+    And the following "tool_mutenancy > tenants" exist:
+      | name     | idnumber |
+      | Tenant 1 | TEN1     |
+      | Tenant 2 | TEN2     |
+      | Tenant 3 | TEN3     |
+    And I log in as "manager1"
+    And I navigate to "Users > Supervisors and teams > User relation frameworks" in site administration
+
+    When I press "Add framework"
+    And I set the following fields in the ".modal-dialog" "css_element" to these values:
+      | Framework name      | Framework 1 |
+      | Supervisors         | 1           |
+      | Supervisor title    | Parent      |
+      | Supervisors plural  | Parents     |
+      | Subordinate title   | Child       |
+      | Subordinates plural | Children    |
+    And I click on "Add framework" "button" in the ".modal-dialog" "css_element"
+    Then I should see "Framework 1" in the "Framework name" definition list item
+    And I should see "Not set" in the "Framework ID" definition list item
+    And I should see "Supervisors" in the "Framework mode" definition list item
+    And I should see "Position managers, supervisors, course teachers and subordinates" in the "Positions visibility" definition list item
+    And I should see "Not set" in the "Management restricted to cohort" definition list item
+    And I should see "Yes" in the "Available in all tenants" definition list item
+    And I should see "Parent" in the "Supervisor title" definition list item
+    And I should see "Parents" in the "Supervisors plural" definition list item
+    And I should see "Not set" in the "Supervisor candidates cohort" definition list item
+    And I should see "Not set" in the "Supervisor role" definition list item
+    And I should see "Child" in the "Subordinate title" definition list item
+    And I should see "Children" in the "Subordinates plural" definition list item
+    And I should see "Not set" in the "Subordinate candidates cohort" definition list item
+
+    And I navigate to "Users > Supervisors and teams > User relation frameworks" in site administration
+
+    When I press "Add framework"
+    And I set the following fields in the ".modal-dialog" "css_element" to these values:
+      | Framework name           | Framework 2        |
+      | Supervisors              | 1                  |
+      | Available in all tenants | 0                  |
+      | Tenants                  | Tenant 1, Tenant 2 |
+      | Supervisor title         | Parent             |
+      | Supervisors plural       | Parents            |
+      | Subordinate title        | Child              |
+      | Subordinates plural      | Children           |
+    And I click on "Add framework" "button" in the ".modal-dialog" "css_element"
+    Then I should see "Framework 2" in the "Framework name" definition list item
+    And I should see "Not set" in the "Framework ID" definition list item
+    And I should see "Supervisors" in the "Framework mode" definition list item
+    And I should see "Position managers, supervisors, course teachers and subordinates" in the "Positions visibility" definition list item
+    And I should see "Not set" in the "Management restricted to cohort" definition list item
+    And I should see "No" in the "Available in all tenants" definition list item
+    And I should see "Tenant 1, Tenant 2" in the "Tenants" definition list item
+    And I should see "Parent" in the "Supervisor title" definition list item
+    And I should see "Parents" in the "Supervisors plural" definition list item
+    And I should see "Not set" in the "Supervisor candidates cohort" definition list item
+    And I should see "Not set" in the "Supervisor role" definition list item
+    And I should see "Child" in the "Subordinate title" definition list item
+    And I should see "Children" in the "Subordinates plural" definition list item
+    And I should see "Not set" in the "Subordinate candidates cohort" definition list item
+
+    When I press "Update framework"
+    And I set the following fields in the ".modal-dialog" "css_element" to these values:
+      | Available in all tenants | 0                  |
+      | Tenants                  | Tenant 3           |
+    And I click on "Update framework" "button" in the ".modal-dialog" "css_element"
+    Then I should see "Framework 2" in the "Framework name" definition list item
+    And I should see "No" in the "Available in all tenants" definition list item
+    And I should see "Tenant 3" in the "Tenants" definition list item
+    And I should not see "Tenant 1"
+    And I should not see "Tenant 2"
+
+    When I press "Update framework"
+    And I set the following fields in the ".modal-dialog" "css_element" to these values:
+      | Available in all tenants | 1                  |
+    And I click on "Update framework" "button" in the ".modal-dialog" "css_element"
+    Then I should see "Framework 2" in the "Framework name" definition list item
+    And I should see "Yes" in the "Available in all tenants" definition list item
+    And I should not see "Tenant 1"
+    And I should not see "Tenant 2"
+    And I should not see "Tenant 3"

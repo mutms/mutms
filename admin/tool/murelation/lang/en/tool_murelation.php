@@ -25,6 +25,7 @@
  */
 
 $string['actions_a'] = '{$a} actions';
+$string['error_maxsubordinates'] = 'Subordinates limit reached';
 $string['error_noframeworks'] = 'No user relation frameworks found';
 $string['error_nosubordinates'] = 'No subordinates found';
 $string['error_nosubordinates_a'] = 'No {$a} found';
@@ -59,6 +60,7 @@ $string['management_team_actions'] = 'Team actions';
 $string['management_user_actions'] = 'Related users actions';
 $string['member_delete_a'] = 'Remove {$a}';
 $string['member_update_a'] = 'Update {$a}';
+$string['members_add_cohort_a'] = 'Add from cohort';
 $string['members_create_a'] = 'Add {$a}';
 $string['murelation:manageframeworks'] = 'Manage user relation frameworks';
 $string['murelation:managepositions'] = 'Manage Supervisors and teams';
