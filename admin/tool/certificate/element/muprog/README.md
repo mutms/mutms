@@ -1,4 +1,4 @@
-# Program fields plugin for Certificate plugin for Moodle™ LMS.
+# Program fields plugin for Certificate plugin for Moodle™ LMS
 
 ![Moodle Plugin CI](https://github.com/mutms/moodle-certificateelement_muprog/actions/workflows/moodle-ci.yml/badge.svg)
 
