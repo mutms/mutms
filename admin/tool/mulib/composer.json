@@ -1,10 +1,17 @@
 {
   "name": "mutms/moodle-tool_mulib",
-  "license": "GPL-3.0-or-later",
-  "description": "Additional MuTMS tools library plugin for Moodle™ LMS",
-  "type": "project",
+  "type": "moodle-tool",
+  "description": "Additional MuTMS libraries plugin for Moodle LMS",
   "homepage": "https://github.com/mutms/moodle-tool_mulib",
+  "license": "GPL-3.0-or-later",
   "require": {
-    "php": ">=8.1"
+    "composer/installers": "*"
+  },
+  "extra": {
+    "installer-name": "mulib"
+  },
+  "support": {
+    "issues": "https://github.com/mutms/moodle-tool_mulib/issues",
+    "source": "https://github.com/mutms/moodle-tool_mulib"
   }
 }
