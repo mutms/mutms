@@ -1,0 +1,17 @@
+{
+  "name": "mutms/moodle-block_muprogmyoverview",
+  "type": "moodle-block",
+  "description": "My programs overview page for Moodle LMS",
+  "homepage": "https://github.com/mutms/moodle-block_muprogmyoverview",
+  "license": "GPL-3.0-or-later",
+  "require": {
+    "composer/installers": "*"
+  },
+  "extra": {
+    "installer-name": "muprogmyoverview"
+  },
+  "support": {
+    "issues": "https://github.com/mutms/moodle-block_muprogmyoverview/issues",
+    "source": "https://github.com/mutms/moodle-block_muprogmyoverview"
+  }
+}
