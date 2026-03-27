@@ -31,6 +31,10 @@ jobs:
             moodle-branch: 'MOODLE_501_STABLE'
             db: pgsql
             dbversion: 18
+          - php: '8.4'
+            moodle-branch: 'MOODLE_502_STABLE'
+            db: pgsql
+            dbversion: 18
 
     steps:
       - name: Check out repository code
