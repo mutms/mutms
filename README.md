@@ -38,7 +38,7 @@ solely due to this core patch requirement — it is production ready.
 For manual installation:
 
 * Moodle™ LMS 5.1.3
-* [MuTMS core patch](https://github.com/mutms/patches/tree/patch/mutenancy/MOODLE_405_STABLE)
+* [MuTMS core patch](https://github.com/mutms/patches/tree/patch/mutenancy/MOODLE_501_STABLE)
 * [Additional tools library plugin](https://github.com/mutms/moodle-tool_mulib)
 
 ## Documentation

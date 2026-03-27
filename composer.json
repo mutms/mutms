@@ -1,0 +1,17 @@
+{
+  "name": "mutms/moodle-tool_mutenancy",
+  "type": "moodle-tool",
+  "description": "Multi-tenancy plugin for Moodle LMS",
+  "homepage": "https://github.com/mutms/moodle-tool_mutenancy",
+  "license": "GPL-3.0-or-later",
+  "require": {
+    "composer/installers": "*"
+  },
+  "extra": {
+    "installer-name": "mutenancy"
+  },
+  "support": {
+    "issues": "https://github.com/mutms/moodle-tool_mutenancy/issues",
+    "source": "https://github.com/mutms/moodle-tool_mutenancy"
+  }
+}
