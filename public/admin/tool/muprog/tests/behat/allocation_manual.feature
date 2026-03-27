@@ -335,14 +335,12 @@ Feature: Manual program allocation tests
     And I log in as "manager1"
     And I navigate to "Programs > Program allocation custom fields" in site administration
     And I press "Add a new category"
-    And I click on "Add a new custom field" "link"
-    And I click on "Short text" "link"
+    And I click add custom field of type "Short text"
     And I set the following fields to these values:
       | Name                                     | Test field 1 |
       | Short name                               | testfield1   |
     And I click on "Save changes" "button" in the "Adding a new Short text" "dialogue"
-    And I click on "Add a new custom field" "link"
-    And I click on "Short text" "link"
+    And I click add custom field of type "Short text"
     And I set the following fields to these values:
       | Name                                     | Test field 2 |
       | Short name                               | testfield2   |
@@ -386,6 +384,7 @@ Feature: Manual program allocation tests
   @javascript
   Scenario: Manager may enable Manual allocation when creating program
     Given I log in as "manager1"
+    And I change window size to "large"
     And I am on the "tool_muprog > All programs management" page
 
     When I click on "Add program" "button"
