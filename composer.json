@@ -1,0 +1,17 @@
+{
+  "name": "mutms/moodle-certificateelement_muprog",
+  "type": "moodle-certificateelement",
+  "description": "Program fields plugin for Certificate plugin for Moodle LMS",
+  "homepage": "https://github.com/mutms/moodle-certificateelement_muprog",
+  "license": "GPL-3.0-or-later",
+  "require": {
+    "composer/installers": "*"
+  },
+  "extra": {
+    "installer-name": "muprog"
+  },
+  "support": {
+    "issues": "https://github.com/mutms/moodle-certificateelement_muprog/issues",
+    "source": "https://github.com/mutms/moodle-certificateelement_muprog"
+  }
+}
