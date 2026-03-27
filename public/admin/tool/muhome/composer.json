@@ -1,0 +1,17 @@
+{
+  "name": "mutms/moodle-tool_muhome",
+  "type": "moodle-tool",
+  "description": "Custom home pages for Moodle LMS",
+  "homepage": "https://github.com/mutms/moodle-tool_muhome",
+  "license": "GPL-3.0-or-later",
+  "require": {
+    "composer/installers": "*"
+  },
+  "extra": {
+    "installer-name": "muhome"
+  },
+  "support": {
+    "issues": "https://github.com/mutms/moodle-tool_muhome/issues",
+    "source": "https://github.com/mutms/moodle-tool_muhome"
+  }
+}

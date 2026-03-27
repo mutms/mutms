@@ -137,6 +137,8 @@ final class core_test extends \advanced_testcase {
     public function test_hook_primary_extend(): void {
         global $PAGE;
 
+        set_config('enablemyhome', 1); // Home is disabled by default since Moodle 5.2.
+
         /** @var \tool_muhome_generator $generator */
         $generator = $this->getDataGenerator()->get_plugin_generator('tool_muhome');
 

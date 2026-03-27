@@ -1,7 +1,10 @@
 @tool @tool_muhome @javascript @MuTMS
 Feature: Behat tool_muhome generator usage
   Background:
-    Given the following "categories" exist:
+    Given the following config values are set as admin:
+      | enablemyhome | 1 |
+      | forcelogin   | 0 |
+    And the following "categories" exist:
       | name  | category | idnumber |
       | Cat 1 | 0        | CAT1     |
       | Cat 2 | 0        | CAT2     |
