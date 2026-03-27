@@ -2,6 +2,9 @@
 Feature: Multi-tenancy use cases for custom home pages
   Background:
     Given I skip tests if "tool_mutenancy" is not installed
+    And the following config values are set as admin:
+      | enablemyhome | 1 |
+      | forcelogin   | 0 |
     And the following "tool_mutenancy > tenants" exist:
       | name     | idnumber | sitefullname     | siteshortname | archived | categoryidnumber | categoryname |
       | Tenant 1 | TEN1     | Tent Site full 1 | TSS1          | 0        | TC1              | Tenant cat 1 |

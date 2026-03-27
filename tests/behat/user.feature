@@ -1,7 +1,10 @@
 @tool @tool_muhome @javascript @MuTMS
 Feature: Users may access custom home pages
   Background:
-    Given the following "categories" exist:
+    Given the following config values are set as admin:
+      | enablemyhome | 1 |
+      | forcelogin   | 0 |
+    And the following "categories" exist:
       | name  | category | idnumber |
       | Cat 1 | 0        | CAT1     |
       | Cat 2 | 0        | CAT2     |
@@ -34,6 +37,7 @@ Feature: Users may access custom home pages
       | replacehome        | 1 | tool_muhome |
       | defaulthomepage    | 1 |             |
       | enabledashboard    | 1 |             |
+      | enablemycourses    | 1 |             |
 
     When I log in as "user1"
     Then I should see "Dashboard" in the "h1" "css_element"
@@ -46,6 +50,7 @@ Feature: Users may access custom home pages
       | replacehome        | 0 | tool_muhome |
       | defaulthomepage    | 1 |             |
       | enabledashboard    | 0 |             |
+      | enablemycourses    | 1 |             |
 
     When I log in as "user1"
     Then I should see "My courses" in the "h1" "css_element"
@@ -58,6 +63,7 @@ Feature: Users may access custom home pages
       | replacehome        | 1 | tool_muhome |
       | defaulthomepage    | 1 |             |
       | enabledashboard    | 0 |             |
+      | enablemycourses    | 1 |             |
 
     When I log in as "user1"
     Then I should see "My courses" in the "h1" "css_element"
@@ -70,6 +76,7 @@ Feature: Users may access custom home pages
       | replacehome        | 0 | tool_muhome |
       | defaulthomepage    | 3 |             |
       | enabledashboard    | 1 |             |
+      | enablemycourses    | 1 |             |
 
     When I log in as "user1"
     Then I should see "My courses" in the "h1" "css_element"
@@ -82,6 +89,7 @@ Feature: Users may access custom home pages
       | replacehome        | 1 | tool_muhome |
       | defaulthomepage    | 3 |             |
       | enabledashboard    | 1 |             |
+      | enablemycourses    | 1 |             |
 
     When I log in as "user1"
     Then I should see "My courses" in the "h1" "css_element"
@@ -94,6 +102,7 @@ Feature: Users may access custom home pages
       | replacehome        | 0 | tool_muhome |
       | defaulthomepage    | 0 |             |
       | enabledashboard    | 1 |             |
+      | enablemycourses    | 1 |             |
 
     When I log in as "user1"
     Then I should see "Acceptance test site" in the "h1" "css_element"
@@ -106,6 +115,7 @@ Feature: Users may access custom home pages
       | replacehome        | 1 | tool_muhome |
       | defaulthomepage    | 0 |             |
       | enabledashboard    | 1 |             |
+      | enablemycourses    | 1 |             |
 
     When I log in as "user1"
     Then I should see "Home page title 1" in the "h1" "css_element"
@@ -118,6 +128,7 @@ Feature: Users may access custom home pages
       | replacehome        | 0 | tool_muhome |
       | defaulthomepage    | 2 |             |
       | enabledashboard    | 1 |             |
+      | enablemycourses    | 1 |             |
 
     And I log in as "user1"
     And I follow "Preferences" in the user menu
@@ -164,6 +175,7 @@ Feature: Users may access custom home pages
       | replacehome        | 1 | tool_muhome |
       | defaulthomepage    | 2 |             |
       | enabledashboard    | 1 |             |
+      | enablemycourses    | 1 |             |
 
     And I log in as "user1"
     And I follow "Preferences" in the user menu
