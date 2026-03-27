@@ -63,8 +63,7 @@ Feature: Being able to manage certification elements in a certificate template
     And I change window size to "large"
     And I navigate to "Certification > Certification custom fields" in site administration
     And I press "Add a new category"
-    And I click on "Add a new custom field" "link"
-    And I click on "Short text" "link"
+    And I click add custom field of type "Short text"
     And I set the following fields to these values:
       | Name                                | Test field |
       | Short name                          | testfield  |

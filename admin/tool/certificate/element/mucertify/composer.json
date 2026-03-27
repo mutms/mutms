@@ -1,0 +1,17 @@
+{
+  "name": "mutms/moodle-certificateelement_mucertify",
+  "type": "moodle-certificateelement",
+  "description": "Certification fields plugin for Certificate plugin for Moodle LMS",
+  "homepage": "https://github.com/mutms/moodle-certificateelement_mucertify",
+  "license": "GPL-3.0-or-later",
+  "require": {
+    "composer/installers": "*"
+  },
+  "extra": {
+    "installer-name": "mucertify"
+  },
+  "support": {
+    "issues": "https://github.com/mutms/moodle-certificateelement_mucertify/issues",
+    "source": "https://github.com/mutms/moodle-certificateelement_mucertify"
+  }
+}
