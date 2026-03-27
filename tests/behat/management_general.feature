@@ -174,8 +174,7 @@ Feature: General Certification management tests
     Given I log in as "manager3"
     And I navigate to "Certifications > Certification custom fields" in site administration
     And I press "Add a new category"
-    And I click on "Add a new custom field" "link"
-    And I click on "Short text" "link"
+    And I click add custom field of type "Short text"
     And I set the following fields to these values:
       | Name                                     | Test field |
       | Short name                               | testfield  |
