@@ -4,6 +4,13 @@ Plugin versioning is derived from Moodle releases, it does not comply with the s
 
 The format of this change log follows the advice given at [Keep a CHANGELOG](https://keepachangelog.com).
 
+## [v5.0.6.04](https://github.com/mutms/moodle-tool_mulib/compare/v5.0.6.03...v5.0.6.04) - 2026-03-27
+
+### Added
+
+- Added composer.json for Packagist distribution
+- Added behat steps to work around custom field changes in 5.2
+
 ## [v5.0.6.03](https://github.com/mutms/moodle-tool_mulib/compare/v5.0.6.02...v5.0.6.03) - 2026-03-26
 
 ### Added

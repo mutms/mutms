@@ -613,6 +613,8 @@ final class context_map_test extends \advanced_testcase {
         global $DB, $CFG;
         $this->preventResetByRollback(); // This helps with debugging in case of any failures!
 
+        $CFG->forcelogin = 0; // On by default since Moodle 5.2.
+
         $admin = get_admin();
         $managerroleid = $DB->get_field('role', 'id', ['shortname' => 'teacher']);
         $studentroleid = $DB->get_field('role', 'id', ['shortname' => 'student']);
