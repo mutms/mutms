@@ -1,0 +1,17 @@
+{
+  "name": "mutms/moodle-block_mucertify_my",
+  "type": "moodle-block",
+  "description": "My certifications block for Moodle LMS",
+  "homepage": "https://github.com/mutms/moodle-block_mucertify_my",
+  "license": "GPL-3.0-or-later",
+  "require": {
+    "composer/installers": "*"
+  },
+  "extra": {
+    "installer-name": "mucertify_my"
+  },
+  "support": {
+    "issues": "https://github.com/mutms/moodle-block_mucertify_my/issues",
+    "source": "https://github.com/mutms/moodle-block_mucertify_my"
+  }
+}
