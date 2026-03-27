@@ -15,14 +15,14 @@ Feature: Test tool_mpwned compromised password blocking
       | resetpassword              | 1 | tool_mupwned |
       | expiretokens               | 1 | tool_mupwned |
 
-    When I follow "Log in"
+    When I visit "/login"
     And I set the field "Username" to "user1"
     And I set the field "Password" to "oJHGjgfd15abcd-_"
     And I press "Log in"
     Then I should see "Welcome, First!"
     And I log out
 
-    When I follow "Log in"
+    When I visit "/login"
     And I set the field "Username" to "user2"
     And I set the field "Password" to "123456"
     And I press "Log in"
@@ -53,8 +53,7 @@ Feature: Test tool_mpwned compromised password blocking
       | enabled                    | 1        | tool_mupwned |
       | resetpassword              | 1        | tool_mupwned |
       | expiretokens               | 1        | tool_mupwned |
-    And I follow "Log in"
-    And I click on "Create new account" "link"
+    And I visit "/login/signup.php"
 
     When I set the following fields to these values:
       | Username      | user3                     |
@@ -83,7 +82,7 @@ Feature: Test tool_mpwned compromised password blocking
     When I confirm email for "user3"
     And I should see "Thanks, Third User"
     And I log out
-    And I follow "Log in"
+    And I visit "/login"
     And I set the field "Username" to "user3"
     And I set the field "Password" to "fldshJHJHfdfsjgdf098798--"
     And I press "Log in"
@@ -104,7 +103,7 @@ Feature: Test tool_mpwned compromised password blocking
       | enabled                    | 1        | tool_mupwned |
       | resetpassword              | 1        | tool_mupwned |
       | expiretokens               | 1        | tool_mupwned |
-    And I follow "Log in"
+    And I visit "/login"
     And I set the field "Username" to "user1"
     And I set the field "Password" to "oJHGjgfd15abcd-_"
     And I press "Log in"

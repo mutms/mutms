@@ -1,0 +1,17 @@
+{
+  "name": "mutms/moodle-tool_mupwned",
+  "type": "moodle-tool",
+  "description": "Compromised passwords blocking plugin for Moodle LMS",
+  "homepage": "https://github.com/mutms/moodle-tool_mupwned",
+  "license": "GPL-3.0-or-later",
+  "require": {
+    "composer/installers": "*"
+  },
+  "extra": {
+    "installer-name": "mupwned"
+  },
+  "support": {
+    "issues": "https://github.com/mutms/moodle-tool_mupwned/issues",
+    "source": "https://github.com/mutms/moodle-tool_mupwned"
+  }
+}
