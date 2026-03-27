@@ -1,0 +1,17 @@
+{
+  "name": "mutms/moodle-customfield_mutrain",
+  "type": "moodle-customfield",
+  "description": "Training credits custom field for Moodle LMS",
+  "homepage": "https://github.com/mutms/moodle-customfield_mutrain",
+  "license": "GPL-3.0-or-later",
+  "require": {
+    "composer/installers": "*"
+  },
+  "extra": {
+    "installer-name": "mutrain"
+  },
+  "support": {
+    "issues": "https://github.com/mutms/moodle-customfield_mutrain/issues",
+    "source": "https://github.com/mutms/moodle-customfield_mutrain"
+  }
+}
