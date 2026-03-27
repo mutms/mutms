@@ -338,14 +338,12 @@ Feature: Manual certification assignment tests
     And I log in as "manager1"
     And I navigate to "Certifications > Certification assignment custom fields" in site administration
     And I press "Add a new category"
-    And I click on "Add a new custom field" "link"
-    And I click on "Short text" "link"
+    And I click add custom field of type "Short text"
     And I set the following fields to these values:
       | Name                                     | Test field 1 |
       | Short name                               | testfield1   |
     And I click on "Save changes" "button" in the "Adding a new Short text" "dialogue"
-    And I click on "Add a new custom field" "link"
-    And I click on "Short text" "link"
+    And I click add custom field of type "Short text"
     And I set the following fields to these values:
       | Name                                     | Test field 2 |
       | Short name                               | testfield2   |

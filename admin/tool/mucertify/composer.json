@@ -1,0 +1,17 @@
+{
+  "name": "mutms/moodle-tool_mucertify",
+  "type": "moodle-tool",
+  "description": "Certifications plugin for Moodle LMS",
+  "homepage": "https://github.com/mutms/moodle-tool_mucertify",
+  "license": "GPL-3.0-or-later",
+  "require": {
+    "composer/installers": "*"
+  },
+  "extra": {
+    "installer-name": "mucertify"
+  },
+  "support": {
+    "issues": "https://github.com/mutms/moodle-tool_mucertify/issues",
+    "source": "https://github.com/mutms/moodle-tool_mucertify"
+  }
+}
