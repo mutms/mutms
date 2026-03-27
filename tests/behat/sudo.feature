@@ -36,6 +36,7 @@ Feature: Test tool_musudo privileged session
     And I log in as "admin"
     And I set the following administration settings values:
       | MFA plugin enabled | 1 |
+    And I change viewport size to "medium"
     And I navigate to "Users > Permissions > Privileged users" in site administration
     And I press "Add privileged user"
     And I set the following fields to these values:
@@ -76,6 +77,7 @@ Feature: Test tool_musudo privileged session
     And I set the following administration settings values:
       | MFA plugin enabled | 1 |
       | Lockout threshold  | 3 |
+    And I change viewport size to "medium"
     And I navigate to "Users > Permissions > Privileged users" in site administration
     And I press "Add privileged user"
     And I set the following fields to these values:

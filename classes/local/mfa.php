@@ -79,7 +79,7 @@ final class mfa {
      * @return void
      */
     public static function form_definition(\MoodleQuickForm $mform, object_factor_base $factor, array $factors): void {
-        global $OUTPUT;
+        global $OUTPUT, $CFG;
         $factorname = $factor->name;
 
         $disablefactor = false;
@@ -90,9 +90,15 @@ final class mfa {
             $disablefactor = true;
         }
 
+        if ($CFG->version >= 2026032000) {
+            $logintitle = get_string('logintitle', 'tool_mfa');
+        } else {
+            $logintitle = get_string('logintitle', 'factor_' . $factorname);
+        }
+
         $header = $OUTPUT->render_from_template('tool_musudo/factorheader', [
             'factoricon' => $factor->get_icon(),
-            'logintitle' => get_string('logintitle', 'factor_' . $factorname),
+            'logintitle' => $logintitle,
             'logindesc' => $factor->get_login_desc(),
             'disablefactor' => $disablefactor,
         ]);
