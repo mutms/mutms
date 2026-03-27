@@ -34,6 +34,7 @@ Feature: Program allocation calendar events tests
   @javascript
   Scenario: Student may see program events in calendar
     Given I log in as "student1"
+    And I follow "Full calendar"
 
     When I click on "Program 000 starts" "link"
     Then I should see "Fancy program description"
