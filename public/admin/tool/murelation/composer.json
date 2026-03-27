@@ -1,0 +1,17 @@
+{
+  "name": "mutms/moodle-tool_murelation",
+  "type": "moodle-tool",
+  "description": "Supervisors and teams plugin for Moodle LMS",
+  "homepage": "https://github.com/mutms/moodle-tool_murelation",
+  "license": "GPL-3.0-or-later",
+  "require": {
+    "composer/installers": "*"
+  },
+  "extra": {
+    "installer-name": "murelation"
+  },
+  "support": {
+    "issues": "https://github.com/mutms/moodle-tool_murelation/issues",
+    "source": "https://github.com/mutms/moodle-tool_murelation"
+  }
+}
