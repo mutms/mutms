@@ -14,8 +14,7 @@ Feature: Managers can manage credits custom program fields
     Given I log in as "admin"
     And I navigate to "Programs > Program custom fields" in site administration
 
-    When I click on "Add a new custom field" "link"
-    And I click on "Training credits" "link"
+    When I click add custom field of type "Training credits"
     And I set the following fields to these values:
       | Name       | Test field |
       | Short name | testfield  |
@@ -27,13 +26,12 @@ Feature: Managers can manage credits custom program fields
     Given I log in as "admin"
     And I navigate to "Programs > Program custom fields" in site administration
 
-    When I click on "Add a new custom field" "link"
-    And I click on "Training credits" "link"
+    When I click add custom field of type "Training credits"
     And I set the following fields to these values:
       | Name       | Test field |
       | Short name | testfield  |
     And I click on "Save changes" "button" in the "Adding a new Training credits" "dialogue"
-    And I click on "Edit custom field: Test field" "button" in the "Test field" "table_row"
+    And I click Edit custom field "Test field"
     And I set the following fields to these values:
       | Name | Edited field |
     And I click on "Save changes" "button" in the "Updating Test field" "dialogue"
@@ -44,13 +42,12 @@ Feature: Managers can manage credits custom program fields
     Given I log in as "admin"
     And I navigate to "Programs > Program custom fields" in site administration
 
-    When I click on "Add a new custom field" "link"
-    And I click on "Training credits" "link"
+    When I click add custom field of type "Training credits"
     And I set the following fields to these values:
       | Name       | Test field |
       | Short name | testfield  |
     And I click on "Save changes" "button" in the "Adding a new Training credits" "dialogue"
-    And I click on "Delete custom field: Test field" "button" in the "Test field" "table_row"
+    And I click Delete custom field "Test field"
     And I click on "Yes" "button" in the "Confirm" "dialogue"
     And I wait until the page is ready
     And I wait until "Test field" "text" does not exist
