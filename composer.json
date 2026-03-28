@@ -5,10 +5,14 @@
   "homepage": "https://github.com/mutms/moodle-tool_mucertify",
   "license": "GPL-3.0-or-later",
   "require": {
-    "composer/installers": "*"
-  },
-  "extra": {
-    "installer-name": "mucertify"
+    "moodle/composer-installer": "*",
+    "moodle/moodle": "5.1.*||5.2.*",
+    "mutms/moodle-tool_mulib": "*",
+    "mutms/moodle-enrol_muprog": "*",
+    "mutms/moodle-block_muprog_my": "*",
+    "mutms/moodle-block_muprogmyoverview": "*",
+    "mutms/moodle-tool_muprog": "*",
+    "mutms/moodle-block_mucertify_my": "*"
   },
   "support": {
     "issues": "https://github.com/mutms/moodle-tool_mucertify/issues",
