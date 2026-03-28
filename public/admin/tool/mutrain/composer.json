@@ -1,0 +1,17 @@
+{
+  "name": "mutms/moodle-tool_mutrain",
+  "type": "moodle-tool",
+  "description": "Training credits plugin for Moodle LMS",
+  "homepage": "https://github.com/mutms/moodle-tool_mutrain",
+  "license": "GPL-3.0-or-later",
+  "require": {
+    "moodle/composer-installer": "*",
+    "moodle/moodle": "5.1.*||5.2.*",
+    "mutms/moodle-tool_mulib": "*",
+    "mutms/moodle-customfield_mutrain": "*"
+  },
+  "support": {
+    "issues": "https://github.com/mutms/moodle-tool_mutrain/issues",
+    "source": "https://github.com/mutms/moodle-tool_mutrain"
+  }
+}
