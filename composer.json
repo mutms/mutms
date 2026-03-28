@@ -5,10 +5,9 @@
   "homepage": "https://github.com/mutms/moodle-tool_muhome",
   "license": "GPL-3.0-or-later",
   "require": {
-    "composer/installers": "*"
-  },
-  "extra": {
-    "installer-name": "muhome"
+    "moodle/composer-installer": "*",
+    "moodle/moodle": "5.1.*||5.2.*",
+    "mutms/moodle-tool_mulib": "*"
   },
   "support": {
     "issues": "https://github.com/mutms/moodle-tool_muhome/issues",
