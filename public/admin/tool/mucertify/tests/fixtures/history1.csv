@@ -1,0 +1,4 @@
+username,from,expiration,certified,evidence
+student1,2020-01-01,2020-03-31,2020-01-01,passed program X
+student2,2020-03-01,2020-05-31,2020-02-01,
+student3,2019-03-01,2019-05-31,2019-02-01,
