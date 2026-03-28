@@ -1,0 +1,16 @@
+{
+  "name": "mutms/moodle-mod_mubook",
+  "type": "moodle-mod",
+  "description": "Interactive book for Moodle LMS",
+  "homepage": "https://github.com/mutms/moodle-mod_mubook",
+  "license": "GPL-3.0-or-later",
+  "require": {
+    "moodle/composer-installer": "*",
+    "moodle/moodle": "5.1.*||5.2.*",
+    "mutms/moodle-tool_mulib": "*"
+  },
+  "support": {
+    "issues": "https://github.com/mutms/moodle-mod_mubook/issues",
+    "source": "https://github.com/mutms/moodle-mod_mubook"
+  }
+}

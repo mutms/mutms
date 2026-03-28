@@ -1,0 +1,86 @@
+# Run test suite
+name: Tests
+on: [push, pull_request]
+jobs:
+  install_tools:
+    name: Install tools
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+      - name: Install tools
+        uses: ngmy/phive-install-action@master
+      - name: Upload tools to artifact store
+        uses: actions/upload-artifact@v4
+        with:
+          name: tools
+          path: tools
+  test:
+    name: test
+    needs: install_tools
+    strategy:
+      fail-fast: false
+      matrix:
+        operating-system: ["ubuntu-latest", "macOs-latest"]
+        php-versions: ["8.3", "8.4"]
+    runs-on: ${{ matrix.operating-system }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Setup PHP, with composer and extensions
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php-versions }}
+          extensions: mbstring
+          coverage: none
+      - name: Install composer dependencies
+        uses: ramsey/composer-install@v3
+        with:
+          composer-options: "--prefer-dist --optimize-autoloader"
+      - name: Download tools from artifact store
+        uses: actions/download-artifact@v4
+        with:
+          name: tools
+          path: tools
+      - name: Set tools as an executable
+        run: find tools -type f -print0 | xargs -0 chmod +x
+      - name: Check coding standard
+        run: composer cs:check
+      - name: Static analysis tool
+        run: composer analytics
+      - name: Test suite
+        run: composer test
+  test-windows:
+    name: test-windows
+    needs: install_tools
+    strategy:
+      fail-fast: false
+      matrix:
+        php-versions: ["8.3", "8.4"]
+    runs-on: windows-latest
+    steps:
+      - name: Set autocrlf
+        run: git config --global core.autocrlf false
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Setup PHP, with composer and extensions
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php-versions }}
+          extensions: mbstring
+          coverage: none
+      - name: Install composer dependencies
+        uses: ramsey/composer-install@v3
+        with:
+          composer-options: "--prefer-dist --optimize-autoloader"
+      - name: Download tools from artifact store
+        uses: actions/download-artifact@v4
+        with:
+          name: tools
+          path: tools
+      - name: Check coding standard
+        run: php tools/php-cs-fixer fix -v --diff --dry-run
+      - name: Static analysis tool
+        run: php tools/phpstan analyze
+      - name: Test suite
+        run: composer test

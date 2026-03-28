@@ -1,0 +1,20 @@
+{
+  "config": {
+    "vendor-dir": "."
+  },
+  "repositories": [
+    {
+      "type": "vcs",
+      "url":  "git@github.com:mutms/commonmark-alert.git"
+    },
+    {
+      "type": "vcs",
+      "url":  "git@github.com:mutms/commonmark-extra.git"
+    }
+  ],
+  "require": {
+    "league/commonmark": "^2.7",
+    "pomodocs/commonmark-alert": "dev-mutms-php81",
+    "mutms/commonmark-extra": "dev-main"
+  }
+}
