@@ -1,0 +1,80 @@
+{{!
+    This file is part of MuTMS suite of plugins for Moodle™ LMS.
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <https://www.gnu.org/licenses/>.
+}}
+{{!
+    @template block_muprogmyoverview/programcard
+
+    This template renders the a card for the program cards.
+
+    Example context (json):
+    {
+        "programs": [
+            {
+                "name": "Assignment due 1",
+                "viewurl": "https://moodlesite/program/view.php?id=2",
+                "programimage": "https://moodlesite/pluginfile/123/program/overviewfiles/123.jpg",
+                "fullname": "program 3",
+                "hasprogress": true,
+                "progress": 10
+            }
+        ]
+    }
+}}
+<div class="card program-card mx-1" role="listitem"
+    data-region="program-content"
+    data-program-id="{{{id}}}">
+    <a href="{{viewurl}}" tabindex="-1">
+        <div class="card-img-top" style='background-image: url("{{{programimage}}}");'>
+            <span class="visually-hidden">{{fullname}}</span>
+        </div>
+    </a>
+    <div class="card-body pe-1 program-info-container" id="program-info-container-{{id}}-{{uniqid}}">
+        <div class="d-flex align-items-start">
+            <div class="w-100 text-truncate">
+                <div class="text-muted muted d-flex mb-1 flex-wrap">
+                    <span class="visually-hidden">
+                        {{#str}}programidnumber, tool_muprog{{/str}}
+                    </span>
+                    <div>
+                        {{{idnumber}}}
+                    </div>
+                </div>
+                <a href="{{viewurl}}" class="aalink programname me-2 mb-1">
+                    {{> block_muprogmyoverview/favouriteicon }}
+                    <span class="visually-hidden">
+                        {{#str}}programname, tool_muprog{{/str}}
+                    </span>
+                    {{$programname}}{{/programname}}
+                </a>
+                <div class="text-muted muted d-flex flex-wrap">
+                    {{$programcategory}}{{/programcategory}}
+                </div>
+                <div>
+                    <span class="visually-hidden">
+                        {{#str}}programstatus, tool_muprog{{/str}}
+                    </span>
+                    <span class="badge {{statusclass}}">
+                        {{status}}
+                    </span>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="d-flex align-items-start">
+        {{$progress}}{{/progress}}
+        {{$menu}}{{/menu}}
+    </div>
+</div>
