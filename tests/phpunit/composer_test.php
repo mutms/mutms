@@ -51,6 +51,9 @@ final class composer_test extends \core\tests\plugin_checks_testcase {
             return;
         }
 
+        $plugin = new \stdClass();
+        require("$dir/version.php");
+
         $readme = file_get_contents("$dir/README.md");
         preg_match('/^# (.*)$/m', $readme, $matches);
         $description = str_replace('™', '', $matches[1]);
@@ -60,8 +63,29 @@ final class composer_test extends \core\tests\plugin_checks_testcase {
         $this->assertSame($description, $composer['description']);
         $this->assertSame("https://github.com/mutms/moodle-{$component}", $composer['homepage']);
         $this->assertSame('GPL-3.0-or-later', $composer['license']);
-        $this->assertSame(["composer/installers" => "*"], $composer['require']);
-        $this->assertSame(["installer-name" => $pluginname], $composer['extra']);
+        $this->assertArrayNotHasKey('installers', $composer);
+        if (!empty($plugin->dependencies)) {
+            foreach ($plugin->dependencies as $dependency => $version) {
+                if ($dependency === 'tool_mfa' || $dependency === 'tool_certificate') {
+                    continue;
+                }
+                $this->assertSame('*', $composer['require']["mutms/moodle-$dependency"]);
+            }
+        }
+        foreach ($composer['require'] as $dependency => $version) {
+            if ($dependency === 'moodle/moodle') {
+                if ($component !== 'tool_mutenancy') {
+                    $this->assertSame('5.1.*||5.2.*', $version);
+                }
+                continue;
+            }
+            if (!str_starts_with($dependency, 'mutms/moodle-')) {
+                continue;
+            }
+            $depname = substr($dependency, strlen('mutms/moodle-'));
+            $this->assertArrayHasKey($depname, $plugin->dependencies);
+        }
+        $this->assertArrayNotHasKey('extra', $composer);
         $this->assertSame(
             [
                 "issues" => "https://github.com/mutms/moodle-{$component}/issues",
