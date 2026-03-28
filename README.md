@@ -1,48 +1,54 @@
-# Moodle
+# MuTMS distribution
 
-<p align="center"><a href="https://moodle.org" target="_blank" title="Moodle Website">
-  <img src="https://raw.githubusercontent.com/moodle/moodle/main/.github/moodlelogo.svg" alt="The Moodle Logo">
-</a></p>
+**MuTMS (Multi-Tenant Management System)** is a GPL 3.0-licensed suite of plugins for Moodle™ LMS
+that brings additional features to standard Moodle installations — multi-tenancy,
+structured learning programs, certifications, and more — with no commercial restrictions and no
+vendor lock-in.
 
-[Moodle][1] is the World's Open Source Learning Platform, widely used around the world by countless universities, schools, companies, and all manner of organisations and individuals.
+This repository is the full MuTMS distribution: all core patches and optional plugins in one place,
+assembled via git subtrees for easy deployment.
 
-Moodle is designed to allow educators, administrators and learners to create personalised learning environments with a single robust, secure and integrated system.
+## Overview
+
+All components are designed to work together as a coherent system, but most plugins can also be
+used independently without the core multi-tenancy patch.
+
+## Plugins
+
+- [Multi-tenancy](https://github.com/mutms/moodle-tool_mutenancy) — Partition a single Moodle instance into isolated tenants, each with their own users, courses, and settings.
+- [Programs](https://github.com/mutms/moodle-tool_muprog) — Define structured learning paths, manage enrolments, track progress, and automate completion across a program as a whole.
+- [Certifications](https://github.com/mutms/moodle-tool_mucertify) — Issue and manage certifications tied to program completion, with expiry and renewal cycle support.
+- [Training credits](https://github.com/mutms/moodle-tool_mutrain) — Allocate credit budgets and gate access to learning activities based on available credits.
+- [Supervisors & teams](https://github.com/mutms/moodle-tool_murelation) — Model learner–supervisor relationships so managers can monitor team progress and compliance.
+- [Custom home pages](https://github.com/mutms/moodle-tool_muhome) — Configure cohort- and tenant-specific dashboards and landing pages.
+- [Interactive book](https://github.com/mutms/moodle-mod_mubook) — A structured, page-based content module for course materials.
+- [Compromised password blocking](https://github.com/mutms/moodle-tool_mupwned) — Blocks known breached passwords via HaveIBeenPwned, using k-Anonymity so passwords never leave Moodle.
+- [Privileged sessions](https://github.com/mutms/moodle-tool_musudo) — Sudo-style privilege escalation for admins, reducing risk during routine work.
+- [Log-in-as via Incognito](https://github.com/mutms/moodle-tool_muloginas) — Opens impersonated sessions in a new Incognito window, keeping the admin session active.
+
+## Installation
+
+This repository contains a full Moodle installation with MuTMS patches and plugins already applied. Clone it in place of a standard Moodle checkout.
+
+```bash
+git clone https://github.com/mutms/mutms.git
+```
+
+See the [installation documentation](https://docs.mutms.org/mutms/installation/) for full setup instructions.
 
 ## Documentation
 
-- Read our [User documentation][3]
-- Discover our [developer documentation][5]
-- Take a look at our [demo site][4]
+See [online documentation](https://docs.mutms.org/).
 
-## Community
+## Support
 
-[moodle.org][1] is the central hub for the Moodle Community, with spaces for educators, administrators and developers to meet and work together.
+Open an issue in the relevant plugin repository for community support.
 
-You may also be interested in:
-
-- attending a [Moodle Moot][6]
-- our regular series of [developer meetings][7]
-- the [Moodle User Association][8]
-
-## Installation and hosting
-
-Moodle is Free, and Open Source software. You can easily [download Moodle][9] and run it on your own web server, however you may prefer to work with one of our experienced [Moodle Partners][10].
-
-Moodle also offers hosting through both [MoodleCloud][11], and our [partner network][10].
+For support, see [mutms.org#support](https://www.mutms.org/#support).
 
 ## License
 
-Moodle is provided freely as open source software, under version 3 of the GNU General Public License. See our [license page][12] for more information.
+MuTMS is free and open source software, licensed under the GNU General Public License v3.0.
 
-[1]: https://moodle.org
-[2]: https://moodle.com
-[3]: https://docs.moodle.org/
-[4]: https://sandbox.moodledemo.net/
-[5]: https://moodledev.io
-[6]: https://moodle.com/events/mootglobal/
-[7]: https://moodledev.io/general/community/meetings
-[8]: https://moodleassociation.org/
-[9]: https://download.moodle.org
-[10]: https://moodle.com/partners
-[11]: https://moodle.com/cloud
-[12]: https://moodledev.io/general/license
+> Moodle™ is a trademark of Moodle Pty Ltd. MuTMS is an independent open-source
+> project and is not affiliated with or endorsed by Moodle Pty Ltd.
