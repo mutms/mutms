@@ -1,0 +1,4 @@
+username,email,idnumber,firstname,lastname
+student1,student1@example.com,s1,First,User
+ student2 , student2@example.com, s2, Second , User
+student3,student3@example.com,s3,Third,User
