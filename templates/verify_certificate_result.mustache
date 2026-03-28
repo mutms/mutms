@@ -1,0 +1,47 @@
+{{!
+    This file is part of the tool_certificate plugin for Moodle - http://moodle.org/
+
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+}}
+{{!
+    @template tool_certificate/verify_certificate_result
+
+    The certificate verification result
+
+    Classes required for JS:
+    * None
+
+    Data attibutes required for JS:
+    * All data attributes are required
+
+    Context variables required for this template:
+    * userprofileurl The URL to the user's profile
+    * userfullname The fullname of the user
+    * courseurl The URL of the course
+    * coursefullname The full name of the course
+    * certificatename The name of the certificate
+
+    Example context (json):
+    {
+        "expired": false,
+        "table": "<table></table>",
+        "viewurl": ""
+    }
+}}
+<div class="alert alert-block fade in alert-{{#expired}}danger{{/expired}}{{^expired}}success{{/expired}} mb-2" role="alert">
+    {{#expired}}<p class="m-0 alert-danger">{{#str}}expiredcertificate, tool_certificate{{/str}}{{/expired}}
+    {{^expired}}<p class="m-0 alert-success">{{#str}}validcertificate, tool_certificate{{/str}}{{/expired}}</p>
+</div>
+{{{table}}}
+<a class="btn btn-sm btn-secondary" href="{{viewurl}}" target="_blank">{{#str}}viewcertificate, tool_certificate{{/str}}</a>
