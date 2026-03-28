@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<XMLDB PATH="admin/tool/mutenancy/db" VERSION="20250228" COMMENT="XMLDB file for tool_mutenancy"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:noNamespaceSchemaLocation="../../../../lib/xmldb/xmldb.xsd"
+>
+  <TABLES>
+    <TABLE NAME="tool_mutenancy_tenant" COMMENT="List of tenants">
+      <FIELDS>
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+        <FIELD NAME="name" TYPE="char" LENGTH="255" NOTNULL="true" SEQUENCE="false" COMMENT="Tenant name"/>
+        <FIELD NAME="idnumber" TYPE="char" LENGTH="50" NOTNULL="true" SEQUENCE="false" COMMENT="ID number of tenant, used for login, cookies - ascii only"/>
+        <FIELD NAME="loginshow" TYPE="int" LENGTH="1" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="1 means show tenant as option on login page, 0 means allow login page switch via tenant id or idnumber page paramter only"/>
+        <FIELD NAME="memberlimit" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false" COMMENT="Maximum number of tenant members including unconfirmed users, NULL means no limit"/>
+        <FIELD NAME="categoryid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="Automatically created top-level category for tenant courses"/>
+        <FIELD NAME="cohortid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="Automatically created system cohort for tenant members and associated users"/>
+        <FIELD NAME="assoccohortid" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false" COMMENT="Other linked cohort with additional global users associated with/visible in tenants, members of other cohorts are ignored"/>
+        <FIELD NAME="sitefullname" TYPE="char" LENGTH="255" NOTNULL="false" SEQUENCE="false" COMMENT="Site name when switched to tenant"/>
+        <FIELD NAME="siteshortname" TYPE="char" LENGTH="255" NOTNULL="false" SEQUENCE="false" COMMENT="Site short name when switched to tenant"/>
+        <FIELD NAME="archived" TYPE="int" LENGTH="1" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="Archived tenant members cannot login, tenant is mostly hidden in UI"/>
+        <FIELD NAME="timecreated" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="timemodified" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+        <KEY NAME="categoryid" TYPE="foreign-unique" FIELDS="categoryid" REFTABLE="course_categories" REFFIELDS="id"/>
+        <KEY NAME="cohortid" TYPE="foreign-unique" FIELDS="cohortid" REFTABLE="cohort" REFFIELDS="id"/>
+        <KEY NAME="assoccohortid" TYPE="foreign" FIELDS="assoccohortid" REFTABLE="cohort" REFFIELDS="id"/>
+      </KEYS>
+      <INDEXES>
+        <INDEX NAME="idnumber" UNIQUE="true" FIELDS="idnumber"/>
+      </INDEXES>
+    </TABLE>
+    <TABLE NAME="tool_mutenancy_manager" COMMENT="List of tenant managers - used primarily for automatic role assignments in tenant and category contexts">
+      <FIELDS>
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+        <FIELD NAME="tenantid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="userid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="user must be from the same tenant or global user, cross-tenant managers do not work."/>
+        <FIELD NAME="usercreated" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="user who added the manager"/>
+        <FIELD NAME="timecreated" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+        <KEY NAME="tenantid" TYPE="foreign" FIELDS="tenantid" REFTABLE="tool_mutenancy_tenant" REFFIELDS="id"/>
+        <KEY NAME="userid" TYPE="foreign" FIELDS="userid" REFTABLE="user" REFFIELDS="id"/>
+        <KEY NAME="usercreated" TYPE="foreign" FIELDS="usercreated" REFTABLE="user" REFFIELDS="id"/>
+      </KEYS>
+      <INDEXES>
+        <INDEX NAME="tenantid-userid" UNIQUE="true" FIELDS="tenantid, userid"/>
+      </INDEXES>
+    </TABLE>
+    <TABLE NAME="tool_mutenancy_config" COMMENT="Tenant overrides for system configuration settings in config and config_plugins database tables">
+      <FIELDS>
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+        <FIELD NAME="tenantid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="plugin" TYPE="char" LENGTH="100" NOTNULL="true" SEQUENCE="false" COMMENT="core value means record applies to config table"/>
+        <FIELD NAME="name" TYPE="char" LENGTH="100" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="value" TYPE="text" NOTNULL="true" SEQUENCE="false"/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+        <KEY NAME="tenantid" TYPE="foreign" FIELDS="tenantid" REFTABLE="tool_mutenancy_tenant" REFFIELDS="id"/>
+      </KEYS>
+      <INDEXES>
+        <INDEX NAME="tenantid-plugin-name" UNIQUE="true" FIELDS="tenantid, plugin, name"/>
+      </INDEXES>
+    </TABLE>
+  </TABLES>
+</XMLDB>

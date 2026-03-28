@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<COMPATIBILITY_MATRIX>
+    <PLUGIN name="tool_mutenancy">
+        <CUSTOM_CHECKS>
+            <CUSTOM_CHECK file="admin/tool/mutenancy/environmentlib.php" function="tool_mutenancy_environment_corepatch" level="required">
+                <FEEDBACK>
+                    <ON_OK message="environment_corepatch_ok" plugin="tool_mutenancy"/>
+                    <ON_ERROR message="environment_corepatch_error" plugin="tool_mutenancy"/>
+                </FEEDBACK>
+            </CUSTOM_CHECK>
+        </CUSTOM_CHECKS>
+    </PLUGIN>
+</COMPATIBILITY_MATRIX>
