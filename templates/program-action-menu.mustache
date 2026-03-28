@@ -1,0 +1,78 @@
+{{!
+    This file is part of MuTMS suite of plugins for Moodle™ LMS.
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <https://www.gnu.org/licenses/>.
+}}
+{{!
+    @template block_muprogmyoverview/program-action-menu
+
+    This template renders action menu for each program.
+
+    Example context (json):
+    {
+        "isfavourite": true
+    }
+}}
+<div class="ms-auto dropdown">
+    <button class="btn btn-icon programmenubtn aabtn"
+        type="button"
+        data-bs-toggle="dropdown"
+        aria-haspopup="true"
+        aria-expanded="false">
+        <i class="icon fa fa-ellipsis-v fa-fw m-0" title="{{#str}} aria:programactions, block_muprogmyoverview {{/str}} {{{fullname}}}" aria-hidden="true"></i>
+        <span class="visually-hidden">{{#str}} aria:programactions, block_muprogmyoverview {{/str}} {{{fullname}}}</span>
+    </button>
+    <div class="dropdown-menu dropdown-menu-end">
+        <a class="dropdown-item {{#isfavourite}}hidden{{/isfavourite}}" href="#"
+            data-action="add-favourite"
+            data-program-id="{{id}}"
+            aria-controls="favorite-icon-{{ id }}-{{ uniqid }}"
+            >
+            {{#str}} addtofavourites, block_muprogmyoverview {{/str}}
+            <div class="visually-hidden">
+                {{#str}} aria:addtofavourites, block_muprogmyoverview {{/str}} {{{fullname}}}
+            </div>
+        </a>
+        <a class="dropdown-item {{^isfavourite}}hidden{{/isfavourite}}" href="#"
+            data-action="remove-favourite"
+            data-program-id="{{id}}"
+            aria-controls="favorite-icon-{{ id }}-{{ uniqid }}"
+            >
+            {{#str}} removefromfavourites, block_muprogmyoverview {{/str}}
+            <div class="visually-hidden">
+                {{#str}} aria:removefromfavourites, block_muprogmyoverview {{/str}} {{{fullname}}}
+            </div>
+        </a>
+        <a class="dropdown-item {{^hidden}}hidden{{/hidden}}" href="#"
+            data-action="show-program"
+            data-program-id="{{id}}"
+            aria-controls="favorite-icon-{{ id }}-{{ uniqid }}"
+            >
+            {{#str}} show, block_muprogmyoverview {{/str}}
+            <div class="visually-hidden">
+                {{#str}} aria:showprogram, block_muprogmyoverview, {{fullname}} {{/str}}
+            </div>
+        </a>
+        <a class="dropdown-item {{#hidden}}hidden{{/hidden}}" href="#"
+            data-action="hide-program"
+            data-program-id="{{id}}"
+            aria-controls="favorite-icon-{{ id }}-{{ uniqid }}"
+            >
+            {{#str}} hideprogram, block_muprogmyoverview {{/str}}
+            <div class="visually-hidden">
+                {{#str}} aria:hideprogram, block_muprogmyoverview, {{fullname}} {{/str}}
+            </div>
+        </a>
+    </div>
+</div>

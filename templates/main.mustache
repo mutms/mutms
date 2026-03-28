@@ -1,0 +1,58 @@
+{{!
+    This file is part of MuTMS suite of plugins for Moodle™ LMS.
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <https://www.gnu.org/licenses/>.
+}}
+{{!
+    @template block_muprogmyoverview/main
+
+    This template renders the main content area for the muprogmyoverview block.
+
+    Example context (json):
+    {}
+}}
+
+<div id="block-muprogmyoverview-{{uniqid}}" class="block-muprogmyoverview block-cards" data-region="muprogmyoverview" role="navigation">
+    <div role="search" data-region="filter" class="d-flex align-items-center my-2" aria-label="{{#str}} aria:controls, block_muprogmyoverview {{/str}}">
+        <div class="d-flex flex-wrap gap-1 align-items-center w-100">
+            {{> block_muprogmyoverview/nav-grouping-selector }}
+
+            {{> block_muprogmyoverview/nav-search-widget }}
+
+            {{> block_muprogmyoverview/nav-sort-selector }}
+
+            {{#displaydropdown}}
+                {{> block_muprogmyoverview/nav-display-selector }}
+            {{/displaydropdown}}
+        </div>
+    </div>
+
+    <div class="container-fluid p-0">
+        {{> block_muprogmyoverview/programs-view }}
+    </div>
+</div>
+{{#js}}
+require(
+[
+    'jquery',
+    'block_muprogmyoverview/main',
+],
+function(
+    $,
+    Main
+) {
+    var root = $('#block-muprogmyoverview-{{uniqid}}');
+    Main.init(root);
+});
+{{/js}}
