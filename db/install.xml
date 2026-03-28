@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<XMLDB PATH="admin/tool/musudo/db" VERSION="20250602" COMMENT="XMLDB file for tool_musudo"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:noNamespaceSchemaLocation="../../../../lib/xmldb/xmldb.xsd"
+>
+  <TABLES>
+    <TABLE NAME="tool_musudo_sudoer" COMMENT="People allowed to use sudo plugin to get elevated permissions">
+      <FIELDS>
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+        <FIELD NAME="userid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="User with elevated permissions"/>
+        <FIELD NAME="mfarequired" TYPE="int" LENGTH="1" NOTNULL="true" SEQUENCE="false" COMMENT="1 means MFA factor required, 0 means not required"/>
+        <FIELD NAME="note" TYPE="text" NOTNULL="true" SEQUENCE="false" COMMENT="Note about user for administrators"/>
+        <FIELD NAME="privilegesjson" TYPE="text" NOTNULL="true" SEQUENCE="false" COMMENT="JSON encoded pairs of roles and context ids"/>
+        <FIELD NAME="timecreated" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="When was the sudo user added"/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+        <KEY NAME="userid" TYPE="foreign-unique" FIELDS="userid" REFTABLE="user" REFFIELDS="id" COMMENT="Only one set of extra roles for each user"/>
+      </KEYS>
+    </TABLE>
+  </TABLES>
+</XMLDB>

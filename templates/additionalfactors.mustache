@@ -1,0 +1,50 @@
+{{!
+This file is part of MuTMS suite of plugins for Moodle™ LMS.
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
+@copyright   2025 Petr Skoda
+@license     https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+
+}}
+{{!
+    @template tool_musudo/additionalfactors
+
+    Additional factors.
+
+    Example context (json):
+    {
+        "additionalfactors": [
+            {
+            "url": "https://example.com/something.php?factor=webauthn",
+            "icon": "fa-hand-pointer",
+            "loginoption": "Werify it's you by security key",
+            "disable": false
+            }
+        ]
+    }
+}}
+<div class="mb-6 mt-4 border-bottom"></div>
+<p class="font-weight-bold mb-1">{{#str}} verifyalt, tool_mfa {{/str}}</p>
+{{#additionalfactors}}
+    <a href="{{url}}" class="btn-link text-decoration-none tool-mfa-factor-choose d-flex align-items-center p-1 mb-2 border {{#disable}}disabled{{/disable}}">
+            <span class="icon-no-margin icon-size-3 d-flex p-1 me-2">
+                <i class="fa {{icon}} fa-fw fa-2x"
+                   title="{{loginoption}}"
+                   role="img"
+                   aria-label="{{loginoption}}"></i>
+            </span>
+        <span class="tool-mfa-factor-choose-text mfa-login-option">{{loginoption}}</span>
+    </a>
+{{/additionalfactors}}

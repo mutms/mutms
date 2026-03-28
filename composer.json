@@ -1,0 +1,16 @@
+{
+  "name": "mutms/moodle-tool_musudo",
+  "type": "moodle-tool",
+  "description": "Privileged sessions (aka sudo) plugin for Moodle LMS",
+  "homepage": "https://github.com/mutms/moodle-tool_musudo",
+  "license": "GPL-3.0-or-later",
+  "require": {
+    "moodle/composer-installer": "*",
+    "moodle/moodle": "5.1.*||5.2.*",
+    "mutms/moodle-tool_mulib": "*"
+  },
+  "support": {
+    "issues": "https://github.com/mutms/moodle-tool_musudo/issues",
+    "source": "https://github.com/mutms/moodle-tool_musudo"
+  }
+}
