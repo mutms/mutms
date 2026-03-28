@@ -41,6 +41,7 @@ use coding_exception, moodle_url;
  * @property-read string $path path to context, starts with system context
  * @property-read int $depth
  * @property-read bool $locked true means write capabilities are ignored in this context or parents
+ * @property-read int|null $tenantid
  */
 abstract class context extends stdClass implements IteratorAggregate {
 
@@ -90,6 +91,13 @@ abstract class context extends stdClass implements IteratorAggregate {
      * @var int
      */
     protected $_locked;
+
+    /**
+     * Tenant id.
+     *
+     * @var ?int
+     */
+    protected $_tenantid;
 
     /**
      * @var array Context caching info
@@ -258,6 +266,16 @@ abstract class context extends stdClass implements IteratorAggregate {
             'locked' => $rec->ctxlocked,
         ];
 
+        if (mutenancy_is_active()) {
+            if (property_exists($rec, 'ctxtenantid')) {
+                $record->tenantid = $rec->ctxtenantid;
+            } else {
+                debugging('ctxtenantid expected when preloading contexts', DEBUG_DEVELOPER);
+                $record->tenantid = \core\context\tenant::guess_tenantid($record->contextlevel, $record->instanceid, $record->path);
+            }
+        }
+        unset($rec->ctxtenantid);
+
         unset($rec->ctxid);
         unset($rec->ctxlevel);
         unset($rec->ctxinstance);
@@ -299,6 +317,8 @@ abstract class context extends stdClass implements IteratorAggregate {
                 return $this->_depth;
             case 'locked':
                 return $this->is_locked();
+            case 'tenantid':
+                return $this->_tenantid;
 
             default:
                 debugging('Invalid context property accessed! '.$name);
@@ -326,6 +346,8 @@ abstract class context extends stdClass implements IteratorAggregate {
             case 'locked':
                 // Locked is always set.
                 return true;
+            case 'tenantid':
+                return isset($this->_tenantid);
             default:
                 return false;
         }
@@ -355,6 +377,7 @@ abstract class context extends stdClass implements IteratorAggregate {
             'path' => $this->path,
             'depth' => $this->depth,
             'locked' => $this->locked,
+            'tenantid' => $this->tenantid,
         );
         return new ArrayIterator($ret);
     }
@@ -373,6 +396,25 @@ abstract class context extends stdClass implements IteratorAggregate {
         $this->_instanceid = $record->instanceid;
         $this->_path = $record->path;
         $this->_depth = $record->depth;
+
+        if (mutenancy_is_active()) {
+            if ($this->_contextlevel == CONTEXT_SYSTEM) {
+                $this->_tenantid = null;
+            } else if ($this->_contextlevel == CONTEXT_TENANT) {
+                $this->_tenantid = (int)$this->_instanceid;
+            } else if (property_exists($record, 'tenantid')) {
+                if ($record->tenantid === null) {
+                    $this->_tenantid = null;
+                } else {
+                    $this->_tenantid = (int)$record->tenantid;
+                }
+            } else {
+                debugging('tenantid expected in context constructor', DEBUG_DEVELOPER);
+                $this->_tenantid = \core\context\tenant::guess_tenantid($this->_contextlevel, $this->_instanceid, $this->_path);
+            }
+        } else {
+            $this->_tenantid = null;
+        }
 
         if (isset($record->locked)) {
             $this->_locked = $record->locked;
@@ -507,6 +549,18 @@ abstract class context extends stdClass implements IteratorAggregate {
                  WHERE path LIKE ?";
         $params = array($newpath, "{$frompath}/%");
         $DB->execute($sql, $params);
+
+        if (mutenancy_is_active()) {
+            $sql = "UPDATE {context}
+                       SET tenantid=:tenantid
+                     WHERE path LIKE :path OR id = :cid";
+            $params = [
+                'tenantid' => $newparent->tenantid,
+                'path' => $newpath . '/%',
+                'cid' => $this->_id,
+            ];
+            $DB->execute($sql, $params);
+        }
 
         $this->mark_dirty();
 
@@ -668,6 +722,7 @@ abstract class context extends stdClass implements IteratorAggregate {
         $record->depth = 0;
         $record->path = null; // Not known before insert.
         $record->locked = 0;
+        $record->tenantid = null;
 
         $record->id = $DB->insert_record('context', $record);
 
@@ -675,6 +730,11 @@ abstract class context extends stdClass implements IteratorAggregate {
         if (!is_null($parentpath)) {
             $record->path = $parentpath.'/'.$record->id;
             $record->depth = substr_count($record->path, '/');
+
+            if (mutenancy_is_active()) {
+                $record->tenantid = \core\context\tenant::guess_tenantid($record->contextlevel, $record->instanceid, $record->path);
+            }
+
             $DB->update_record('context', $record);
         }
 

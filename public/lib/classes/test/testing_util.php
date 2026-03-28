@@ -732,7 +732,10 @@ abstract class testing_util {
         $output .= ", " . $env['dbtype'] . ": " . $env['dbversion'];
 
         // OS details.
-        $output .= ", OS: " . $env['os'] . "\n";
+        $output .= ", OS: " . $env['os'];
+
+        $output .= ", Multi-tenancy active: " . (mutenancy_is_active() ? 'Yes' : 'No');
+        $output .=  "\n";
 
         return $output;
     }

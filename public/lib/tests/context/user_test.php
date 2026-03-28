@@ -155,7 +155,11 @@ final class user_test extends \advanced_testcase {
      * @covers ::get_possible_parent_levels
      */
     public function test_get_possible_parent_levels(): void {
-        $this->assertSame([system::LEVEL], user::get_possible_parent_levels());
+        if (mutenancy_is_active()) {
+            $this->assertSame([system::LEVEL, tenant::LEVEL], user::get_possible_parent_levels());
+        } else {
+            $this->assertSame([system::LEVEL], user::get_possible_parent_levels());
+        }
     }
 
     /**

@@ -55,7 +55,7 @@ class message_output_airnotifier extends message_output {
 
         // Skip any messaging suspended and deleted users.
         if ($eventdata->userto->auth === 'nologin' or
-            $eventdata->userto->suspended or
+            $eventdata->userto->suspended or mutenancy_is_user_archived($eventdata->userto) or
             $eventdata->userto->deleted) {
             return true;
         }

@@ -441,7 +441,8 @@ class theme_config {
 
         // Load theme settings from db.
         try {
-            $settings = get_config('theme_' . $themename);
+            //$settings = get_config('theme_' . $themename);
+            $settings = mutenancy_get_config('theme_' . $themename);
         } catch (dml_exception $e) {
             // Most probably moodle tables not created yet.
             $settings = new stdClass();
@@ -832,6 +833,15 @@ class theme_config {
                 $rev .= "_{$themesubrevision}";
             }
 
+            if (mutenancy_is_active()) {
+                $tenantid = \tool_mutenancy\local\tenancy::get_current_tenantid();
+                if ($tenantid) {
+                    if (\tool_mutenancy\local\appearance::has_custom_css($tenantid, $this->name)) {
+                        $rev .= "_t{$tenantid}";
+                    }
+                }
+            }
+
             if (!empty($CFG->slasharguments)) {
                 $slashargs = '';
                 if (!$svg) {
@@ -1007,7 +1017,17 @@ class theme_config {
         $nosvg = (!$this->use_svg_icons()) ? 'nosvg_' : '';
         $rtlmode = ($this->rtlmode == true) ? 'rtl' : 'ltr';
 
-        return $nosvg . $this->name . '_' . $rtlmode;
+        $t = '';
+        if (mutenancy_is_active()) {
+            $tenantid = \tool_mutenancy\local\tenancy::get_current_tenantid();
+            if ($tenantid) {
+                if (\tool_mutenancy\local\appearance::has_custom_css($tenantid, $this->name)) {
+                    $t = "_t{$tenantid}";
+                }
+            }
+        }
+
+        return $nosvg . $this->name . '_' . $rtlmode . $t;
     }
 
     /**
@@ -1780,11 +1800,20 @@ class theme_config {
         $component = 'theme_' . $this->name;
         $itemid = theme_get_revision();
         $filepath = $this->settings->$setting;
-        $syscontext = context_system::instance();
+
+        $context = context_system::instance();
+        if (mutenancy_is_active()) {
+            $tenantid = \tool_mutenancy\local\tenancy::get_current_tenantid();
+            if ($tenantid) {
+                if (\tool_mutenancy\local\config::is_overridden($tenantid, $component, $setting)) {
+                    $context = \context_tenant::instance($tenantid);
+                }
+            }
+        }
 
         $url = moodle_url::make_file_url(
             "$CFG->wwwroot/pluginfile.php",
-            "/$syscontext->id/$component/$filearea/$itemid" . $filepath,
+            "/$context->id/$component/$filearea/$itemid" . $filepath,
         );
 
         // Now this is tricky because the we can not hardcode http or https here, lets use the relative link.
@@ -1802,13 +1831,16 @@ class theme_config {
      * @param array $args
      * @param bool $forcedownload
      * @param array $options
+     * @param \core\context|null $context use tenant context if necessary
      * @return bool may terminate if file not found or donotdie not specified
      */
-    public function setting_file_serve($filearea, $args, $forcedownload, $options) {
+    public function setting_file_serve($filearea, $args, $forcedownload, $options, $context = null) {
         global $CFG;
         require_once("$CFG->libdir/filelib.php");
 
-        $syscontext = context_system::instance();
+        if (!$context) {
+            $context = context_system::instance();
+        }
         $component = 'theme_' . $this->name;
 
         $revision = array_shift($args);
@@ -1825,7 +1857,7 @@ class theme_config {
         $fs = get_file_storage();
         $relativepath = implode('/', $args);
 
-        $fullpath = "/{$syscontext->id}/{$component}/{$filearea}/0/{$relativepath}";
+        $fullpath = "/{$context->id}/{$component}/{$filearea}/0/{$relativepath}";
         $fullpath = rtrim($fullpath, '/');
         if ($file = $fs->get_file_by_hash(sha1($fullpath))) {
             send_stored_file($file, $lifetime, 0, $forcedownload, $options);

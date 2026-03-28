@@ -352,6 +352,11 @@ final class context_helper_test extends \advanced_testcase {
      * @covers ::get_preload_record_columns
      */
     public function test_get_preload_record_columns(): void {
+        $this->resetAfterTest();
+        if (mutenancy_is_active()) {
+            \tool_mutenancy\local\tenancy::deactivate();
+        }
+
         $expected = array (
             'testalias.id' => 'ctxid',
             'testalias.path' => 'ctxpath',
@@ -370,6 +375,11 @@ final class context_helper_test extends \advanced_testcase {
      */
     public function test_get_preload_record_columns_sql(): void {
         global $DB;
+
+        $this->resetAfterTest();
+        if (mutenancy_is_active()) {
+            \tool_mutenancy\local\tenancy::deactivate();
+        }
 
         $result = context_helper::get_preload_record_columns_sql('testalias');
         $expected = 'testalias.id AS ctxid, testalias.path AS ctxpath, testalias.depth AS ctxdepth,'

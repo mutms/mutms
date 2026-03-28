@@ -238,8 +238,9 @@ class contentbank {
         $courses = $coursescache->get($userid);
 
         if ($categories === false || $courses === false) {
-            // Required fields for preloading the context record.
-            $contextfields = 'ctxid, ctxpath, ctxdepth, ctxlevel, ctxinstance, ctxlocked';
+            // Fix sloppy context preloading code!
+            $contextfields = \core\context_helper::get_preload_record_columns('');
+            $contextfields = implode(', ', $contextfields);
 
             list($categories, $courses) = get_user_capability_contexts($capability, true, $userid, true,
                 "fullname, {$contextfields}", "name, {$contextfields}", 'fullname', 'name');

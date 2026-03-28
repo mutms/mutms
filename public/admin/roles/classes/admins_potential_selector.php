@@ -52,6 +52,10 @@ class core_role_admins_potential_selector extends user_selector_base {
         $fields = 'SELECT u.id, ' . $this->userfieldsselects;
         $countfields = 'SELECT COUNT(1)';
 
+        if (mutenancy_is_active()) {
+            $wherecondition .= " AND u.tenantid IS NULL";
+        }
+
         $sql = " FROM {user} u
                       $this->userfieldsjoin
                 WHERE $wherecondition AND mnethostid = :localmnet";

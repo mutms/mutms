@@ -404,6 +404,20 @@ class helper {
             ];
         }
 
+        if (mutenancy_is_active()) {
+            if ($category->get_context()->tenantid
+                && $category->get_context()->depth == 2
+                && has_capability('tool/mutenancy:view', $category->get_context())
+            ) {
+                $url = new \moodle_url('/admin/tool/mutenancy/tenant.php', ['id' => $category->get_context()->tenantid]);
+                $actions['tenant'] = [
+                    'url' => $url,
+                    'icon' => new \pix_icon('switch', '', 'tool_mutenancy'),
+                    'string' => get_string('tenant', 'tool_mutenancy'),
+                ];
+            }
+        }
+
         return $actions;
     }
 

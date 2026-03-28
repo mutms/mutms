@@ -84,7 +84,8 @@ function core_admin_pluginfile($course, $cm, $context, $filearea, $args, $forced
         $options = ['cacheability' => 'public'];
 
         // Check if we've got a cached file to return. When lifetime is 0 then we don't want to cached one.
-        $candidate = $CFG->localcachedir . "/core_admin/$themerev/$filearea/{$maxwidth}x{$maxheight}/$filename";
+        // mutenancy: add context id because we have logos in tenant contexts!
+        $candidate = $CFG->localcachedir . "/core_admin/$themerev/$context->id/$filearea/{$maxwidth}x{$maxheight}/$filename";
         if (file_exists($candidate) && $lifetime > 0) {
             send_file($candidate, $filename, $lifetime, 0, false, false, '', false, $options);
         }

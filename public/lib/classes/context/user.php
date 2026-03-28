@@ -110,7 +110,11 @@ class user extends context {
      * @return int[]
      */
     public static function get_possible_parent_levels(): array {
-        return [system::LEVEL];
+        $result = [system::LEVEL];
+        if (mutenancy_is_active()) {
+            $result[] = tenant::LEVEL;
+        }
+        return $result;
     }
 
     /**
@@ -163,8 +167,13 @@ class user extends context {
         }
 
         if (!$record = $DB->get_record('context', array('contextlevel' => self::LEVEL, 'instanceid' => $userid))) {
-            if ($user = $DB->get_record('user', array('id' => $userid, 'deleted' => 0), 'id', $strictness)) {
-                $record = context::insert_context_record(self::LEVEL, $user->id, '/'.SYSCONTEXTID, 0);
+            if ($user = $DB->get_record('user', ['id' => $userid, 'deleted' => 0], '*', $strictness)) {
+                if (mutenancy_is_active() && $user->tenantid) {
+                    $tenantcontext = tenant::instance($user->tenantid);
+                    $record = context::insert_context_record(self::LEVEL, $user->id, '/'.SYSCONTEXTID.'/'.$tenantcontext->id);
+                } else {
+                    $record = context::insert_context_record(self::LEVEL, $user->id, '/'.SYSCONTEXTID);
+                }
             }
         }
 
@@ -237,6 +246,19 @@ class user extends context {
                        path = {$path}
                  WHERE contextlevel = " . self::LEVEL . "
                    AND ($where)";
+
+        if (!mutenancy_is_active()) {
+            $DB->execute($sql, $params);
+            return;
+        }
+
+        $sql = "UPDATE {context}
+                   SET depth = 2,
+                       path = {$path},
+                       tenantid = NULL
+                 WHERE contextlevel = " . self::LEVEL . "
+                   AND ($where)
+                   AND instanceid IN (SELECT u.id FROM {user} u WHERE u.tenantid IS NULL)";
         $DB->execute($sql, $params);
     }
 }

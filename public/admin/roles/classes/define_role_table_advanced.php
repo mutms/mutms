@@ -541,7 +541,13 @@ class core_role_define_role_table_advanced extends core_role_capability_table_wi
         $options = array();
         $options[''] = get_string('none');
         foreach (get_role_archetypes() as $type) {
-            $options[$type] = get_string('archetype'.$type, 'role');
+            if ($type === 'tenantmanager') {
+                $options[$type] = get_string('role_tenantmanager_archetype', 'tool_mutenancy');
+            } else if ($type === 'tenantuser') {
+                $options[$type] = get_string('role_tenantuser_archetype', 'tool_mutenancy');
+            } else {
+                $options[$type] = get_string('archetype'.$type, 'role');
+            }
         }
         return html_writer::select($options, 'archetype', $this->role->archetype, false,
             ['class' => 'form-select']);

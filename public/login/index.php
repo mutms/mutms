@@ -46,6 +46,10 @@ if (defined('BEHAT_SITE_RUNNING') && BEHAT_SITE_RUNNING) {
     }
 }
 
+if (mutenancy_is_active()) {
+    \tool_mutenancy\local\tenancy::callback_login_page();
+}
+
 $context = context_system::instance();
 $PAGE->set_url("$CFG->wwwroot/login/index.php");
 $PAGE->set_context($context);
@@ -406,6 +410,16 @@ if (isloggedin() and !isguestuser()) {
     );
     echo $OUTPUT->box_end();
 } else {
+
+    if (mutenancy_is_active()) {
+        $tenantselect = new \tool_mutenancy\output\logintenantselector();
+        if ($tenantselect->has_items()) {
+            echo '<div class="float-end">';
+            echo $OUTPUT->render($tenantselect);
+            echo '</div>';
+        }
+    }
+
     $loginform = new \core_auth\output\login($authsequence, $frm->username);
     $loginform->set_error($errormsg, $errorcode);
     $loginform->set_info($infomsg);

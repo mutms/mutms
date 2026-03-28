@@ -489,6 +489,10 @@ class phpunit_util extends \core\test\testing_util {
         set_config('curlsecurityblockedhosts', '');
         set_config('curlsecurityallowedport', '');
 
+        if (defined('TEST_MUTENANCY_INIT_ACTIVATE') && TEST_MUTENANCY_INIT_ACTIVATE) {
+            \tool_mutenancy\local\tenancy::activate();
+        }
+
         // Execute all the adhoc tasks.
         while ($task = \core\task\manager::get_next_adhoc_task(time())) {
             $task->execute();

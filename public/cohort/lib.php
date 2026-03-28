@@ -133,8 +133,18 @@ function cohort_update_cohort($cohort) {
 function cohort_delete_cohort($cohort) {
     global $DB;
 
+    $cohort = $DB->get_record('cohort', ['id' => $cohort->id]);
+    if (!$cohort) {
+        return;
+    }
+
     if ($cohort->component) {
         // TODO: add component delete callback
+
+        if ($cohort->component === 'tool_mutenancy') {
+            // Do NOT delete cohorts belonging to other plugins!
+            return;
+        }
     }
 
     $handler = core_cohort\customfield\cohort_handler::create();

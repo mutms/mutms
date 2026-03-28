@@ -179,7 +179,7 @@ class webservice {
         }
 
         //check the user is suspended
-        if (!empty($user->suspended)) {
+        if (!empty($user->suspended) || mutenancy_is_user_archived($user)) {
             $params = $loginfaileddefaultparams;
             $params['other']['reason'] = 'user_suspended';
             $event = \core\event\webservice_login_failed::create($params);

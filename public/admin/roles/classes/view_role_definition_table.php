@@ -50,6 +50,10 @@ class core_role_view_role_definition_table extends core_role_define_role_table_a
     protected function get_archetype_field($id) {
         if (empty($this->role->archetype)) {
             return get_string('none');
+        } else if ($this->role->archetype === 'tenantmanager') {
+            return get_string('role_tenantmanager_archetype', 'tool_mutenancy');
+        } else if ($this->role->archetype === 'tenantuser') {
+            return get_string('role_tenantuser_archetype', 'tool_mutenancy');
         } else {
             return get_string('archetype'.$this->role->archetype, 'core_role');
         }

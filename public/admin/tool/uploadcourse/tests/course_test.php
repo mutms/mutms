@@ -243,6 +243,9 @@ final class course_test extends \advanced_testcase {
         global $DB;
 
         $rolesallowed = ['manager'];
+        if (mutenancy_is_active()) {
+            $rolesallowed[] = 'tenantmanager';
+        }
         $roles = get_all_roles();
 
         $mode = tool_uploadcourse_processor::MODE_CREATE_NEW;

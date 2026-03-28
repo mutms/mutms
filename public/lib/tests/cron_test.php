@@ -42,6 +42,10 @@ final class cron_test extends \advanced_testcase {
         global $PAGE, $USER, $SESSION, $SITE, $CFG;
         $this->resetAfterTest();
 
+        if (mutenancy_is_active()) {
+            \tool_mutenancy\local\tenancy::deactivate();
+        }
+
         $admin = get_admin();
         $user1 = $this->getDataGenerator()->create_user();
         $user2 = $this->getDataGenerator()->create_user();

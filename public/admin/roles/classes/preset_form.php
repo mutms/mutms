@@ -59,7 +59,13 @@ class core_role_preset_form extends moodleform {
         $group = get_string('archetype', 'core_role');
         $options[$group] = array();
         foreach (get_role_archetypes() as $type) {
-            $options[$group][$type] = get_string('archetype'.$type, 'core_role');
+            if ($type === 'tenantmanager') {
+                $options[$group][$type] = get_string('role_tenantmanager_archetype', 'tool_mutenancy');
+            } else if ($type === 'tenantuser') {
+                $options[$group][$type] = get_string('role_tenantuser_archetype', 'tool_mutenancy');
+            } else {
+                $options[$group][$type] = get_string('archetype'.$type, 'core_role');
+            }
         }
 
         $mform->addElement('header', 'presetheader', get_string('roleresetdefaults', 'core_role'));

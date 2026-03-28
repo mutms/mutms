@@ -57,10 +57,19 @@ class cohort_candidate_selector extends user_selector_base {
         $fields      = 'SELECT u.id, ' . $this->userfieldsselects;
         $countfields = 'SELECT COUNT(1)';
 
+        if (mutenancy_is_active()) {
+            $cohort = $DB->get_record('cohort', ['id' => $this->cohortid], '*', MUST_EXIST);
+            $context = context::instance_by_id($cohort->contextid);
+            $tenantrestriction = \tool_mutenancy\local\tenancy::get_related_users_exists('u.id', $context);
+        } else {
+            $tenantrestriction = '';
+        }
+
         $sql = " FROM {user} u
             LEFT JOIN {cohort_members} cm ON (cm.userid = u.id AND cm.cohortid = :cohortid)
                 $this->userfieldsjoin
-                WHERE cm.id IS NULL AND $wherecondition";
+                WHERE cm.id IS NULL AND $wherecondition
+                      $tenantrestriction";
 
         list($sort, $sortparams) = users_order_by_sql('u', $search, $this->accesscontext, $this->userfieldsmappings);
         $order = ' ORDER BY ' . $sort;

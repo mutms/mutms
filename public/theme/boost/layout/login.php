@@ -28,8 +28,9 @@ $bodyattributes = $OUTPUT->body_attributes();
 
 // Left-panel instructions. Only set when the admin has defined custom instructions;
 // the template falls back to the default welcome content when this is empty/null.
-$leftinstructions = !empty($CFG->auth_instructions)
-    ? format_text($CFG->auth_instructions, FORMAT_MOODLE, ['context' => context_system::instance()])
+$instructions = mutenancy_get_config('core', 'auth_instructions');
+$leftinstructions = !empty($instructions)
+    ? format_text($instructions, FORMAT_MOODLE, ['context' => context_system::instance()])
     : null;
 
 $templatecontext = [

@@ -97,6 +97,21 @@ class user_editadvanced_form extends moodleform {
             }
         }
 
+        if (mutenancy_is_active()) {
+            if ($user->id == -1) {
+                $mform->addElement('hidden', 'tenantid');
+                $mform->setType('tenantid', PARAM_INT);
+                $mform->setConstant('tenantid', $user->tenantid);
+            }
+            if ($user->tenantid) {
+                $tenant = \tool_mutenancy\local\tenant::fetch($user->tenantid);
+                if ($tenant) {
+                    $mform->addElement('static', 'statictenantid', get_string('tenant', 'tool_mutenancy'),
+                        format_string($tenant->name));
+                }
+            }
+        }
+
         $purpose = user_edit_map_field_purpose($userid, 'username');
         $mform->addElement('text', 'username', get_string('username'), 'size="20"' . $purpose);
         $mform->addHelpButton('username', 'username', 'auth');

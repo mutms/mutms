@@ -114,6 +114,9 @@ class provider implements
             CONTEXT_MODULE,
             CONTEXT_BLOCK
         ];
+        if (mutenancy_is_active()) {
+            $contexts[] = CONTEXT_TENANT;
+        }
         list($insql, $inparams) = $DB->get_in_or_equal($contexts, SQL_PARAMS_NAMED);
         $sql = "SELECT ctx.id
                   FROM {context} ctx
@@ -139,6 +142,9 @@ class provider implements
             CONTEXT_MODULE,
             CONTEXT_BLOCK
         ];
+        if (mutenancy_is_active()) {
+            $contexts[] = CONTEXT_TENANT;
+        }
         list($insql, $inparams) = $DB->get_in_or_equal($contexts, SQL_PARAMS_NAMED);
         $params = [
             'userid' => $userid,
@@ -227,6 +233,9 @@ class provider implements
             CONTEXT_MODULE,
             CONTEXT_BLOCK
         ];
+        if (mutenancy_is_active()) {
+            $contexts[] = CONTEXT_TENANT;
+        }
         list($inctxsql, $ctxparams) = $DB->get_in_or_equal($contexts, SQL_PARAMS_NAMED);
         $sql = "SELECT ra.id, ra.contextid, ra.roleid, ra.userid, ra.timemodified, ra.modifierid, $ctxfields
                   FROM {role_assignments} ra
@@ -273,6 +282,9 @@ class provider implements
             CONTEXT_MODULE,
             CONTEXT_BLOCK
         ];
+        if (mutenancy_is_active()) {
+            $contexts[] = CONTEXT_TENANT;
+        }
         list($inctxsql, $ctxparams) = $DB->get_in_or_equal($contexts, SQL_PARAMS_NAMED);
         $sql = "SELECT rc.id, rc.contextid, rc.capability, rc.permission, rc.timemodified, rc.roleid, $ctxfields
                   FROM {context} ctx

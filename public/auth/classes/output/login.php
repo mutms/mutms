@@ -95,10 +95,17 @@ class login implements renderable, templatable {
 
         $languagedata = new \core\output\language_menu($PAGE);
 
+        $registerauth = mutenancy_get_config('core', 'registerauth');
+
         $this->languagemenu = $languagedata->export_for_action_menu($OUTPUT);
         $this->canloginasguest = $CFG->guestloginbutton && !isguestuser();
+        if (mutenancy_is_active()) {
+            if (\tool_mutenancy\local\tenancy::get_current_tenantid()) {
+                $this->canloginasguest = false;
+            }
+        }
         $this->canloginbyemail = !empty($CFG->authloginviaemail);
-        $this->cansignup = $CFG->registerauth == 'email' || !empty($CFG->registerauth);
+        $this->cansignup = !empty($registerauth); // mutenancy tweak
         if ($CFG->rememberusername == 0) {
             $this->cookieshelpicon = new help_icon('cookiesenabledonlysession', 'core');
         } else {
@@ -112,10 +119,10 @@ class login implements renderable, templatable {
         $this->signupurl = new moodle_url('/login/signup.php');
 
         // Authentication instructions.
-        $this->instructions = $CFG->auth_instructions;
+        $this->instructions = mutenancy_get_config('core', 'auth_instructions');
         if (is_enabled_auth('none')) {
             $this->instructions = get_string('loginstepsnone');
-        } else if ($CFG->registerauth == 'email' && empty($this->instructions)) {
+        } else if ($registerauth == 'email' && empty($this->instructions)) { // mutenancy tweak
             $this->instructions = get_string('logindonthaveaccount');
         }
 
@@ -195,7 +202,7 @@ class login implements renderable, templatable {
         $data->recaptcha = $this->recaptcha;
         $data->togglepassword = $this->togglepassword;
         $data->smallscreensonly = $this->smallscreensonly;
-        $data->showloginform = get_config('core', 'showloginform') === false || get_config('core', 'showloginform');
+        $data->showloginform = get_config('core', 'showloginform') === false || mutenancy_get_config('core', 'showloginform');
 
         return $data;
     }

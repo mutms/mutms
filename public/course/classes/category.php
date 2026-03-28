@@ -316,6 +316,18 @@ class core_course_category implements renderable, cacheable_object, IteratorAggr
      * @return core_course_category|null
      */
     public static function user_top() {
+        if (mutenancy_is_active()) {
+            $tenantid = \tool_mutenancy\local\tenancy::get_current_tenantid();
+            if ($tenantid) {
+                $tenant = \tool_mutenancy\local\tenant::fetch($tenantid);
+                if ($tenant) {
+                    $category = self::get($tenant->categoryid, IGNORE_MISSING);
+                    if ($category && $category->is_uservisible()) {
+                        return $category;
+                    }
+                }
+            }
+        }
         $children = self::top()->get_children();
         if (count($children) == 1) {
             // User has access to only one category on the top level. Return this category as "user top category".
@@ -1943,6 +1955,14 @@ class core_course_category implements renderable, cacheable_object, IteratorAggr
         if (!$this->has_manage_capability()) {
             return false;
         }
+
+        if (mutenancy_is_active()) {
+            $context = $this->get_context();
+            if ($context->tenantid && $context->depth == 2) {
+                return false;
+            }
+        }
+
         return $this->parent_has_manage_capability();
     }
 
@@ -1964,6 +1984,13 @@ class core_course_category implements renderable, cacheable_object, IteratorAggr
 
         if (!$this->has_manage_capability()) {
             return false;
+        }
+
+        if (mutenancy_is_active()) {
+            $context = $this->get_context();
+            if ($context->tenantid && $context->depth == 2) {
+                return false;
+            }
         }
 
         // Check all child categories (not only direct children).
@@ -2026,6 +2053,13 @@ class core_course_category implements renderable, cacheable_object, IteratorAggr
         require_once($CFG->libdir.'/gradelib.php');
         require_once($CFG->libdir.'/questionlib.php');
         require_once($CFG->dirroot.'/cohort/lib.php');
+
+        if (mutenancy_is_active()) {
+            $context = $this->get_context();
+            if ($context->tenantid && $context->depth == 2) {
+                throw new \core\exception\coding_exception('Cannot delete tenant category');
+            }
+        }
 
         // Make sure we won't timeout when deleting a lot of courses.
         $settimeout = core_php_time_limit::raise();
@@ -2146,6 +2180,13 @@ class core_course_category implements renderable, cacheable_object, IteratorAggr
             return false;
         }
 
+        if (mutenancy_is_active()) {
+            $context = $this->get_context();
+            if ($context->tenantid && $context->depth == 2) {
+                return false;
+            }
+        }
+
         $testcaps = array();
         // If this category has courses in it, user must have 'course:create' capability in target category.
         if ($this->has_courses()) {
@@ -2189,6 +2230,13 @@ class core_course_category implements renderable, cacheable_object, IteratorAggr
         require_once($CFG->libdir.'/gradelib.php');
         require_once($CFG->libdir.'/questionlib.php');
         require_once($CFG->dirroot.'/cohort/lib.php');
+
+        if (mutenancy_is_active()) {
+            $context = $this->get_context();
+            if ($context->tenantid && $context->depth == 2) {
+                throw new \core\exception\coding_exception('Cannot delete tenant category');
+            }
+        }
 
         // Get all objects and lists because later the caches will be reset so.
         // We don't need to make extra queries.
@@ -2326,6 +2374,12 @@ class core_course_category implements renderable, cacheable_object, IteratorAggr
         global $DB;
 
         $context = $this->get_context();
+
+        if (mutenancy_is_active()) {
+            if ($context->tenantid && $context->depth == 2) {
+                throw new moodle_exception('cannotmovecategory');
+            }
+        }
 
         $hidecat = false;
         if (empty($newparentcat->id)) {
@@ -2737,6 +2791,11 @@ class core_course_category implements renderable, cacheable_object, IteratorAggr
         $a['xi'] = $context->id;
         $a['xp'] = $context->path;
         $a['xl'] = $context->locked;
+
+        if (mutenancy_is_active()) {
+            $a['xt'] = $context->tenantid;
+        }
+
         return $a;
     }
 
@@ -2766,6 +2825,9 @@ class core_course_category implements renderable, cacheable_object, IteratorAggr
         $record->ctxlevel = CONTEXT_COURSECAT;
         $record->ctxinstance = $record->id;
         $record->ctxlocked = $a['xl'];
+        if (array_key_exists('xt', $a)) {
+            $record->ctxtenantid = $a['xt'];
+        }
         return new self($record, true);
     }
 
@@ -3239,9 +3301,16 @@ class core_course_category implements renderable, cacheable_object, IteratorAggr
         //
         // IMPORTANT: This is an exception, not a precedent. The broader use of CTEs
         // and potential abstraction-layer support will be discussed separately.
+
+        $tenantidcolumn = '';
+        if (mutenancy_is_active()) {
+            // MuTMS: workaround for missing regualr context preloading logic.
+            $tenantidcolumn = ', tenantid';
+        }
+
         $sql = "
         WITH ctx AS (
-            SELECT id, instanceid, path, depth, contextlevel, locked
+            SELECT id, instanceid, path, depth, contextlevel, locked $tenantidcolumn
               FROM {context}
              WHERE contextlevel = :ctxlevel
                AND $likeparent
