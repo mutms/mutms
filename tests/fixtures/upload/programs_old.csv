@@ -1,0 +1,5 @@
+idnumber,fullname,category,description,descriptionformat,public,creategroups,allocationstart,allocationend,startdate,duedate,enddate
+P00,"Program 00",,"<p>Test program</p>
+<p>at system context</p>",1,1,0,2023-10-30T17:57:00+00:00,2029-10-30T17:57:00+00:00,type=delay|delay=P3D,type=delay|delay=P1M,type=delay|delay=P6M
+P01,"Program 01","Category 1",,1,0,1,,,type=allocation,type=notset,type=notset
+P02,"Program 02",CAT2,,1,0,0,,,type=date|date=2024-10-01T18:09:00+01:00,type=date|date=2024-11-01T18:09:00+00:00,type=date|date=2024-12-01T18:09:00+00:00
