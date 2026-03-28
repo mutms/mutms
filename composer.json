@@ -1,0 +1,15 @@
+{
+  "name": "mutms/moodle-tool_muloginas",
+  "type": "moodle-tool",
+  "description": "Log-in-as via Incognito window plugin for Moodle LMS",
+  "homepage": "https://github.com/mutms/moodle-tool_muloginas",
+  "license": "GPL-3.0-or-later",
+  "require": {
+    "moodle/composer-installer": "*",
+    "moodle/moodle": "5.1.*||5.2.*"
+  },
+  "support": {
+    "issues": "https://github.com/mutms/moodle-tool_muloginas/issues",
+    "source": "https://github.com/mutms/moodle-tool_muloginas"
+  }
+}
