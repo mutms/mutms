@@ -5,10 +5,8 @@
   "homepage": "https://github.com/mutms/moodle-enrol_muprog",
   "license": "GPL-3.0-or-later",
   "require": {
-    "composer/installers": "*"
-  },
-  "extra": {
-    "installer-name": "muprog"
+    "moodle/composer-installer": "*",
+    "moodle/moodle": "5.1.*||5.2.*"
   },
   "support": {
     "issues": "https://github.com/mutms/moodle-enrol_muprog/issues",
