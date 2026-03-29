@@ -4,6 +4,12 @@ Plugin versioning is derived from Moodle releases, it does not comply with the s
 
 The format of this change log follows the advice given at [Keep a CHANGELOG](https://keepachangelog.com).
 
+## [v5.1.3.06](https://github.com/mutms/moodle-tool_mutenancy/compare/v5.1.3.05...v5.1.3.06) - 2026-03-29
+
+### Fixed
+
+- Changed Composer requirement to fix mutms/seed-mutenancy
+
 ## [v5.1.3.05](https://github.com/mutms/moodle-tool_mutenancy/compare/v5.1.3.04...v5.1.3.05) - 2026-03-28
 
 - No changes

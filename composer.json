@@ -6,7 +6,7 @@
   "license": "GPL-3.0-or-later",
   "require": {
     "moodle/composer-installer": "*",
-    "moodle/moodle": "5.1.3",
+    "moodle/moodle": "5.1.*",
     "mutms/moodle-tool_mulib": "*"
   },
   "support": {
