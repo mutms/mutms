@@ -4,6 +4,7 @@
     "description": "Moodle - the world's open source learning platform",
     "type": "moodle-core",
     "homepage": "https://moodle.org",
+    "version": "v5.1.3",
     "provide": {
         "moodle/lms": "5.1"
     },
@@ -30,7 +31,10 @@
         }
     },
     "extra": {
-        "haspublicdir": true
+        "haspublicdir": true,
+        "branch-alias": {
+            "dev-patch/mutenancy/MOODLE_501_STABLE": "5.1.x-dev"
+        }
     },
     "minimum-stability": "dev",
     "prefer-stable": true,
