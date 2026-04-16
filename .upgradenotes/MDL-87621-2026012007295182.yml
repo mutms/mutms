@@ -1,8 +1,0 @@
-issueNumber: MDL-87621
-notes:
-  mod_subsection:
-    - message: >-
-        When restoring backups, subsection descriptions are now ignored. This
-        change ensures that subsection do not incorrectly restore legacy
-        summary.
-      type: changed

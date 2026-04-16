@@ -94,10 +94,10 @@ Feature: Test if the login form provides the correct feedback
     And I press "Save changes"
     And I log out
     And I am on homepage
-    Then I should see "Google"
+    Then I should see "Log in with Google"
     But I should not see "elgooG"
-    And I should see "Facebook"
-    And I should see "Microsoft"
+    And I should see "Log in with Facebook"
+    And I should see "Log in with Microsoft"
 
   Scenario: Test the login page auto focus feature
     Given the following config values are set as admin:

@@ -1,9 +1,0 @@
-issueNumber: MDL-87242
-notes:
-  core_enrol:
-    - message: >-
-        The external function core_enrol::get_enrolled_users() now behaves
-        consistently with the web version; returning the basic user information
-        even if the current user does not have permission to view the full
-        details.
-      type: changed

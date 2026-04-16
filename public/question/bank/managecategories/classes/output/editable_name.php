@@ -23,6 +23,7 @@ use core\output\renderable;
 use core\url;
 use core_external\external_api;
 use core_question\category_manager;
+use core_question\local\bank\question_counts;
 use core_question\output\question_category_selector;
 use qbank_managecategories\helper;
 
@@ -86,8 +87,13 @@ class editable_name extends inplace_editable implements named_templatable, rende
             ],
         );
         $categoryname = format_string($updatedcategory->name, true, ['context' => $context, 'escape' => false]);
-        $questioncountsql = question_category_selector::question_count_sql(categoryparam: '?');
-        $questioncount = $DB->get_field_sql($questioncountsql, [$categoryid]);
+        $questioncounts = new question_counts();
+        [$questioncountsql, $questioncountparams] = $questioncounts->by_category_query(categoryparam: ':categoryid');
+        $params = [
+            ...$questioncountparams,
+            'categoryid' => $categoryid,
+        ];
+        $questioncount = $DB->get_field_sql($questioncountsql, $params);
 
         $categorylink = new category_link(
             $categoryname,

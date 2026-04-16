@@ -1,4 +1,5 @@
 $login-layout-left-bg: $primary !default;
+$login-layout-panel-bg: darken($login-layout-left-bg, 25%);
 $login-layout-panel-padding: 3rem !default;
 $login-layout-content-width: 576px !default;
 $login-layout-copy-width: 450px !default;
@@ -20,7 +21,6 @@ $login-input-bg: $gray-100 !default;
 
 .login-layout-left {
     background-color: $login-layout-left-bg;
-    color: color-contrast($login-layout-left-bg);
     position: sticky;
     top: 0;
     align-self: flex-start;
@@ -34,7 +34,19 @@ $login-input-bg: $gray-100 !default;
 .login-layout-left-content {
     max-width: $login-layout-copy-width;
     text-align: center;
-    text-shadow: 1px 1px 3px $black;
+    color: color-contrast($login-layout-panel-bg);
+    background-color: rgba($login-layout-panel-bg, 0.65);
+    border-radius: $border-radius;
+    padding: $spacer;
+    margin-bottom: 5rem;
+    blockquote {
+        color: inherit;
+        border-left: 5px solid color-contrast($login-layout-panel-bg);
+    }
+    a {
+        color: inherit;
+        text-decoration: underline;
+    }
 }
 
 .login-layout-stats {

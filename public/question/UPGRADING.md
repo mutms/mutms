@@ -1,12 +1,15 @@
 # core_question (subsystem) Upgrade notes
 
-## 5.2beta
+## 5.2
 
 ### Added
 
 - During restore of a question_set_reference, mapping of IDs in the filtercondition is now delegated to qbank plugins. If your qbank plugin defines a filter condition that uses database IDs, add an override of `restore_filtercondition()` to the `condition` class, which checks the condition's data and replaces the IDs with mapped values if required. See  `qbank_managecategories\category_condition` for an example.
 
   For more information see [MDL-86524](https://tracker.moodle.org/browse/MDL-86524)
+- Moved the route for returning counts of questions in each of a course's question banks to `/api/rest/v2/question/counts`, for a more RESTful URL and consistency with other `core_question` routes.
+
+  For more information see [MDL-87264](https://tracker.moodle.org/browse/MDL-87264)
 - Added a new route at `/api/rest/v2/question/categories` for returning a list of question categories in a particular course module.
 
   For more information see [MDL-87264](https://tracker.moodle.org/browse/MDL-87264)
@@ -25,6 +28,9 @@
 - The `\core_question\output\switch_question_bank` renderable is now deprecated, as rendering of the switch_question_bank template is now all handled client-side by the `core_question/bank_switcher` Javascript module.
 
   For more information see [MDL-87264](https://tracker.moodle.org/browse/MDL-87264)
+- `core_question\output\question_category_selector::question_count_sql` has been replaces with `core_question\local\bank\question_counts\by_category_query`, to keep all the question counting logic together in one place.
+
+  For more information see [MDL-87848](https://tracker.moodle.org/browse/MDL-87848)
 
 ### Removed
 

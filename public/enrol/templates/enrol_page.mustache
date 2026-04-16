@@ -45,11 +45,14 @@
     data-enrol="{{enrol}}"
     data-instanceid="{{instanceid}}"
     {{#extraattributes}}{{name}}="{{value}}" {{/extraattributes}}
+    {{#header}}role="region" aria-labelledby="enrol-heading-{{enrol}}-{{instanceid}}"{{/header}}
 >
     <div class="card">
         {{#header}}
         <div class="card-header">
-            <span class="mb-0 fs-6 fw-bold">{{{header}}}</span>
+            {{$headercontent}}
+                <h4 id="enrol-heading-{{enrol}}-{{instanceid}}" class="mb-0 fs-6 fw-bold">{{{header}}}</h4>
+            {{/headercontent}}
         </div>
         {{/header}}
         {{#body}}

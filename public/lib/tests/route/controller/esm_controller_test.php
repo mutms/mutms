@@ -42,23 +42,21 @@ final class esm_controller_test extends route_testcase {
      * @return esm_controller
      */
     private function make_test_controller(?string $filename = null): esm_controller {
+        \core\di::set(
+            \core\output\requirements\import_map::class,
+            \DI\create(\core\tests\output\requirements\import_map::class),
+        );
+
         if ($filename === null) {
             $filename = make_request_directory() . '/test.js';
         }
         file_put_contents($filename, 'export default {};');
 
-        \core\di::set(
-            \core\output\requirements\import_map::class,
-            new class ($filename) extends \core\output\requirements\import_map {
-                // phpcs:ignore
-                public function __construct(private readonly string $fixture) {}
-                // phpcs:ignore
-                public function get_path_for_script(int $revision, string $requestedpath): ?string {
-                    return $this->fixture;
-                }
-            },
-        );
-        return new esm_controller();
+        /** @var \core\tests\output\requirements\import_map */
+        $map = \core\di::get(\core\output\requirements\import_map::class);
+        $map->set_fixture($filename);
+
+        return \core\di::get(esm_controller::class);
     }
 
     /**
@@ -81,7 +79,7 @@ final class esm_controller_test extends route_testcase {
     #[\PHPUnit\Framework\Attributes\DataProvider('serve_not_found_provider')]
     public function test_serve_not_found(string $scriptpath): void {
         $this->expectException(\core\exception\not_found_exception::class);
-        (new esm_controller())->serve(
+        \core\di::get(esm_controller::class)->serve(
             new ServerRequest('GET', "/12345/{$scriptpath}"),
             new Response(),
             12345,

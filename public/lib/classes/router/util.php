@@ -176,6 +176,16 @@ class util {
     public static function get_route_name_for_callable(
         callable|array|string $callable,
     ): string {
+        if (is_string($callable) && str_contains($callable, '::')) {
+            $callable = explode('::', $callable, 2);
+        }
+
+        if (is_array($callable) && count($callable) === 2) {
+            if (class_exists($callable[0]) && method_exists($callable[0], $callable[1])) {
+                return $callable[0] . '::' . $callable[1];
+            }
+        }
+
         $resolver = \core\di::get(\Invoker\CallableResolver::class);
         $callable = $resolver->resolve($callable);
 

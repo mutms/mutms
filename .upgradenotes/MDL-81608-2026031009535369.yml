@@ -1,8 +1,0 @@
-issueNumber: MDL-81608
-notes:
-  mod_quiz:
-    - message: >-
-        The language strings `addpagebreak` and `removepagebreak` have been
-        deprecated and should no longer be used. These have been replaced by
-        the `addpagebreakafter` and `removepagebreakafter` language strings.
-      type: deprecated

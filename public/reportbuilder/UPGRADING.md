@@ -1,6 +1,6 @@
 # core_reportbuilder (subsystem) Upgrade notes
 
-## 5.2beta
+## 5.2
 
 ### Added
 
@@ -53,9 +53,8 @@
 ### Removed
 
 - The following deprecated report helper methods have been removed:
-
-  * `audience::get_all_audiences_menu_types()`
-  * `report::get_available_columns()`
+  - `audience::get_all_audiences_menu_types()`
+  - `report::get_available_columns()`
 
   The stub `get_default_table_aliases()` method of the base entity class has also been removed as it hasn't been supported for some time
 

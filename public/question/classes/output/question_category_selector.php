@@ -16,10 +16,13 @@
 
 namespace core_question\output;
 
+use core\attribute\deprecated;
 use core\context;
+use core\deprecation;
 use core\output\renderable;
 use core\output\renderer_base;
 use core\output\templatable;
+use core_question\local\bank\question_counts;
 use core_question\local\bank\question_version_status;
 
 /**
@@ -89,19 +92,27 @@ class question_category_selector implements renderable, templatable {
             return [];
         }
 
-        [$insql, $inparams] = $DB->get_in_or_equal($validcontexts);
+        [$insql, $inparams] = $DB->get_in_or_equal($validcontexts, SQL_PARAMS_NAMED);
 
         $topwhere = $top ? '' : 'AND c.parent <> 0';
-        $countsql = $this->question_count_sql($showallversions);
+        $questioncounts = new question_counts();
+        [$countsql, $countparams] = $questioncounts->by_category_query($showallversions);
+        $params = array_merge($inparams, $countparams);
         $sql = "SELECT c.*,
                     ({$countsql}) AS questioncount
                   FROM {question_categories} c
                  WHERE c.contextid {$insql} {$topwhere}
               ORDER BY {$sortorder}";
 
-        return $DB->get_records_sql($sql, $inparams);
+        return $DB->get_records_sql($sql, $params);
     }
 
+    #[deprecated(
+        replacement: 'question_counts::by_category_query',
+        since: 5.2,
+        reason: 'Moved question count queries to a common class',
+        mdl: 'MDL-87848',
+    )]
     /**
      * Return the SQL query for getting a count of questions in a category.
      *
@@ -110,25 +121,10 @@ class question_category_selector implements renderable, templatable {
      * @return string The SQL.
      */
     public static function question_count_sql(int $showallversions = 0, string $categoryparam = 'c.id'): string {
-        $statuscondition = "AND (qv.status = '" . question_version_status::QUESTION_STATUS_READY . "' " .
-            " OR qv.status = '" . question_version_status::QUESTION_STATUS_DRAFT . "' )";
-        $substatuscondition = "AND qv2.status <> '"  . question_version_status::QUESTION_STATUS_HIDDEN . "' ";
-        return "
-            SELECT COUNT(1)
-              FROM {question} q
-              JOIN {question_versions} qv ON qv.questionid = q.id
-         LEFT JOIN {question_versions} qv2 ON (   qv2.questionbankentryid = qv.questionbankentryid
-                                             AND qv2.version > qv.version
-                                             $substatuscondition
-                                             )
-              JOIN {question_bank_entries} qbe ON qbe.id = qv.questionbankentryid
-             WHERE q.parent = '0'
-                   $statuscondition
-                   AND ({$showallversions} = 1
-                       OR qv2.questionbankentryid IS NULL
-                   )
-                   AND qbe.questioncategoryid = {$categoryparam}
-        ";
+        deprecation::emit_deprecation([self::class, __FUNCTION__]);
+        $questioncounts = new question_counts();
+        [$sql] = $questioncounts->by_category_query($showallversions, $categoryparam);
+        return $sql;
     }
 
     /**

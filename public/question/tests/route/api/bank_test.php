@@ -16,11 +16,17 @@
 
 namespace core_question\route\api;
 
+use core\router\route_loader_interface;
 use core\tests\router\route_testcase;
 use core\context\module;
+use core_question\local\bank\question_counts_test;
+use core_question\local\bank\question_version_status;
 
 /**
  * Unit tests for \core_question\route\api\bank
+ *
+ * This tests that the route correct calls {@see question_counts::by_course()} and returns the results in the correct format.
+ * Full coverage of {@see question_counts::by_course()} is in {@see question_counts_test}.
  *
  * @package   core_question
  * @copyright 2025 onwards Catalyst IT EU {@link https://catalyst-eu.net}
@@ -30,109 +36,6 @@ use core\context\module;
  */
 final class bank_test extends route_testcase {
     /**
-     * An empty bank should return a count of 0.
-     */
-    public function test_question_count_empty(): void {
-        $this->resetAfterTest();
-        $this->setAdminUser();
-        $this->add_class_routes_to_route_loader(
-            bank::class,
-            '/api/rest/v2/question'
-        );
-        $course = self::getDataGenerator()->create_course();
-        $qbank = self::getDataGenerator()->create_module('qbank', ['course' => $course->id]);
-
-        $response = $this->process_api_request('GET', "/question/bank/{$course->id}/question_counts");
-        $this->assert_valid_response($response);
-        $payload = $this->decode_response($response, true);
-
-        $this->assertEquals(['counts' => [$qbank->cmid => 0]], $payload);
-    }
-
-    /**
-     * A bank should return the correct number of questions.
-     */
-    public function test_question_count_questions(): void {
-        $this->resetAfterTest();
-        $this->setAdminUser();
-        $this->add_class_routes_to_route_loader(
-            bank::class,
-            '/api/rest/v2/question'
-        );
-        $course = self::getDataGenerator()->create_course();
-        $qbank = self::getDataGenerator()->create_module('qbank', ['course' => $course->id]);
-        $bankcontext = module::instance($qbank->cmid);
-        $category = question_get_default_category($bankcontext->id, true);
-        $questiongenerator = self::getDataGenerator()->get_plugin_generator('core_question');
-        $questiongenerator->create_question('truefalse', overrides: ['category' => $category->id]);
-        $questiongenerator->create_question('truefalse', overrides: ['category' => $category->id]);
-
-        $response = $this->process_api_request('GET', "/question/bank/{$course->id}/question_counts");
-        $this->assert_valid_response($response);
-        $payload = $this->decode_response($response, true);
-
-        $this->assertEquals(['counts' => [$qbank->cmid => 2]], $payload);
-
-        $questiongenerator->create_question('truefalse', overrides: ['category' => $category->id]);
-
-        $response = $this->process_api_request('GET', "/question/bank/{$course->id}/question_counts");
-        $this->assert_valid_response($response);
-        $payload = $this->decode_response($response, true);
-
-        $this->assertEquals(['counts' => [$qbank->cmid => 3]], $payload);
-    }
-
-    /**
-     * A question with multiple versions should only be counted once.
-     */
-    public function test_question_count_versions(): void {
-        $this->resetAfterTest();
-        $this->setAdminUser();
-        $this->add_class_routes_to_route_loader(
-            bank::class,
-            '/api/rest/v2/question'
-        );
-        $course = self::getDataGenerator()->create_course();
-        $qbank = self::getDataGenerator()->create_module('qbank', ['course' => $course->id]);
-        $bankcontext = module::instance($qbank->cmid);
-        $category = question_get_default_category($bankcontext->id, true);
-        $questiongenerator = self::getDataGenerator()->get_plugin_generator('core_question');
-        $q1 = $questiongenerator->create_question('truefalse', overrides: ['category' => $category->id]);
-        $questiongenerator->update_question($q1, overrides: ['questiontext' => 'edited']);
-        $questiongenerator->create_question('truefalse', overrides: ['category' => $category->id]);
-
-        $response = $this->process_api_request('GET', "/question/bank/{$course->id}/question_counts");
-        $this->assert_valid_response($response);
-        $payload = $this->decode_response($response, true);
-
-        $this->assertEquals(['counts' => [$qbank->cmid => 2]], $payload);
-    }
-
-    /**
-     * Subquestions should not be included in the question bank's total
-     */
-    public function test_question_count_subquestions(): void {
-        $this->resetAfterTest();
-        $this->setAdminUser();
-        $this->add_class_routes_to_route_loader(
-            bank::class,
-            '/api/rest/v2/question'
-        );
-        $course = self::getDataGenerator()->create_course();
-        $qbank = self::getDataGenerator()->create_module('qbank', ['course' => $course->id]);
-        $bankcontext = module::instance($qbank->cmid);
-        $category = question_get_default_category($bankcontext->id, true);
-        $questiongenerator = self::getDataGenerator()->get_plugin_generator('core_question');
-        $questiongenerator->create_question('multianswer', 'twosubq', ['category' => $category->id]);
-
-        $response = $this->process_api_request('GET', "/question/bank/{$course->id}/question_counts");
-        $this->assert_valid_response($response);
-        $payload = $this->decode_response($response, true);
-
-        $this->assertEquals(['counts' => [$qbank->cmid => 1]], $payload);
-    }
-
-    /**
      * All course modules using the question bank should have their count returned.
      */
     public function test_question_count_multiple_banks(): void {
@@ -140,7 +43,7 @@ final class bank_test extends route_testcase {
         $this->setAdminUser();
         $this->add_class_routes_to_route_loader(
             bank::class,
-            '/api/rest/v2/question'
+            route_loader_interface::ROUTE_GROUP_API,
         );
         $course = self::getDataGenerator()->create_course();
         $qbank1 = self::getDataGenerator()->create_module('qbank', ['course' => $course->id]);
@@ -170,7 +73,7 @@ final class bank_test extends route_testcase {
         $questiongenerator->create_question('truefalse', overrides: ['category' => $category4->id]);
         $questiongenerator->create_question('truefalse', overrides: ['category' => $category4->id]);
 
-        $response = $this->process_api_request('GET', "/question/bank/{$course->id}/question_counts");
+        $response = $this->process_api_request('GET', "/counts?course={$course->id}");
         $this->assert_valid_response($response);
         $payload = $this->decode_response($response, true);
 

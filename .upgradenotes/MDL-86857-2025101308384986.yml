@@ -1,7 +1,0 @@
-issueNumber: MDL-86857
-notes:
-  core_courseformat:
-    - message: >-
-        Add set_groupmode method to the core_courseformat\cmactions (course
-        format actions)
-      type: improved

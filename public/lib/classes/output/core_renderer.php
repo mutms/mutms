@@ -568,7 +568,17 @@ class core_renderer extends renderer_base {
         // for now. This will be replaced with the real content in {@see core_renderer::footer()}.
         $output = '';
         if ($this->page->pagelayout !== 'embedded' && !empty($CFG->additionalhtmlfooter)) {
-            $output .= "\n" . format_string($CFG->additionalhtmlfooter, false, ['context' => $this->page->context]);
+            // The additional HTML footer content needs to also support JS so it supports things like analytics or other tooling.
+            // It is controlled via config so is considered trusted for this.
+            // We use format_text rather than injecting directly, to support features like multi-lang.
+            $formatoptions = [
+                'trusted' => true,
+                'clean' => false,
+                'context' => $this->page->context,
+                'para' => false,
+                'allowid' => true,
+            ];
+            $output .= "\n" . format_text($CFG->additionalhtmlfooter, FORMAT_HTML, $formatoptions);
         }
         $output .= $this->unique_end_html_token;
         return $output;
@@ -2387,10 +2397,10 @@ class core_renderer extends renderer_base {
         $output = html_writer::tag('a', $output, $attributes);
 
         // Show suspended label if needed.
-        if ( $userpicture->showsuspended && property_exists($user, 'suspended') && $user->suspended) {
+        if ($userpicture->showsuspended && property_exists($user, 'suspended') && $user->suspended) {
             $output .= html_writer::tag(
                 'span',
-                get_string('suspended'),
+                get_string('suspended', 'auth'),
                 ['class' => 'badge text-bg-warning ms-1']
             );
         }
@@ -4521,6 +4531,10 @@ EOD;
      * @return string
      */
     public function region_main_settings_menu() {
+        if ($this->page->hide_settings()) {
+            return '';
+        }
+
         $context = $this->page->context;
         $menu = new action_menu();
 
@@ -4533,7 +4547,7 @@ EOD;
                 $buildmenu = true;
             } else if (
                 !empty($node) && ($node->type == navigation_node::TYPE_ACTIVITY ||
-                            $node->type == navigation_node::TYPE_RESOURCE)
+                    $node->type == navigation_node::TYPE_RESOURCE)
             ) {
                 $items = $this->page->navbar->get_items();
                 $navbarnode = end($items);

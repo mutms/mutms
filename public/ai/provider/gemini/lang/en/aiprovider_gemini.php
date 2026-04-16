@@ -44,7 +44,7 @@ $string['action:summarise_text:model_help'] = 'The model used to summarise the p
 $string['action:summarise_text:systeminstruction'] = 'System instruction';
 $string['action:summarise_text:systeminstruction_help'] = 'This instruction is sent to the AI model along with the user\'s prompt. Editing this instruction is not recommended unless absolutely required.';
 $string['apikey'] = 'Gemini API key';
-$string['apikey_help'] = 'Get a key from <a href="https://aistudio.google.com/apikey" target="_blank">Google AI Studio website API keys</a>.';
+$string['apikey_help'] = 'Get a key from <a href="https://aistudio.google.com/apikey" target="_blank">Google AI Studio API keys</a>.';
 $string['custom_model_name'] = 'Custom model name';
 $string['extraparams'] = 'Extra parameters';
 $string['extraparams_help'] = 'Extra parameters can be configured here. We support JSON format. For example:
@@ -54,7 +54,7 @@ $string['extraparams_help'] = 'Extra parameters can be configured here. We suppo
     "max_output_tokens": 100
 }
 </pre>';
-$string['getallmodels_error'] = 'You need to insert API key before.';
+$string['getallmodels_error'] = 'You need to insert the API key first.';
 $string['invalidjson'] = 'Invalid JSON string';
 $string['pluginname'] = 'Gemini API provider';
 $string['privacy:metadata'] = 'The Gemini API provider plugin does not store any personal data.';
@@ -70,7 +70,7 @@ $string['settings_max_output_tokens_help'] = 'The maximum number of tokens used 
 $string['settings_stop_sequences'] = 'Stop sequences';
 $string['settings_stop_sequences_help'] = 'Specify one or more character sequences (comma-separated) where the model should stop generating text.';
 $string['settings_temperature'] = 'Temperature';
-$string['settings_temperature_help'] = 'Temperature influences whether the output is more random and creative or more predictable. Increasing the temperature will make the model answer more creatively. This setting works alongside other options like topP and topK to generate the output.';
+$string['settings_temperature_help'] = 'Temperature influences whether the output is more random and creative or more predictable. Increasing the temperature will make the model answer more creatively. This setting works alongside other options like top p and top k to generate the output.';
 $string['settings_top_k'] = 'Top k';
 $string['settings_top_k_help'] = 'Reduces the probability of generating nonsense. A higher value (e.g. 100) will give more diverse answers, while a lower value (e.g. 10) will be more conservative.';
 $string['settings_top_p'] = 'Top p';

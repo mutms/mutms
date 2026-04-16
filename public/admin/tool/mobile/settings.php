@@ -81,12 +81,7 @@ if ($hassiteconfig || has_capability('moodle/site:configview', context_system::i
     // Subscription information page.
     $mobileappsubscriptionstr = get_string('mobileappsubscription', 'tool_mobile');
     if (!$ispremiumplan) {
-        $upgradetext = strtoupper(get_string('upgradeyourplan', 'tool_mobile'));
-        if (right_to_left()) {
-            $mobileappsubscriptionstr .= ' ' . $upgradetext . ' 🚀';
-        } else {
-            $mobileappsubscriptionstr .= ' 🚀 ' . $upgradetext;
-        }
+        $mobileappsubscriptionstr .= ' ' . get_string('upgradeyourplan', 'tool_mobile');
     }
 
     $ADMIN->add(
@@ -110,12 +105,7 @@ if ($hassiteconfig || has_capability('moodle/site:configview', context_system::i
             set_config('shownewsettings', $shownewsettingsuntil, 'tool_mobile');
         }
         if (!empty($shownewsettingsuntil) && time() < $shownewsettingsuntil) {
-            $new = strtoupper(get_string('new', 'tool_mobile'));
-            if (right_to_left()) {
-                $premiumfeaturestitle .= ' ' . $new . ' ⭐️';
-            } else {
-                $premiumfeaturestitle .= ' ⭐️ ' . $new;
-            }
+            $premiumfeaturestitle .= ' ' . get_string('new', 'tool_mobile');
         }
     }
     $temp = new admin_settingpage(
@@ -180,7 +170,6 @@ if ($hassiteconfig || has_capability('moodle/site:configview', context_system::i
         $featureparams = [
             'url' => $appsportalurl,
             'plan' => $planname,
-            'related' => '',
         ];
 
         $templatesubscribe = [
@@ -293,13 +282,9 @@ if ($hassiteconfig || has_capability('moodle/site:configview', context_system::i
     ));
     if (!$ispremiumplan && isset($featureslimited['custommenuitems'])) {
         $featureparams['limit'] = $featureslimited['custommenuitems'];
-        $featureparams['feature'] = strtolower($custommenuitemsstr);
-        $featureparams['related'] = new lang_string(
-            'limiteddisabledfeature_related',
-            'tool_mobile',
-            strtolower($customusermenuitemsstr)
-        );
-        $templatesubscribe['message'] = clean_text(get_string('limiteddisabledfeature', 'tool_mobile', $featureparams));
+        $featureparams['feature1'] = strtolower($custommenuitemsstr);
+        $featureparams['feature2'] = strtolower($customusermenuitemsstr);
+        $templatesubscribe['message'] = clean_text(get_string('limiteddisabledfeature_related', 'tool_mobile', $featureparams));
 
         $temp->add(new admin_setting_heading(
             'tool_mobile/custommenuitemssubscribe',
@@ -317,14 +302,11 @@ if ($hassiteconfig || has_capability('moodle/site:configview', context_system::i
         '50',
         '10',
     ));
-    if (!$ispremiumplan && isset($featureslimited['customusermenuitems'])) {
-        $featureparams['feature'] = strtolower($customusermenuitemsstr);
-        $featureparams['related'] = new lang_string(
-            'limiteddisabledfeature_related',
-            'tool_mobile',
-            strtolower($custommenuitemsstr)
-        );
-        $templatesubscribe['message'] = clean_text(get_string('limiteddisabledfeature', 'tool_mobile', $featureparams));
+    if (!$ispremiumplan && isset($featureslimited['custommenuitems'])) {
+        $featureparams['limit'] = $featureslimited['custommenuitems'];
+        $featureparams['feature1'] = strtolower($customusermenuitemsstr);
+        $featureparams['feature2'] = strtolower($custommenuitemsstr);
+        $templatesubscribe['message'] = clean_text(get_string('limiteddisabledfeature_related', 'tool_mobile', $featureparams));
 
         $temp->add(new admin_setting_heading(
             'tool_mobile/customusermenuitemssubscribe',
@@ -346,7 +328,6 @@ if ($hassiteconfig || has_capability('moodle/site:configview', context_system::i
     if (!$ispremiumplan && isset($featureslimited['customlangstrings'])) {
         $featureparams['limit'] = $featureslimited['customlangstrings'];
         $featureparams['feature'] = strtolower($featurename);
-        $featureparams['related'] = '';
         $templatesubscribe['message'] = clean_text(get_string('limiteddisabledfeature', 'tool_mobile', $featureparams));
 
         $temp->add(new admin_setting_heading(

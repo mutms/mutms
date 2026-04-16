@@ -170,7 +170,7 @@ class users extends system_report {
                     if ($row->suspended) {
                         $fullname .= ' ' . \html_writer::tag(
                             'span',
-                            get_string('suspended', 'moodle'),
+                            get_string('suspended', 'auth'),
                             ['class' => 'badge text-bg-warning ms-1']
                         );
                     }

@@ -1,6 +1,6 @@
 # enrol_self Upgrade notes
 
-## 5.2beta
+## 5.2
 
 ### Removed
 

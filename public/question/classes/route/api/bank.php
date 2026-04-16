@@ -18,7 +18,6 @@ namespace core_question\route\api;
 
 use core\context\course;
 use core\context\module;
-use core\exception\required_capability_exception;
 use core\param;
 use core\router\parameters\query_course;
 use core\router\parameters\query_coursemodule;
@@ -35,12 +34,14 @@ use core\router\schema\response\payload_response;
 use core\router\schema\response\response;
 use core_question\local\bank\formatted_bank;
 use core_question\local\bank\question_bank_helper;
+use core_question\local\bank\question_counts;
 use core_question\local\bank\question_edit_contexts;
 use core_question\local\bank\question_version_status;
 use core_question\output\question_category_selector;
 use core_question\question_category;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
+use stdClass;
 
 /**
  * Web service functions related to question banks
@@ -56,73 +57,68 @@ class bank {
      *
      * This will count all top-level questions (no subquestions) that are not hidden.
      *
-     * @param int $courseid
+     * @param course $coursecontext The course context.
+     * @param question_counts $questioncounts Injected dependency.
+     * @return payload_response A list of counts for each activity in the course that has question categories, keyed by CMID.
      */
     #[route(
-        path: '/bank/{courseid}/question_counts',
+        path: '/counts', // Resolves to /api/rest/v2/question/counts.
         method: ['GET'],
-        pathtypes: [
-            new path_parameter(
-                name: 'courseid',
-                type: param::INT,
-                description: 'The course ID the fetch question counts for',
-                required: true,
+        queryparams: [
+            new query_course(required: true),
+        ],
+        responses: [
+            new response(
+                statuscode: 200,
+                description: 'OK',
+                content: [
+                    new json_media_type(
+                        schema: new schema_object(
+                            content: [
+                                'counts' => new array_of_strings(),
+                            ],
+                        ),
+                        example: new example(
+                            name: 'Question counts',
+                            summary: 'List of question counts, the number of questions keyed by the CMID of the question bank',
+                            value: [
+                                '1' => '1',
+                                '2' => '2',
+                            ],
+                        ),
+                    ),
+                ],
             ),
         ],
-        requirelogin: new require_login(false, true, 'courseid'),
+        requirelogin: new require_login(false, true, 'course'),
     )]
     public function question_counts(
         ServerRequestInterface $request,
         ResponseInterface $response,
-        int $courseid,
+        question_counts $questioncounts,
+        question_bank_helper $bankhelper,
+        course $coursecontext,
     ): payload_response {
-        global $DB;
-        $coursecontext = course::instance($courseid);
         $capabilities = array_merge(question_edit_contexts::$caps['editq'], question_edit_contexts::$caps['categories']);
-
-        if (!has_any_capability($capabilities, $coursecontext)) {
-            throw new required_capability_exception(
-                $coursecontext,
-                reset($capabilities),
-                'missingcapability',
-                'question',
-            );
-        }
-
-        $contextpathlike = $DB->sql_like('c.path', ':contextpath');
-
-        // Get a count of all questions in each module context within this course, keyed by cmid.
-        // Only include modules that have question category records, so we don't get a count for modules that don't use questions.
-        // Return a count of 0 for those modules with no questions.
-        // The double LEFT JOIN of question_versions ensures we only get the latest version for a question bank entry.
-        $sql = "
-            SELECT c.instanceid,
-                   COUNT(
-                       CASE
-                           WHEN q.id IS NOT NULL THEN 1
-                       END
-                   ) AS count
-              FROM {context} c
-              JOIN {question_categories} qc ON qc.contextid = c.id
-         LEFT JOIN {question_bank_entries} qbe ON qbe.questioncategoryid = qc.id
-         LEFT JOIN {question_versions} qv ON qv.questionbankentryid = qbe.id
-         LEFT JOIN {question_versions} qv1 ON qv1.questionbankentryid = qbe.id AND qv.version < qv1.version
-         LEFT JOIN {question} q ON q.id = qv.questionid
-             WHERE c.contextlevel = :module
-                   AND {$contextpathlike}
-                   AND (q.parent = '0' OR q.id IS NULL)
-                   AND (qv1.questionbankentryid IS NULL OR q.id IS NULL)
-          GROUP BY c.instanceid
-        ";
-        $params = [
-            'hidden' => question_version_status::QUESTION_STATUS_HIDDEN,
-            'module' => module::LEVEL,
-            'contextpath' => "{$coursecontext->path}/%",
+        /** @var formatted_bank[] $sharedbanks */
+        $sharedbanks = $bankhelper->get_activity_instances_with_shareable_questions(
+            [$coursecontext->instanceid],
+            havingcap: $capabilities,
+            filtercontext: $coursecontext,
+        );
+        /** @var formatted_bank[] $privatebanks */
+        $privatebanks = $bankhelper->get_activity_instances_with_private_questions(
+            [$coursecontext->instanceid],
+            havingcap: $capabilities,
+            filtercontext: $coursecontext,
+        );
+        $coursemodulecontextids = [
+            ...array_map(fn($bank) => $bank->cminfo->context->id, $sharedbanks),
+            ...array_map(fn($bank) => $bank->cminfo->context->id, $privatebanks),
         ];
-        $counts = $DB->get_records_sql_menu($sql, $params);
         return new payload_response(
             payload: [
-                'counts' => $counts,
+                'counts' => $questioncounts->by_course_modules($coursemodulecontextids),
             ],
             request: $request,
             response: $response,

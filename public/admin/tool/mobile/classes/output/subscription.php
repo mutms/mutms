@@ -159,6 +159,14 @@ class subscription implements \renderable, \templatable {
                 ($data['subscription']['plan'] === 'premium' || $data['subscription']['plan'] === 'bma');
         }
 
+        if (!empty($data['subscription']['expiretime'])) {
+            $expiretimeshort = userdate(
+                (int)$data['subscription']['expiretime'],
+                get_string('strftimedatetimeshort', 'langconfig'),
+            );
+            $data['subscription']['planexpiresontext'] = get_string('planexpireson', 'tool_mobile', $expiretimeshort);
+        }
+
         if ($data['subscription']['ispremium']) {
             $data['messagefullaccess'][] = [
                 'titleicon' => [
@@ -226,7 +234,9 @@ class subscription implements \renderable, \templatable {
         }
         $subscribedfeatures = [];
         // Review features.
-        foreach ($data['subscription']['features'] as &$feature) {
+        foreach ($data['subscription']['features'] as $featureindex => &$feature) {
+            $featurenameforid = clean_param((string)($feature['name'] ?? 'feature'), PARAM_ALPHANUMEXT);
+            $feature['progresslabelid'] = 'tool-mobile-feature-' . $featureindex . '-' . $featurenameforid . '-label';
             // Check the type of features, if it is a limitation or functionality feature.
             if (array_key_exists('limit', $feature)) {
                 if (empty($feature['limit'])) {   // Unlimited, no need to calculate current values.

@@ -1,8 +1,0 @@
-issueNumber: MDL-87350
-notes:
-  core:
-    - message: >-
-        The get_moodlenet_info() method has been deprecated and will be removed
-        in a future release (See MDL-87934 for the final deprecation). There is
-        no replacement for this method.
-      type: deprecated

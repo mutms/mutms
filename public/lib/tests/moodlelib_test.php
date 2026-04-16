@@ -5985,6 +5985,24 @@ EOT;
     }
 
     /**
+     * Test MessageID is reset when sending messages in bulk.
+     *
+     * Ensures that each outgoing mail is assigned a unique MessageID.
+     *
+     * @covers ::get_mailer
+     */
+    public function test_message_id_reset_in_smtp_bulk_mode(): void {
+        $this->resetAfterTest();
+        set_config('smtphosts', 'anyhost');
+        set_config('smtpmaxbulk', 5);
+
+        $mailer = get_mailer();
+        $this->assertEmpty($mailer->MessageID);
+        $mailer->MessageID = "this should be reset next";
+        $this->assertEmpty(get_mailer()->MessageID);
+    }
+
+    /**
      * Data provider for plugin_supports_purpose tests.
      *
      * @return array

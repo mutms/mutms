@@ -75,6 +75,91 @@ final class section_test extends \advanced_testcase {
     }
 
     /**
+     * Test section state keeps navigation URL only for visible sections.
+     *
+     * @param bool $issubsection whether the target section should be a delegated subsection
+     * @param bool $isrestricted whether the target section should be availability restricted
+     * @param bool $ishidden whether the target section should be hidden
+     * @param bool $expectedhasurl whether a navigation URL is expected
+     * @param bool $expectedanchored whether the URL is expected to contain a section anchor
+     */
+    #[\PHPUnit\Framework\Attributes\DataProvider('sectionurl_state_provider')]
+    public function test_section_state_sectionurl(
+        bool $issubsection,
+        bool $isrestricted,
+        bool $ishidden,
+        bool $expectedhasurl,
+        bool $expectedanchored
+    ): void {
+        global $PAGE, $DB;
+
+        $this->resetAfterTest();
+
+        $generator = $this->getDataGenerator();
+        $course = $generator->create_course(['numsections' => 1, 'format' => 'topics']);
+        $subsection = null;
+        $restriction = json_encode(tree::get_root_json(
+            [
+                condition::get_json(condition::DIRECTION_FROM, time() + HOURSECS),
+            ],
+            '&',
+            true,
+        ));
+        $section = get_fast_modinfo($course)->get_section_info(1);
+        if ($issubsection) {
+            $subsectiondata = ['course' => $course->id];
+            if ($isrestricted) {
+                $subsectiondata['availability'] = $restriction;
+            }
+            $subsection = $generator->create_module('subsection', $subsectiondata);
+            $cm = get_fast_modinfo($course)->get_cm($subsection->cmid);
+            $section = $cm->get_delegated_section_info();
+        }
+
+        if ($isrestricted) {
+            $DB->set_field('course_sections', 'availability', $restriction, ['id' => $section->id]);
+        }
+
+        if ($ishidden) {
+            \core_courseformat\formatactions::section($course->id)->set_visibility($section, false);
+        }
+
+        $student = $generator->create_and_enrol($course, 'student');
+        $this->setUser($student);
+
+        // Reload the section info to ensure we have the latest data after all the updates.
+        $modinfo = get_fast_modinfo($course, $student->id);
+        if ($issubsection) {
+            $section = $modinfo->get_cm($subsection->cmid)->get_delegated_section_info();
+        } else {
+            $section = $modinfo->get_section_info(1);
+        }
+
+        if ($ishidden) {
+            $this->assertEmpty($section->visible);
+        }
+
+        $courseformat = course_get_format($course->id);
+        $renderer = $courseformat->get_renderer($PAGE);
+
+        $sectionclass = $courseformat->get_output_classname('state\\section');
+        $sectionstate = new $sectionclass($courseformat, $section);
+        $state = $sectionstate->export_for_template($renderer);
+
+        if (!$expectedhasurl) {
+            $this->assertObjectNotHasProperty('sectionurl', $state);
+            return;
+        }
+
+        $expectedurl = course_get_url($course, $section->section, ['navigation' => true])?->out(false);
+        $this->assertSame($expectedurl, $state->sectionurl);
+
+        if ($expectedanchored) {
+            $this->assertStringContainsString('#section-' . $section->section, $state->sectionurl);
+        }
+    }
+
+    /**
      * Setup section or cm has restrictions scenario.
      *
      * @param string $format the course format
@@ -339,6 +424,42 @@ final class section_test extends \advanced_testcase {
             'hasavailability' => false,
             'available' => true,
             'expected' => false,
+        ];
+    }
+
+    /**
+     * Data provider for test_section_state_sectionurl().
+     *
+     * @return \Generator
+     */
+    public static function sectionurl_state_provider(): \Generator {
+        yield 'Visible section has navigation URL' => [
+            'issubsection' => false,
+            'isrestricted' => false,
+            'ishidden' => false,
+            'expectedhasurl' => true,
+            'expectedanchored' => false,
+        ];
+        yield 'Hidden section has no navigation URL' => [
+            'issubsection' => false,
+            'isrestricted' => false,
+            'ishidden' => true,
+            'expectedhasurl' => false,
+            'expectedanchored' => false,
+        ];
+        yield 'Subsection keeps navigation URL' => [
+            'issubsection' => true,
+            'isrestricted' => false,
+            'ishidden' => false,
+            'expectedhasurl' => true,
+            'expectedanchored' => true,
+        ];
+        yield 'Restricted subsection keeps navigation URL' => [
+            'issubsection' => true,
+            'isrestricted' => true,
+            'ishidden' => false,
+            'expectedhasurl' => true,
+            'expectedanchored' => true,
         ];
     }
 }

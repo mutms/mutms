@@ -613,7 +613,7 @@ function question_move_questions_to_category($questionids, $newcategoryid): bool
     $questions = $DB->get_records_sql($sql, $params);
     foreach ($questions as $question) {
         if ($newcategorydata->contextid != $question->contextid) {
-            question_bank::get_qtype($question->qtype)->move_files(
+            question_bank::get_qtype($question->qtype, false)->move_files(
                     $question->id, $question->contextid, $newcategorydata->contextid);
         }
         // Check whether there could be a clash of idnumbers in the new category.

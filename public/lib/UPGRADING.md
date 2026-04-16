@@ -1,13 +1,37 @@
 # core (subsystem) Upgrade notes
 
-## 5.2beta
+## 5.2
 
 ### Added
 
 - Appending an exclamation mark to template names ignores theme overrides
 
   For more information see [MDL-77894](https://tracker.moodle.org/browse/MDL-77894)
-- Several core web services now include a new initials field in user data structures. This change is backward-compatible and only adds an optional field; no existing fields or field semantics have been changed. Client applications should ensure they can handle the additional initials field in web service responses, but clients that ignore unknown fields can continue working without changes. The affected web services are: - core_enrol_get_enrolled_users - core_enrol_get_enrolled_users_with_capability - core_enrol_get_potential_users - core_enrol_search_users - core_user_get_users_by_field - core_user_get_users - core_user_get_course_user_profiles - core_grades_get_enrolled_users_for_selector - core_grades_get_gradable_users - gradereport_grader_get_users_in_report - core_message_get_contact_requests - core_message_get_conversation_members - core_message_message_search_users - core_message_get_user_contacts - core_message_get_member_info - core_message_get_conversation_messages - mod_assign_list_participants - mod_assign_get_participant - mod_forum_get_forum_discussions
+- Several core web services now include a new initials field in user data
+  structures. This change is backward-compatible and only adds an optional
+  field; no existing fields or field semantics have been changed.
+  Client applications should ensure they can handle the additional initials
+  field in web service responses, but clients that ignore unknown fields can
+  continue working without changes. The affected web services are:
+  - core_enrol_get_enrolled_users
+  - core_enrol_get_enrolled_users_with_capability
+  - core_enrol_get_potential_users
+  - core_enrol_search_users
+  - core_user_get_users_by_field
+  - core_user_get_users
+  - core_user_get_course_user_profiles
+  - core_grades_get_enrolled_users_for_selector
+  - core_grades_get_gradable_users
+  - gradereport_grader_get_users_in_report
+  - core_message_get_contact_requests
+  - core_message_get_conversation_members
+  - core_message_message_search_users
+  - core_message_get_user_contacts
+  - core_message_get_member_info
+  - core_message_get_conversation_messages
+  - mod_assign_list_participants
+  - mod_assign_get_participant
+  - mod_forum_get_forum_discussions
 
   For more information see [MDL-84960](https://tracker.moodle.org/browse/MDL-84960)
 - Redis connection timeout settings for cachestores and sessions have been split into connection timeout and read timeout to allow for finer control. These settings now also accept floats.
@@ -195,7 +219,26 @@
 - The MoodleNet integration plugin (tool_moodlenet) has been removed from Moodle core. The public MoodleNet service (moodle.net) is being retired in April 2026. Sites using self-hosted MoodleNet instances can install the plugin from the Moodle HQ GitHub repository.
 
   For more information see [MDL-87351](https://tracker.moodle.org/browse/MDL-87351)
-- The following functions have been removed from `public/lib/deprecatedlib.php` as part of the depreciation process: - `print_course_request_buttons()` - `cron_run()` - `cron_run_scheduled_tasks()` - `cron_run_adhoc_tasks()` - `cron_run_inner_scheduled_task()` - `cron_run_inner_adhoc_task()` - `cron_set_process_title()` - `cron_trace_time_and_memory()` - `cron_prepare_core_renderer()` - `cron_setup_user()` - `badges_get_oauth2_service_options()` - `theme_is_device_locked()` - `theme_get_locked_theme_for_device()` - `random_bytes_emulate()` - `plagiarism_get_file_results()` - `plagiarism_update_status()` - `calendar_top_controls()` - `calendar_get_link_previous()` - `calendar_get_link_next()`
+- The following functions have been removed from `public/lib/deprecatedlib.php` as part of the depreciation process:
+  - `print_course_request_buttons()`
+  - `cron_run()`
+  - `cron_run_scheduled_tasks()`
+  - `cron_run_adhoc_tasks()`
+  - `cron_run_inner_scheduled_task()`
+  - `cron_run_inner_adhoc_task()`
+  - `cron_set_process_title()`
+  - `cron_trace_time_and_memory()`
+  - `cron_prepare_core_renderer()`
+  - `cron_setup_user()`
+  - `badges_get_oauth2_service_options()`
+  - `theme_is_device_locked()`
+  - `theme_get_locked_theme_for_device()`
+  - `random_bytes_emulate()`
+  - `plagiarism_get_file_results()`
+  - `plagiarism_update_status()`
+  - `calendar_top_controls()`
+  - `calendar_get_link_previous()`
+  - `calendar_get_link_next()`
 
   For more information see [MDL-87423](https://tracker.moodle.org/browse/MDL-87423)
 - The `MOD_PURPOSE_INTERFACE` constant has been removed from `public/lib/moodlelib.php`.
@@ -207,23 +250,36 @@
 - The `public/question/qengine.js` file has been removed.
 
   For more information see [MDL-87425](https://tracker.moodle.org/browse/MDL-87425)
-- - The `public/lib/amd/src/addblockmodal.js` file has been removed. - The `request()` has been removed from `public/lib/amd/src/pending.js`. - The `triggerSelector()` has been removed from `public/lib/amd/src/comboboxsearch/search_combobox.js`. - The `public/lib/classes/navigation/flat_navigation.php` file has been removed. - The following methods have been removed from `public/lib/classes/output/action_menu.php`:
+- - The `public/lib/amd/src/addblockmodal.js` file has been removed.
+  - The `request()` has been removed from `public/lib/amd/src/pending.js`.
+  - The `triggerSelector()` has been removed from `public/lib/amd/src/comboboxsearch/search_combobox.js`.
+  - The `public/lib/classes/navigation/flat_navigation.php` file has been removed.
+  - The following methods have been removed from `public/lib/classes/output/action_menu.php`:
     - `\core\output\action_menu::set_alignment()`
     - `\core\output\action_menu::set_constraint()`
   - The following methods have been removed from `public/lib/classes/output/core_renderer.php`:
     - `\core\output\core_renderer::activity_information()`
     - `\core\output\core_renderer::htmllize_file_tree()`
-  - The `\core\output\action_menu\link::instance` property has been removed from `public/lib/classes/output/action_menu/link.php`. - The `\core\output\renderer_base::should_display_main_logo()` has been removed from `public/lib/classes/output/renderer_base.php`. - The `\core\task\manager::ensure_adhoc_task_qos()` has been removed from `public/lib/classes/task/manager.php`. - The following methods have been removed from `public/lib/classes/task/task_base.php`:
+  - The `\core\output\action_menu\link::instance` property has been removed from `public/lib/classes/output/action_menu/link.php`.
+  - The `\core\output\renderer_base::should_display_main_logo()` has been removed from `public/lib/classes/output/renderer_base.php`.
+  - The `\core\task\manager::ensure_adhoc_task_qos()` has been removed from `public/lib/classes/task/manager.php`.
+  - The following methods have been removed from `public/lib/classes/task/task_base.php`:
     - `\core\task\task_base::set_blocking()`
     - `\core\task\task_base::is_blocking()`
-  - The `\core\moodlenet\activity_sender::share_activity()` has been removed from `public/lib/classes/moodlenet/activity_sender.php`. - The `\core\encryption::is_sodium_installed()` has been removed from `public/lib/classes/encryption.php`. - The `\core\hook\manager::is_deprecated_plugin_callback()` has been removed from `public/lib/classes/hook/manager.php`. - The `\core\report_helper::save_selected_report()` has been removed from `public/lib/classes/report_helper.php`. - The `\core_text::reset_caches()` has been removed from `public/lib/classes/text.php`. - The following methods have been removed from `public/lib/classes/useragent.php`:
+  - The `\core\moodlenet\activity_sender::share_activity()` has been removed from `public/lib/classes/moodlenet/activity_sender.php`.
+  - The `\core\encryption::is_sodium_installed()` has been removed from `public/lib/classes/encryption.php`.
+  - The `\core\hook\manager::is_deprecated_plugin_callback()` has been removed from `public/lib/classes/hook/manager.php`.
+  - The `\core\report_helper::save_selected_report()` has been removed from `public/lib/classes/report_helper.php`.
+  - The `\core_text::reset_caches()` has been removed from `public/lib/classes/text.php`.
+  - The following methods have been removed from `public/lib/classes/useragent.php`:
     - `\core_useragent::get_device_type_list()`
     - `\core_useragent::get_device_type_theme()`
     - `\core_useragent::get_device_type_cfg_var_name()`
   - The `M.util.set_user_preference()` has been removed from `public/lib/javascript-static.js`.
 
   For more information see [MDL-87425](https://tracker.moodle.org/browse/MDL-87425)
-- - The `\core\output\action_menu::do_not_enhance()` has been removed from `public/lib/classes/output/action_menu.php`. - The following functions have been removed from `public/lib/javascript-static.js`:
+- - The `\core\output\action_menu::do_not_enhance()` has been removed from `public/lib/classes/output/action_menu.php`.
+  - The following functions have been removed from `public/lib/javascript-static.js`:
     - `M.util.init_toggle_class_on_click()`
     - `M.util.focus_login_form()`
     - `M.util.focus_login_error()`

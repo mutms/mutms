@@ -73,7 +73,7 @@ $string['issuerenabled'] = 'Identity issuer enabled';
 $string['issuerimage_help'] = 'An image URL used to show a logo for this issuer. May be displayed on login page.';
 $string['issuerimage'] = 'Logo URL';
 $string['issuerloginpagename'] = 'Name displayed on the login page';
-$string['issuerloginpagename_help'] = 'If specified, this name will be used on the login page instead of the service name.<br><br>Different languages can be processed using the <a href="https://docs.moodle.org/en/Multi-language_content_filter" target="_blank">Multi-language content filter</a>.';
+$string['issuerloginpagename_help'] = 'When provided, this name replaces the service name on the login page. To display this in multiple languages, use the <a href="https://docs.moodle.org/en/Multi-language_content_filter" target="_blank">Multi-language content filter</a>.';
 $string['issuerloginparams'] = 'Additional parameters included in a login request.';
 $string['issuerloginparams_help'] = 'Some systems require additional parameters for a login request in order to read the user\'s basic profile.';
 $string['issuerloginparamsoffline'] = 'Additional parameters included in a login request for offline access.';

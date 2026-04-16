@@ -95,7 +95,7 @@ $string['downloadcontent_help'] = 'Should this activity or resource be included 
 
 The setting has no effect on mobile app content download for offline usage.';
 $string['enabledownloadcoursecontent'] = 'Enable download course content';
-$string['error:sitehomeisdisabled'] = 'The Site Home has been disabled by an administrator.';
+$string['error:sitehomeisdisabled'] = 'Home has been disabled by an administrator.';
 $string['errorendbeforestart'] = 'The end date ({$a}) is before the course start date.';
 $string['favourite'] = 'Starred course';
 $string['filterbothactive'] = 'First ({$a->first}) Last ({$a->last})';
@@ -161,7 +161,7 @@ $string['resetinprogressedit'] = 'There is a pending reset requested for this co
 $string['resettimeout'] = 'Resetting course {$a} may take a long time. Ask your site administrator to enable asynchronous course resets in Site administration > Advanced features and try again.';
 $string['resettingcourse'] = 'Resetting course ID {$a}';
 $string['resettingcoursefound'] = 'Found course {$a}. Starting reset.';
-$string['resettingcoursenotfound'] = 'Course with id {$a} not found. It may have been deleted. Skipping reset.';
+$string['resettingcoursenotfound'] = 'Course with ID {$a} not found. It may have been deleted. Skipping reset.';
 $string['restrictedtitle'] = 'Not available: {$a}';
 $string['searchactivitiesbyname'] = 'Search for activities by name';
 $string['searchresults'] = 'Search results: {$a}';

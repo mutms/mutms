@@ -1,10 +1,11 @@
 # gradereport_grader Upgrade notes
 
-## 5.2beta
+## 5.2
 
 ### Removed
 
-- - The `\behat_gradereport_grader::get_grade_item_id()` has been removed from `public/grade/report/grader/tests/behat/behat_gradereport_grader.php`. - The following methods have been removed from `public/grade/report/grader/lib.php`:
+- - The `\behat_gradereport_grader::get_grade_item_id()` has been removed from `public/grade/report/grader/tests/behat/behat_gradereport_grader.php`.
+  - The following methods have been removed from `public/grade/report/grader/lib.php`:
     - `\grade_report_grader::get_left_icons_row()`
     - `\grade_report_grader::get_right_icons_row()`
     - `\grade_report_grader::get_right_avg_row()`

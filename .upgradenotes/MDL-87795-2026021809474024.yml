@@ -1,7 +1,0 @@
-issueNumber: MDL-87795
-notes:
-  core_user:
-    - message: >-
-        Added new optional parameter `userid` to the `user_remove_user_device`
-        function.
-      type: improved

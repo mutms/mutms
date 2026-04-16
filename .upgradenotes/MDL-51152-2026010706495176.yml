@@ -1,7 +1,0 @@
-issueNumber: MDL-51152
-notes:
-  enrol_manual:
-    - message: >-
-        The unused parameter 'roleid' has been removed from the external
-        function `unenrol_users()`
-      type: removed

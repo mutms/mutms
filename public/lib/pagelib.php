@@ -403,6 +403,11 @@ class moodle_page {
     protected $_regionmainsettingsinheader = false;
 
     /**
+     * @var bool Should the settings menu be hidden.
+     */
+    protected $hidesettings = false;
+
+    /**
      * @var bool Should the secondary menu be rendered.
      */
     protected $_hassecondarynavigation = true;
@@ -2415,6 +2420,24 @@ class moodle_page {
      */
     public function include_region_main_settings_in_header_actions(): bool {
         return $this->_regionmainsettingsinheader;
+    }
+
+    /**
+     * Set the flag to indicate if the settings should be hidden or rendered.
+     *
+     * @param bool $value If the settings should be hidden.
+     */
+    public function set_hide_settings(bool $value): void {
+        $this->hidesettings = $value;
+    }
+
+    /**
+     * Check if the settings should be hidden or rendered.
+     *
+     * @return bool
+     */
+    public function hide_settings(): bool {
+        return $this->hidesettings;
     }
 
     /**

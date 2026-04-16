@@ -25,6 +25,6 @@
 defined('MOODLE_INTERNAL') || die();
 
 $plugin->component = 'aiprovider_awsbedrock';
-$plugin->version = 2026021600;
-$plugin->requires = 2026021000;
+$plugin->version = 2026042000;
+$plugin->requires = 2026041000;
 $plugin->maturity = MATURITY_STABLE;

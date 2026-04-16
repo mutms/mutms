@@ -1,8 +1,0 @@
-issueNumber: MDL-87931
-notes:
-  core:
-    - message: >-
-        Added new metadata field to the page class for header-level information.
-        Use this field to pass extra strings (like the activity dates) that need
-        to be rendered adjacent to the activity header.
-      type: improved

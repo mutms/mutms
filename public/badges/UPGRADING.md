@@ -1,11 +1,19 @@
 # core_badges (subsystem) Upgrade notes
 
-## 5.2beta
+## 5.2
 
 ### Added
 
-- The following classes and functions are now also available in the following new locations. They will continue to work in their old locations:
-  | Old classname/function | New classname/function | | --- | --- | | `\badge_award_selector_base` | `\core_badges\award_selector_base` | | `\badge_potential_users_selector` | `\core_badges\potential_award_selector` | | `\badge_existing_users_selector` | `\core_badges\existing_award_selector` | | `process_manual_award()` | `\core_badges\award_manager::process_manual_award()` | | `process_manual_revoke()` | `\core_badges\award_manager::process_manual_revoke()` |
+- The following classes and functions are now also available in the following new
+  locations. They will continue to work in their old locations:
+
+  | Old classname/function | New classname/function |
+  | --- | --- |
+  | `\badge_award_selector_base` | `\core_badges\award_selector_base` |
+  | `\badge_potential_users_selector` | `\core_badges\potential_award_selector` |
+  | `\badge_existing_users_selector` | `\core_badges\existing_award_selector` |
+  | `process_manual_award()` | `\core_badges\award_manager::process_manual_award()` |
+  | `process_manual_revoke()` | `\core_badges\award_manager::process_manual_revoke()` |
 
   For more information see [MDL-83902](https://tracker.moodle.org/browse/MDL-83902)
 

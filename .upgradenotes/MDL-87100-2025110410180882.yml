@@ -1,7 +1,0 @@
-issueNumber: MDL-87100
-notes:
-  core:
-    - message: >-
-        When creating upgrade notes, the issue number will be inferred from the
-        current Git branch name by default
-      type: improved

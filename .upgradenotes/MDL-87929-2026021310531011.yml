@@ -1,9 +1,0 @@
-issueNumber: MDL-87929
-notes:
-  theme:
-    - message: >-
-        The `core_courseformat\base` class now includes
-        `set_show_restrictions_expanded()` and `get_show_restrictions_expanded()`
-        to allow course formats to define whether restrictions are displayed
-        as expanded (defaulting to collapsed).
-      type: improved

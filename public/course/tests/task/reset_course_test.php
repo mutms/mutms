@@ -45,7 +45,7 @@ final class reset_course_test extends \advanced_testcase {
         $task = reset_course::create($resetdata);
 
         $this->expectOutputRegex("~Resetting course ID 100~");
-        $this->expectOutputRegex("~Course with id 100 not found. It may have been deleted. Skipping reset.~");
+        $this->expectOutputRegex("~Course with ID 100 not found. It may have been deleted. Skipping reset.~");
         // Run the task.
         $task->execute();
     }

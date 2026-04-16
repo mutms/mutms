@@ -39,7 +39,7 @@ class anthropic extends awsbedrock_base {
             'anthropic.claude-3-5-sonnet-20240620-v1:0' => self::create_model(
                 'anthropic.claude-3-5-sonnet-20240620-v1:0',
                 model_definition::MODEL_TYPE_TEXT,
-                $default,
+                self::with_cross_region($default, 'us.anthropic.claude-3-5-sonnet-20240620-v1:0'),
             ),
             'anthropic.claude-3-5-sonnet-20241022-v2:0' => self::create_model(
                 'anthropic.claude-3-5-sonnet-20241022-v2:0',

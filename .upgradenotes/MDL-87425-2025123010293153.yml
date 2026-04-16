@@ -1,7 +1,0 @@
-issueNumber: MDL-87425
-notes:
-  core:
-    - message: >-
-        The `MOD_PURPOSE_INTERFACE` constant has been removed from
-        `public/lib/moodlelib.php`.
-      type: removed

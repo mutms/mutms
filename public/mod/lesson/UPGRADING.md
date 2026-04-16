@@ -1,6 +1,6 @@
 # mod_lesson Upgrade notes
 
-## 5.2beta
+## 5.2
 
 ### Removed
 

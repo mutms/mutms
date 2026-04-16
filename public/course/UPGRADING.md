@@ -1,6 +1,6 @@
 # core_course (subsystem) Upgrade notes
 
-## 5.2beta
+## 5.2
 
 ### Added
 
@@ -22,6 +22,9 @@
 - The `cm_info` class now includes `get_navigation_url()`, `set_navigation_url(?url $url)`, and `reset_navigation_url()` methods, allowing activities to explicitly define, override, or suppress their navigation URL. This customisation can be managed within the `cm_info_dynamic callback`. By setting the navigation URL to null, a module can be effectively excluded from the linear navigation flow, such as the automatic "Previous" and "Next" routing URLs. In cases where no override is specified, `get_navigation_url()` will return the default `$cm->url` by fallback.
 
   For more information see [MDL-87984](https://tracker.moodle.org/browse/MDL-87984)
+- A new protected hidesettings property has been added to pagelib  to force the page to hide the settings menu. Use set_hide_settings()  and get_hide_setting() to fully hide the settings menu.
+
+  For more information see [MDL-88214](https://tracker.moodle.org/browse/MDL-88214)
 
 ### Changed
 
@@ -49,7 +52,8 @@
 
 ### Removed
 
-- - The `\core_course_bulk_activity_completion_renderer::edit_default_completion()` has been removed from `public/course/classes/output/bulk_activity_completion_renderer.php`. - The `\core_course\reportbuilder\local\formatters\enrolment::enrolment_name()` has been removed from `public/course/classes/reportbuilder/local/formatters/enrolment.php`.
+- - The `\core_course_bulk_activity_completion_renderer::edit_default_completion()` has been removed from `public/course/classes/output/bulk_activity_completion_renderer.php`.
+  - The `\core_course\reportbuilder\local\formatters\enrolment::enrolment_name()` has been removed from `public/course/classes/reportbuilder/local/formatters/enrolment.php`.
 
   For more information see [MDL-87425](https://tracker.moodle.org/browse/MDL-87425)
 - The `replaceSectionActionItem()` has been removed from `public/course/amd/src/actions.js`.

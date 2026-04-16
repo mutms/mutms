@@ -93,7 +93,7 @@ class section implements renderable {
             'parentsectionid' => $section->get_component_instance()?->get_parent_section()?->id,
         ];
 
-        if ($section->uservisible) {
+        if ($format->is_section_visible($section)) {
             $data->sectionurl = course_get_url($course, $section->section, ['navigation' => true])?->out(false);
         }
 

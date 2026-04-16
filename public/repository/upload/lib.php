@@ -82,8 +82,6 @@ class repository_upload extends repository {
             $license = null, $author = '', $overwriteexisting = false, $areamaxbytes = FILE_AREA_MAX_BYTES_UNLIMITED) {
         global $USER, $CFG, $OUTPUT;
 
-        \core\session\manager::write_close();
-
         if ((is_array($types) and in_array('*', $types)) or $types == '*') {
             $this->mimetypes = '*';
         } else {
@@ -145,14 +143,7 @@ class repository_upload extends repository {
             }
         }
 
-        $avscanstarttime = microtime(true);
-        \core\antivirus\manager::scan_file($_FILES[$elname]['tmp_name'], $_FILES[$elname]['name'], true);
-        $avscantime = microtime(true) - $avscanstarttime;
-
-        // {@link repository::build_source_field()}
-        $sourcefield = $this->get_file_source_info($_FILES[$elname]['name']);
-        $record->source = self::build_source_field($sourcefield);
-
+        // Determine the filename before validation.
         if (empty($saveasfilename)) {
             $record->filename = clean_param($_FILES[$elname]['name'], PARAM_FILE);
         } else {
@@ -178,12 +169,7 @@ class repository_upload extends repository {
             }
         }
 
-        // Check the file has some non-null contents - usually an indication that a user has
-        // tried to upload a folder by mistake.
-        if (!$this->check_valid_contents($_FILES[$elname]['tmp_name'])) {
-            throw new moodle_exception('upload_error_invalid_file', 'repository_upload', '', $record->filename);
-        }
-
+        // Validate file type before closing session.
         if ($this->mimetypes != '*') {
             // Check filetype.
             $filemimetype = file_storage::mimetype($_FILES[$elname]['tmp_name'], $record->filename);
@@ -202,6 +188,23 @@ class repository_upload extends repository {
                     ],
                 );
             }
+        }
+
+        // Session can now be safely closed - all validation that may need $OUTPUT is complete.
+        \core\session\manager::write_close();
+
+        $avscanstarttime = microtime(true);
+        \core\antivirus\manager::scan_file($_FILES[$elname]['tmp_name'], $_FILES[$elname]['name'], true);
+        $avscantime = microtime(true) - $avscanstarttime;
+
+        // Get source field info for the uploaded file.
+        $sourcefield = $this->get_file_source_info($_FILES[$elname]['name']);
+        $record->source = self::build_source_field($sourcefield);
+
+        // Check the file has some non-null contents - usually an indication that a user has
+        // tried to upload a folder by mistake.
+        if (!$this->check_valid_contents($_FILES[$elname]['tmp_name'])) {
+            throw new moodle_exception('upload_error_invalid_file', 'repository_upload', '', $record->filename);
         }
 
         if (empty($record->itemid)) {

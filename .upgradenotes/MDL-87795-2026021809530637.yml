@@ -1,8 +1,0 @@
-issueNumber: MDL-87795
-notes:
-  message_airnotifier:
-    - message: >-
-        A new scheduled task, `message_airnotifier\task\cleanup_task`, has been
-        added. This task removes orphaned records in the
-        `message_airnotifier_devices` table.
-      type: improved

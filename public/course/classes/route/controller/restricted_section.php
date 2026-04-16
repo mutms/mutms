@@ -87,6 +87,7 @@ class restricted_section {
         $PAGE->set_title($strtitle . \moodle_page::TITLE_SEPARATOR . $course->shortname);
         $PAGE->set_heading($sectiontitle);
         $PAGE->set_secondary_navigation(false);
+        $PAGE->set_hide_settings(true);
         $renderer = $format->get_renderer($PAGE);
         if ($header = $OUTPUT->header()) {
             $response->getBody()->write($header);

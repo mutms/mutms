@@ -1,6 +1,6 @@
 # scormreport_graphs Upgrade notes
 
-## 5.2beta
+## 5.2
 
 ### Removed
 

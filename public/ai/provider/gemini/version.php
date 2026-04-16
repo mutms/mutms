@@ -26,6 +26,6 @@
 defined('MOODLE_INTERNAL') || die();
 
 $plugin->component = 'aiprovider_gemini';
-$plugin->version = 2026012200;
-$plugin->requires = 2026011600;
+$plugin->version = 2026042000;
+$plugin->requires = 2026041000;
 $plugin->maturity = MATURITY_STABLE;

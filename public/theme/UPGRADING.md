@@ -1,6 +1,6 @@
 # theme (plugin type) Upgrade notes
 
-## 5.2beta
+## 5.2
 
 ### Added
 
@@ -14,9 +14,9 @@
 ### Deprecated
 
 - These icons are no longer in use and have been deprecated:
-    - core:t/blocks_drawer
-    - core:t/blocks_drawer_rtl
-    - core:t/index_drawer
+    - `core:t/blocks_drawer`
+    - `core:t/blocks_drawer_rtl`
+    - `core:t/index_drawer`
 
   For more information see [MDL-88085](https://tracker.moodle.org/browse/MDL-88085)
 

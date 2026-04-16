@@ -1,9 +1,0 @@
-issueNumber: MDL-87351
-notes:
-  core:
-    - message: >-
-        The MoodleNet integration plugin (tool_moodlenet) has been removed from
-        Moodle core. The public MoodleNet service (moodle.net) is being retired
-        in April 2026. Sites using self-hosted MoodleNet instances can install
-        the plugin from the Moodle HQ GitHub repository.
-      type: removed

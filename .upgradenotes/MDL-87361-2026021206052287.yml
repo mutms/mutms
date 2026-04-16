@@ -1,9 +1,0 @@
-issueNumber: MDL-87361
-notes:
-  core_user:
-    - message: >-
-        The MoodleNet profile field has been migrated from a core user table
-        field to a custom profile field. Any existing moodlenetprofile data will
-        be automatically migrated to a custom profile field during upgrade. The
-        core moodlenetprofile column will be removed from the user table.
-      type: deprecated

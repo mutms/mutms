@@ -1,8 +1,0 @@
-issueNumber: MDL-88176
-notes:
-  core_customfield:
-    - message: >-
-        The base `\core_customfield\handler` class now implements static
-        caching/reset itself, so all implementations of the same from extending
-        handler classes should be removed
-      type: changed

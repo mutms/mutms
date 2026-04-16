@@ -119,28 +119,21 @@ final class helper_test extends manage_category_test_base {
             MUST_EXIST
         );
 
-        // Create a couple of questions then edit their qtype so they look like legacy random questions.
-        $q1b = $this->create_question_in_a_category('description', $qcat1->id);
-        $DB->set_field('question', 'qtype', 'random', ['id' => $q1b->id]);
-        $q2c = $this->create_question_in_a_category('description', $qcat2->id);
-        $DB->set_field('question', 'qtype', 'random', ['id' => $q2c->id]);
-
         $contexts = new \core_question\local\bank\question_edit_contexts(\context_module::instance($quiz->cmid));
         $manager = new category_manager();
-        $this->assertEquals(2, count($manager->get_real_question_ids_in_category($qcat1->id, $contexts)));
-        $this->assertEquals(3, count($manager->get_real_question_ids_in_category($qcat2->id, $contexts)));
+        $this->assertEquals(1, count($manager->get_real_question_ids_in_category($qcat1->id, $contexts)));
+        $this->assertEquals(2, count($manager->get_real_question_ids_in_category($qcat2->id, $contexts)));
 
         // Non-existing category, nothing will happen.
         helper::question_remove_stale_questions_from_category(0);
-        $this->assertEquals(2, count($manager->get_real_question_ids_in_category($qcat1->id, $contexts)));
-        $this->assertEquals(3, count($manager->get_real_question_ids_in_category($qcat2->id, $contexts)));
+        $this->assertEquals(1, count($manager->get_real_question_ids_in_category($qcat1->id, $contexts)));
+        $this->assertEquals(2, count($manager->get_real_question_ids_in_category($qcat2->id, $contexts)));
 
         // First category, should be empty afterwards.
         helper::question_remove_stale_questions_from_category($qcat1->id);
         $this->assertEquals(0, count($manager->get_real_question_ids_in_category($qcat1->id, $contexts)));
-        $this->assertEquals(3, count($manager->get_real_question_ids_in_category($qcat2->id, $contexts)));
+        $this->assertEquals(2, count($manager->get_real_question_ids_in_category($qcat2->id, $contexts)));
         $this->assertFalse($DB->record_exists('question', ['id' => $q1a->id]));
-        $this->assertFalse($DB->record_exists('question', ['id' => $q1b->id]));
 
         // Second category, used questions should be left untouched.
         helper::question_remove_stale_questions_from_category($qcat2->id);
@@ -148,7 +141,6 @@ final class helper_test extends manage_category_test_base {
         $this->assertEquals(1, count($manager->get_real_question_ids_in_category($qcat2->id, $contexts)));
         $this->assertFalse($DB->record_exists('question', ['id' => $q2a->id]));
         $this->assertTrue($DB->record_exists('question', ['id' => $q2b->id]));
-        $this->assertFalse($DB->record_exists('question', ['id' => $q2c->id]));
         $this->assertTrue($DB->record_exists(
             'question_set_references',
             ['id' => $q2d->id, 'component' => 'mod_quiz', 'questionarea' => 'slot'],

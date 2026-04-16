@@ -27,7 +27,7 @@
 
     Context variables required for this template:
     * subscription - Object with the current subscription information (plan, name, description, isfree, ispremium,
-        features[], optional expiretime, etc.).
+        features[] (including optional progresslabelid for usage bars), optional expiretime, etc.
     * appsportalurl - URL of the Moodle Apps portal used in links.
     * appsportalupgradeurl - URL in the Apps portal to upgrade or manage the subscription.
     * messageoldcache - Optional string describing how old the cached subscription data is.
@@ -62,6 +62,7 @@
             },
             {
                 "name": "pushnotificationsdevices",
+                "progresslabelid": "tool-mobile-feature-1-pushnotificationsdevices-label",
                 "description": "Active devices for push notifications",
                 "descriptionwithlimit": "50 active devices for push notifications",
                 "enabled": true,
@@ -215,7 +216,7 @@
             </h3>
             {{#expiretime}}
             <div class="ml-2 text-muted">
-                {{#str}} planexpireson, tool_mobile {{/str}}{{#userdate}} {{expiretime}}, {{#str}} strftimedatetimeshort {{/str}} {{/userdate}}.
+                {{planexpiresontext}}
                 {{#messageoldcache}}
                     {{{messagelivedata}}}
                 {{/messageoldcache}}
@@ -258,7 +259,7 @@
                             {{/ispremium}}
                             {{^ispremium}}
                     <div class="d-flex justify-content-between text-muted mt-3">
-                        <span>{{description}}</span>
+                        <span{{#progresslabelid}} id="{{progresslabelid}}"{{/progresslabelid}}>{{description}}</span>
                                 {{#showbar}}
                         <span class="text-muted">{{humanstatus}}</span>
                                 {{/showbar}}
@@ -269,7 +270,7 @@
                                 {{#showbar}}
                         <div class="d-flex align-items-center gap-2">
                             <div class="progress flex-grow-1">
-                                <div class="progress-bar progress-bar-animated {{barclass}}" role="progressbar" style="width: {{percentage}}%" aria-valuenow="{{status}}" aria-valuemin="0" aria-valuemax="{{limit}}"></div>
+                                <div class="progress-bar progress-bar-animated {{barclass}}" role="progressbar" style="width: {{percentage}}%" aria-valuenow="{{status}}" aria-valuemin="0" aria-valuemax="{{limit}}"{{#progresslabelid}} aria-labelledby="{{progresslabelid}}"{{/progresslabelid}}></div>
                             </div>
                             <span class="small fw-semibold">{{percentage}}%</span>
                         </div>
@@ -288,7 +289,7 @@
             <div class="card bg-primary bg-opacity-25 border-0 flex-fill d-flex">
                 <div class="card-body p-4 d-flex flex-column">
                     <div class="d-flex justify-content-between align-items-start">
-                        <h4 class="h4 fw-bold card-title">{{name}} {{#str}} features, tool_mobile {{/str}}</h4>
+                        <h4 class="h4 fw-bold card-title">{{#str}} planfeatures, tool_mobile, {{tocompareplan.name}} {{/str}}</h4>
                         <div class="text-end">
                             <div class="fw-bold fs-4">{{price}}</div>
                             <small>{{#str}} billedannually, tool_mobile {{/str}}</small>
@@ -324,7 +325,7 @@
                 <div class="card h-100 flex-grow-1">
                 <div class="card-body p-4 p-4">
                     <div class="d-flex justify-content-between align-items-start mb-2">
-                        <h4 class="h4 fw-bold card-title">{{name}} {{#str}} features, tool_mobile {{/str}}</h4>
+                        <h4 class="h4 fw-bold card-title">{{#str}} planfeatures, tool_mobile, {{name}} {{/str}}</h4>
                     </div>
                     <ul class="list-unstyled row row-cols-1 row-cols-md-2 g-2 flex-grow-1">
                     {{#features}}
@@ -481,7 +482,7 @@
         <div class="mt-5">
             <div class="card flex-fill">
                 <div class="card-body p-4">
-                    <h4 class="h4 fw-bold card-title">{{#str}} nosubscouldntretrieve, tool_mobile {{/str}}</h4>
+                    <h3 class="h3 fw-bold card-title">{{#str}} nosubscouldntretrieve, tool_mobile {{/str}}</h3>
                     <p class="mt-4">{{#str}} nosubsoerror, tool_mobile{{/str}}</p>
                     <div class="mt-3">
                         <a href="" class="btn btn-primary">
@@ -496,7 +497,7 @@
                         </a>
                     </div>
                     {{#messagenosubscriptioninfo}}
-                        {{> core/notification_info}}
+                        {{> tool_mobile/notification_info}}
                     {{/messagenosubscriptioninfo}}
                 </div>
             </div>

@@ -35594,7 +35594,6 @@ textarea[data-auto-rows] {
 
 .login-layout-left {
   background-color: #0f6cbf;
-  color: #fff;
   position: sticky;
   top: 0;
   align-self: flex-start;
@@ -35608,7 +35607,19 @@ textarea[data-auto-rows] {
 .login-layout-left-content {
   max-width: 450px;
   text-align: center;
-  text-shadow: 1px 1px 3px #000;
+  color: #fff;
+  background-color: rgba(6, 41, 73, 0.65);
+  border-radius: 0.375rem;
+  padding: 1rem;
+  margin-bottom: 5rem;
+}
+.login-layout-left-content blockquote {
+  color: inherit;
+  border-left: 5px solid #fff;
+}
+.login-layout-left-content a {
+  color: inherit;
+  text-decoration: underline;
 }
 
 .login-layout-stats {

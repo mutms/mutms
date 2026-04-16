@@ -34,10 +34,9 @@ const SELECTORS = {
 
 export const fetchCounts = async(courseId) => {
     const countContainer = document.querySelector(SELECTORS.COUNT_CONTAINER);
-    const endpoint = ['bank', courseId, 'question_counts'];
     const loadingPromise = LoadingIcon.addIconToContainerWithPromise(countContainer);
     try {
-        const response = await Fetch.performGet('core_question', endpoint.join('/'));
+        const response = await Fetch.performGet('core_question', `counts?course=${courseId}`);
         const questionCounts = await response.json();
         for (const [cmid, count] of Object.entries(questionCounts.counts)) {
             const countBadge = document.querySelector(SELECTORS.COUNT_BADGE(cmid));

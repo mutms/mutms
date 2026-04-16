@@ -1,6 +1,6 @@
 # core_user (subsystem) Upgrade notes
 
-## 5.2beta
+## 5.2
 
 ### Added
 
@@ -16,7 +16,8 @@
 
 ### Removed
 
-- - The `\profile_field_base::profile_field_base()` has been removed from `public/user/profile/lib.php`. - The `\core_user_renderer::unified_filter()` has been removed from `public/user/renderer.php`.
+- - The `\profile_field_base::profile_field_base()` has been removed from `public/user/profile/lib.php`.
+  - The `\core_user_renderer::unified_filter()` has been removed from `public/user/renderer.php`.
 
   For more information see [MDL-87426](https://tracker.moodle.org/browse/MDL-87426)
 

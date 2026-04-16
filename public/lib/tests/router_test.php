@@ -16,6 +16,7 @@
 
 namespace core;
 
+use core\router\util;
 use core\tests\router\route_testcase;
 use GuzzleHttp\Psr7\ServerRequest;
 use Psr\Http\Message\ResponseInterface;
@@ -30,6 +31,7 @@ use Slim\App;
  */
 #[\PHPUnit\Framework\Attributes\CoversClass(\core\router::class)]
 #[\PHPUnit\Framework\Attributes\CoversClass(\core\router\response_handler::class)]
+#[\PHPUnit\Framework\Attributes\CoversClass(\core\router\util::class)]
 final class router_test extends route_testcase {
     public function test_get_app(): void {
         $router = $this->get_router('/example');
@@ -40,6 +42,7 @@ final class router_test extends route_testcase {
     }
 
     public function test_request_normalisation(): void {
+        $this->set_basepath('');
         $router = $this->get_router('');
 
         // Create handlers for the routes.
@@ -81,6 +84,28 @@ final class router_test extends route_testcase {
         $payload = $this->decode_response($response);
 
         $this->assertEmpty((array) $payload);
+    }
+
+    /**
+     * Test that a routed URL can be set on the page without triggering debugging output.
+     */
+    public function test_routed_url_can_be_set_on_page(): void {
+        global $PAGE;
+
+        $this->resetAfterTest();
+        $this->add_class_routes_to_route_loader(\core_user\route\api\preferences::class);
+
+        // We need to get the app so we initialise the basepath to an empty value.
+        $this->get_app();
+        $url = util::get_path_for_callable(
+            [\core_user\route\api\preferences::class, 'get_preferences'],
+            ['user' => 'current'],
+        );
+        $expectedurl = new url($url);
+        $PAGE->set_url($url);
+
+        $this->assertDebuggingNotCalled();
+        $this->assertSame($expectedurl->out(false), $PAGE->url->out(false));
     }
 
     public function test_basepath_supplied(): void {
@@ -252,6 +277,7 @@ final class router_test extends route_testcase {
         \Throwable $exception,
         int $expectedstatus,
     ): void {
+        $this->set_basepath('');
         $app = $this->get_app();
 
         $app->map(['GET'], '/test', fn ($request, $response) => throw $exception);

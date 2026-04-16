@@ -18,9 +18,9 @@ namespace core\router;
 
 use core\router\middleware\moodle_route_attribute_middleware;
 use core\tests\router\route_testcase;
+use core\url;
 use GuzzleHttp\Psr7\Response;
 use GuzzleHttp\Psr7\ServerRequest;
-use core\url;
 
 /**
  * Tests for the route utility class.
@@ -28,8 +28,8 @@ use core\url;
  * @package    core
  * @copyright  Andrew Lyons <andrew@nicols.co.uk>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- * @covers     \core\router\util
  */
+#[\PHPUnit\Framework\Attributes\CoversClass(util::class)]
 final class util_test extends route_testcase {
     /**
      * Ensure that redirecting works as expected.
@@ -83,6 +83,24 @@ final class util_test extends route_testcase {
      */
     public function test_get_route_instance_for_method_not_array_callable(): void {
         $this->assertNull(util::get_route_instance_for_method(fn () => null));
+    }
+
+    /**
+     * Ensure that the act of getting the route name does not instantiate the class.
+     */
+    public function test_get_route_name_for_method_does_not_instantiate(): void {
+        self::load_fixture('core', 'router/uninstantiable_class.php');
+
+        $classname = \core\fixtures\uninstantiable_class::class;
+
+        \core\router\util::get_route_name_for_callable([$classname, 'method_with_route']);
+        \core\router\util::get_route_name_for_callable("{$classname}::method_with_route");
+
+        $this->assertTrue(true, 'No error was thrown when getting the route name for a non-instantiable class.');
+
+        // And ensure that no-one has broken the fixture by making it instantiable.
+        $this->expectException(\Error::class);
+        new \core\fixtures\uninstantiable_class();
     }
 
     /**
