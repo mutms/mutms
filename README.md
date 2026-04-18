@@ -1,6 +1,6 @@
 # Additional MuTMS libraries plugin for Moodle™ LMS
 
-![Moodle Plugin CI](https://github.com/mutms/moodle-tool_mulib/actions/workflows/moodle-ci.yml/badge.svg)
+[![MDL Shield](https://img.shields.io/endpoint?url=https%3A%2F%2Fmdlshield.com%2Fapi%2Fbadge%2Ftool_mulib)](https://mdlshield.com/plugins/tool_mulib) ![Moodle Plugin CI](https://github.com/mutms/moodle-tool_mulib/actions/workflows/moodle-ci.yml/badge.svg)
 
 Shared library required by all MuTMS plugins — fully open source under GPL 3.0, with no
 restrictions on commercial use. Part of the [MuTMS suite](https://github.com/mutms).
