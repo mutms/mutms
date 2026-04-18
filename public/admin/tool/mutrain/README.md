@@ -1,6 +1,6 @@
 # Training credits plugin for Moodle™ LMS
 
-![Moodle Plugin CI](https://github.com/mutms/moodle-tool_mutrain/actions/workflows/moodle-ci.yml/badge.svg)
+[![MDL Shield](https://img.shields.io/endpoint?url=https%3A%2F%2Fmdlshield.com%2Fapi%2Fbadge%2Ftool_mutrain)](https://mdlshield.com/plugins/tool_mutrain) ![Moodle Plugin CI](https://github.com/mutms/moodle-tool_mutrain/actions/workflows/moodle-ci.yml/badge.svg)
 
 Training credit management for standard Moodle™ LMS installations — fully open source under GPL 3.0,
 with no restrictions on commercial use. Part of the [MuTMS suite](https://github.com/mutms).
