@@ -1,6 +1,6 @@
 # Log-in-as via Incognito window plugin for Moodle™ LMS
 
-![Moodle Plugin CI](https://github.com/mutms/moodle-tool_muloginas/actions/workflows/moodle-ci.yml/badge.svg)
+[![MDL Shield](https://img.shields.io/endpoint?url=https%3A%2F%2Fmdlshield.com%2Fapi%2Fbadge%2Ftool_muloginas)](https://mdlshield.com/plugins/tool_muloginas) ![Moodle Plugin CI](https://github.com/mutms/moodle-tool_muloginas/actions/workflows/moodle-ci.yml/badge.svg)
 
 Enhances the standard Moodle™ LMS "Log in as" feature — fully open source under GPL 3.0, with no
 restrictions on commercial use. Part of the [MuTMS suite](https://github.com/mutms).
