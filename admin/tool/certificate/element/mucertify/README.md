@@ -1,6 +1,6 @@
 # Certification fields plugin for Certificate plugin for Moodle™ LMS
 
-![Moodle Plugin CI](https://github.com/mutms/moodle-certificateelement_mucertify/actions/workflows/moodle-ci.yml/badge.svg)
+[![MDL Shield](https://img.shields.io/endpoint?url=https%3A%2F%2Fmdlshield.com%2Fapi%2Fbadge%2Fcertificateelement_mucertify)](https://mdlshield.com/plugins/certificateelement_mucertify) ![Moodle Plugin CI](https://github.com/mutms/moodle-certificateelement_mucertify/actions/workflows/moodle-ci.yml/badge.svg)
 
 Adds certification fields to the [Certificate plugin](https://github.com/moodleworkplace/moodle-tool_certificate)
 — fully open source under GPL 3.0, with no restrictions on commercial use. Part of the [MuTMS suite](https://github.com/mutms).
