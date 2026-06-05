@@ -1768,11 +1768,9 @@ function xmldb_main_upgrade($oldversion) {
     }
 
     if ($oldversion < 2026022700.02) {
-        $orphanedquestions = core_question\category_manager::cleanup_questions_without_categories();
-        if ($orphanedquestions > 0) {
-            upgrade_log(UPGRADE_LOG_NORMAL, null, "Cleaned up {$orphanedquestions} questions left over from restores.");
-        }
-
+        $task = new \core\task\cleanup_questions_without_categories_task();
+        \core\task\manager::queue_adhoc_task($task);
+        upgrade_log(UPGRADE_LOG_NORMAL, null, 'Queueing cleanup task for questions without categories.');
         upgrade_main_savepoint(true, 2026022700.02);
     }
 
@@ -1863,6 +1861,16 @@ function xmldb_main_upgrade($oldversion) {
         }
 
         upgrade_main_savepoint(true, 2026032700.01);
+    }
+
+    // Automatically generated Moodle v5.2.0 release upgrade line.
+    // Put any upgrade step following this.
+
+    if ($oldversion < 2026042000.06) {
+        // Force H5P content dependencies to be rebuilt lazily after the h5plib_v128 library update.
+        $DB->set_field_select('h5p', 'filtered', null, $DB->sql_compare_text('filtered') . ' IS NOT NULL');
+
+        upgrade_main_savepoint(true, 2026042000.06);
     }
 
     return true;
