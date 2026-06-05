@@ -26,7 +26,6 @@ namespace tool_certificate\customfield;
 
 use core_customfield\field_controller;
 use core_customfield\handler;
-use tool_certification\certification;
 
 /**
  * Class issue_handler
