@@ -31,7 +31,7 @@
  * @return environment_results updated results object
  */
 function tool_mutenancy_environment_corepatch(environment_results $result): environment_results {
-    $release = 'mutenancy-5.2.0-01';
+    $release = 'mutenancy-5.2.1-01';
 
     $result->setInfo("Core Multi-tenancy patch ($release is required)");
 
