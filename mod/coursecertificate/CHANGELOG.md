@@ -1,5 +1,9 @@
 # Changelog
 
+## 5.0.8 - 2026-06-09
+###
+- Internal CI updates only
+
 ## 5.0.7 - 2026-04-21
 ### Added
 - Added support for Moodle 5.2
