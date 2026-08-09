@@ -28,13 +28,13 @@ defined('MOODLE_INTERNAL') || die();
 
 /** @var stdClass $plugin */
 $plugin->component = 'tool_mutrain';
-$plugin->version = 2026060550;
+$plugin->version = 2026080850;
 $plugin->requires = 2025041400;
 $plugin->supported = [500, 502];
 
-$plugin->release = 'v5.0.8.01';
+$plugin->release = 'v5.0.9.01';
 
 $plugin->dependencies = [
-    'tool_mulib' => 2026060550,
-    'customfield_mutrain' => 2026060550,
+    'tool_mulib' => 2026080850,
+    'customfield_mutrain' => 2026080850,
 ];
