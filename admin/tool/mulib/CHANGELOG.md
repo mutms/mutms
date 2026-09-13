@@ -4,6 +4,12 @@ Plugin versioning is derived from Moodle releases, it does not comply with the s
 
 The format of this change log follows the advice given at [Keep a CHANGELOG](https://keepachangelog.com).
 
+## [v4.5.14.01](https://github.com/mutms/moodle-tool_mulib/compare/v4.5.13.01...v4.5.14.01) - 2026-09-13
+
+### Fixed
+
+- Added uninstallation of materialized default user role assignment
+
 ## [v4.5.13.01](https://github.com/mutms/moodle-tool_mulib/compare/v4.5.12.01...v4.5.13.01) - 2026-06-05
 
 - No changes
