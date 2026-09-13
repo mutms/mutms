@@ -15,23 +15,21 @@
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 // phpcs:disable moodle.Files.BoilerplateComment.CommentEndedTooSoon
+// phpcs:disable moodle.Files.LineLength.TooLong
 
 /**
- * Additional tools library plugin version.
+ * Plugin tool_mulib uninstallation.
  *
- * @package     tool_mulib
- * @copyright   2022 Open LMS (https://www.openlms.net/)
- * @copyright   2025 Petr Skoda
- * @author      Petr Skoda
- * @license     https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @package    tool_mulib
+ * @copyright  2025 Petr Skoda
+ * @license    https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-defined('MOODLE_INTERNAL') || die();
+/**
+ * Uninstall tool_mulib plugin.
+ */
+function xmldb_tool_mulib_uninstall(): void {
+    global $DB;
 
-/** @var stdClass $plugin */
-$plugin->component = 'tool_mulib';
-$plugin->version = 2026091345;
-$plugin->requires = 2024100700;
-$plugin->supported = [405, 405];
-$plugin->incompatible = 500;
-$plugin->release = 'v4.5.14.01';
+    $DB->delete_records('role_assignments', ['userid' => \tool_mulib\local\context_map::MAGIC_DEFAULT_USER_ID, 'component' => 'tool_mulib']);
+}
