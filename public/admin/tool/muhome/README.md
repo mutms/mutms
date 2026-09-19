@@ -1,6 +1,6 @@
 # Custom home pages for Moodle™ LMS
 
-[![MDL Shield](https://img.shields.io/endpoint?url=https%3A%2F%2Fmdlshield.com%2Fapi%2Fbadge%2Ftool_muhome)](https://mdlshield.com/plugins/tool_muhome) ![Moodle Plugin CI](https://github.com/mutms/moodle-tool_muhome/actions/workflows/moodle-ci.yml/badge.svg)
+[![MDL Shield](https://img.shields.io/endpoint?url=https%3A%2F%2Fmdlshield.com%2Fapi%2Fbadge%2Ftool_muhome)](https://mdlshield.com/plugins/tool_muhome) ![Moodle Plugin CI](https://github.com/mutms/moodle-tool_muhome/actions/workflows/moodle-ci.yml/badge.svg) [![camp](https://camp-registry.org/badge/tool_muhome.svg)](https://camp-registry.org/plugin/tool_muhome.html)
 
 Custom home pages for standard Moodle™ LMS installations — fully open source under GPL 3.0,
 with no restrictions on commercial use. Part of the [MuTMS suite](https://github.com/mutms).
