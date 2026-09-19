@@ -1,5 +1,9 @@
 # Changelog
 
+## 4.5.14 - 2026-09-15
+### Fixed
+- Accessibility improvements in forms
+
 ## 4.5.7 - 2025-10-07
 ### Changed
 - Only changes to automatic testing scripts
