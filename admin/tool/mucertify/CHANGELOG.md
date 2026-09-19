@@ -4,6 +4,20 @@ Plugin versioning is derived from Moodle releases, it does not comply with the s
 
 The format of this change log follows the advice given at [Keep a CHANGELOG](https://keepachangelog.com).
 
+## [v4.5.14.03](https://github.com/mutms/moodle-tool_mucertify/compare/v4.5.14.02...v4.5.14.03) - 2026-09-19
+
+- version pinned to 20260919xx
+
+## [v4.5.14.02](https://github.com/mutms/moodle-tool_mucertify/compare/v4.5.14.01...v4.5.14.02) - 2026-09-18
+
+### Added
+
+- CAMP registry support
+
+### Changed
+
+- Security only fixes for Moodle 4.5 – 5.2, version pinned to 2026091845.xx
+
 ## [v4.5.14.01](https://github.com/mutms/moodle-tool_mucertify/compare/v4.5.13.01...v4.5.14.01) - 2026-09-13
 
 - No changes
