@@ -122,6 +122,12 @@ final class export extends \moodleform {
                     }
                 }
             }
+        } else {
+            // Programs may be exported only from categories where the user has the export capability.
+            $error = export_contextid::validate_value($data['contextid'] ?? 0, [], $context);
+            if ($error !== null) {
+                $errors['contextid'] = $error;
+            }
         }
 
         return $errors;
