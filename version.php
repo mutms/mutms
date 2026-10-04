@@ -28,11 +28,11 @@ defined('MOODLE_INTERNAL') || die();
 
 /** @var stdClass $plugin */
 $plugin->component = 'tool_musudo';
-$plugin->version = 2026092000;
+$plugin->version = 2026092001;
 $plugin->requires = 2025041400;
 $plugin->supported = [500, 502];
 $plugin->incompatible = 503;
-$plugin->release = 'v5.0.10.03';
+$plugin->release = 'v5.0.11.01';
 
 $plugin->dependencies = [
     'tool_mulib' => 2026092000,
