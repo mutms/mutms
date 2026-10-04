@@ -14,14 +14,6 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-/**
- * Class issues
- *
- * @package     tool_certificate
- * @copyright   2018 Daniel Neis
- * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- */
-
 namespace tool_certificate\external;
 
 defined('MOODLE_INTERNAL') || die();
@@ -108,12 +100,14 @@ class issues extends \external_api {
 
         $issue = $DB->get_record('tool_certificate_issues', ['id' => $params['id']], '*', MUST_EXIST);
 
-        // Make sure the user has the required capabilities.
-        $context = \context_system::instance();
-        self::validate_context($context);
         $template = \tool_certificate\template::instance($issue->templateid);
-        if (!$template->can_issue($issue->userid)) {
-            throw new \required_capability_exception($template->get_context(), 'tool/certificate:issue', 'nopermissions', 'error');
+
+        // Make sure the user has the required capabilities.
+        $context = \context_course::instance($issue->courseid, IGNORE_MISSING) ?: $template->get_context();
+        self::validate_context($context);
+
+        if (!$template->can_issue($issue->userid, $context)) {
+            throw new \required_capability_exception($context, 'tool/certificate:issue', 'nopermissions', 'error');
         }
 
         // Regenerate the issue file.
@@ -137,6 +131,8 @@ class issues extends \external_api {
         return new \external_function_parameters([
             'search' => new \external_value(PARAM_NOTAGS, 'Search string', VALUE_REQUIRED),
             'itemid' => new \external_value(PARAM_INT, 'Item id', VALUE_REQUIRED),
+            'limitfrom' => new \external_value(PARAM_INT, 'The number to start getting the users from', VALUE_DEFAULT, 0),
+            'limitnum' => new \external_value(PARAM_INT, 'The number of users to get', VALUE_DEFAULT, 0),
         ]);
     }
 
@@ -145,17 +141,26 @@ class issues extends \external_api {
      *
      * @param string $search
      * @param int $itemid
+     * @param int $limitfrom Amount of records to skip.
+     * @param int $limitnum Amount of records to fetch.
      * @return array
      */
-    public static function potential_users_selector(string $search, int $itemid): array {
+    public static function potential_users_selector(
+        string $search,
+        int $itemid,
+        int $limitfrom = 0,
+        int $limitnum = 0
+    ): array {
         global $DB;
 
         $params = self::validate_parameters(
             self::potential_users_selector_parameters(),
-            ['search' => $search, 'itemid' => $itemid]
+            ['search' => $search, 'itemid' => $itemid, 'limitfrom' => $limitfrom, 'limitnum' => $limitnum]
         );
         $search = $params['search'];
         $itemid = $params['itemid'];
+        $limitfrom = $params['limitfrom'];
+        $limitnum = $params['limitnum'];
 
         $context = \context_system::instance();
         self::validate_context($context);
@@ -196,7 +201,7 @@ class issues extends \external_api {
         $query .= " ORDER BY {$sortsql}";
         $params += $sortparams;
 
-        $result = $DB->get_records_sql($query, $params);
+        $result = $DB->get_records_sql($query, $params, $limitfrom, $limitnum);
         $viewfullnames = has_capability('moodle/site:viewfullnames', $context);
         if ($result) {
             $result = array_map(function ($record) use ($viewfullnames) {
