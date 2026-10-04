@@ -1,5 +1,28 @@
 # Changelog
 
+## 5.0.10 - 2026-09-15
+### Fixed
+- Course navigation access for teachers
+- Certificate regeneration for course teachers
+- Accessibility improvements in forms
+
+## 5.0.9 - 2026-08-11
+### Fixed
+- Fixed the expiration duration form element name
+- Even more UI glitches squashed in page/template editor
+
+## 5.0.8 - 2026-06-09
+### Fixed
+- Fixed some more UI glitches in editor on narrow screens
+
+## 5.0.7 - 2026-04-21
+### Added
+- Added support for Moodle 5.2
+### Fixed
+- Fixed UI spacing glitches in template editor
+### Changed
+- Added pagination to user selector autocomplete element to improve performance
+
 ## 5.0.6 - 2026-02-13
 ### Fixed
 - Fixed redundant string formatting of user profile fields in certificates
