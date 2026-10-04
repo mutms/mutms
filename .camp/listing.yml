@@ -13,6 +13,7 @@ summary: Introduces multi-tenancy to standard Moodle™ LMS installations — fu
 #   donation-supported | commercial-support-available
 labels:
   - fully-free
+  - requires-core-patch
 links:
   docs: https://github.com/mutms/moodle-tool_mutenancy#readme
   issues: https://github.com/mutms/moodle-tool_mutenancy/issues
