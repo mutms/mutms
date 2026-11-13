@@ -46,6 +46,13 @@ final class allocate_user_test extends \advanced_testcase {
         $this->assertSame(false, $function->allowed_from_ajax);
         $this->assertSame('write', $function->type);
         $this->assertSame(true, $function->loginrequired);
+
+        // Web service clients send named parameters, core passes them to execute() in the order of definition.
+        $method = new \ReflectionMethod(allocate_user::class, 'execute');
+        $this->assertSame(
+            array_map(fn($parameter) => $parameter->getName(), $method->getParameters()),
+            array_keys(allocate_user::execute_parameters()->keys)
+        );
     }
 
     public function test_execute(): void {
