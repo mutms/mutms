@@ -116,7 +116,7 @@ Feature: Certifications plugin English wiki documentation image generator
     And I click on "Update Automatic cohort assignment" "link"
     And I set the following fields to these values:
       | Active            | Yes           |
-      | Assign to cohorts | All employees |
+      | Assign cohorts | All employees |
     And I click on "Update" "button" in the ".modal-dialog" "css_element"
 
     Then I make documentation screenshot "img_certification_assignment.png" for "tool_mucertify" plugin
