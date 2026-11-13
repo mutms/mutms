@@ -142,7 +142,7 @@ final class assignment_test extends \advanced_testcase {
             'timecertifiedtemp' => $now + DAYSECS,
         ]);
         $status = \tool_mucertify\local\assignment::get_status_html($certification, $assignment);
-        $this->assertStringContainsString('Temporary valid', $status);
+        $this->assertStringContainsString('Temporarily valid', $status);
 
         $assignment = \tool_mucertify\local\source\base::assignment_update((object)[
             'id' => $assignment->id,
