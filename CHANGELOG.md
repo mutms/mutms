@@ -4,7 +4,18 @@ Plugin versioning is derived from Moodle releases, it does not comply with the s
 
 The format of this change log follows the advice given at [Keep a CHANGELOG](https://keepachangelog.com).
 
-## [v4.5.15.01](https://github.com/mutms/moodle-tool_mutenancy/compare/v4.5.14.03...v4.5.15.01) - 2026-09-19
+## [v4.5.16.01](https://github.com/mutms/moodle-tool_mutenancy/compare/v4.5.15.01...v4.5.16.01) - 2026-11-12
+
+### Added
+
+- Compatible with Moodle 4.5.16
+- Czech translation and AI-produced previews of German, French, Italian, Portuguese and Spanish translations
+
+### Fixed
+
+- _tool_mutenancy_allocate_user_ web service received user id and tenant id swapped
+
+## [v4.5.15.01](https://github.com/mutms/moodle-tool_mutenancy/compare/v4.5.14.03...v4.5.15.01) - 2026-10-04
 
 - Compatible with Moodle 4.5.15
 
