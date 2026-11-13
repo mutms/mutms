@@ -25,7 +25,7 @@
  */
 
 $string['creatingtoken'] = 'Preparing log in as token...';
-$string['error_incognitoproglem'] = 'Error initialising "Log in as" session, make sure all Incognito windows are closed and retry.';
+$string['error_incognitoproblem'] = 'Error initialising "Log in as" session, make sure all Incognito windows are closed and retry.';
 $string['error_invalidrequest'] = 'Invalid "Log in as" request detected.';
 $string['error_linkexpired'] = '"Log in as" link expired, retry if necessary.';
 $string['error_notincognito'] = '"Log in as" link was not opened in a new Incognito window.';
@@ -39,7 +39,7 @@ $string['muloginas:loginas'] = 'Log in as via Incognito window';
 $string['pluginname'] = 'Log in as via Incognito window';
 $string['popup_link'] = 'Right-click this link and select <strong>Open Link in Incognito Window</strong> or similar option.';
 $string['privacy:metadata'] = 'Log in as plugin does not store any personal user data persistently';
-$string['privacy:metadata:targetuserid'] = 'target user id';
+$string['privacy:metadata:targetuserid'] = 'Target user id';
 $string['privacy:metadata:tool_muloginas_request:tableexplanation'] = 'Log-in-as request tokens';
 $string['privacy:metadata:userid'] = 'User id';
 $string['taskcron'] = 'Log-in-as tokens cleanup task';
