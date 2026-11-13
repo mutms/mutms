@@ -40,13 +40,13 @@ This may affect multiple tenants when tenants share the same associated users co
 $string['auth_edit'] = 'Update authentication';
 $string['boost_edit'] = 'Edit Boost';
 $string['bulk_allocate'] = 'Allocate users to tenant';
-$string['bulk_allocate_info'] = 'Following users will be allocated to the selected tenant:
+$string['bulk_allocate_info'] = 'The following users will be allocated to the selected tenant:
 
 {$a}
 
-Tenant manager assignments will be removed and users will loose access to all other tenants. Administrator accounts will not modified.';
+Tenant manager assignments will be removed and users will lose access to all other tenants. Administrator accounts will not be modified.';
 $string['bulk_deallocate'] = 'Deallocate tenant members';
-$string['bulk_deallocate_info'] = 'Following users will be deallocated from tenants and will become regular users:
+$string['bulk_deallocate_info'] = 'The following users will be deallocated from tenants and will become regular users:
 
 {$a}';
 $string['cachedef_config'] = 'Tenant config cache';
@@ -77,7 +77,7 @@ It is recommended to use *Resend confirmation email* option if user did not rece
 $string['member_create'] = 'Create account';
 $string['member_create_info'] = 'New tenant member account will be able to access their tenant courses and if allowed also global courses.
 
-They will not be able to access courses from any other tenant';
+They will not be able to access courses from any other tenant.';
 $string['member_delete_info'] = 'Deleting of tenant member account is not reversible.';
 $string['member_managers_info'] = 'Tenant managers are not automatically visible in tenants. They should be added to
 the associated users cohort if they are expected to participate in the tenant.';
@@ -108,11 +108,11 @@ $string['navigation_top'] = 'Tenant management';
 $string['pluginname'] = 'Multi-tenancy';
 $string['privacy:metadata:tool_mutenancy_manager'] = 'Tenant managers';
 $string['privacy:metadata:tool_mutenancy_manager:tenantid'] = 'Tenant id';
-$string['privacy:metadata:tool_mutenancy_manager:timecreated'] = 'Time of creation';
-$string['privacy:metadata:tool_mutenancy_manager:usercreated'] = 'User who created tenant';
+$string['privacy:metadata:tool_mutenancy_manager:timecreated'] = 'Time the manager was assigned';
+$string['privacy:metadata:tool_mutenancy_manager:usercreated'] = 'User who assigned the manager';
 $string['privacy:metadata:tool_mutenancy_manager:userid'] = 'Manager user id';
 $string['role_tenantmanager_archetype'] = 'ARCHETYPE: Tenant manager';
-$string['role_tenantmanager_description'] = 'Tenant manager role gets assigned to all tenant mangers automatically in tenant and tenant category contexts.
+$string['role_tenantmanager_description'] = 'Tenant manager role gets assigned to all tenant managers automatically in tenant and tenant category contexts.
 
 This role is not supposed to be assigned manually, do not change the role short name.';
 $string['role_tenantmanager_name'] = 'Tenant manager';
@@ -129,9 +129,9 @@ $string['setting_allowguests'] = 'Allow guest access to tenants';
 $string['setting_allowguests_desc'] = 'Enable this setting if you want to allow guest access to tenant courses.
 
 Note that this feature requires site‑level guest access to be enabled. In addition, tenant courses must have guest access enabled, and users should be associated with tenants rather than being tenant members.';
-$string['setting_tenantentities'] = 'Tenant entity plural';
+$string['setting_tenantentities'] = 'Tenant entity name (plural)';
 $string['setting_tenantentities_desc'] = 'If provided the plural "Tenants" word will be replaced with given custom name. For example: Units, Faculties or Events';
-$string['setting_tenantentity'] = 'Tenant entity singular';
+$string['setting_tenantentity'] = 'Tenant entity name';
 $string['setting_tenantentity_desc'] = 'If provided the singular "Tenant" word will be replaced with given custom name. For example: Unit, Faculty or Event';
 $string['setting_tenantlimit'] = 'Tenant limit';
 $string['setting_tenantlimit_desc'] = 'Specifies how many tenants can be created. Note that sites with more than 100 tenants may encounter performance and usability problems.';
@@ -213,6 +213,6 @@ $string['tenant_users_a'] = '{$a} users';
 $string['tenants'] = 'Tenants';
 $string['user_allocate'] = 'Allocate user';
 $string['user_allocate_info'] = 'When allocating user to a tenant their tenant manager assignments are removed
-and they will loose access to all other tenants.';
+and they will lose access to all other tenants.';
 $string['user_tenants'] = 'Associated with tenants';
 $string['user_tenants_a'] = 'Associated with {$a}';
