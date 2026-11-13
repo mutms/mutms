@@ -179,4 +179,70 @@ final class mulib_test extends \advanced_testcase {
         // It can be converted back to raw UTF-8 characters.
         $this->assertSame(\core_text::entities_to_utf8($string), \core_text::entities_to_utf8($cleaned));
     }
+
+    /**
+     * Create fake downloaded language file.
+     *
+     * @param string $lang
+     * @return string full path
+     */
+    private function create_downloaded_file(string $lang): string {
+        global $CFG;
+        $dir = "$CFG->langotherroot/$lang";
+        if (!is_dir($dir)) {
+            mkdir($dir, $CFG->directorypermissions, true);
+        }
+        file_put_contents("$dir/tool_mulib.php", "<?php\n\$string['pluginname'] = 'Zatuchlý blábol z AMOS';\n");
+        return "$dir/tool_mulib.php";
+    }
+
+    public function test_is_mutms_plugin(): void {
+        $this->assertTrue(mulib::is_mutms_plugin('tool_mulib'));
+        $this->assertTrue(mulib::is_mutms_plugin('mod_mubook'));
+        $this->assertFalse(mulib::is_mutms_plugin('tool_certificate'));
+        $this->assertFalse(mulib::is_mutms_plugin('mod_forum'));
+    }
+
+    public function test_purge_downloaded_translations(): void {
+        $cs = $this->create_downloaded_file('cs');
+        $de = $this->create_downloaded_file('de');
+        $is = $this->create_downloaded_file('is');
+
+        set_config('purgedownloadedlang', 0, 'tool_mulib');
+        $this->assertSame(0, mulib::purge_downloaded_translations());
+        $this->assertFileExists($cs);
+
+        set_config('purgedownloadedlang', 1, 'tool_mulib');
+        $this->assertSame(2, mulib::purge_downloaded_translations());
+        $this->assertFileDoesNotExist($cs);
+        $this->assertFileDoesNotExist($de);
+        $this->assertFileExists($is);
+    }
+
+    public function test_callback_langpack_installed(): void {
+        set_config('purgedownloadedlang', 1, 'tool_mulib');
+
+        $file = $this->create_downloaded_file('de');
+        \tool_langimport\event\langpack_updated::event_with_langcode('de')->trigger();
+        $this->assertFileDoesNotExist($file);
+
+        $file = $this->create_downloaded_file('de');
+        \tool_langimport\event\langpack_imported::event_with_langcode('de')->trigger();
+        $this->assertFileDoesNotExist($file);
+    }
+
+    /**
+     * Test the scheduled cleanup task.
+     *
+     * @covers \tool_mulib\task\lang_cleanup
+     */
+    public function test_lang_cleanup_task(): void {
+        set_config('purgedownloadedlang', 1, 'tool_mulib');
+        $file = $this->create_downloaded_file('cs');
+
+        $task = new \tool_mulib\task\lang_cleanup();
+        $this->expectOutputString("Deleted 1 downloaded translation files conflicting with official MuTMS translations\n");
+        $task->execute();
+        $this->assertFileDoesNotExist($file);
+    }
 }
