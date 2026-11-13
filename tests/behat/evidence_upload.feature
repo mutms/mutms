@@ -78,7 +78,7 @@ Feature: Upload program completion evidence using csv
     And I should see "Active" in the "Manual allocation" definition list item
     And I click on "Users" "link" in the ".secondary-navigation" "css_element"
     And I click on "Users actions" "link"
-    And I should not see "Upload completion evidences"
+    And I should not see "Upload completion evidence"
 
     And I click on "Upload allocations" "link"
     And I upload "admin/tool/muprog/tests/fixtures/evidence1.csv" file to "CSV file" filemanager
@@ -93,14 +93,14 @@ Feature: Upload program completion evidence using csv
     And I click on "Upload allocations" "button" in the ".modal-dialog" "css_element"
     And I should see "5 users were allocated to program."
     And I click on "Users actions" "link"
-    And I should see "Upload completion evidences"
+    And I should see "Upload completion evidence"
 
     And I follow "Student 3"
     And I click on "Archive" "link"
     And I click on "Archive" "button" in the ".modal-dialog" "css_element"
     And I click on "Users" "link" in the ".secondary-navigation" "css_element"
 
-    When I click on "Upload completion evidences" action from "Users actions" dropdown
+    When I click on "Upload completion evidence" action from "Users actions" dropdown
     And I upload "admin/tool/muprog/tests/fixtures/evidence1.csv" file to "CSV file" filemanager
     And I set the following fields in the ".modal-dialog" "css_element" to these values:
       | CSV separator | ,     |
@@ -113,7 +113,7 @@ Feature: Upload program completion evidence using csv
       | Completion date            | completed     |
       | Details                    | evidence      |
       | Default details            | EvidenceX     |
-    And I click on "Upload completion evidences" "button" in the ".modal-dialog" "css_element"
+    And I click on "Upload completion evidence" "button" in the ".modal-dialog" "css_element"
     Then I should see "Completion evidence updated for 2 users"
     And I should see "2 rows skipped"
     And I should see "2 invalid rows detected"
@@ -139,7 +139,7 @@ Feature: Upload program completion evidence using csv
       | 12/03/23, 00:00 | EvidenceX      |
     And I click on "Users" "link" in the ".secondary-navigation" "css_element"
 
-    When I click on "Upload completion evidences" action from "Users actions" dropdown
+    When I click on "Upload completion evidence" action from "Users actions" dropdown
     And I upload "admin/tool/muprog/tests/fixtures/evidence2.csv" file to "CSV file" filemanager
     And I set the following fields to these values:
       | CSV separator | ,     |
@@ -150,14 +150,14 @@ Feature: Upload program completion evidence using csv
       | User mapping via           | Email address |
       | First line is header       | 1             |
       | Completion date            | completed     |
-    And I click on "Upload completion evidences" "button" in the ".modal-dialog" "css_element"
+    And I click on "Upload completion evidence" "button" in the ".modal-dialog" "css_element"
     And I set the following fields to these values:
       | User identification column | email         |
       | User mapping via           | Email         |
       | First line is header       | 1             |
       | Completion date            | completed     |
       | Default details            | EvidenceY     |
-    And I click on "Upload completion evidences" "button" in the ".modal-dialog" "css_element"
+    And I click on "Upload completion evidence" "button" in the ".modal-dialog" "css_element"
     Then I should see "Completion evidence updated for 2 users"
     And I should see "1 rows skipped"
 
