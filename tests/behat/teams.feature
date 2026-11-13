@@ -83,7 +83,7 @@ Feature: Teams management
     When I press "Create team"
     And I set the following fields in the ".modal-dialog" "css_element" to these values:
       | Team name               | Team Two                                  |
-      | Team ID number          | team2                                     |
+      | Team ID                 | team2                                     |
       | Teacher                 | teacher 2                                 |
       | Supervisor-managed team | 1                                         |
       | Max team members        | 10                                        |
@@ -92,7 +92,7 @@ Feature: Teams management
       | Team cohort name        | Team cohort 2                             |
     And I click on "Create team" "button" in the ".modal-dialog" "css_element"
     Then I should see "Team Two" in the "Team name" definition list item
-    And I should see "team2" in the "Team ID number" definition list item
+    And I should see "team2" in the "Team ID" definition list item
     And I should see "Teacher 2" in the "Teacher" definition list item
     And I should see "Yes" in the "Supervisor-managed team" definition list item
     And I should see "2 / 10" in the "Max team members" definition list item
@@ -105,21 +105,21 @@ Feature: Teams management
     When I click on "Team actions" "link_or_button"
     And I click on "Update team" "link"
     And the following fields in the ".modal-dialog" "css_element" match these values:
-      | Team name               | Team Two                                  |
-      | Team ID number          | team2                                     |
-      | Supervisor-managed team | 1                                         |
-      | Max team members        | 10                                        |
-      | Team cohort name        | Team cohort 2                             |
+      | Team name               | Team Two      |
+      | Team ID                 | team2         |
+      | Supervisor-managed team | 1             |
+      | Max team members        | 10            |
+      | Team cohort name        | Team cohort 2 |
     And I set the following fields in the ".modal-dialog" "css_element" to these values:
-      | Team name               | Team B                                    |
-      | Team ID number          | teamb                                     |
-      | Teacher                 | Teacher 1                                 |
-      | Supervisor-managed team | 0                                         |
-      | Max team members        | 11                                        |
-      | Team cohort name        | Team cohort B                             |
+      | Team name               | Team B        |
+      | Team ID                 | teamb         |
+      | Teacher                 | Teacher 1     |
+      | Supervisor-managed team | 0             |
+      | Max team members        | 11            |
+      | Team cohort name        | Team cohort B |
     And I click on "Update team" "button" in the ".modal-dialog" "css_element"
     Then I should see "Team B" in the "Team name" definition list item
-    And I should see "teamb" in the "Team ID number" definition list item
+    And I should see "teamb" in the "Team ID" definition list item
     And I should see "Teacher 1" in the "Teacher" definition list item
     And I should see "No" in the "Supervisor-managed team" definition list item
     And I should see "2 / 11" in the "Max team members" definition list item
@@ -180,8 +180,8 @@ Feature: Teams management
       | Tick the checkbox | 1 |
     And I click on "Delete team" "button" in the ".modal-dialog" "css_element"
     Then the following should exist in the "reportbuilder-table" table:
-      | Team name | Team ID number        | Supervisor-managed team |
-      | Team One  |                       | No                      |
+      | Team name | Team ID | Supervisor-managed team |
+      | Team One  |         | No                      |
     And I should not see "Team B"
 
   Scenario: User teams are visible in user profile
@@ -212,8 +212,8 @@ Feature: Teams management
     When I am on the "manager2" "user > profile" page logged in as "manager1"
     And I follow "Supervised teams"
     Then the following should exist in the "reportbuilder-table" table:
-      | Relation framework | Team name | Team ID number        | Supervisor title    | Supervisor-managed team | Subordinates |
-      | Framework 1        | Team One  | tm1                   | Ucitel              | No                      | 2            |
+      | Relation framework | Team name | Team ID | Supervisor title | Supervisor-managed team | Subordinates |
+      | Framework 1        | Team One  | tm1     | Ucitel           | No                      | 2            |
 
   Scenario: Team supervisor may manage own team
     Given the following "tool_murelation > frameworks" exist:
@@ -283,11 +283,11 @@ Feature: Teams management
     And I click on "Create team" "button" in the ".modal-dialog" "css_element"
 
     When I click on "Team actions" "link_or_button"
-    And I click on "Add from cohort" "link"
+    And I click on "Add Zaci from cohort" "link"
     And I set the following fields in the ".modal-dialog" "css_element" to these values:
       | Team position | xyz      |
       | Cohort        | Cohort 3 |
-    And I click on "Add from cohort" "button" in the ".modal-dialog" "css_element"
+    And I click on "Add Zaci from cohort" "button" in the ".modal-dialog" "css_element"
     Then the following should exist in the "reportbuilder-table" table:
       | First name | Email address        | Team position |
       | Student 1  | student1@example.com | xyz           |
