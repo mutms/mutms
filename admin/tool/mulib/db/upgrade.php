@@ -35,6 +35,12 @@ function xmldb_tool_mulib_upgrade($oldversion): bool {
 
     $dbman = $DB->get_manager();
 
+    // Shipped translations must not be overridden by outdated strings from downloaded language packs.
+    if (get_config('tool_mulib', 'purgedownloadedlang') === false) {
+        set_config('purgedownloadedlang', 1, 'tool_mulib');
+    }
+    \tool_mulib\local\mulib::purge_downloaded_translations();
+
     if ($oldversion < 2025111845) {
         // Define table tool_mulib_extdb_server to be created.
         $table = new xmldb_table('tool_mulib_extdb_server');

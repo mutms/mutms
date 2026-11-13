@@ -28,6 +28,14 @@ defined('MOODLE_INTERNAL') || die();
 
 $observers = [
     [
+        'eventname' => \tool_langimport\event\langpack_imported::class,
+        'callback' => \tool_mulib\local\mulib::class . '::callback_langpack_installed',
+    ],
+    [
+        'eventname' => \tool_langimport\event\langpack_updated::class,
+        'callback' => \tool_mulib\local\mulib::class . '::callback_langpack_installed',
+    ],
+    [
         'eventname' => \tool_mutenancy\event\tenant_created::class,
         'callback' => \tool_mulib\local\context_map_builder::class . '::callback_tenant_created',
     ],
