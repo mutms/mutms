@@ -580,7 +580,7 @@ final class accesslib_test extends \advanced_testcase {
         $role = \tool_mutenancy\local\manager::get_role();
         $this->assertSame('', $role->description);
         $this->assertStringContainsString(
-            'Tenant manager role gets assigned to all tenant mangers automatically',
+            'Tenant manager role gets assigned to all tenant managers automatically',
             role_get_description($role)
         );
     }
