@@ -94,7 +94,7 @@ class provider implements
                 'userid' => 'privacy:metadata:field:userid',
                 'status' => 'privacy:metadata:field:status',
                 'timeeffective' => 'privacy:metadata:field:timeeffective',
-                'teakenby' => 'privacy:metadata:field:teakenby',
+                'takenby' => 'privacy:metadata:field:takenby',
             ],
             'privacy:metadata:table:tool_muprog_attendance'
         );
