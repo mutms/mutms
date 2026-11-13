@@ -65,11 +65,11 @@ Feature: Behat tool_murelation generator usage
     And I should see "Position managers, supervisors, course teachers and subordinates" in the "Positions visibility" definition list item
     And I should see "Not set" in the "Management restricted to cohort" definition list item
     And I should see "Supervisor" in the "Supervisor title" definition list item
-    And I should see "Supervisors" in the "Supervisors plural" definition list item
+    And I should see "Supervisors" in the "Supervisor title (plural)" definition list item
     And I should see "Not set" in the "Supervisor candidates cohort" definition list item
     And I should see "Not set" in the "Supervisor role" definition list item
     And I should see "Subordinate" in the "Subordinate title" definition list item
-    And I should see "Subordinates" in the "Subordinates plural" definition list item
+    And I should see "Subordinates" in the "Subordinate title (plural)" definition list item
     And I should see "Not set" in the "Subordinate candidates cohort" definition list item
 
     And I navigate to "Users > Supervisors and teams > User relation frameworks" in site administration
@@ -80,11 +80,11 @@ Feature: Behat tool_murelation generator usage
     And I should see "Position managers, supervisors, course teachers and subordinates" in the "Positions visibility" definition list item
     And I should see "Not set" in the "Management restricted to cohort" definition list item
     And I should see "Supervisor" in the "Supervisor title" definition list item
-    And I should see "Supervisors" in the "Supervisors plural" definition list item
+    And I should see "Supervisors" in the "Supervisor title (plural)" definition list item
     And I should see "Not set" in the "Supervisor candidates cohort" definition list item
     And I should see "Not set" in the "Supervisor role" definition list item
     And I should see "Subordinate" in the "Subordinate title" definition list item
-    And I should see "Subordinates" in the "Subordinates plural" definition list item
+    And I should see "Subordinates" in the "Subordinate title (plural)" definition list item
     And I should see "Not set" in the "Subordinate candidates cohort" definition list item
 
     And I navigate to "Users > Supervisors and teams > User relation frameworks" in site administration
@@ -96,11 +96,11 @@ Feature: Behat tool_murelation generator usage
     And I should see "Position managers" in the "Positions visibility" definition list item
     And I should see "Cohort 1" in the "Management restricted to cohort" definition list item
     And I should see "Ucitel" in the "Supervisor title" definition list item
-    And I should see "Ucitele" in the "Supervisors plural" definition list item
+    And I should see "Ucitele" in the "Supervisor title (plural)" definition list item
     And I should see "Cohort 2" in the "Supervisor candidates cohort" definition list item
     And I should see "UManager" in the "Supervisor role" definition list item
     And I should see "Zak" in the "Subordinate title" definition list item
-    And I should see "Zaci" in the "Subordinates plural" definition list item
+    And I should see "Zaci" in the "Subordinate title (plural)" definition list item
     And I should see "Cohort 3" in the "Subordinate candidates cohort" definition list item
 
     And I navigate to "Users > Supervisors and teams > User relation frameworks" in site administration
@@ -112,11 +112,11 @@ Feature: Behat tool_murelation generator usage
     And I should see "Everybody" in the "Positions visibility" definition list item
     And I should see "Cohort 1" in the "Management restricted to cohort" definition list item
     And I should see "Velitel" in the "Supervisor title" definition list item
-    And I should see "Velitele" in the "Supervisors plural" definition list item
+    And I should see "Velitele" in the "Supervisor title (plural)" definition list item
     And I should see "Cohort 2" in the "Supervisor candidates cohort" definition list item
     And I should see "TManager" in the "Supervisor role" definition list item
     And I should see "Pesak" in the "Subordinate title" definition list item
-    And I should see "Pesaci" in the "Subordinates plural" definition list item
+    And I should see "Pesaci" in the "Subordinate title (plural)" definition list item
     And I should see "Cohort 3" in the "Subordinate candidates cohort" definition list item
 
   Scenario: tool_murelation generator may create supervisors
@@ -154,10 +154,10 @@ Feature: Behat tool_murelation generator usage
     And I follow "Framework 1"
     And I follow "Teams"
     Then the following should exist in the "reportbuilder-table" table:
-      | Team name | Team ID number        | Manazer    | Supervisor-managed team | Podrizeni |
-      | Prvni tym | tm1                   | Manager 1  | No                      | 0         |
-      | Druhy tym |                       |            | No                      | 0         |
-      | Treti tym |                       |            | Yes                     | 0         |
+      | Team name | Team ID | Manazer   | Supervisor-managed team | Podrizeni |
+      | Prvni tym | tm1     | Manager 1 | No                      | 0         |
+      | Druhy tym |         |           | No                      | 0         |
+      | Treti tym |         |           | Yes                     | 0         |
 
   Scenario: tool_murelation generator may create team members
     Given the following "tool_murelation > frameworks" exist:
@@ -180,11 +180,11 @@ Feature: Behat tool_murelation generator usage
     And I follow "Framework 1"
     And I follow "Podrizeni"
     Then the following should exist in the "reportbuilder-table" table:
-      | First name | Email address        | Team position | Manazer   | Team name | Team ID number |
-      | Manager 1  | manager1@example.com | Velitel       | Manager 1 | Prvni tym | tm1            |
-      | Student 1  | student1@example.com |               | Manager 1 | Prvni tym | tm1            |
-      | Student 2  | student2@example.com |               | Manager 1 | Prvni tym | tm1            |
-      | Student 3  | student3@example.com |               |           | Druhy tym |                |
+      | First name | Email address        | Team position | Manazer   | Team name | Team ID |
+      | Manager 1  | manager1@example.com | Velitel       | Manager 1 | Prvni tym | tm1     |
+      | Student 1  | student1@example.com |               | Manager 1 | Prvni tym | tm1     |
+      | Student 2  | student2@example.com |               | Manager 1 | Prvni tym | tm1     |
+      | Student 3  | student3@example.com |               |           | Druhy tym |         |
 
   @tool_mutenancy
   Scenario: tool_murelation generator may create tenant teams
@@ -206,7 +206,7 @@ Feature: Behat tool_murelation generator usage
     And I follow "Framework 1"
     And I follow "Teams"
     Then the following should exist in the "reportbuilder-table" table:
-      | Team name | Team ID number        | Manazer    | Supervisor-managed team | Tenant   | Podrizeni |
-      | Prvni tym |                       |            | No                      | Tenant 1 | 0         |
-      | Druhy tym |                       |            | No                      | Tenant 2 | 0         |
-      | Treti tym |                       |            | No                      |          | 0         |
+      | Team name | Team ID | Manazer | Supervisor-managed team | Tenant   | Podrizeni |
+      | Prvni tym |         |         | No                      | Tenant 1 | 0         |
+      | Druhy tym |         |         | No                      | Tenant 2 | 0         |
+      | Treti tym |         |         | No                      |          | 0         |
