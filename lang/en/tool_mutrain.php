@@ -83,4 +83,4 @@ $string['restrictafter'] = 'Only obtained after';
 $string['restrictcontext'] = 'Restricted to category';
 $string['selectcategory'] = 'Select category';
 $string['specificsettings'] = 'Training credits custom field settings';
-$string['taskcron'] = 'Completed credits caching';
+$string['taskcron'] = 'Recalculate training credits';
