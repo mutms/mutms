@@ -74,7 +74,7 @@ Feature: Automatic cohorts assignments certification tests
     And I click on "Update Automatic cohort assignment" "link"
     And I set the following fields to these values:
       | Active            | Yes                |
-      | Assign to cohorts | Cohort 1, Cohort 2 |
+      | Assign cohorts | Cohort 1, Cohort 2 |
     And I click on "Update" "button" in the ".modal-dialog" "css_element"
     Then I should see "Active (Cohort 1, Cohort 2)" in the "Automatic cohort assignment" definition list item
     And I click on "Users" "link" in the ".secondary-navigation" "css_element"
@@ -91,7 +91,7 @@ Feature: Automatic cohorts assignments certification tests
     When I click on "Assignment settings" "link" in the ".secondary-navigation" "css_element"
     And I click on "Update Automatic cohort assignment" "link"
     And I set the following fields to these values:
-      | Assign to cohorts | Cohort 1 |
+      | Assign cohorts | Cohort 1 |
     And I click on "Update" "button" in the ".modal-dialog" "css_element"
     Then I should see "Active (Cohort 1)" in the "Automatic cohort assignment" definition list item
     And I click on "Users" "link" in the ".secondary-navigation" "css_element"
@@ -108,7 +108,7 @@ Feature: Automatic cohorts assignments certification tests
     When I click on "Assignment settings" "link" in the ".secondary-navigation" "css_element"
     And I click on "Update Automatic cohort assignment" "link"
     And I set the following fields to these values:
-      | Assign to cohorts | Cohort 4 |
+      | Assign cohorts | Cohort 4 |
     And I click on "Update" "button" in the ".modal-dialog" "css_element"
     And I should see "Active (Cohort 4)" in the "Automatic cohort assignment" definition list item
     And I click on "Users" "link" in the ".secondary-navigation" "css_element"
