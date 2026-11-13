@@ -4,11 +4,17 @@ Plugin versioning is derived from Moodle releases, it does not comply with the s
 
 The format of this change log follows the advice given at [Keep a CHANGELOG](https://keepachangelog.com).
 
-## [v5.0.11.01](https://github.com/mutms/moodle-certificateelement_muprog/compare/v5.0.10.03...v5.0.11.01) - 2026-09-20
+## [v5.0.12.01](https://github.com/mutms/moodle-certificateelement_muprog/compare/v5.0.11.01...v5.0.12.01) - 2026-11-12
+
+### Added
+
+- Czech translation and AI-produced previews of German, French, Italian, Portuguese and Spanish translations
+
+## [v5.0.11.01](https://github.com/mutms/moodle-certificateelement_muprog/compare/v5.0.10.03...v5.0.11.01) - 2026-10-04
 
 - No changes
 
-## [v5.0.10.03](https://github.com/mutms/moodle-certificateelement_muprog/compare/v5.0.10.02...v5.0.10.03) - 2026-09-20
+## [v5.0.10.03](https://github.com/mutms/moodle-certificateelement_muprog/compare/v5.0.10.02...v5.0.10.03) - 2026-09-19
 
 - version pinned to 2026092000
 
