@@ -25,7 +25,7 @@
  */
 
 $string['environment_oracle_incompatible'] = 'Oracle Database is not compatible with MuTMS plugins.';
-$string['environment_windows_unsupported'] = 'MS Windows is not supported as web server for use with MuTMS plugins. ';
+$string['environment_windows_unsupported'] = 'MS Windows is not supported as web server for use with MuTMS plugins.';
 $string['extdb'] = 'External databases';
 $string['extdb_exception'] = 'Error communicating with external database';
 $string['extdb_queries'] = 'External database queries';
@@ -52,6 +52,7 @@ $string['extdb_server_extensions'] = 'Available PDO extensions: {$a}';
 $string['extdb_server_status'] = 'Connection status';
 $string['extdb_server_update'] = 'Update server';
 $string['extdb_servers'] = 'External database servers';
+$string['lang_settings'] = 'MuTMS translations';
 $string['lang_string_a'] = '{$a}';
 $string['mulib:useextdb'] = 'Use external queries';
 $string['notification'] = 'Notification';
@@ -78,6 +79,9 @@ $string['privacy:metadata:notificationid'] = 'Notification id';
 $string['privacy:metadata:timenotified'] = 'Time user notified';
 $string['privacy:metadata:tool_mulib_notification_user:tableexplanation'] = 'Tracked user notifications';
 $string['privacy:metadata:userid'] = 'User';
+$string['purgedownloadedlang'] = 'Use translations shipped with MuTMS';
+$string['purgedownloadedlang_desc'] = 'Translations shipped with MuTMS plugins are reviewed together with the code. If enabled, MuTMS strings are deleted from downloaded language packs, because they would override the shipped translations. Use language customisation to change individual strings.';
 $string['task_context_map_cron'] = 'Context map cron';
+$string['task_lang_cleanup'] = 'Purge downloaded translations conflicting with official MuTMS translations';
 $string['toomanyitemsfound'] = 'Too many items found (maximum {$a})';
 $string['toomanyrecords'] = 'Too many records found';
