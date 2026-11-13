@@ -35,7 +35,7 @@ Feature: My programs page overview block pagination
 
   Scenario: The pagination controls should be hidden if I am not allocated in any programs
     When I am on the "block_muprogmyoverview > My programs" page logged in as "student1"
-    Then I should see "You not have any active programs." in the "My programs overview page" "block"
+    Then I should see "You do not have any active programs." in the "My programs overview page" "block"
     And I should not see "Show" in the "My programs overview page" "block"
     And ".block_muprogmyoverview .dropdown-menu.show" "css_element" should not be visible
     And ".block_muprogmyoverview [data-control='next']" "css_element" should not be visible

@@ -40,7 +40,7 @@ Feature: My programs page overview block searching
 
   Scenario: There is no search if I am not allocated in any program
     When I am on the "block_muprogmyoverview > My programs" page logged in as "student2"
-    Then I should see "You not have any active programs." in the "My programs overview page" "block"
+    Then I should see "You do not have any active programs." in the "My programs overview page" "block"
     And "Search programs" "field" should not exist in the "My programs overview page" "block"
     And I log out
 
