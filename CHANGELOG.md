@@ -4,7 +4,15 @@ Plugin versioning is derived from Moodle releases, it does not comply with the s
 
 The format of this change log follows the advice given at [Keep a CHANGELOG](https://keepachangelog.com).
 
-## [v4.5.15.01](https://github.com/mutms/moodle-tool_mulib/compare/v4.5.14.03...v4.5.15.01) - 2026-09-19
+## [v4.5.16.01](https://github.com/mutms/moodle-tool_mulib/compare/v4.5.15.01...v4.5.16.01) - 2026-11-12
+
+### Added
+
+- Czech translation and AI-produced previews of German, French, Italian, Portuguese and Spanish translations
+- mulib::TRANSLATIONS list of languages shipped by all MuTMS plugins, with a test for missing strings
+- Setting to purge MuTMS strings from downloaded language packs, enabled by default
+
+## [v4.5.15.01](https://github.com/mutms/moodle-tool_mulib/compare/v4.5.14.03...v4.5.15.01) - 2026-10-04
 
 - No changes
 

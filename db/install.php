@@ -28,5 +28,9 @@
  * Install mulib.
  */
 function xmldb_tool_mulib_install(): void {
+    // Language packs downloaded during Moodle installation may contain outdated MuTMS strings.
+    set_config('purgedownloadedlang', 1, 'tool_mulib');
+    \tool_mulib\local\mulib::purge_downloaded_translations();
+
     \tool_mulib\local\context_map_builder::build();
 }

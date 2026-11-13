@@ -43,3 +43,16 @@ $ADMIN->add('tool_mulib_extdb', new admin_externalpage(
     new moodle_url('/admin/tool/mulib/extdb/queries.php'),
     'tool/mulib:useextdb'
 ));
+
+$settings = new admin_settingpage('tool_mulib_lang', get_string('lang_settings', 'tool_mulib'));
+$ADMIN->add('language', $settings);
+if ($ADMIN->fulltree) {
+    $setting = new admin_setting_configcheckbox(
+        'tool_mulib/purgedownloadedlang',
+        get_string('purgedownloadedlang', 'tool_mulib'),
+        get_string('purgedownloadedlang_desc', 'tool_mulib'),
+        1
+    );
+    $setting->set_updatedcallback([\tool_mulib\local\mulib::class, 'purge_downloaded_translations']);
+    $settings->add($setting);
+}
