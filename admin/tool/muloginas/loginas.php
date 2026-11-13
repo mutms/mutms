@@ -82,7 +82,7 @@ if (!$newprivatewindow || $USER->id) {
     if ($request && $request->userid == $USER->id) {
         $info = get_string('error_notincognito', 'tool_muloginas');
     } else {
-        $info = get_string('error_incognitoproglem', 'tool_muloginas');
+        $info = get_string('error_incognitoproblem', 'tool_muloginas');
     }
 
     echo '<div class="alert alert-danger">';
