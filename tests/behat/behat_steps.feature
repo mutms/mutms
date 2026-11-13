@@ -230,7 +230,7 @@ Feature: Certifications navigation behat steps test
 
     When I log in as "manager1"
     And I navigate to "Certifications > Certification settings" in site administration
-    Then I should see "Allow cohort allocation"
+    Then I should see "Allow cohort assignment"
     And I log out
 
     When I log in as "admin"
@@ -239,7 +239,7 @@ Feature: Certifications navigation behat steps test
     And I click on "Assignment settings" "link" in the ".secondary-navigation" "css_element"
     Then I should see "Requests with approval"
     Then I navigate to "Certifications > Certification settings" in site administration
-    Then I should see "Allow cohort allocation"
+    Then I should see "Allow cohort assignment"
     And I set the following fields to these values:
       | Allow approvals              |  0  |
     And I press "Save changes"
