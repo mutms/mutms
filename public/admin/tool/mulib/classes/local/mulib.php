@@ -19,7 +19,6 @@
 
 namespace tool_mulib\local;
 
-use dml_write_exception;
 use stdClass;
 
 /**
@@ -32,6 +31,78 @@ use stdClass;
  * @license    https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 final class mulib {
+    /** @var string[] components of all MuTMS plugins, tool_certificate is not a MuTMS plugin */
+    public const MUTMS_PLUGINS = [
+        'block_mucertify_my',
+        'block_muprog_my',
+        'block_muprogmyoverview',
+        'certificateelement_mucertify',
+        'certificateelement_muprog',
+        'customfield_mutrain',
+        'enrol_muprog',
+        'mod_mubook',
+        'tool_mucertify',
+        'tool_muhome',
+        'tool_mulib',
+        'tool_muloginas',
+        'tool_muprog',
+        'tool_mupwned',
+        'tool_murelation',
+        'tool_musudo',
+        'tool_mutenancy',
+        'tool_mutrain',
+    ];
+
+    /** @var string[] full translations shipped in lang/ of all MuTMS plugins, tested by tool_mulib */
+    public const TRANSLATIONS = [
+        'cs',
+        'de',
+        'es',
+        'fr',
+        'it',
+        'pt',
+    ];
+
+    /**
+     * Is the component a MuTMS plugin?
+     *
+     * NOTE: the plugin does not need to be installed.
+     *
+     * @param string $component frankenstyle component name
+     * @return bool
+     */
+    public static function is_mutms_plugin(string $component): bool {
+        return in_array($component, self::MUTMS_PLUGINS, true);
+    }
+
+    /**
+     * Delete translations of MuTMS plugins from downloaded language packs,
+     * translations shipped with the plugins must be used instead.
+     *
+     * NOTE: this can be disabled via tool_mulib/purgedownloadedlang setting.
+     *
+     * @return int number of deleted files
+     */
+    public static function purge_downloaded_translations(): int {
+        if (!get_config('tool_mulib', 'purgedownloadedlang')) {
+            return 0;
+        }
+        $deleted = 0;
+        foreach (self::MUTMS_PLUGINS as $component) {
+            $deleted += lang_util::purge_downloaded_translations($component, self::TRANSLATIONS);
+        }
+        return $deleted;
+    }
+
+    /**
+     * Language pack installed or updated observer.
+     *
+     * @param \core\event\base $event
+     */
+    public static function callback_langpack_installed(\core\event\base $event): void {
+        self::purge_downloaded_translations();
+    }
+
     /**
      * Is catalogue plugin available?
      *
@@ -220,10 +291,7 @@ final class mulib {
     /**
      * A fast way to insert or update record that has EXACTLY ONE unique index.
      *
-     * If there is already an existing record with unique constraint then
-     * record is updated, if not new record is inserted.
-     *
-     * This method solves problems with highly concurrent inserts into tables with unique constraints.
+     * Use mudb::upsert_record() in new code.
      *
      * @param string $table
      * @param stdClass|array $dataobject
@@ -231,53 +299,13 @@ final class mulib {
      * @param array $insertonlyfields additional fields with values to be used only for inserts
      */
     public static function upsert_record(string $table, stdClass|array $dataobject, array $uniqueindexcolumns, array $insertonlyfields = []): void {
-        global $DB;
-
-        $dataobject = (object)(array)$dataobject;
-
-        self::validate_upsert_record_arguments($table, $dataobject, $uniqueindexcolumns, $insertonlyfields);
-
-        if ($DB->get_dbfamily() === 'pgsql') {
-            self::upsert_record_pgsql($table, $dataobject, $uniqueindexcolumns, $insertonlyfields);
-            return;
-        } else if ($DB->get_dbfamily() === 'mysql') {
-            self::upsert_record_mysql($table, $dataobject, $uniqueindexcolumns, $insertonlyfields);
-            return;
-        }
-
-        // NOTE: this is a fallback implementation for unsupported MS SQL Server.
-
-        $conditions = [];
-        foreach ($uniqueindexcolumns as $column) {
-            $conditions[$column] = $dataobject->$column;
-        }
-
-        $record = $DB->get_record($table, $conditions);
-        if ($record) {
-            $dataobject->id = $record->id;
-            $DB->update_record($table, $dataobject);
-        } else {
-            try {
-                if ($insertonlyfields) {
-                    $insertdata = (object)((array)$dataobject + $insertonlyfields);
-                } else {
-                    $insertdata = $dataobject;
-                }
-                $DB->insert_record($table, $insertdata);
-            } catch (dml_write_exception $e) {
-                // Could be a concurrent insert trouble.
-                $record = $DB->get_record($table, $conditions);
-                if (!$record) {
-                    throw $e;
-                }
-                $dataobject->id = $record->id;
-                $DB->update_record($table, $dataobject);
-            }
-        }
+        mudb::upsert_record($table, $dataobject, $uniqueindexcolumns, $insertonlyfields);
     }
 
     /**
      * PostgreSQL UPSERT.
+     *
+     * Use mudb::upsert_record() in new code.
      *
      * @param string $table
      * @param stdClass $dataobject
@@ -285,145 +313,6 @@ final class mulib {
      * @param array $insertonlyfields additional fields with values to be used only for inserts
      */
     public static function upsert_record_pgsql(string $table, stdClass $dataobject, array $uniqueindexcolumns, array $insertonlyfields): void {
-        global $DB;
-
-        $values = [];
-        $fields = [];
-        $params = [];
-        $updates = [];
-        foreach ((array)$dataobject as $field => $value) {
-            $params[] = $value;
-            $values[] = '?';
-            $fields[] = $field;
-            if (!in_array($field, $uniqueindexcolumns)) {
-                $updates[] = "$field = EXCLUDED.$field";
-            }
-        }
-        foreach ($insertonlyfields as $field => $value) {
-            $params[] = $value;
-            $values[] = '?';
-            $fields[] = $field;
-        }
-        $values = implode(',', $values);
-        $fields = implode(',', $fields);
-        $constraint = implode(',', $uniqueindexcolumns);
-        $updates = implode(', ', $updates);
-
-        $sql = "INSERT INTO {{$table}} ($fields) VALUES ($values)
-                            ON CONFLICT ($constraint) DO UPDATE SET $updates";
-        $DB->execute($sql, $params);
-    }
-
-    /**
-     * MySQL UPSERT.
-     *
-     * @param string $table
-     * @param stdClass $dataobject
-     * @param string[] $uniqueindexcolumns list of all columns in unique index
-     * @param array $insertonlyfields additional fields with values to be used only for inserts
-     */
-    protected static function upsert_record_mysql(string $table, stdClass $dataobject, array $uniqueindexcolumns, array $insertonlyfields): void {
-        global $DB;
-
-        $values = [];
-        $fields = [];
-        $params = [];
-        $updates = [];
-        foreach ((array)$dataobject as $field => $value) {
-            $params[] = $value;
-            $values[] = '?';
-            $fields[] = $field;
-            if (!in_array($field, $uniqueindexcolumns)) {
-                $updates[] = "$field = VALUES($field)";
-            }
-        }
-        foreach ($insertonlyfields as $field => $value) {
-            $params[] = $value;
-            $values[] = '?';
-            $fields[] = $field;
-        }
-        $values = implode(',', $values);
-        $fields = implode(',', $fields);
-        $updates = implode(', ', $updates);
-
-        $sql = "INSERT INTO {{$table}} ($fields) VALUES ($values)
-                            ON DUPLICATE KEY UPDATE $updates";
-        $DB->execute($sql, $params);
-    }
-
-    /**
-     * Validate all upsert parameters.
-     *
-     * @param string $table
-     * @param stdClass $dataobject
-     * @param array $uniqueindexcolumns
-     * @param array $insertonlyfields
-     * @return void
-     */
-    protected static function validate_upsert_record_arguments(
-        string $table,
-        stdClass $dataobject,
-        array $uniqueindexcolumns,
-        array $insertonlyfields
-    ): void {
-        global $DB;
-
-        if (!$uniqueindexcolumns) {
-            throw new \core\exception\coding_exception(
-                'moodle_database::upsert_record() requires list of unique constraint columns'
-            );
-        }
-
-        if (property_exists($dataobject, 'id')) {
-            throw new \core\exception\coding_exception(
-                'moodle_database::upsert_record() dataobject must not have id property'
-            );
-        }
-
-        foreach ($uniqueindexcolumns as $column) {
-            if (!isset($dataobject->$column)) {
-                throw new \core\exception\coding_exception(
-                    'moodle_database::upsert_record() dataobject must have all unique columns set'
-                );
-            }
-        }
-
-        $columns = $DB->get_columns($table);
-
-        foreach ($insertonlyfields as $k => $v) {
-            if (!isset($columns[$k])) {
-                throw new \core\exception\coding_exception(
-                    'moodle_database::upsert_record() insertonlyfields contains unknown column'
-                );
-            }
-            if (in_array($k, $uniqueindexcolumns)) {
-                throw new \core\exception\coding_exception(
-                    'moodle_database::upsert_record() insertonlyfields cannot contain unique columns'
-                );
-            }
-            if (property_exists($dataobject, $k)) {
-                throw new \core\exception\coding_exception(
-                    'moodle_database::upsert_record() insertonlyfields must not share columns with dataobject'
-                );
-            }
-        }
-
-        $foundnonunique = false;
-        foreach ((array)$dataobject as $field => $value) {
-            if (!isset($columns[$field])) {
-                throw new \core\exception\coding_exception(
-                    'moodle_database::upsert_record() dataobject contains unknown column'
-                );
-            }
-            if (!$foundnonunique && !in_array($field, $uniqueindexcolumns)) {
-                $foundnonunique = true;
-            }
-        }
-
-        if (!$foundnonunique) {
-            throw new \core\exception\coding_exception(
-                'moodle_database::upsert_record() dataobject must contain at least one non-unique column'
-            );
-        }
+        mudb::upsert_record_pgsql($table, $dataobject, $uniqueindexcolumns, $insertonlyfields);
     }
 }
