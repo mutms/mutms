@@ -318,7 +318,7 @@ Feature: Manual certification assignment tests
     And I click on "Upload assignments" "button" in the ".modal-dialog" "css_element"
     And I should see "2 users were assigned to certification"
     And I follow "Student 1"
-    Then I should see "Temporary valid" in the "Certification status" definition list item
+    Then I should see "Temporarily valid" in the "Certification status" definition list item
     And I should see "Tuesday, 2 January 2035, 12:00" in the "Temporary certification until" definition list item
     And the following should exist in the "reportbuilder-table" table:
       | Certification due | Window closing | Program     | Expiration     | Re-certify automatically | Status  |
